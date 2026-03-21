@@ -1,0 +1,176 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* FlowLink brand palette — light mode */
+    --brand-blue: 220 80% 56%;
+    --brand-purple: 262 72% 58%;
+    --brand-indigo: 240 65% 52%;
+
+    /* Status tokens */
+    --color-approved: 152 60% 42%;
+    --color-rejected: 0 72% 51%;
+    --color-escalated: 38 92% 50%;
+    --color-pending: 220 14% 56%;
+
+    /* shadcn / radix primitives */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --primary: 220 80% 56%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 262 72% 58%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 220 80% 56%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* FlowLink brand palette — dark mode */
+    --brand-blue: 220 80% 60%;
+    --brand-purple: 262 72% 65%;
+    --brand-indigo: 240 65% 60%;
+
+    /* Status tokens (brighter for dark bg) */
+    --color-approved: 152 65% 48%;
+    --color-rejected: 0 72% 58%;
+    --color-escalated: 38 92% 56%;
+    --color-pending: 220 14% 50%;
+
+    /* shadcn / radix primitives */
+    --background: 224 28% 7%;
+    --foreground: 210 40% 98%;
+
+    --card: 224 24% 10%;
+    --card-foreground: 210 40% 98%;
+
+    --primary: 220 80% 60%;
+    --primary-foreground: 222 47% 6%;
+
+    --secondary: 224 24% 14%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 224 24% 14%;
+    --muted-foreground: 215 16% 56%;
+
+    --accent: 262 72% 65%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 63% 48%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 224 16% 18%;
+    --input: 224 16% 18%;
+    --ring: 220 80% 60%;
+  }
+
+  /* Base resets & typography */
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  /* Focus ring */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Custom scrollbar — WebKit */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full;
+    background: hsl(var(--muted-foreground) / 0.3);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+
+  /* Firefox scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+  }
+
+  /* Selection */
+  ::selection {
+    @apply bg-primary/20 text-foreground;
+  }
+}
+
+@layer utilities {
+  /* Status badge utilities */
+  .status-approved {
+    color: hsl(var(--color-approved));
+    background: hsl(var(--color-approved) / 0.12);
+  }
+
+  .status-rejected {
+    color: hsl(var(--color-rejected));
+    background: hsl(var(--color-rejected) / 0.12);
+  }
+
+  .status-escalated {
+    color: hsl(var(--color-escalated));
+    background: hsl(var(--color-escalated) / 0.12);
+  }
+
+  .status-pending {
+    color: hsl(var(--color-pending));
+    background: hsl(var(--color-pending) / 0.12);
+  }
+
+  /* Gradient text */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--brand-blue)),
+      hsl(var(--brand-purple))
+    );
+  }
+
+  /* Glass card */
+  .glass {
+    @apply backdrop-blur-lg;
+    background: hsl(var(--card) / 0.6);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+}
