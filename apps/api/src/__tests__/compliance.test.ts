@@ -13,6 +13,8 @@ vi.mock("../db/index.js", () => ({
     insert: () => ({
       values: () => ({
         returning: mockInsertReturning,
+        then: (resolve: (v: unknown) => void) => Promise.resolve().then(resolve),
+        catch: () => Promise.resolve(),
       }),
     }),
     select: () => ({

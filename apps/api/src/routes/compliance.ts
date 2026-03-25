@@ -15,6 +15,10 @@ import { AMLScorer, loadConfig } from "@flowlink/core";
 import type { TransactionContext } from "@flowlink/core";
 import { checkDelegationScope } from "../utils/spend-enforcement.js";
 import { screenAddress } from "../services/screening.js";
+import {
+  createComplianceCommitment,
+  verifyComplianceCommitment,
+} from "../services/zk-commitment.js";
 import { getProtocolCompliance, isSupportedProtocol } from "../services/protocol-adapter.js";
 import type { SupportedProtocol, ProtocolComplianceContext } from "../services/protocol-adapter.js";
 import {
@@ -28,6 +32,7 @@ import {
   resolveAgentOriginator,
 } from "../services/travel-rule-config.js";
 import type { AgentOriginatorInfo } from "../services/travel-rule-config.js";
+import { recordUsage } from "../services/billing.js";
 
 // ---------------------------------------------------------------------------
 // AML Scorer (singleton — created once with default config)
@@ -327,6 +332,14 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
   const receiptHash = `0x${randomUUID().replace(/-/g, "")}`;
   const signature = `0x${"0".repeat(128)}`; // Placeholder -- real impl signs with ProofLink key
 
+  // Generate ZK commitment — only the hash goes on-chain, salt stays private
+  const commitment = createComplianceCommitment({
+    senderAddress: parsed.sender.address,
+    receiverAddress: parsed.receiver.address,
+    amount: parsed.amount,
+    status,
+  });
+
   const [receipt] = await db
     .insert(complianceReceipts)
     .values({
@@ -335,6 +348,8 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
       overallStatus: status,
       riskScore,
       travelRuleStatus: travelRuleApplies ? "REQUIRED_PENDING" : "NOT_REQUIRED",
+      commitmentHash: commitment.commitmentHash,
+      commitmentSalt: commitment.salt,
       signature,
       checksPerformed,
       ttl: 300,
@@ -351,7 +366,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
   // Fire-and-forget: audit log
   writeAuditLog({
     eventType: "compliance.check.created",
-    payload: { checkId: check.id, status, riskScore, receiptHash, totalDurationMs },
+    payload: { checkId: check.id, status, riskScore, receiptHash, commitmentHash: commitment.commitmentHash, totalDurationMs },
     receiptId: receipt.id,
     agentDid: parsed.sender.agentDID,
     apiKeyId: auth?.apiKeyId,
@@ -419,6 +434,16 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
     });
   }
 
+  // Fire-and-forget: metered billing
+  if (parsed.sender.agentDID) {
+    recordUsage(parsed.sender.agentDID, "compliance_check", amountUsd, {
+      checkId: check.id,
+      receiptId: receipt.id,
+      status,
+      riskScore,
+    }, traceId);
+  }
+
   c.header("X-Trace-ID", traceId);
 
   return c.json(
@@ -456,6 +481,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
         } : null,
         receiptId: receipt.id,
         receiptHash,
+        commitmentHash: commitment.commitmentHash,
         checks: checksPerformed,
         travelRuleStatus: travelRuleApplies ? "REQUIRED_PENDING" : "NOT_REQUIRED",
         totalDurationMs,
@@ -494,8 +520,60 @@ compliance.post("/screen", validate({ body: ScreenRequest }), async (c) => {
     screenedAt: result.screenedAt,
   };
 
+  // Fire-and-forget: metered billing for screen action
+  const auth = c.get("auth") as AuthContext | undefined;
+  const agentDid = auth?.ownerId;
+  if (agentDid) {
+    recordUsage(agentDid, "screen", 0, {
+      address: parsed.address,
+      chain: parsed.chain,
+      matched: result.matched,
+      riskScore: result.riskScore,
+    });
+  }
+
   return c.json({ success: true, data: screenResult }, 200);
 });
+
+// POST /v1/compliance/verify-commitment -- Verify a ZK commitment against receipt data
+const VerifyCommitmentRequest = z.object({
+  commitmentHash: z.string().min(1),
+  receipt: z.object({
+    senderAddress: z.string().min(1),
+    receiverAddress: z.string().min(1),
+    amount: z.string().min(1),
+    status: z.string().min(1),
+  }),
+  salt: z.string().min(1),
+});
+
+compliance.post(
+  "/verify-commitment",
+  validate({ body: VerifyCommitmentRequest }),
+  async (c) => {
+    const parsed = c.get("validatedBody") as z.infer<typeof VerifyCommitmentRequest>;
+
+    const valid = verifyComplianceCommitment(
+      parsed.commitmentHash,
+      parsed.receipt,
+      parsed.salt,
+    );
+
+    return c.json(
+      {
+        success: true,
+        data: {
+          valid,
+          commitmentHash: parsed.commitmentHash,
+          message: valid
+            ? "Commitment matches the provided receipt data and salt."
+            : "Commitment does NOT match — receipt data or salt is incorrect.",
+        },
+      },
+      200,
+    );
+  },
+);
 
 // GET /v1/compliance/receipt/:id -- Get compliance receipt
 compliance.get("/receipt/:id", validate({ params: ReceiptParams }), async (c) => {
@@ -531,6 +609,7 @@ compliance.post("/batch", validate({ body: BatchComplianceRequest }), async (c) 
     riskScore: number;
     receiptId: string;
     receiptHash: string;
+    commitmentHash: string;
     totalDurationMs: number;
     traceId: string;
   }> = [];
@@ -700,6 +779,14 @@ compliance.post("/batch", validate({ body: BatchComplianceRequest }), async (c) 
     const receiptHash = `0x${randomUUID().replace(/-/g, "")}`;
     const signature = `0x${"0".repeat(128)}`;
 
+    // Generate ZK commitment for batch item
+    const batchCommitment = createComplianceCommitment({
+      senderAddress: req.sender.address,
+      receiverAddress: req.receiver.address,
+      amount: req.amount,
+      status,
+    });
+
     const [receipt] = await db
       .insert(complianceReceipts)
       .values({
@@ -708,6 +795,8 @@ compliance.post("/batch", validate({ body: BatchComplianceRequest }), async (c) 
         overallStatus: status,
         riskScore,
         travelRuleStatus: batchTravelRuleApplies ? "TRANSMITTED" : "NOT_REQUIRED",
+        commitmentHash: batchCommitment.commitmentHash,
+        commitmentSalt: batchCommitment.salt,
         signature,
         checksPerformed,
         ttl: 300,
@@ -727,6 +816,7 @@ compliance.post("/batch", validate({ body: BatchComplianceRequest }), async (c) 
       riskScore,
       receiptId: receipt.id,
       receiptHash,
+      commitmentHash: batchCommitment.commitmentHash,
       totalDurationMs,
       traceId: itemTraceId,
     });

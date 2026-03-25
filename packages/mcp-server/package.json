@@ -17,7 +17,9 @@
       "import": "./dist/server.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "clean": "rm -rf dist",
@@ -32,6 +34,7 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
+    "@types/node": "^25.5.0",
     "typescript": "^5.8.0",
     "vitest": "^3.0.0"
   }

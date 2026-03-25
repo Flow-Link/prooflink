@@ -106,6 +106,89 @@ function Toggle({
 
 // ─── General Section ─────────────────────────────────────────────────────────
 
+function ApiKeyConnect() {
+  const [key, setKey] = useState("");
+  const [connected, setConnected] = useState(false);
+
+  // Load from localStorage on mount
+  useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("flowlink_api_key");
+      if (saved) {
+        setKey(saved);
+        setConnected(true);
+      }
+    }
+  });
+
+  const handleConnect = () => {
+    if (!key.trim()) return;
+    const { setApiKey } = require("@/lib/api");
+    setApiKey(key.trim());
+    setConnected(true);
+  };
+
+  const handleDisconnect = () => {
+    const { setApiKey } = require("@/lib/api");
+    setApiKey("");
+    setKey("");
+    setConnected(false);
+    if (typeof window !== "undefined") localStorage.removeItem("flowlink_api_key");
+  };
+
+  return (
+    <Card className={connected ? "border-emerald-500/30" : "border-amber-500/30"}>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Key className="h-4 w-4" />
+            API Connection
+          </CardTitle>
+          {connected ? (
+            <span className="text-xs text-emerald-400 flex items-center gap-1">
+              <CheckCircle2 className="h-3 w-3" /> Connected
+            </span>
+          ) : (
+            <span className="text-xs text-amber-400 flex items-center gap-1">
+              <AlertTriangle className="h-3 w-3" /> Not connected
+            </span>
+          )}
+        </div>
+        <CardDescription>
+          Connect your API key to enable screening, invoice creation, and compliance checks from the dashboard.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="flex gap-2">
+          <Input
+            placeholder="fl_live_..."
+            value={key}
+            onChange={(e) => setKey(e.target.value)}
+            type="password"
+            className="font-mono text-sm"
+          />
+          {connected ? (
+            <Button variant="destructive" size="sm" onClick={handleDisconnect} className="shrink-0">
+              Disconnect
+            </Button>
+          ) : (
+            <Button size="sm" onClick={handleConnect} disabled={!key.trim()} className="shrink-0 gap-1">
+              <Key className="h-3 w-3" />
+              Connect
+            </Button>
+          )}
+        </div>
+        {!connected && (
+          <p className="text-xs text-muted-foreground">
+            Without an API key, screening and invoice creation will use mock data.
+            Your key from the seed: <code className="bg-secondary/50 px-1 rounded">fl_live_...</code>
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 function GeneralSection() {
   const [orgName, setOrgName] = useState("FlowLink Inc.");
   const [timezone, setTimezone] = useState("UTC");
@@ -132,6 +215,7 @@ function GeneralSection() {
 
   return (
     <div className="space-y-6">
+      <ApiKeyConnect />
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold">General Settings</h3>
@@ -871,7 +955,7 @@ function TeamSection() {
                   <TableRow key={m.id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-blue-600 text-xs font-bold text-white">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-teal-600 text-xs font-bold text-white">
                           {m.name.charAt(0)}
                         </div>
                         <div>
@@ -883,7 +967,7 @@ function TeamSection() {
                     <TableCell>
                       <span className={cn(
                         "rounded-full border px-2.5 py-0.5 text-xs font-medium",
-                        m.role === "ADMIN" ? "border-purple-500/30 bg-purple-500/10 text-purple-400" :
+                        m.role === "ADMIN" ? "border-blue-500/30 bg-blue-500/10 text-blue-400" :
                         m.role === "MEMBER" ? "border-blue-500/30 bg-blue-500/10 text-blue-400" :
                         "border-zinc-500/30 bg-zinc-500/10 text-zinc-400"
                       )}>

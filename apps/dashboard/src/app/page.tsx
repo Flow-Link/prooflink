@@ -49,7 +49,7 @@ import Link from "next/link";
 
 // ─── Sparkline ──────────────────────────────────────────────────────────────
 
-function Sparkline({ data, color = "#8b5cf6", width = 80, height = 24 }: { data: number[]; color?: string; width?: number; height?: number }) {
+function Sparkline({ data, color = "#3b82f6", width = 80, height = 24 }: { data: number[]; color?: string; width?: number; height?: number }) {
   if (data.length < 2) return null;
   const min = Math.min(...data);
   const max = Math.max(...data);
@@ -240,9 +240,9 @@ function StatsSection() {
         rawValue={stats.totalChecks}
         change={stats.checksChange}
         icon={Shield}
-        iconColor="text-purple-400"
+        iconColor="text-blue-400"
         sparklineData={sparklines.checks}
-        sparklineColor="#a78bfa"
+        sparklineColor="#60a5fa"
       />
       <AnimatedStatCard
         title="Approved Rate"
@@ -295,7 +295,7 @@ function ChartSection() {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
-              <div className="h-2.5 w-2.5 rounded-full bg-purple-500" />
+              <div className="h-2.5 w-2.5 rounded-full bg-blue-500" />
               <span className="text-xs text-muted-foreground">Passed</span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -401,14 +401,14 @@ function SystemHealth() {
 
 function QuickActions() {
   const actions = [
-    { href: "/screen", label: "Screen Address", desc: "Run compliance check on a wallet", icon: Shield, color: "purple" },
+    { href: "/screen", label: "Screen Address", desc: "Run compliance check on a wallet", icon: Shield, color: "teal" },
     { href: "/invoices/new", label: "Create Invoice", desc: "Generate a compliant invoice", icon: FileText, color: "blue" },
     { href: "/agents", label: "Manage Agents", desc: "View and issue KYA credentials", icon: Bot, color: "amber" },
     { href: "/analytics", label: "View Analytics", desc: "Compliance and transaction analytics", icon: TrendingUp, color: "emerald" },
   ];
 
   const colorMap: Record<string, { bg: string; bgHover: string; text: string }> = {
-    purple: { bg: "bg-purple-500/15", bgHover: "hover:border-purple-500/30", text: "text-purple-400" },
+    teal: { bg: "bg-teal-500/15", bgHover: "hover:border-teal-500/30", text: "text-teal-400" },
     blue: { bg: "bg-blue-500/15", bgHover: "hover:border-blue-500/30", text: "text-blue-400" },
     amber: { bg: "bg-amber-500/15", bgHover: "hover:border-amber-500/30", text: "text-amber-400" },
     emerald: { bg: "bg-emerald-500/15", bgHover: "hover:border-emerald-500/30", text: "text-emerald-400" },

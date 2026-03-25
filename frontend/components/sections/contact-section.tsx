@@ -422,8 +422,8 @@ export function ContactSection() {
             <p className="max-w-2xl text-sm text-foreground/90 md:text-lg">
               Watch as your payment passes through all compliance checks in real-time — sanctions screening, KYC verification, Travel Rule compliance, and AML monitoring — all automated.
             </p>
-            <MagneticButton size="lg" variant="primary">
-              Start Your Journey
+            <MagneticButton size="lg" variant="primary" href="/dashboard">
+              Open Dashboard
             </MagneticButton>
           </div>
         </div>

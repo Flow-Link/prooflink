@@ -39,7 +39,7 @@ const config: Config = {
         /* FlowLink brand colors */
         brand: {
           blue: "hsl(var(--brand-blue))",
-          purple: "hsl(var(--brand-purple))",
+          teal: "hsl(var(--brand-teal))",
           indigo: "hsl(var(--brand-indigo))",
         },
         /* Status semantic colors */

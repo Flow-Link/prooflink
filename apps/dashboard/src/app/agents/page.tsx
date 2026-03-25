@@ -53,7 +53,7 @@ function getReputationScore(checksPerformed: number, status: string): number {
 
 function AgentTypeBadge({ type }: { type: AgentType }) {
   const config = {
-    autonomous: { label: "Autonomous", icon: Cpu, bg: "bg-purple-500/15", text: "text-purple-400", border: "border-purple-500/30" },
+    autonomous: { label: "Autonomous", icon: Cpu, bg: "bg-blue-500/15", text: "text-blue-400", border: "border-blue-500/30" },
     "semi-autonomous": { label: "Semi-Autonomous", icon: Activity, bg: "bg-blue-500/15", text: "text-blue-400", border: "border-blue-500/30" },
     "human-supervised": { label: "Human-Supervised", icon: Eye, bg: "bg-amber-500/15", text: "text-amber-400", border: "border-amber-500/30" },
   };
@@ -319,7 +319,7 @@ export default function AgentsPage() {
               <CardContent className="pt-6">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-border/50">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/20 to-teal-500/20 border border-border/50">
                       <Bot className="h-5 w-5 text-primary" />
                     </div>
                     <div>

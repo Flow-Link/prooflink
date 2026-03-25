@@ -25,7 +25,7 @@ function getEventIcon(type: ActivityEvent["type"]) {
     case "invoice_paid":
       return <DollarSign className="h-4 w-4 text-blue-400" />;
     case "agent_verified":
-      return <Bot className="h-4 w-4 text-purple-400" />;
+      return <Bot className="h-4 w-4 text-blue-400" />;
     case "agent_revoked":
       return <Bot className="h-4 w-4 text-red-400" />;
     case "key_created":

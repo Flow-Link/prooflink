@@ -193,15 +193,15 @@ export default function AnalyticsPage() {
               <AreaChart data={volumeData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="volumeGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(263, 70%, 58%)" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(263, 70%, 58%)" stopOpacity={0} />
+                    <stop offset="5%" stopColor="hsl(217, 91%, 60%)" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="hsl(217, 91%, 60%)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(215, 25%, 13%)" vertical={false} />
                 <XAxis dataKey="date" tick={{ fill: "hsl(215, 20%, 50%)", fontSize: 11 }} tickLine={false} axisLine={false} />
                 <YAxis tick={{ fill: "hsl(215, 20%, 50%)", fontSize: 11 }} tickLine={false} axisLine={false} tickFormatter={(v: number) => formatCompactNumber(v)} />
                 <Tooltip content={<ChartTooltip />} />
-                <Area type="monotone" dataKey="volume" stroke="hsl(263, 70%, 58%)" strokeWidth={2} fill="url(#volumeGrad)" animationDuration={1000} />
+                <Area type="monotone" dataKey="volume" stroke="hsl(217, 91%, 60%)" strokeWidth={2} fill="url(#volumeGrad)" animationDuration={1000} />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
@@ -300,7 +300,7 @@ export default function AnalyticsPage() {
                   </div>
                   <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-700"
+                      className="h-full rounded-full bg-gradient-to-r from-blue-500 to-teal-500 transition-all duration-700"
                       style={{ width: `${geo.percentage}%` }}
                     />
                   </div>

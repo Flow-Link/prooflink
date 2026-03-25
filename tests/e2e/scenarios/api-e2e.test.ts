@@ -46,6 +46,8 @@ vi.mock("../../../apps/api/src/db/index.js", () => ({
         onConflictDoUpdate: () => ({
           returning: mockInsertReturning,
         }),
+        then: (resolve: (v: unknown) => void) => Promise.resolve().then(resolve),
+        catch: () => Promise.resolve(),
       }),
     }),
     select: (..._args: unknown[]) => ({
@@ -82,6 +84,7 @@ vi.mock("../../../apps/api/src/db/index.js", () => ({
 
 vi.mock("../../../apps/api/src/middleware/auth.js", () => ({
   authMiddleware: () => async (_c: unknown, next: () => Promise<void>) => next(),
+  requireScope: () => async (_c: unknown, next: () => Promise<void>) => next(),
 }));
 
 vi.mock("../../../apps/api/src/middleware/rate-limit.js", () => ({
@@ -301,6 +304,15 @@ describe("E2E: Compliance check", () => {
   it("compliance_check_with_agent_did_includes_KYA_verification_check", async () => {
     // Arrange
     seedComplianceInserts();
+
+    // Seed agent lookup so resolveAgentOriginator finds an active agent
+    const agentRow = makeAgentRow({ agentDid: "did:flowlink:agent:test-001" });
+    mockSelectFrom.mockImplementation(() => ({
+      where: () => ({
+        limit: () => Promise.resolve([agentRow]),
+      }),
+      orderBy: () => ({ limit: () => Promise.resolve([]) }),
+    }));
 
     // Act
     const res = await app.request("/v1/compliance/check", {

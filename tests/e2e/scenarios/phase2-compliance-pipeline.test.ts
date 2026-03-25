@@ -46,6 +46,8 @@ vi.mock("../../../apps/api/src/db/index.js", () => ({
       values: () => ({
         returning: mockInsertReturning,
         onConflictDoUpdate: () => ({ returning: mockInsertReturning }),
+        then: (resolve: (v: unknown) => void) => Promise.resolve().then(resolve),
+        catch: () => Promise.resolve(),
       }),
     }),
     select: () => ({
@@ -67,6 +69,7 @@ vi.mock("../../../apps/api/src/db/index.js", () => ({
 
 vi.mock("../../../apps/api/src/middleware/auth.js", () => ({
   authMiddleware: () => async (_c: unknown, next: () => Promise<void>) => next(),
+  requireScope: () => async (_c: unknown, next: () => Promise<void>) => next(),
 }));
 
 vi.mock("../../../apps/api/src/middleware/rate-limit.js", async () => {
@@ -290,8 +293,8 @@ describe("E2E Phase 2: Compliance Pipeline", () => {
       expect(trCheck.details.amountUsd).toBe(100);
     });
 
-    it("should return travelRuleStatus=TRANSMITTED for $4000 USDC on base (above $3000 US threshold)", async () => {
-      seedInserts({}, { travelRuleStatus: "TRANSMITTED" });
+    it("should return travelRuleStatus=REQUIRED_PENDING for $4000 USDC on base (above $3000 US threshold)", async () => {
+      seedInserts({}, { travelRuleStatus: "REQUIRED_PENDING" });
 
       const res = await app.request("/api/v1/compliance/check", {
         method: "POST",
@@ -301,8 +304,8 @@ describe("E2E Phase 2: Compliance Pipeline", () => {
 
       expect(res.status).toBe(201);
       const { data } = await res.json();
-      // $4000 > $3000 US threshold → TRANSMITTED
-      expect(data.travelRuleStatus).toBe("TRANSMITTED");
+      // $4000 > $3000 US threshold → REQUIRED_PENDING
+      expect(data.travelRuleStatus).toBe("REQUIRED_PENDING");
       const trCheck = data.checks.find(
         (c: { checkType: string }) => c.checkType === "TRAVEL_RULE",
       );
@@ -326,8 +329,8 @@ describe("E2E Phase 2: Compliance Pipeline", () => {
       expect(data.travelRuleStatus).toBe("NOT_REQUIRED");
     });
 
-    it("should apply travel rule conservatively for unknown asset (Infinity USD → TRANSMITTED)", async () => {
-      seedInserts({}, { travelRuleStatus: "TRANSMITTED" });
+    it("should apply travel rule conservatively for unknown asset (Infinity USD → REQUIRED_PENDING)", async () => {
+      seedInserts({}, { travelRuleStatus: "REQUIRED_PENDING" });
 
       const res = await app.request("/api/v1/compliance/check", {
         method: "POST",
@@ -338,7 +341,7 @@ describe("E2E Phase 2: Compliance Pipeline", () => {
 
       expect(res.status).toBe(201);
       const { data } = await res.json();
-      expect(data.travelRuleStatus).toBe("TRANSMITTED");
+      expect(data.travelRuleStatus).toBe("REQUIRED_PENDING");
     });
 
     it("should include amountUsd and thresholdUsd in the TRAVEL_RULE check details", async () => {

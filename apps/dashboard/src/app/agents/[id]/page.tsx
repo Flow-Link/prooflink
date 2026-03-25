@@ -68,7 +68,7 @@ function AgentProfileCard({ agent }: { agent: Agent }) {
     <Card>
       <CardContent className="pt-6">
         <div className="flex items-start gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-border/50">
+          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/20 to-teal-500/20 border border-border/50">
             <Bot className="h-7 w-7 text-primary" />
           </div>
           <div className="flex-1 min-w-0">

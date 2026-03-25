@@ -40,7 +40,13 @@ const mockSelectFrom = vi.fn();
 
 vi.mock("../db/index.js", () => ({
   getDb: () => ({
-    insert: () => ({ values: () => ({ returning: vi.fn().mockResolvedValue([]) }) }),
+    insert: () => ({
+      values: () => ({
+        returning: vi.fn().mockResolvedValue([]),
+        then: (resolve: (v: unknown) => void) => Promise.resolve().then(resolve),
+        catch: () => Promise.resolve(),
+      }),
+    }),
     select: () => ({ from: mockSelectFrom }),
     update: () => ({
       set: () => ({ where: () => ({ catch: vi.fn() }) }),

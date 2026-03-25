@@ -32,7 +32,7 @@ function UserDropdown() {
         className="ml-2 flex items-center gap-2 rounded-lg border border-border/40 bg-secondary/40 px-3 py-1.5 hover:bg-secondary/60 transition-colors"
       >
         <div
-          className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-blue-600"
+          className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-teal-600"
           aria-hidden="true"
         >
           <User className="h-3.5 w-3.5 text-white" />

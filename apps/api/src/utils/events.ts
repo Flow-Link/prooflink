@@ -14,7 +14,14 @@ type ComplianceEventType =
   | "compliance.check.review"
   | "sanctions.alert"
   | "invoice.created"
-  | "invoice.paid";
+  | "invoice.paid"
+  | "escrow.created"
+  | "escrow.funded"
+  | "escrow.activated"
+  | "escrow.completed"
+  | "escrow.disputed"
+  | "escrow.refunded"
+  | "escrow.expired";
 
 interface ComplianceEvent {
   type: ComplianceEventType;
@@ -71,7 +78,9 @@ export function emitComplianceEvent(
   };
 
   // Broadcast to WebSocket clients
-  broadcastWsEvent(event);
+  // Cast to WsEvent — ComplianceEventType is a superset of WsEventType;
+  // extra event types are forwarded to clients that subscribe to them
+  broadcastWsEvent(event as unknown as Parameters<typeof broadcastWsEvent>[0]);
 
   // Fire-and-forget audit persistence
   fireAuditLog(`event.${type}`, {
@@ -111,7 +120,9 @@ export function emitSanctionsAlert(
   };
 
   // Broadcast immediately
-  broadcastWsEvent(event);
+  // Cast to WsEvent — ComplianceEventType is a superset of WsEventType;
+  // extra event types are forwarded to clients that subscribe to them
+  broadcastWsEvent(event as unknown as Parameters<typeof broadcastWsEvent>[0]);
 
   // Log at ERROR level — sanctions matches are high priority
   logger.error("SANCTIONS ALERT: address matched sanctions list", {

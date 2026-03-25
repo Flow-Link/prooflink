@@ -12,6 +12,8 @@ import { rateLimitMiddleware } from "./middleware/rate-limit.js";
 import { analytics } from "./routes/analytics.js";
 import { compliance } from "./routes/compliance.js";
 import { dashboard } from "./routes/dashboard.js";
+import { disputeRoutes } from "./routes/disputes.js";
+import { escrowRoutes } from "./routes/escrow.js";
 import { health } from "./routes/health.js";
 import { identity } from "./routes/identity.js";
 import { invoiceRoutes } from "./routes/invoices.js";
@@ -117,6 +119,8 @@ export function createApp(): Hono {
   v1.use("*", rateLimitMiddleware({ defaultLimit: 60 }));
 
   v1.route("/compliance", compliance);
+  v1.route("/disputes", disputeRoutes);
+  v1.route("/escrow", escrowRoutes);
   v1.route("/invoices", invoiceRoutes);
   v1.route("/identity", identity);
   v1.route("/receipts", receipts);

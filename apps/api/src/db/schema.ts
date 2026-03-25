@@ -105,6 +105,8 @@ export const complianceReceipts = pgTable("compliance_receipts", {
   overallStatus: varchar("overall_status", { length: 20 }).notNull(),
   riskScore: smallint("risk_score").notNull(),
   travelRuleStatus: varchar("travel_rule_status", { length: 20 }),
+  commitmentHash: varchar("commitment_hash", { length: 128 }),
+  commitmentSalt: varchar("commitment_salt", { length: 128 }),
   easAttestationUid: varchar("eas_attestation_uid", { length: 128 }),
   ipfsCid: varchar("ipfs_cid", { length: 128 }),
   signature: text("signature").notNull(),
@@ -171,6 +173,84 @@ export const reports = pgTable("reports", {
 ]);
 
 // ---------------------------------------------------------------------------
+// Escrows (outcome-based escrow state machine)
+// ---------------------------------------------------------------------------
+
+export const escrows = pgTable("escrows", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  escrowType: varchar("escrow_type", { length: 20 }).notNull(), // "PAYMENT" | "SERVICE" | "MILESTONE"
+  state: varchar("state", { length: 20 }).notNull().default("CREATED"), // CREATED, FUNDED, ACTIVE, COMPLETED, DISPUTED, REFUNDED, EXPIRED
+  payerAgentDid: varchar("payer_agent_did", { length: 256 }).notNull(),
+  payeeAgentDid: varchar("payee_agent_did", { length: 256 }).notNull(),
+  payerWallet: varchar("payer_wallet", { length: 128 }).notNull(),
+  payeeWallet: varchar("payee_wallet", { length: 128 }).notNull(),
+  amount: numeric("amount", { precision: 38, scale: 18 }).notNull(),
+  asset: varchar("asset", { length: 10 }).notNull(),
+  chain: varchar("chain", { length: 64 }).notNull(),
+  conditions: jsonb("conditions").$type<Record<string, unknown>>().notNull(),
+  evaluatorAddress: varchar("evaluator_address", { length: 128 }),
+  complianceReceiptId: uuid("compliance_receipt_id").references(() => complianceReceipts.id),
+  traceId: varchar("trace_id", { length: 64 }),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  fundedAt: timestamp("funded_at", { withTimezone: true }),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
+  disputedAt: timestamp("disputed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index("escrows_state_idx").on(table.state),
+  index("escrows_payer_wallet_idx").on(table.payerWallet),
+  index("escrows_payee_wallet_idx").on(table.payeeWallet),
+  index("escrows_trace_id_idx").on(table.traceId),
+]);
+
+// ---------------------------------------------------------------------------
+// Disputes
+// ---------------------------------------------------------------------------
+
+export const disputes = pgTable("disputes", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  escrowId: uuid("escrow_id").references(() => escrows.id),
+  invoiceId: uuid("invoice_id").references(() => invoices.id),
+  state: varchar("state", { length: 20 }).notNull().default("OPEN"), // OPEN, EVIDENCE, ARBITRATION, RESOLVED, CLOSED
+  initiatorDid: varchar("initiator_did", { length: 256 }).notNull(),
+  respondentDid: varchar("respondent_did", { length: 256 }).notNull(),
+  reason: text("reason").notNull(),
+  category: varchar("category", { length: 30 }).notNull(), // SERVICE_QUALITY, NON_DELIVERY, UNAUTHORIZED, OVERCHARGE, OTHER
+  evidence: jsonb("evidence").$type<Record<string, unknown>[]>().notNull().default([]),
+  resolution: jsonb("resolution").$type<Record<string, unknown>>(),
+  resolvedBy: varchar("resolved_by", { length: 256 }),
+  traceId: varchar("trace_id", { length: 64 }),
+  deadline: timestamp("deadline", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index("disputes_state_idx").on(table.state),
+  index("disputes_initiator_did_idx").on(table.initiatorDid),
+  index("disputes_respondent_did_idx").on(table.respondentDid),
+  index("disputes_escrow_id_idx").on(table.escrowId),
+  index("disputes_invoice_id_idx").on(table.invoiceId),
+]);
+
+// ---------------------------------------------------------------------------
+// Usage Records (metered billing)
+// ---------------------------------------------------------------------------
+
+export const usageRecords = pgTable("usage_records", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  agentDid: varchar("agent_did", { length: 256 }).notNull(),
+  action: varchar("action", { length: 50 }).notNull(), // compliance_check, screen, invoice, escrow, dispute
+  amountUsd: numeric("amount_usd", { precision: 18, scale: 8 }).notNull(),
+  metadata: jsonb("metadata").$type<Record<string, unknown>>(),
+  traceId: varchar("trace_id", { length: 64 }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index("usage_records_agent_did_idx").on(table.agentDid),
+  index("usage_records_action_idx").on(table.action),
+  index("usage_records_created_at_idx").on(table.createdAt),
+]);
+
+// ---------------------------------------------------------------------------
 // Audit Log (append-only with hash chain)
 // ---------------------------------------------------------------------------
 
@@ -208,6 +288,15 @@ export type NewInvoice = typeof invoices.$inferInsert;
 
 export type Report = typeof reports.$inferSelect;
 export type NewReport = typeof reports.$inferInsert;
+
+export type Escrow = typeof escrows.$inferSelect;
+export type NewEscrow = typeof escrows.$inferInsert;
+
+export type Dispute = typeof disputes.$inferSelect;
+export type NewDispute = typeof disputes.$inferInsert;
+
+export type UsageRecord = typeof usageRecords.$inferSelect;
+export type NewUsageRecord = typeof usageRecords.$inferInsert;
 
 export type AuditLogEntry = typeof auditLog.$inferSelect;
 export type NewAuditLogEntry = typeof auditLog.$inferInsert;

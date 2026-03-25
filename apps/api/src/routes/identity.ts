@@ -7,6 +7,10 @@ import { agents } from "../db/schema.js";
 import { validate } from "../middleware/validate.js";
 import { issueKYACredential, verifyCredentialSignature } from "../services/kya-issuer.js";
 import { KYACredentialSubjectSchema, KYAVerifiableCredentialSchema } from "../services/kya-schema.js";
+import {
+  createSelectiveProof,
+  verifySelectiveProof,
+} from "../services/selective-disclosure.js";
 
 // ---------------------------------------------------------------------------
 // Request schemas
@@ -795,6 +799,108 @@ identity.get(
         isActive: agent.isActive,
         validatedAt: agent.validatedAt?.toISOString() ?? null,
         expiresAt: agent.expiresAt?.toISOString() ?? null,
+      },
+    });
+  },
+);
+
+// ---------------------------------------------------------------------------
+// POST /v1/identity/credentials/selective-verify -- Verify with selective disclosure
+// ---------------------------------------------------------------------------
+
+const SelectiveVerifyRequest = z.object({
+  credential: KYAVerifiableCredentialSchema,
+  disclosedFields: z.array(z.string()).min(1, "At least one field must be disclosed"),
+  transactionAmountUsd: z.number().nonnegative().optional(),
+  jurisdiction: z.string().optional(),
+});
+type SelectiveVerifyRequest = z.infer<typeof SelectiveVerifyRequest>;
+
+identity.post(
+  "/credentials/selective-verify",
+  validate({ body: SelectiveVerifyRequest }),
+  async (c) => {
+    const parsed = c.get("validatedBody") as SelectiveVerifyRequest;
+    const { credential, disclosedFields } = parsed;
+    const errors: string[] = [];
+
+    // 1. Verify HMAC signature (full credential needed for this)
+    let signatureValid = false;
+    try {
+      signatureValid = verifyCredentialSignature(credential);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      errors.push(`Signature verification failed: ${message}`);
+    }
+
+    if (!signatureValid && errors.length === 0) {
+      errors.push("Credential signature is invalid");
+    }
+
+    // 2. Check expiration
+    const now = new Date();
+    const credentialExpired = new Date(credential.expirationDate) < now;
+    if (credentialExpired) {
+      errors.push(`Credential expired at ${credential.expirationDate}`);
+    }
+
+    // 3. Check delegation scope expiry
+    const delegationExpired =
+      new Date(credential.credentialSubject.delegationScope.expiresAt) < now;
+    if (delegationExpired) {
+      errors.push(
+        `Delegation expired at ${credential.credentialSubject.delegationScope.expiresAt}`,
+      );
+    }
+
+    // 4. Check transaction amount if provided
+    if (
+      parsed.transactionAmountUsd !== undefined &&
+      parsed.transactionAmountUsd >
+        credential.credentialSubject.delegationScope.maxTransactionValue
+    ) {
+      errors.push(
+        `Transaction amount $${parsed.transactionAmountUsd} exceeds delegation limit $${credential.credentialSubject.delegationScope.maxTransactionValue}`,
+      );
+    }
+
+    // 5. Check jurisdiction
+    if (
+      parsed.jurisdiction &&
+      credential.credentialSubject.delegationScope.blockedJurisdictions?.includes(
+        parsed.jurisdiction,
+      )
+    ) {
+      errors.push(
+        `Jurisdiction ${parsed.jurisdiction} is blocked by delegation scope`,
+      );
+    }
+
+    // 6. Create selective disclosure proof — only requested fields are revealed
+    const credentialData = credential.credentialSubject as unknown as Record<string, unknown>;
+    const selectiveProof = createSelectiveProof(credentialData, disclosedFields);
+
+    // 7. Verify the selective proof is internally consistent
+    const proofVerification = verifySelectiveProof(selectiveProof, disclosedFields);
+    if (!proofVerification.valid) {
+      errors.push(...proofVerification.errors);
+    }
+
+    const verified = errors.length === 0 && signatureValid;
+
+    return c.json({
+      success: true,
+      data: {
+        verified,
+        signatureValid,
+        credentialExpired,
+        delegationExpired,
+        // Only disclosed fields are visible — everything else is hashed
+        disclosedFields: selectiveProof.disclosed,
+        undisclosedFieldHashes: selectiveProof.undisclosedHashes,
+        proofHash: selectiveProof.proofHash,
+        nonce: selectiveProof.nonce,
+        errors,
       },
     });
   },

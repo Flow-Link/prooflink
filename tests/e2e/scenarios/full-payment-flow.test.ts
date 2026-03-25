@@ -45,6 +45,8 @@ vi.mock("../../../apps/api/src/db/index.js", () => ({
         onConflictDoUpdate: () => ({
           returning: mockInsertReturning,
         }),
+        then: (resolve: (v: unknown) => void) => Promise.resolve().then(resolve),
+        catch: () => Promise.resolve(),
       }),
     }),
     select: () => ({
@@ -66,6 +68,7 @@ vi.mock("../../../apps/api/src/db/index.js", () => ({
 
 vi.mock("../../../apps/api/src/middleware/auth.js", () => ({
   authMiddleware: () => async (_c: unknown, next: () => Promise<void>) => next(),
+  requireScope: () => async (_c: unknown, next: () => Promise<void>) => next(),
 }));
 
 vi.mock("../../../apps/api/src/middleware/rate-limit.js", () => ({

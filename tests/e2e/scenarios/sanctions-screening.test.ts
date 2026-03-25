@@ -18,6 +18,7 @@ import { createApp } from "../../../apps/api/src/app.js";
 import {
   makeComplianceCheckRow,
   makeReceiptRow,
+  makeAgentRow,
   BASE_COMPLIANCE_CHECK_PAYLOAD,
   TEST_CLEAN_ADDRESS,
   TEST_CHAIN,
@@ -42,6 +43,8 @@ vi.mock("../../../apps/api/src/db/index.js", () => ({
     insert: () => ({
       values: () => ({
         returning: mockInsertReturning,
+        then: (resolve: (v: unknown) => void) => Promise.resolve().then(resolve),
+        catch: () => Promise.resolve(),
       }),
     }),
     select: () => ({
@@ -62,7 +65,11 @@ vi.mock("../../../apps/api/src/db/index.js", () => ({
 }));
 
 vi.mock("../../../apps/api/src/middleware/auth.js", () => ({
-  authMiddleware: () => async (_c: unknown, next: () => Promise<void>) => next(),
+  authMiddleware: () => async (c: { set: (k: string, v: unknown) => void }, next: () => Promise<void>) => {
+    c.set("auth", { apiKeyId: "test-key-id", ownerId: "test-owner", scopes: ["admin"], rateLimitPerMinute: 60, authMethod: "api_key" });
+    await next();
+  },
+  requireScope: () => async (_c: unknown, next: () => Promise<void>) => next(),
 }));
 
 vi.mock("../../../apps/api/src/middleware/rate-limit.js", () => ({
@@ -409,6 +416,15 @@ describe("E2E: Sanctions Screening", () => {
 
     it("should include KYA_VERIFICATION check when agentDID is provided", async () => {
       seedInsertMocks();
+
+      // Seed agent lookup so resolveAgentOriginator finds an active agent
+      const agentRow = makeAgentRow({ agentDid: "erc8004:8453:0xRegistry:42" });
+      mockSelectFrom.mockImplementation(() => ({
+        where: () => ({
+          limit: () => Promise.resolve([agentRow]),
+        }),
+        orderBy: () => ({ limit: () => Promise.resolve([]) }),
+      }));
 
       const res = await app.request("/api/v1/compliance/check", {
         method: "POST",

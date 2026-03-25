@@ -171,7 +171,7 @@ export default function Home() {
           ))}
         </div>
 
-        <MagneticButton variant="secondary" onClick={() => scrollToSection(4)}>
+        <MagneticButton variant="secondary" href="/dashboard">
           Get Started
         </MagneticButton>
       </nav>
@@ -206,7 +206,7 @@ export default function Home() {
               <MagneticButton
                 size="lg"
                 variant="primary"
-                onClick={() => scrollToSection(4)}
+                href="/dashboard"
               >
                 Try Demo
               </MagneticButton>

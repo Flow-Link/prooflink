@@ -284,7 +284,7 @@ export default function ScreenPage() {
       </div>
 
       {/* Screening Form */}
-      <Card className="glow-purple animate-slide-in-up">
+      <Card className="glow-blue animate-slide-in-up">
         <CardHeader>
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-primary/15 p-2">

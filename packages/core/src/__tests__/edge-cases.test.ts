@@ -136,11 +136,11 @@ describe("ProofLinkEngine — empty string addresses", () => {
   });
 
   it("should match empty sender against allowlist entry of empty string", async () => {
+    setCleanFetch();
     const engine = new ProofLinkEngine(makeConfig({ allowlist: [""] }));
 
     const decision = await engine.checkCompliance(makeRequest({ sender: "" }));
     expect(decision.status).toBe("APPROVED");
-    expect(mockFetch).not.toHaveBeenCalled();
   });
 });
 
@@ -536,7 +536,7 @@ describe("ProofLinkEngine — allowlist and blocklist same address", () => {
     mockFetch.mockReset();
   });
 
-  it("should approve when sender is on both allowlist and blocklist (allowlist checked first)", async () => {
+  it("should reject when address is on both allowlist and blocklist (blocklist checked first)", async () => {
     const addr = "0x1234567890abcdef1234567890abcdef12345678";
     const engine = new ProofLinkEngine(
       makeConfig({
@@ -547,12 +547,12 @@ describe("ProofLinkEngine — allowlist and blocklist same address", () => {
 
     const decision = await engine.checkCompliance(makeRequest({ sender: addr }));
 
-    // Allowlist is evaluated before blocklist in checkCompliance
-    expect(decision.status).toBe("APPROVED");
+    // Blocklist is evaluated before allowlist in the engine — compliance-conservative
+    expect(decision.status).toBe("REJECTED");
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
-  it("should reject when receiver is on blocklist but sender is on allowlist (different addresses)", async () => {
+  it("should reject when receiver is on blocklist even if sender is on allowlist", async () => {
     const sender = "0xaaaabbbbccccddddeeeeffffaaaabbbbccccdddd";
     const receiver = "0x1111222233334444555566667777888899990000";
     const engine = new ProofLinkEngine(
@@ -562,9 +562,9 @@ describe("ProofLinkEngine — allowlist and blocklist same address", () => {
       }),
     );
 
-    // Sender is allowlisted → short-circuits with APPROVED before blocklist check for receiver
+    // Blocklist is checked for all parties before allowlist fast-path
     const decision = await engine.checkCompliance(makeRequest({ sender, receiver }));
-    expect(decision.status).toBe("APPROVED");
+    expect(decision.status).toBe("REJECTED");
   });
 });
 

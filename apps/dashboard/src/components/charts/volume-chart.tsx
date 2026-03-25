@@ -62,12 +62,12 @@ export function VolumeChart({ data }: VolumeChartProps) {
           <linearGradient id={passedId} x1="0" y1="0" x2="0" y2="1">
             <stop
               offset="5%"
-              stopColor="hsl(263, 70%, 58%)"
+              stopColor="hsl(217, 91%, 60%)"
               stopOpacity={0.35}
             />
             <stop
               offset="95%"
-              stopColor="hsl(263, 70%, 58%)"
+              stopColor="hsl(217, 91%, 60%)"
               stopOpacity={0}
             />
           </linearGradient>
@@ -106,7 +106,7 @@ export function VolumeChart({ data }: VolumeChartProps) {
         <Area
           type="monotone"
           dataKey="passed"
-          stroke="hsl(263, 70%, 58%)"
+          stroke="hsl(217, 91%, 60%)"
           strokeWidth={2}
           fill={`url(#${passedId})`}
           animationDuration={1000}

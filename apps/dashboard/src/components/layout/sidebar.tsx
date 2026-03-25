@@ -111,7 +111,7 @@ function Sidebar({
       >
         <div className="flex items-center justify-between h-16 border-b border-border/40 px-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 shadow-lg shadow-purple-500/25">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-teal-600 shadow-lg shadow-blue-500/25">
               <Zap className="h-5 w-5 text-white" />
             </div>
             <span className="text-lg font-bold tracking-tight gradient-text">FlowLink</span>
@@ -161,7 +161,7 @@ function SidebarContent({
     <>
       {/* Logo */}
       <div className="flex h-16 items-center gap-3 border-b border-border/40 px-4">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 shadow-lg shadow-purple-500/25">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-teal-600 shadow-lg shadow-blue-500/25">
           <Zap className="h-5 w-5 text-white" aria-hidden="true" />
         </div>
         {!collapsed && (
@@ -169,7 +169,7 @@ function SidebarContent({
             <span className="text-lg font-bold tracking-tight gradient-text">
               FlowLink
             </span>
-            <span className="rounded-full bg-purple-500/15 border border-purple-500/25 px-1.5 py-0.5 text-[10px] font-semibold text-purple-400 uppercase tracking-wider">
+            <span className="rounded-full bg-blue-500/15 border border-blue-500/25 px-1.5 py-0.5 text-[10px] font-semibold text-blue-400 uppercase tracking-wider">
               Beta
             </span>
           </div>
@@ -222,10 +222,10 @@ function SidebarContent({
 
       {/* Environment / Status */}
       {!collapsed && (
-        <div className="mx-3 mb-3 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 p-3">
+        <div className="mx-3 mb-3 rounded-lg bg-gradient-to-r from-blue-500/10 to-teal-500/10 border border-blue-500/20 p-3">
           <div className="flex items-center gap-2 mb-1">
-            <Sparkles className="h-3.5 w-3.5 text-purple-400" aria-hidden="true" />
-            <span className="text-xs font-semibold text-purple-400">x402 Protocol</span>
+            <Sparkles className="h-3.5 w-3.5 text-blue-400" aria-hidden="true" />
+            <span className="text-xs font-semibold text-blue-400">x402 Protocol</span>
           </div>
           <p className="text-[11px] text-muted-foreground leading-tight">
             Compliance middleware active on Base, Ethereum, Polygon
@@ -284,7 +284,7 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
               <Menu className="h-5 w-5" />
             </button>
             <div className="ml-3 flex items-center gap-2">
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-purple-500 to-blue-600">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-blue-500 to-teal-600">
                 <Zap className="h-4 w-4 text-white" />
               </div>
               <span className="text-sm font-bold gradient-text">FlowLink</span>

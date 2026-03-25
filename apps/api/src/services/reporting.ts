@@ -62,11 +62,18 @@ export async function generateSAR(
 ): Promise<Report> {
   const db = getDb();
 
-  const [check] = await db
-    .select()
-    .from(complianceChecks)
-    .where(eq(complianceChecks.id, checkId))
-    .limit(1);
+  let check: ComplianceCheck | undefined;
+  try {
+    const [row] = await db
+      .select()
+      .from(complianceChecks)
+      .where(eq(complianceChecks.id, checkId))
+      .limit(1);
+    check = row;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`DB error fetching compliance check ${checkId}: ${message}`);
+  }
 
   if (!check) {
     throw new Error(`Compliance check ${checkId} not found`);
@@ -96,18 +103,25 @@ export async function generateSAR(
     generatedAt: new Date().toISOString(),
   };
 
-  const [report] = await db
-    .insert(reports)
-    .values({
-      type: "SAR",
-      status: "DRAFT",
-      priority,
-      complianceCheckId: checkId,
-      agentDid: check.senderAgentDid ?? undefined,
-      triggerReason: reason,
-      reportData,
-    })
-    .returning();
+  let report: Report | undefined;
+  try {
+    const [row] = await db
+      .insert(reports)
+      .values({
+        type: "SAR",
+        status: "DRAFT",
+        priority,
+        complianceCheckId: checkId,
+        agentDid: check.senderAgentDid ?? undefined,
+        triggerReason: reason,
+        reportData,
+      })
+      .returning();
+    report = row;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`DB error inserting SAR for check ${checkId}: ${message}`);
+  }
 
   if (!report) {
     throw new Error("Failed to create SAR report");
@@ -129,11 +143,18 @@ export async function generateCTR(
 ): Promise<Report> {
   const db = getDb();
 
-  const [check] = await db
-    .select()
-    .from(complianceChecks)
-    .where(eq(complianceChecks.id, checkId))
-    .limit(1);
+  let check: ComplianceCheck | undefined;
+  try {
+    const [row] = await db
+      .select()
+      .from(complianceChecks)
+      .where(eq(complianceChecks.id, checkId))
+      .limit(1);
+    check = row;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`DB error fetching compliance check ${checkId}: ${message}`);
+  }
 
   if (!check) {
     throw new Error(`Compliance check ${checkId} not found`);
@@ -159,18 +180,25 @@ export async function generateCTR(
     generatedAt: new Date().toISOString(),
   };
 
-  const [report] = await db
-    .insert(reports)
-    .values({
-      type: "CTR",
-      status: "DRAFT",
-      priority: "NORMAL",
-      complianceCheckId: checkId,
-      agentDid: check.senderAgentDid ?? undefined,
-      triggerReason: `Currency transaction >= $${CTR_AMOUNT_THRESHOLD_USD.toLocaleString()} USD`,
-      reportData,
-    })
-    .returning();
+  let report: Report | undefined;
+  try {
+    const [row] = await db
+      .insert(reports)
+      .values({
+        type: "CTR",
+        status: "DRAFT",
+        priority: "NORMAL",
+        complianceCheckId: checkId,
+        agentDid: check.senderAgentDid ?? undefined,
+        triggerReason: `Currency transaction >= $${CTR_AMOUNT_THRESHOLD_USD.toLocaleString()} USD`,
+        reportData,
+      })
+      .returning();
+    report = row;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`DB error inserting CTR for check ${checkId}: ${message}`);
+  }
 
   if (!report) {
     throw new Error("Failed to create CTR report");

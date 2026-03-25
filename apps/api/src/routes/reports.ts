@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { getDb } from "../db/index.js";
 import { reports } from "../db/schema.js";
-import { requireScope } from "../middleware/auth.js";
+import { authMiddleware, requireScope } from "../middleware/auth.js";
 import type { AuthContext } from "../middleware/auth.js";
 import { validate } from "../middleware/validate.js";
 import { writeAuditLog } from "../utils/audit.js";
@@ -39,8 +39,12 @@ const ReviewBody = z.object({
 
 const reportRoutes = new Hono();
 
+// All report routes require authentication — SARs/CTRs are confidential
+// regulatory documents. Read access requires at minimum the "read" scope.
+reportRoutes.use("*", authMiddleware());
+
 // GET /v1/reports — list with pagination + filters
-reportRoutes.get("/", validate({ query: ListQuery }), async (c) => {
+reportRoutes.get("/", requireScope("read"), validate({ query: ListQuery }), async (c) => {
   const query = c.get("validatedQuery") as z.infer<typeof ListQuery>;
   const { page, limit, type, status, priority } = query;
   const offset = (page - 1) * limit;
@@ -85,7 +89,7 @@ reportRoutes.get("/", validate({ query: ListQuery }), async (c) => {
 });
 
 // GET /v1/reports/:id — single report
-reportRoutes.get("/:id", validate({ params: IdParams }), async (c) => {
+reportRoutes.get("/:id", requireScope("read"), validate({ params: IdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof IdParams>;
   const db = getDb();
 
@@ -156,11 +160,26 @@ reportRoutes.patch("/:id", requireScope("admin"), validate({ params: IdParams, b
     updateValues["filedAt"] = new Date();
   }
 
+  // Optimistic concurrency: only update if status hasn't changed since we
+  // read it — prevents two concurrent PATCHes from double-transitioning.
   const [updated] = await db
     .update(reports)
     .set(updateValues)
-    .where(eq(reports.id, id))
+    .where(and(eq(reports.id, id), eq(reports.status, existing.status)))
     .returning();
+
+  if (!updated) {
+    return c.json(
+      {
+        success: false,
+        error: {
+          code: "CONFLICT",
+          message: "Report status was modified concurrently. Re-fetch and retry.",
+        },
+      },
+      409,
+    );
+  }
 
   writeAuditLog({
     eventType: "report.status.updated",
@@ -174,9 +193,13 @@ reportRoutes.patch("/:id", requireScope("admin"), validate({ params: IdParams, b
 // POST /v1/reports/:id/review — mark as reviewed
 reportRoutes.post("/:id/review", requireScope("admin"), validate({ params: IdParams, body: ReviewBody }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof IdParams>;
+  // reviewedBy from body is accepted as a display label but the audit log
+  // always records the verified auth identity (ownerId) — not the user-supplied string.
   const { reviewedBy } = c.get("validatedBody") as z.infer<typeof ReviewBody>;
   const db = getDb();
   const auth = c.get("auth") as AuthContext | undefined;
+  // Bind review attribution to the verified caller identity, not the request body.
+  const reviewerIdentity = auth ? `${auth.ownerId} (${reviewedBy})` : reviewedBy;
 
   const [existing] = await db
     .select()
@@ -194,7 +217,7 @@ reportRoutes.post("/:id/review", requireScope("admin"), validate({ params: IdPar
   const [updated] = await db
     .update(reports)
     .set({
-      reviewedBy,
+      reviewedBy: reviewerIdentity,
       updatedAt: new Date(),
     })
     .where(eq(reports.id, id))
@@ -202,7 +225,7 @@ reportRoutes.post("/:id/review", requireScope("admin"), validate({ params: IdPar
 
   writeAuditLog({
     eventType: "report.reviewed",
-    payload: { reportId: id, reviewedBy },
+    payload: { reportId: id, reviewedBy: reviewerIdentity, reviewerOwnerId: auth?.ownerId },
     apiKeyId: auth?.apiKeyId,
   });
 

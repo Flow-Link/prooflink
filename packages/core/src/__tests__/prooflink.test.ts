@@ -164,6 +164,7 @@ describe("ProofLinkEngine", () => {
     });
 
     it("should immediately approve allowlisted sender", async () => {
+      setCleanFetch();
       const sender = "0xallowlisted1234567890abcdef123456789ab";
       const engine = new ProofLinkEngine(
         makeConfig({ allowlist: [sender.toLowerCase()] }),
@@ -175,7 +176,6 @@ describe("ProofLinkEngine", () => {
 
       expect(decision.status).toBe("APPROVED");
       expect(decision.riskScore).toBe(0);
-      expect(mockFetch).not.toHaveBeenCalled();
     });
   });
 
@@ -622,18 +622,18 @@ describe("ProofLinkEngine", () => {
 
   describe("checkCompliance — allowlist case-insensitive matching", () => {
     it("should treat allowlist addresses as case-insensitive", async () => {
+      setCleanFetch();
       const sender = "0xAABBCCDDeeff1234567890abcdef1234567890AB";
       const engine = new ProofLinkEngine(
         makeConfig({ allowlist: [sender.toLowerCase()] }),
       );
 
-      // Provide sender with mixed case — should still match
+      // Provide sender with mixed case — should still match (after sanctions pass)
       const decision = await engine.checkCompliance(
         makeRequest({ sender }),
       );
 
       expect(decision.status).toBe("APPROVED");
-      expect(mockFetch).not.toHaveBeenCalled();
     });
   });
 

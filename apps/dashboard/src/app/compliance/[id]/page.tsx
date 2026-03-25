@@ -377,7 +377,7 @@ export default function ComplianceDetailPage() {
           check.status === "FAIL" && "border-red-500/20",
           check.status === "REVIEW" && "border-amber-500/20",
         )}>
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-blue-500" />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-teal-500" />
           <CardHeader>
             <div className="flex items-center gap-3">
               {statusIcon}

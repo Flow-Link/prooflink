@@ -62,8 +62,24 @@ export default function NewInvoicePage() {
       return;
     }
     setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    setIsSubmitting(false);
+    try {
+      const { createInvoiceApi } = await import("@/lib/api");
+      await createInvoiceApi({
+        sellerWallet: form.walletAddress,
+        buyerWallet: form.to,
+        lineItems: lineItems.map((li) => ({
+          description: li.description,
+          quantity: parseFloat(li.quantity) || 1,
+          unitPrice: parseFloat(li.unitPrice) || 0,
+          total: Math.round((parseFloat(li.quantity) || 1) * (parseFloat(li.unitPrice) || 0) * 100) / 100,
+        })),
+        currency: form.currency,
+        totalAmount: Math.round(totalAmount * 100) / 100,
+        dueDate: form.dueDate || undefined,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
     router.push("/invoices");
   };
 
@@ -405,7 +421,7 @@ export default function NewInvoicePage() {
         /* ─── Preview Step ─────────────────────────────────────────────── */
         <div className="space-y-4 animate-slide-in-up">
           <Card className="relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-blue-500" />
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-teal-500" />
             <CardContent className="pt-8">
               {/* Header */}
               <div className="flex items-start justify-between mb-8">
@@ -511,8 +527,8 @@ export default function NewInvoicePage() {
               )}
 
               {/* Compliance notice */}
-              <div className="rounded-lg bg-purple-500/10 border border-purple-500/20 p-3 flex items-start gap-2">
-                <Shield className="h-4 w-4 text-purple-400 mt-0.5 shrink-0" />
+              <div className="rounded-lg bg-blue-500/10 border border-blue-500/20 p-3 flex items-start gap-2">
+                <Shield className="h-4 w-4 text-blue-400 mt-0.5 shrink-0" />
                 <p className="text-xs text-muted-foreground">
                   This invoice will be automatically compliance-checked via
                   FlowLink&apos;s x402 protocol before delivery. The recipient
