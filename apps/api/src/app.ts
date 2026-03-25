@@ -11,11 +11,13 @@ import { globalErrorHandler } from "./middleware/error-handler.js";
 import { rateLimitMiddleware } from "./middleware/rate-limit.js";
 import { analytics } from "./routes/analytics.js";
 import { compliance } from "./routes/compliance.js";
+import { dashboard } from "./routes/dashboard.js";
 import { health } from "./routes/health.js";
 import { identity } from "./routes/identity.js";
 import { invoiceRoutes } from "./routes/invoices.js";
 import { openapi } from "./routes/openapi.js";
 import { receipts } from "./routes/receipts.js";
+import { reportRoutes } from "./routes/reports.js";
 import { webhookRoutes } from "./routes/webhooks.js";
 import { wsRoutes } from "./routes/ws.js";
 import { requestIdMiddleware, requestLoggerMiddleware } from "./utils/logger.js";
@@ -59,7 +61,7 @@ export function createApp(): Hono {
     "*",
     cors({
       origin: (origin) => {
-        const allowedOrigins = process.env["CORS_ORIGIN"]?.split(",") ?? ["http://localhost:3000"];
+        const allowedOrigins = process.env["CORS_ORIGIN"]?.split(",") ?? ["http://localhost:3000", "http://localhost:3100"];
 
         // Allow requests with no origin (server-to-server, curl, etc.)
         if (!origin) return origin;
@@ -118,8 +120,10 @@ export function createApp(): Hono {
   v1.route("/invoices", invoiceRoutes);
   v1.route("/identity", identity);
   v1.route("/receipts", receipts);
+  v1.route("/reports", reportRoutes);
   v1.route("/webhooks", webhookRoutes);
   v1.route("/analytics", analytics);
+  v1.route("/dashboard", dashboard);
   v1.route("/ws", wsRoutes);
 
   app.route("/v1", v1);

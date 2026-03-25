@@ -1,119 +1,69 @@
 # FlowLink Build Progress
 
-**Session Started:** 2026-03-21
-**Previous Session:** 39 research agents produced 1.40 MB research corpus + 23 builder agents
-**Current Session (Wave 1):** 15+ agents audited, reviewed, and fixed the full codebase
-**Current Session (Wave 2):** 30 review agents + 8 fix agents for deep audit
+**Session:** 2026-03-25
+**Total agents deployed:** 45+
 
 ---
 
-## SESSION 3: Deep Audit & Fix (2026-03-21 Evening)
+## Phase 1: Foundation Fixes — COMPLETE
+All 8 gaps fixed, all tests pass.
 
-### Review Phase (COMPLETE)
-- **30 review agents** deployed across architecture, security, compliance, types, tests, etc.
-- Full report: `reviews/COMPREHENSIVE_REVIEW_2026_03_21.md`
-- **47 critical issues, 60+ warnings** across all dimensions
+| Gap | Fix | Files |
+|-----|-----|-------|
+| Gap 8 | Auth HMAC includes request body SHA-256 | `auth.ts` |
+| Gap 2 | Audit log with hash-chain, serialized writes | `utils/audit.ts`, routes |
+| Gap 9 | Delegation scope enforcement (maxTx, daily, chains, assets) | `utils/spend-enforcement.ts`, routes |
+| Gap 10 | Real AMLScorer with 10 weighted rules replaces hardcoded scores | Routes use `@flowlink/core` AMLScorer |
+| Gap 7 | Price guard with reference prices + Travel Rule threshold | `utils/price-guard.ts`, routes |
+| Gap 11 | traceId/parentTraceId in schema + routes + X-Trace-ID headers | `schema.ts`, routes |
+| Gap 5 | Event bus with typed emitComplianceEvent + emitSanctionsAlert | `utils/events.ts`, routes |
+| Gap 18 | Sanctions list expanded 31→100+ real OFAC addresses | `sanctions/lists.ts` |
 
-### P0 Fixes Applied
-- [x] **CORS bypass** — Fixed wildcard subdomain match + rejected-origin fallback (`apps/api/src/app.ts`)
-- [x] **WebSocket auth bypass** — DB-validated auth, removed query param API key, UUID client IDs (`apps/api/src/routes/ws.ts`)
-- [ ] **Tenant data isolation** — Adding apiKeyId scoping (in progress)
-- [ ] **Allowlist bypasses sanctions** — Allowlist skips AML only (in progress)
-- [ ] **Travel Rule thresholds** — EU→0, SG→1100 (in progress)
-- [ ] **hashJsonDeterministic** — Recursive key sorting (in progress)
-- [ ] **Route ordering** — Move static routes before params (in progress)
-- [ ] **Database indexes** — Adding critical indexes (in progress)
+## Phase 2: Core Compliance — COMPLETE
+All 6 features implemented + tests + code review.
 
-### Next: Reviewer Judge Agent
-- Deploy comprehensive judge agent to re-audit after fixes
-- Iterate until zero critical findings
+| Gap | Fix | Files |
+|-----|-----|-------|
+| Gap 1 | Real-time Chainalysis/TRM Labs screening via singleton screener | `services/screening.ts`, routes |
+| Gap 17 | SAR/CTR reporting pipeline with auto-generation | `services/reporting.ts`, `routes/reports.ts`, `schema.ts` |
+| Gap 3 | Cross-protocol compliance middleware (x402/AP2/MPP/ACP/direct) | `services/protocol-adapter.ts`, routes |
+| Gap 6 | KYA credential issuance + verification + W3C VC structure | `services/kya-issuer.ts`, `services/kya-schema.ts`, `routes/identity.ts` |
+| Gap (compliance) | Jurisdiction-aware Travel Rule (US/EU/UK/JP/SG/AE thresholds) | `services/travel-rule-config.ts`, routes |
 
----
+### Quality Gates
+- **Code review**: Fixed 1 Critical (import ordering), 3 High (race condition, ESM require, batch parallelism), 2 Medium issues
+- **Unit tests**: 105 new tests for Phase 1 utilities (price-guard, spend-enforcement, events, audit)
+- **Integration tests**: 49 new e2e tests for compliance pipeline, spend enforcement, audit trail
 
-## Current Status: ALL GREEN — Build + 1,557 Tests Passing
+### Test Results: ALL PASS
+- 22/22 packages successful
+- 2,041 total tests passing
+- 0 failures
 
-### Build
-- All 11 packages build successfully (turbo cache: FULL TURBO)
-- No TypeScript errors
-
-### Test Results
-| Package | Tests | Status |
-|---------|-------|--------|
-| @flowlink/shared | 413 | PASS |
-| @flowlink/core | 414 | PASS |
-| @flowlink/sdk | 111 | PASS |
-| @flowlink/integrations | 197 | PASS |
-| @flowlink/mcp-server | 50 | PASS |
-| @flowlink/x402-compliance | 67 | PASS |
-| @flowlink/request-finance | 21 | PASS |
-| @flowlink/api | 133 | PASS |
-| @flowlink/e2e-tests | 151 | PASS |
-| @flowlink/contracts | All Foundry | PASS |
-| @flowlink/demo | 0 (pass) | PASS |
-| **TOTAL** | **~1,557** | **ALL PASS** |
-
----
-
-## What Was Done This Session
-
-### Wave 1: Research (6 agents)
-Audited all 9 packages + contracts + dashboard + demo. Found:
-- 8 CRITICAL issues
-- 15 IMPORTANT issues
-- 20+ MINOR issues
-
-### Wave 2: Fixes (4 background agents + direct fixes)
-
-**Direct fixes (API + tests):**
-1. **Build error**: `const _` reassignment in aml-stress.test.ts → `void f`
-2. **70 e2e test failures → 0**: Root cause was `/api/v1/*` redirect returning 308
-   - Mounted routes at both `/v1` and `/api/v1` (removed 308 redirect)
-   - Fixed DB mock chaining for `select().from().where().limit()` pattern
-   - Added DID format validation (`/^did:[a-z]+:/` regex) in identity route
-   - Added real OFAC SDN screening in compliance screen endpoint
-   - Fixed pagination field name (`pageSize` not `limit`)
-   - Added `controllingEntityName/Lei` to agent response
-   - Fixed trustScore = 0 for revoked/expired agents
-   - Fixed Request Finance chain mapping test (added paymentProof)
-   - Fixed AML scoring test isolation (historicalAvgAmountUsd)
-   - Fixed health test for module-level singleton
-   - Fixed demo passWithNoTests
-
-**Background agent fixes:**
-- Core engine: Error handling for JSON parse, receipt signing, cache cleanup
-- MCP server: Wiring real @flowlink/core services into tools
-- x402-compliance: Default service warnings, event handler logging, address validation
-- Contracts: uint128 overflow guard, configurable validation score, error messages
-
-### Wave 3: Final Review (3 agents)
-- API changes review
-- Test changes review
-- Full build + test verification
-
----
-
-## Architecture
+## New Files Created
 ```
-flowlink/
-├── packages/
-│   ├── core/           — ProofLink compliance decision engine (REAL)
-│   ├── x402-compliance/ — x402 protocol compliance middleware (REAL)
-│   ├── mcp-server/     — MCP compliance server (REAL tools via core)
-│   ├── sdk/            — TypeScript client SDK (REAL HTTP client)
-│   ├── contracts/      — Solidity smart contracts (4 contracts, all tests pass)
-│   ├── shared/         — Shared types, utils, constants (413 tests)
-│   └── integrations/   — Notabene, TRM, EAS, IPFS, Slack (ALL REAL)
-├── apps/
-│   ├── api/            — Hono REST API server (133 tests)
-│   ├── dashboard/      — Next.js web dashboard (FULLY FUNCTIONAL)
-│   └── demo/           — Interactive demo CLI (STANDALONE)
-├── tests/              — Unit, integration, e2e tests (151 e2e tests)
-└── docs/               — Comprehensive documentation
+apps/api/src/utils/audit.ts           — Hash-chain audit log writer
+apps/api/src/utils/events.ts          — Event bus + sanctions alerts
+apps/api/src/utils/price-guard.ts     — Price conversion + Travel Rule guard
+apps/api/src/utils/spend-enforcement.ts — Delegation scope enforcement
+apps/api/src/services/screening.ts    — Chainalysis/TRM Labs singleton
+apps/api/src/services/reporting.ts    — SAR/CTR auto-generation
+apps/api/src/services/protocol-adapter.ts — Cross-protocol compliance rules
+apps/api/src/services/kya-issuer.ts   — KYA credential issuance
+apps/api/src/services/kya-schema.ts   — Canonical KYA-1 Zod schema
+apps/api/src/services/travel-rule-config.ts — Jurisdiction-aware thresholds
+apps/api/src/routes/reports.ts        — SAR/CTR CRUD endpoints
+apps/api/src/__tests__/utils/price-guard.test.ts     — 43 tests
+apps/api/src/__tests__/utils/spend-enforcement.test.ts — 24 tests
+apps/api/src/__tests__/utils/events.test.ts           — 23 tests
+apps/api/src/__tests__/utils/audit.test.ts            — 15 tests
+tests/e2e/scenarios/phase2-compliance-pipeline.test.ts — 34 tests
+tests/e2e/scenarios/spend-enforcement-e2e.test.ts      — 15 tests
 ```
 
-## Key Findings from Audit
-- **All integrations are REAL** (not stubs) — Notabene, TRM, EAS, IPFS, Slack
-- **Core engine is production-ready** with proper fallback chains
-- **Dashboard is fully functional** with charts, filtering, API hooks
-- **Contracts have proper access control**, UUPS proxy, role-based auth
-- **SDK has real HTTP client** with retry logic and exponential backoff
+## Next: Phase 3 — Trust Infrastructure
+- Gap 4: Outcome-based escrow (ERC-8183 integration)
+- Gap 5: On-chain dispute resolution
+- Gap 15: ZK attestations replacing plaintext EAS receipts
+- Gap 22: Selective disclosure for KYA verification
+- Gap 14: Machine-speed arbitration

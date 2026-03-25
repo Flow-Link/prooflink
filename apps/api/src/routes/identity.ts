@@ -5,6 +5,8 @@ import { z } from "zod";
 import { getDb } from "../db/index.js";
 import { agents } from "../db/schema.js";
 import { validate } from "../middleware/validate.js";
+import { issueKYACredential, verifyCredentialSignature } from "../services/kya-issuer.js";
+import { KYACredentialSubjectSchema, KYAVerifiableCredentialSchema } from "../services/kya-schema.js";
 
 // ---------------------------------------------------------------------------
 // Request schemas
@@ -517,6 +519,284 @@ identity.put(
       },
       200,
     );
+  },
+);
+
+// ---------------------------------------------------------------------------
+// POST /v1/identity/credentials/issue -- Issue a signed KYA credential
+// ---------------------------------------------------------------------------
+
+const IssueCredentialRequest = z.object({
+  agentDid: z
+    .string()
+    .min(1)
+    .regex(/^did:[a-z]+:/, "agentDid must be a valid DID (did:method:...)"),
+  controllingEntityName: z.string().min(1),
+  controllingEntityLEI: z
+    .string()
+    .regex(/^[A-Z0-9]{20}$/, "LEI must be exactly 20 alphanumeric characters (ISO 17442)")
+    .optional(),
+  walletAddress: z.string().min(1),
+  delegationScope: z.object({
+    maxTransactionValue: z.number().nonnegative(),
+    dailyLimit: z.number().nonnegative().optional(),
+    allowedCounterparties: z.array(z.string()).optional(),
+    blockedJurisdictions: z.array(z.string()).optional(),
+    allowedChains: z.array(z.string()).optional(),
+    allowedCurrencies: z.array(z.string()).optional(),
+    expiresAt: z.string().datetime(),
+  }),
+  expiresAt: z.string().datetime(),
+  agentType: z.enum(["autonomous", "semi-autonomous", "human-supervised"]).optional(),
+  erc8004AgentId: z.string().optional(),
+  allowedProtocols: z.array(z.string()).optional(),
+});
+type IssueCredentialRequest = z.infer<typeof IssueCredentialRequest>;
+
+identity.post(
+  "/credentials/issue",
+  validate({ body: IssueCredentialRequest }),
+  async (c) => {
+    const parsed = c.get("validatedBody") as IssueCredentialRequest;
+
+    let issued;
+    try {
+      issued = issueKYACredential({
+        agentDid: parsed.agentDid,
+        controllingEntityName: parsed.controllingEntityName,
+        controllingEntityLEI: parsed.controllingEntityLEI,
+        walletAddress: parsed.walletAddress,
+        delegationScope: parsed.delegationScope,
+        expiresAt: parsed.expiresAt,
+        agentType: parsed.agentType,
+        erc8004AgentId: parsed.erc8004AgentId,
+        allowedProtocols: parsed.allowedProtocols,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return c.json(
+        { success: false, error: { code: "ISSUANCE_FAILED", message } },
+        500,
+      );
+    }
+
+    // Persist credential hash to the agent record (upsert)
+    const db = getDb();
+    const now = new Date();
+    const expiresAt = new Date(parsed.expiresAt);
+
+    await db
+      .insert(agents)
+      .values({
+        agentDid: parsed.agentDid,
+        agentType: parsed.agentType ?? "autonomous",
+        walletAddress: parsed.walletAddress,
+        controllingEntityName: parsed.controllingEntityName,
+        controllingEntityLei: parsed.controllingEntityLEI,
+        kyaCredentialHash: issued.credentialHash,
+        complianceScore: 80,
+        delegationScope: parsed.delegationScope,
+        isActive: true,
+        validatedAt: now,
+        expiresAt,
+      })
+      .onConflictDoUpdate({
+        target: agents.agentDid,
+        set: {
+          walletAddress: parsed.walletAddress,
+          controllingEntityName: parsed.controllingEntityName,
+          controllingEntityLei: parsed.controllingEntityLEI,
+          kyaCredentialHash: issued.credentialHash,
+          delegationScope: parsed.delegationScope,
+          isActive: true,
+          validatedAt: now,
+          expiresAt,
+          updatedAt: now,
+        },
+      });
+
+    return c.json(
+      {
+        success: true,
+        data: {
+          credential: issued.credential,
+          credentialHash: issued.credentialHash,
+          leiWarning: parsed.controllingEntityLEI
+            ? undefined
+            : "controllingEntityLEI is strongly recommended for production use (ISO 17442)",
+        },
+      },
+      201,
+    );
+  },
+);
+
+// ---------------------------------------------------------------------------
+// POST /v1/identity/credentials/verify -- Verify a KYA credential
+// ---------------------------------------------------------------------------
+
+const VerifyCredentialRequest = z.object({
+  credential: KYAVerifiableCredentialSchema,
+  transactionAmountUsd: z.number().nonnegative().optional(),
+  jurisdiction: z.string().optional(),
+});
+type VerifyCredentialRequest = z.infer<typeof VerifyCredentialRequest>;
+
+identity.post(
+  "/credentials/verify",
+  validate({ body: VerifyCredentialRequest }),
+  async (c) => {
+    const parsed = c.get("validatedBody") as VerifyCredentialRequest;
+    const { credential } = parsed;
+    const errors: string[] = [];
+
+    // 1. Verify HMAC signature
+    let signatureValid = false;
+    try {
+      signatureValid = verifyCredentialSignature(credential);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      errors.push(`Signature verification failed: ${message}`);
+    }
+
+    if (!signatureValid && errors.length === 0) {
+      errors.push("Credential signature is invalid");
+    }
+
+    // 2. Check expiration
+    const now = new Date();
+    const credentialExpired = new Date(credential.expirationDate) < now;
+    if (credentialExpired) {
+      errors.push(`Credential expired at ${credential.expirationDate}`);
+    }
+
+    // 3. Check delegation scope expiry
+    const delegationExpired =
+      new Date(credential.credentialSubject.delegationScope.expiresAt) < now;
+    if (delegationExpired) {
+      errors.push(
+        `Delegation expired at ${credential.credentialSubject.delegationScope.expiresAt}`,
+      );
+    }
+
+    // 4. Check transaction amount against delegation limit
+    if (
+      parsed.transactionAmountUsd !== undefined &&
+      parsed.transactionAmountUsd >
+        credential.credentialSubject.delegationScope.maxTransactionValue
+    ) {
+      errors.push(
+        `Transaction amount $${parsed.transactionAmountUsd} exceeds delegation limit $${credential.credentialSubject.delegationScope.maxTransactionValue}`,
+      );
+    }
+
+    // 5. Check jurisdiction against blocked list
+    if (
+      parsed.jurisdiction &&
+      credential.credentialSubject.delegationScope.blockedJurisdictions?.includes(
+        parsed.jurisdiction,
+      )
+    ) {
+      errors.push(
+        `Jurisdiction ${parsed.jurisdiction} is blocked by delegation scope`,
+      );
+    }
+
+    // 6. Verify credential hash matches the stored hash (if agent exists)
+    let storedHashMatch: boolean | null = null;
+    const db = getDb();
+    const [agent] = await db
+      .select({ kyaCredentialHash: agents.kyaCredentialHash })
+      .from(agents)
+      .where(eq(agents.agentDid, credential.credentialSubject.id))
+      .limit(1);
+
+    if (agent?.kyaCredentialHash) {
+      storedHashMatch = agent.kyaCredentialHash === credential.credentialHash;
+      if (!storedHashMatch) {
+        errors.push("Credential hash does not match the stored credential for this agent");
+      }
+    }
+
+    const verified = errors.length === 0 && signatureValid;
+
+    return c.json({
+      success: true,
+      data: {
+        verified,
+        signatureValid,
+        credentialExpired,
+        delegationExpired,
+        storedHashMatch,
+        agentDid: credential.credentialSubject.id,
+        controllingEntity: credential.credentialSubject.controllingEntityName,
+        errors,
+      },
+    });
+  },
+);
+
+// ---------------------------------------------------------------------------
+// GET /v1/identity/agents/:did/credential -- Get latest credential for agent
+// ---------------------------------------------------------------------------
+
+const AgentDidParams = z.object({
+  did: z.string().min(1, "DID is required"),
+});
+
+identity.get(
+  "/agents/:did/credential",
+  validate({ params: AgentDidParams }),
+  async (c) => {
+    const { did } = c.get("validatedParams") as z.infer<typeof AgentDidParams>;
+
+    // DID may be URL-encoded (colons replaced with %3A)
+    const decodedDid = decodeURIComponent(did);
+
+    const db = getDb();
+    const [agent] = await db
+      .select()
+      .from(agents)
+      .where(eq(agents.agentDid, decodedDid))
+      .limit(1);
+
+    if (!agent) {
+      return c.json(
+        { success: false, error: { code: "NOT_FOUND", message: "Agent not found." } },
+        404,
+      );
+    }
+
+    if (!agent.kyaCredentialHash) {
+      return c.json(
+        {
+          success: false,
+          error: {
+            code: "NO_CREDENTIAL",
+            message: "No KYA credential has been issued for this agent. Use POST /v1/identity/credentials/issue first.",
+          },
+        },
+        404,
+      );
+    }
+
+    return c.json({
+      success: true,
+      data: {
+        agentDid: agent.agentDid,
+        credentialHash: agent.kyaCredentialHash,
+        controllingEntity: {
+          name: agent.controllingEntityName,
+          lei: agent.controllingEntityLei,
+        },
+        walletAddress: agent.walletAddress,
+        agentType: agent.agentType,
+        delegationScope: agent.delegationScope,
+        isActive: agent.isActive,
+        validatedAt: agent.validatedAt?.toISOString() ?? null,
+        expiresAt: agent.expiresAt?.toISOString() ?? null,
+      },
+    });
   },
 );
 

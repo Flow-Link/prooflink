@@ -82,11 +82,14 @@ export const complianceChecks = pgTable("compliance_checks", {
   checks: jsonb("checks").$type<Record<string, unknown>[]>().notNull(),
   totalDurationMs: integer("total_duration_ms"),
   apiKeyId: uuid("api_key_id").references(() => apiKeys.id),
+  traceId: varchar("trace_id", { length: 64 }),
+  parentTraceId: varchar("parent_trace_id", { length: 64 }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [
   index("compliance_checks_api_key_created_idx").on(table.apiKeyId, table.createdAt),
   index("compliance_checks_sender_address_idx").on(table.senderAddress),
   index("compliance_checks_receiver_address_idx").on(table.receiverAddress),
+  index("compliance_checks_trace_id_idx").on(table.traceId),
 ]);
 
 // ---------------------------------------------------------------------------
@@ -132,6 +135,7 @@ export const invoices = pgTable("invoices", {
   easAttestationUid: varchar("eas_attestation_uid", { length: 128 }),
   dueDate: timestamp("due_date", { withTimezone: true }),
   apiKeyId: uuid("api_key_id").references(() => apiKeys.id),
+  traceId: varchar("trace_id", { length: 64 }),
   invoiceData: jsonb("invoice_data").$type<Record<string, unknown>>().notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -139,6 +143,31 @@ export const invoices = pgTable("invoices", {
   index("invoices_state_idx").on(table.state),
   index("invoices_seller_wallet_address_idx").on(table.sellerWalletAddress),
   index("invoices_buyer_wallet_address_idx").on(table.buyerWalletAddress),
+  index("invoices_trace_id_idx").on(table.traceId),
+]);
+
+// ---------------------------------------------------------------------------
+// Regulatory Reports (SAR / CTR / TRAVEL_RULE)
+// ---------------------------------------------------------------------------
+
+export const reports = pgTable("reports", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  type: varchar("type", { length: 20 }).notNull(), // "SAR" | "CTR" | "TRAVEL_RULE"
+  status: varchar("status", { length: 20 }).notNull().default("DRAFT"), // DRAFT, SUBMITTED, FILED, REJECTED
+  priority: varchar("priority", { length: 10 }).notNull().default("NORMAL"), // LOW, NORMAL, HIGH, CRITICAL
+  complianceCheckId: uuid("compliance_check_id").references(() => complianceChecks.id),
+  agentDid: varchar("agent_did", { length: 256 }),
+  triggerReason: text("trigger_reason").notNull(),
+  reportData: jsonb("report_data").$type<Record<string, unknown>>().notNull(),
+  filedAt: timestamp("filed_at", { withTimezone: true }),
+  filingReference: varchar("filing_reference", { length: 128 }),
+  reviewedBy: varchar("reviewed_by", { length: 256 }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index("reports_type_idx").on(table.type),
+  index("reports_status_idx").on(table.status),
+  index("reports_compliance_check_id_idx").on(table.complianceCheckId),
 ]);
 
 // ---------------------------------------------------------------------------
@@ -176,6 +205,9 @@ export type NewComplianceReceipt = typeof complianceReceipts.$inferInsert;
 
 export type Invoice = typeof invoices.$inferSelect;
 export type NewInvoice = typeof invoices.$inferInsert;
+
+export type Report = typeof reports.$inferSelect;
+export type NewReport = typeof reports.$inferInsert;
 
 export type AuditLogEntry = typeof auditLog.$inferSelect;
 export type NewAuditLogEntry = typeof auditLog.$inferInsert;

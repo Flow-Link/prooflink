@@ -37,6 +37,7 @@ vi.mock("../db/index.js", () => ({
 
 // Bypass auth
 vi.mock("../middleware/auth.js", () => ({
+  requireScope: () => async (_c: unknown, next: () => Promise<void>) => { await next(); },
   authMiddleware: () => {
     return async (_c: unknown, next: () => Promise<void>) => {
       await next();

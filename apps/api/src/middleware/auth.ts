@@ -150,10 +150,13 @@ function verifyJwt(token: string): JwtPayload | null {
 
 /**
  * Verify request signature if X-Signature header is present.
- * Signature format: HMAC-SHA256(timestamp + method + path + body, signingSecret)
+ * Signature format: HMAC-SHA256(timestamp.method.path.sha256(body), signingSecret)
  * Headers: X-Signature, X-Signature-Timestamp
+ *
+ * The body is read once and cached on the context so downstream handlers
+ * can still access it via `c.req.text()` / `c.req.json()`.
  */
-function verifyRequestSignature(c: Context): boolean {
+async function verifyRequestSignature(c: Context): Promise<boolean> {
   const signature = c.req.header("X-Signature");
   if (!signature) return true; // Signing is optional
 
@@ -173,8 +176,30 @@ function verifyRequestSignature(c: Context): boolean {
     return false;
   }
 
-  // We can't read the body synchronously here, so we verify what we can
-  const message = `${timestamp}.${c.req.method}.${c.req.path}`;
+  // Read body for methods that carry one; use empty string otherwise.
+  // Cache the raw body so downstream handlers can still consume it.
+  const hasBody = !["GET", "HEAD", "DELETE", "OPTIONS"].includes(c.req.method);
+  const rawBody = hasBody ? await c.req.text() : "";
+
+  // Cache the body text on the request so it remains readable downstream.
+  // Hono's `c.req.text()` / `c.req.json()` will resolve from this cache.
+  if (hasBody && rawBody) {
+    const bodyBlob = new Blob([rawBody]);
+    Object.defineProperty(c.req.raw, "body", {
+      value: bodyBlob.stream(),
+      writable: true,
+      configurable: true,
+    });
+    // Also set a fresh bodyUsed flag so Hono can re-read
+    Object.defineProperty(c.req.raw, "bodyUsed", {
+      value: false,
+      writable: true,
+      configurable: true,
+    });
+  }
+
+  const bodyHash = createHash("sha256").update(rawBody).digest("hex");
+  const message = `${timestamp}.${c.req.method}.${c.req.path}.${bodyHash}`;
   const expectedSig = createHmac("sha256", signingSecret).update(message).digest("hex");
 
   try {
@@ -226,8 +251,8 @@ function extractCredential(c: Context): ExtractedCredential | null {
  */
 export function authMiddleware(): MiddlewareHandler {
   return async (c, next) => {
-    // Verify request signature if present
-    if (!verifyRequestSignature(c)) {
+    // Verify request signature if present (reads body & caches it)
+    if (!(await verifyRequestSignature(c))) {
       return c.json(
         {
           success: false,

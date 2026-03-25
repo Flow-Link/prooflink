@@ -69,6 +69,18 @@ vi.mock("../../../apps/api/src/middleware/rate-limit.js", () => ({
   rateLimitMiddleware: () => async (_c: unknown, next: () => Promise<void>) => next(),
 }));
 
+// ---------------------------------------------------------------------------
+// Mock the screening service — avoids real HTTP calls to Chainalysis
+// ---------------------------------------------------------------------------
+
+const mockScreenAddress = vi.fn();
+
+vi.mock("../../../apps/api/src/services/screening.js", () => ({
+  screenAddress: (...args: unknown[]) => mockScreenAddress(...args),
+  getScreener: vi.fn(),
+  resetScreener: vi.fn(),
+}));
+
 const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
 
@@ -112,6 +124,26 @@ describe("E2E: Sanctions Screening", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Default: all addresses are clean
+    mockScreenAddress.mockResolvedValue({
+      matched: false,
+      listsChecked: ["OFAC_SDN"],
+      matchDetails: [],
+      riskScore: 0,
+      screenedAt: new Date().toISOString(),
+      provider: "chainalysis_free",
+    });
+
+    // Default: select mock for audit log / agents lookups
+    mockSelectFrom.mockImplementation(() => ({
+      where: () => ({
+        limit: () => Promise.resolve([]),
+      }),
+      orderBy: () => ({
+        limit: () => Promise.resolve([]),
+      }),
+    }));
   });
 
   // -------------------------------------------------------------------------
