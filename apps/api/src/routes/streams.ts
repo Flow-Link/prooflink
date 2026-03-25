@@ -113,16 +113,16 @@ function handleServiceError(c: any, err: unknown) {
 
 const streamRoutes = new Hono();
 
-// POST /v1/streams — Create a payment stream
+// POST /v1/streams — Create a payment stream (tenant-isolated)
 streamRoutes.post("/", requireScope("write"), validate({ body: CreateStreamRequest }), async (c) => {
   const parsed = c.get("validatedBody") as CreateStreamRequest;
-  const auth = c.get("auth") as AuthContext | undefined;
+  const auth = c.get("auth") as AuthContext;
 
   try {
     const stream = await createStream({
       ...parsed,
       expiresAt: new Date(parsed.expiresAt),
-      apiKeyId: auth?.apiKeyId,
+      apiKeyId: auth.apiKeyId,
     });
     return c.json({ success: true, data: stream }, 201);
   } catch (err: unknown) {
@@ -130,30 +130,30 @@ streamRoutes.post("/", requireScope("write"), validate({ body: CreateStreamReque
   }
 });
 
-// GET /v1/streams/:id — Get stream status with computed fields
+// GET /v1/streams/:id — Get stream status with computed fields (tenant-isolated)
 streamRoutes.get("/:id", validate({ params: StreamIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof StreamIdParams>;
-  const auth = c.get("auth") as AuthContext | undefined;
+  const auth = c.get("auth") as AuthContext;
 
   try {
-    const status = await getStreamStatus(id, auth?.apiKeyId);
+    const status = await getStreamStatus(id, auth.apiKeyId);
     return c.json({ success: true, data: status }, 200);
   } catch (err: unknown) {
     return handleServiceError(c, err);
   }
 });
 
-// POST /v1/streams/:id/usage — Record usage against a stream
+// POST /v1/streams/:id/usage — Record usage against a stream (tenant-isolated)
 streamRoutes.post(
   "/:id/usage", requireScope("write"),
   validate({ params: StreamIdParams, body: RecordUsageRequest }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof StreamIdParams>;
     const body = c.get("validatedBody") as RecordUsageRequest;
-    const auth = c.get("auth") as AuthContext | undefined;
+    const auth = c.get("auth") as AuthContext;
 
     try {
-      const stream = await recordStreamUsage(id, body, auth?.apiKeyId);
+      const stream = await recordStreamUsage(id, body, auth.apiKeyId);
       return c.json({ success: true, data: stream }, 200);
     } catch (err: unknown) {
       return handleServiceError(c, err);
@@ -161,16 +161,16 @@ streamRoutes.post(
   },
 );
 
-// POST /v1/streams/:id/pause — Pause an active stream
+// POST /v1/streams/:id/pause — Pause an active stream (tenant-isolated)
 streamRoutes.post(
   "/:id/pause", requireScope("write"),
   validate({ params: StreamIdParams }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof StreamIdParams>;
-    const auth = c.get("auth") as AuthContext | undefined;
+    const auth = c.get("auth") as AuthContext;
 
     try {
-      const stream = await pauseStream(id, auth?.apiKeyId);
+      const stream = await pauseStream(id, auth.apiKeyId);
       return c.json({ success: true, data: stream }, 200);
     } catch (err: unknown) {
       return handleServiceError(c, err);
@@ -178,16 +178,16 @@ streamRoutes.post(
   },
 );
 
-// POST /v1/streams/:id/resume — Resume a paused stream
+// POST /v1/streams/:id/resume — Resume a paused stream (tenant-isolated)
 streamRoutes.post(
   "/:id/resume", requireScope("write"),
   validate({ params: StreamIdParams }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof StreamIdParams>;
-    const auth = c.get("auth") as AuthContext | undefined;
+    const auth = c.get("auth") as AuthContext;
 
     try {
-      const stream = await resumeStream(id, auth?.apiKeyId);
+      const stream = await resumeStream(id, auth.apiKeyId);
       return c.json({ success: true, data: stream }, 200);
     } catch (err: unknown) {
       return handleServiceError(c, err);
@@ -195,16 +195,16 @@ streamRoutes.post(
   },
 );
 
-// POST /v1/streams/:id/settle — Settle and close a stream
+// POST /v1/streams/:id/settle — Settle and close a stream (tenant-isolated)
 streamRoutes.post(
   "/:id/settle", requireScope("write"),
   validate({ params: StreamIdParams }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof StreamIdParams>;
-    const auth = c.get("auth") as AuthContext | undefined;
+    const auth = c.get("auth") as AuthContext;
 
     try {
-      const stream = await settleStream(id, auth?.apiKeyId);
+      const stream = await settleStream(id, auth.apiKeyId);
       return c.json({ success: true, data: stream }, 200);
     } catch (err: unknown) {
       return handleServiceError(c, err);
@@ -212,17 +212,16 @@ streamRoutes.post(
   },
 );
 
-// GET /v1/streams — List streams with filters and pagination
+// GET /v1/streams — List streams with filters and pagination (tenant-isolated)
 streamRoutes.get("/", validate({ query: ListStreamsQuery }), async (c) => {
   const query = c.get("validatedQuery") as z.infer<typeof ListStreamsQuery>;
   const { page, limit, status, model, payer, payee, from, to } = query;
   const offset = (page - 1) * limit;
-  const auth = c.get("auth") as AuthContext | undefined;
+  const auth = c.get("auth") as AuthContext;
 
   const db = getDb();
 
-  const conditions = [];
-  if (auth?.apiKeyId) conditions.push(eq(paymentStreams.apiKeyId, auth.apiKeyId));
+  const conditions = [eq(paymentStreams.apiKeyId, auth.apiKeyId)];
   if (status) conditions.push(eq(paymentStreams.status, status));
   if (model) conditions.push(eq(paymentStreams.model, model));
   if (payer) conditions.push(eq(paymentStreams.payerDid, payer));
@@ -230,7 +229,7 @@ streamRoutes.get("/", validate({ query: ListStreamsQuery }), async (c) => {
   if (from) conditions.push(gte(paymentStreams.createdAt, new Date(from)));
   if (to) conditions.push(lte(paymentStreams.createdAt, new Date(to)));
 
-  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+  const whereClause = and(...conditions);
 
   const [items, countResult] = await Promise.all([
     db

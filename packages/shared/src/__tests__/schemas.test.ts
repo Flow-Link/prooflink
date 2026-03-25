@@ -638,7 +638,7 @@ describe("ComplianceReceipt", () => {
     return {
       receiptId: "cmp_abc123",
       checksPerformed: [],
-      overallStatus: "COMPLIANT",
+      overallStatus: "APPROVED",
       riskScore: 12,
       travelRuleStatus: "NOT_REQUIRED",
       signature: "0x" + "a".repeat(128),
@@ -655,7 +655,7 @@ describe("ComplianceReceipt", () => {
   });
 
   it("accepts all valid overallStatus values", () => {
-    for (const status of ["COMPLIANT", "BLOCKED", "REVIEW_REQUIRED"]) {
+    for (const status of ["APPROVED", "REJECTED", "ESCALATED"]) {
       const receipt = ComplianceReceipt.parse(makeReceipt({ overallStatus: status }));
       expect(receipt.overallStatus).toBe(status);
     }
@@ -670,7 +670,7 @@ describe("ComplianceReceipt", () => {
   });
 
   it("rejects invalid overallStatus", () => {
-    expect(() => ComplianceReceipt.parse(makeReceipt({ overallStatus: "APPROVED" }))).toThrow();
+    expect(() => ComplianceReceipt.parse(makeReceipt({ overallStatus: "INVALID_STATUS" }))).toThrow();
   });
 
   it("rejects non-positive ttl", () => {

@@ -2,8 +2,8 @@ import { randomBytes, randomUUID } from "node:crypto";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { formatMcpError } from "../errors.js";
-import { sanctionsScreener, kyaVerifier } from "../context.js";
-import type { VerifiableCredential } from "@flowlink/core";
+import { sanctionsScreener } from "../context.js";
+import { lookupAgent } from "../agent-registry.js";
 
 const TRAVEL_RULE_THRESHOLD_USD = 1_000;
 
@@ -125,44 +125,25 @@ export function registerPayWithCompliance(server: McpServer): void {
           };
         }
 
-        // Step 2: KYA verification (if recipient is an agent)
+        // Step 2: KYA verification via registry lookup (not synthetic credentials)
         if (params.recipient.agent_id) {
-          // Build synthetic credential for verification
-          const credential: VerifiableCredential = {
-            "@context": [
-              "https://www.w3.org/2018/credentials/v1",
-              "https://flowlink.io/kya/v1",
-            ],
-            type: ["VerifiableCredential", "KYACredential"],
-            issuer: "did:web:flowlink.io",
-            issuanceDate: new Date().toISOString(),
-            credentialSubject: {
-              id: params.recipient.agent_id,
-              walletAddress: params.recipient.wallet_address,
-              delegationScope: {
-                expiresAt: new Date(
-                  Date.now() + 365 * 24 * 60 * 60 * 1000,
-                ).toISOString(),
-              },
-            },
-          };
+          const lookup = lookupAgent(params.recipient.agent_id);
+          complianceSummary.kya_verified = lookup.credentialValid;
 
-          const kyaResult = await kyaVerifier.verifyCredential(credential);
-          complianceSummary.kya_verified = kyaResult.verified;
-
-          if (!kyaResult.verified && params.require_kya) {
+          if (!lookup.credentialValid && params.require_kya) {
+            const errors = lookup.errors.join("; ");
             return {
               content: [
                 {
                   type: "text" as const,
-                  text: `BLOCKED: KYA verification failed for agent ${params.recipient.agent_id}. ${kyaResult.errors.join("; ")}`,
+                  text: `BLOCKED: KYA verification failed for agent ${params.recipient.agent_id}. ${errors}`,
                 },
               ],
               structuredContent: {
                 status: params.dry_run ? "DRY_RUN_BLOCKED" : "BLOCKED",
                 simulated: false,
                 compliance_summary: complianceSummary,
-                block_reason: `KYA_VERIFICATION_FAILED: ${kyaResult.errors.join("; ")}`,
+                block_reason: `KYA_VERIFICATION_FAILED: ${errors}`,
                 receipt_id: receiptId,
               },
               isError: true,

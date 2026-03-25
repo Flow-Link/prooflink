@@ -249,3 +249,120 @@ describe("screenAddress", () => {
     expect(mockScreenAddressFn).toHaveBeenCalledWith("0xADDR", "eip155:8453");
   });
 });
+
+// ---------------------------------------------------------------------------
+// Sprint 2: failOpen behaviour is NODE_ENV-driven
+//
+// The fix: getScreener() now derives failOpen from NODE_ENV rather than
+// hardcoding failOpen:true. Production must be fail-closed so that a
+// screening API outage blocks payments rather than silently passing them.
+// ---------------------------------------------------------------------------
+
+// Grab the mocked loadConfig so we can assert on its call arguments.
+// Because vi.mock is hoisted, we import the mocked module after the mock block.
+import { loadConfig as _mockLoadConfig } from "@flowlink/core";
+const mockLoadConfig = _mockLoadConfig as ReturnType<typeof vi.fn>;
+
+describe("Sprint 2: getScreener failOpen — NODE_ENV-driven", () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    resetScreener();
+  });
+
+  afterEach(() => {
+    resetScreener();
+    // Restore original NODE_ENV after each test
+    if (originalNodeEnv === undefined) {
+      delete process.env.NODE_ENV;
+    } else {
+      process.env.NODE_ENV = originalNodeEnv;
+    }
+  });
+
+  it("calls loadConfig with failOpen:false when NODE_ENV=production", () => {
+    process.env.NODE_ENV = "production";
+    getScreener();
+
+    expect(mockLoadConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ failOpen: false }),
+    );
+  });
+
+  it("calls loadConfig with failOpen:true when NODE_ENV=development", () => {
+    process.env.NODE_ENV = "development";
+    getScreener();
+
+    expect(mockLoadConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ failOpen: true }),
+    );
+  });
+
+  it("calls loadConfig with failOpen:true when NODE_ENV=test", () => {
+    process.env.NODE_ENV = "test";
+    getScreener();
+
+    expect(mockLoadConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ failOpen: true }),
+    );
+  });
+
+  it("calls loadConfig with failOpen:true when NODE_ENV is undefined", () => {
+    delete process.env.NODE_ENV;
+    getScreener();
+
+    expect(mockLoadConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ failOpen: true }),
+    );
+  });
+
+  // -------------------------------------------------------------------------
+  // Behavioural: the screenAddress wrapper always falls back to offline OFAC
+  // regardless of NODE_ENV, because our catch block is independent of failOpen.
+  // failOpen in config affects the screener's internal retry logic; our wrapper
+  // is a safety net on top.
+  // -------------------------------------------------------------------------
+
+  it("production mode: screenAddress still uses offline OFAC fallback when screener throws", async () => {
+    mockScreenAddressFn.mockRejectedValue(new Error("Provider unreachable in production"));
+
+    process.env.NODE_ENV = "production";
+    resetScreener();
+
+    const result = await screenAddress("0xPROD_ADDR", "ethereum");
+
+    // Screener threw but wrapper caught it — falls back to offline OFAC
+    expect(result.provider).toBe("ofac_sdn_offline");
+    // Unknown address → not matched
+    expect(result.matched).toBe(false);
+  });
+
+  it("production mode: offline fallback still matches OFAC SDN addresses", async () => {
+    mockScreenAddressFn.mockRejectedValue(new Error("API down"));
+
+    process.env.NODE_ENV = "production";
+    resetScreener();
+
+    // 0xdeadbeef... is in the mocked OFAC_SDN_ETH_ADDRESSES set
+    const result = await screenAddress(
+      "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+      "ethereum",
+    );
+
+    expect(result.matched).toBe(true);
+    expect(result.riskScore).toBe(100);
+    expect(result.provider).toBe("ofac_sdn_offline");
+  });
+
+  it("non-production mode: screener error also falls back to offline OFAC (consistent behaviour)", async () => {
+    mockScreenAddressFn.mockRejectedValue(new Error("dev API error"));
+
+    process.env.NODE_ENV = "development";
+    resetScreener();
+
+    const result = await screenAddress("0xDEV_CLEAN_ADDR", "ethereum");
+    expect(result.provider).toBe("ofac_sdn_offline");
+    expect(result.matched).toBe(false);
+  });
+});

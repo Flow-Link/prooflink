@@ -66,18 +66,14 @@ export type AgentIdentity = z.infer<typeof AgentIdentity>;
 
 export const KYACredentialSubject = z.object({
   id: z.string(), // agent DID
-  agentId: z.string(),
-  agentType: AgentType,
-  controllingEntity: z.object({
-    name: z.string(),
-    lei: z.string().optional(),
-    did: z.string().optional(),
-    kybVerified: z.boolean(),
-  }),
+  agentDid: z.string(),
+  agentType: AgentType.optional(),
+  controllingEntityName: z.string(),
+  controllingEntityLEI: z.string().optional(),
   delegationScope: DelegationScope,
   walletAddress: z.string(),
-  erc8004RegistryAddress: z.string().optional(),
-  erc8004TokenId: z.string().optional(),
+  erc8004AgentId: z.string().optional(),
+  allowedProtocols: z.array(z.string()).optional(),
   validationEvidence: z.string().optional(), // URI to TEE attestation / auditor report
 });
 export type KYACredentialSubject = z.infer<typeof KYACredentialSubject>;

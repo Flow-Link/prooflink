@@ -5,6 +5,7 @@ import {
   NotabeneProvider,
   type TravelRuleProvider,
   type IVMS101Message,
+  type IVMS101NameIdentifier,
 } from "../travel-rule/checker.js";
 import type { TravelRuleData } from "@flowlink/shared";
 import type { ProofLinkConfig } from "../config.js";
@@ -344,14 +345,15 @@ describe("MockNotabeneProvider", () => {
     const provider = new MockNotabeneProvider();
     const result = await provider.transmit({
       originator: {
-        originatorPersons: [{ naturalPerson: { name: "Alice" } }],
+        originatorPersons: [{ naturalPerson: { nameIdentifier: [{ primaryIdentifier: "Alice", nameIdentifierType: "LEGL" as const }] } }],
         accountNumber: ["0x1234"],
       },
       beneficiary: {
-        beneficiaryPersons: [{ naturalPerson: { name: "Bob" } }],
+        beneficiaryPersons: [{ naturalPerson: { nameIdentifier: [{ primaryIdentifier: "Bob", nameIdentifierType: "LEGL" as const }] } }],
         accountNumber: ["0xabcd"],
       },
       transactionAmount: "5000",
+      transactionAmountCurrency: "USDC",
       transactionAsset: "USDC",
       transactionChain: "eip155:1",
     });
@@ -365,14 +367,15 @@ describe("MockNotabeneProvider", () => {
     const provider = new MockNotabeneProvider(false);
     const result = await provider.transmit({
       originator: {
-        originatorPersons: [{ naturalPerson: { name: "Alice" } }],
+        originatorPersons: [{ naturalPerson: { nameIdentifier: [{ primaryIdentifier: "Alice", nameIdentifierType: "LEGL" as const }] } }],
         accountNumber: ["0x1234"],
       },
       beneficiary: {
-        beneficiaryPersons: [{ naturalPerson: { name: "Bob" } }],
+        beneficiaryPersons: [{ naturalPerson: { nameIdentifier: [{ primaryIdentifier: "Bob", nameIdentifierType: "LEGL" as const }] } }],
         accountNumber: ["0xabcd"],
       },
       transactionAmount: "5000",
+      transactionAmountCurrency: "USDC",
       transactionAsset: "USDC",
       transactionChain: "eip155:1",
     });
@@ -386,14 +389,15 @@ describe("MockNotabeneProvider", () => {
     const provider = new MockNotabeneProvider();
     const message = {
       originator: {
-        originatorPersons: [{ naturalPerson: { name: "Alice" } }],
+        originatorPersons: [{ naturalPerson: { nameIdentifier: [{ primaryIdentifier: "Alice", nameIdentifierType: "LEGL" as const }] } }],
         accountNumber: ["0x1234"],
       },
       beneficiary: {
-        beneficiaryPersons: [{ naturalPerson: { name: "Bob" } }],
+        beneficiaryPersons: [{ naturalPerson: { nameIdentifier: [{ primaryIdentifier: "Bob", nameIdentifierType: "LEGL" as const }] } }],
         accountNumber: ["0xabcd"],
       },
       transactionAmount: "5000",
+      transactionAmountCurrency: "USDC",
       transactionAsset: "USDC",
       transactionChain: "eip155:1",
     };
@@ -430,14 +434,15 @@ describe("NotabeneProvider", () => {
 
     const result = await provider.transmit({
       originator: {
-        originatorPersons: [{ naturalPerson: { name: "Alice" } }],
+        originatorPersons: [{ naturalPerson: { nameIdentifier: [{ primaryIdentifier: "Alice", nameIdentifierType: "LEGL" as const }] } }],
         accountNumber: ["0x1234"],
       },
       beneficiary: {
-        beneficiaryPersons: [{ naturalPerson: { name: "Bob" } }],
+        beneficiaryPersons: [{ naturalPerson: { nameIdentifier: [{ primaryIdentifier: "Bob", nameIdentifierType: "LEGL" as const }] } }],
         accountNumber: ["0xabcd"],
       },
       transactionAmount: "5000",
+      transactionAmountCurrency: "USDC",
       transactionAsset: "USDC",
       transactionChain: "eip155:1",
     });
@@ -470,6 +475,7 @@ describe("NotabeneProvider", () => {
         accountNumber: ["0xabcd"],
       },
       transactionAmount: "100",
+      transactionAmountCurrency: "USDC",
       transactionAsset: "USDC",
       transactionChain: "eip155:1",
     });
@@ -503,6 +509,7 @@ describe("NotabeneProvider", () => {
         accountNumber: ["0xabcd"],
       },
       transactionAmount: "100",
+      transactionAmountCurrency: "USDC",
       transactionAsset: "USDC",
       transactionChain: "eip155:1",
     });
@@ -530,6 +537,7 @@ describe("NotabeneProvider", () => {
         accountNumber: ["0xabcd"],
       },
       transactionAmount: "100",
+      transactionAmountCurrency: "USDC",
       transactionAsset: "USDC",
       transactionChain: "eip155:1",
     });
@@ -556,6 +564,7 @@ describe("NotabeneProvider", () => {
       originator: { originatorPersons: [], accountNumber: ["0x1234"] },
       beneficiary: { beneficiaryPersons: [], accountNumber: ["0xabcd"] },
       transactionAmount: "100",
+      transactionAmountCurrency: "USDC",
       transactionAsset: "USDC",
       transactionChain: "eip155:1",
     });
@@ -607,5 +616,205 @@ describe("TravelRuleChecker — provider selection", () => {
 
     expect(result.status).toBe("TRANSMITTED");
     expect(mockFetch).toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Sprint 2: IVMS101 message structure — nameIdentifier + native amount
+// ---------------------------------------------------------------------------
+
+describe("TravelRuleChecker — Sprint 2: IVMS101 nameIdentifier structure", () => {
+  /**
+   * Capture the IVMS101 message built when travelRuleApplies === true.
+   * Uses a custom provider that records the transmitted message.
+   */
+  function makeCaptureProvider(): {
+    provider: TravelRuleProvider;
+    getCaptured: () => IVMS101Message | null;
+  } {
+    let captured: IVMS101Message | null = null;
+    const provider: TravelRuleProvider = {
+      async transmit(msg: IVMS101Message) {
+        captured = msg;
+        return { success: true, referenceId: "sprint2-ref-001" };
+      },
+    };
+    return { provider, getCaptured: () => captured };
+  }
+
+  it("uses nameIdentifier array (not flat name string) on originator naturalPerson when travelRuleApplies", async () => {
+    const { provider, getCaptured } = makeCaptureProvider();
+    const checker = new TravelRuleChecker(makeConfig(), provider);
+
+    await checker.checkTravelRule(
+      makeTravelRuleData({
+        amountUsd: 5_000,
+        originator: {
+          walletAddress: "0xORIG",
+          name: "Alice Sender",
+        },
+      }),
+    );
+
+    const msg = getCaptured();
+    expect(msg).not.toBeNull();
+    const person = msg!.originator.originatorPersons[0]?.naturalPerson;
+    expect(person).toBeDefined();
+    // Must use nameIdentifier array, not a flat name string
+    expect(Array.isArray(person!.nameIdentifier)).toBe(true);
+    expect(person!.nameIdentifier.length).toBeGreaterThan(0);
+  });
+
+  it("nameIdentifier primaryIdentifier holds the family name (last word) and secondaryIdentifier holds given names", async () => {
+    const { provider, getCaptured } = makeCaptureProvider();
+    const checker = new TravelRuleChecker(makeConfig(), provider);
+
+    await checker.checkTravelRule(
+      makeTravelRuleData({
+        amountUsd: 5_000,
+        originator: { walletAddress: "0xORIG", name: "Alice Marie Sender" },
+        beneficiary: { walletAddress: "0xBENE", name: "Bob Receiver" },
+      }),
+    );
+
+    const msg = getCaptured()!;
+    const origNameId = msg.originator.originatorPersons[0]!.naturalPerson!.nameIdentifier[0]!;
+    // Last word of "Alice Marie Sender" → primaryIdentifier = "Sender"
+    expect(origNameId.primaryIdentifier).toBe("Sender");
+    // Remaining words → secondaryIdentifier = "Alice Marie"
+    expect(origNameId.secondaryIdentifier).toBe("Alice Marie");
+    expect(origNameId.nameIdentifierType).toBe("LEGL");
+  });
+
+  it("beneficiary naturalPerson also uses nameIdentifier array", async () => {
+    const { provider, getCaptured } = makeCaptureProvider();
+    const checker = new TravelRuleChecker(makeConfig(), provider);
+
+    await checker.checkTravelRule(
+      makeTravelRuleData({
+        amountUsd: 5_000,
+        beneficiary: { walletAddress: "0xBENE", name: "Bob Receiver" },
+      }),
+    );
+
+    const msg = getCaptured()!;
+    const beneNameId =
+      msg.beneficiary.beneficiaryPersons[0]?.naturalPerson?.nameIdentifier;
+    expect(Array.isArray(beneNameId)).toBe(true);
+    expect(beneNameId!.length).toBeGreaterThan(0);
+  });
+
+  it("transactionAmount uses native asset amount when nativeAmount is provided", async () => {
+    const { provider, getCaptured } = makeCaptureProvider();
+    const checker = new TravelRuleChecker(makeConfig(), provider);
+
+    // Simulate a non-stablecoin: nativeAmount differs from amountUsd
+    const data = makeTravelRuleData({
+      amountUsd: 5_000,
+      asset: "ETH",
+    });
+
+    await checker.buildIVMS101Message({ ...data, nativeAmount: "2.5" });
+    // Now call via checkTravelRule with nativeAmount passed through
+    // (buildIVMS101Message is public for direct testing)
+    const msg = checker.buildIVMS101Message({ ...data, nativeAmount: "2.5" });
+    expect(msg.transactionAmount).toBe("2.5");
+    expect(msg.transactionAmountCurrency).toBe("ETH");
+  });
+
+  it("transactionAmount falls back to amountUsd.toString() when nativeAmount is not provided", async () => {
+    const checker = new TravelRuleChecker(makeConfig());
+    const data = makeTravelRuleData({ amountUsd: 1500, asset: "USDC" });
+
+    const msg = checker.buildIVMS101Message(data);
+    expect(msg.transactionAmount).toBe("1500");
+    expect(msg.transactionAmountCurrency).toBe("USDC");
+  });
+
+  it("transactionAmountUsd is always populated with the USD equivalent", async () => {
+    const checker = new TravelRuleChecker(makeConfig());
+    const data = makeTravelRuleData({ amountUsd: 3500, asset: "ETH" });
+
+    const msg = checker.buildIVMS101Message({ ...data, nativeAmount: "1.2" });
+    expect(msg.transactionAmountUsd).toBe("3500");
+    // Native amount is used for transactionAmount
+    expect(msg.transactionAmount).toBe("1.2");
+  });
+
+  it("originatingVASP uses nameIdentifier array (not flat string)", async () => {
+    const checker = new TravelRuleChecker(makeConfig());
+    const data = makeTravelRuleData({ amountUsd: 5_000 });
+
+    const msg = checker.buildIVMS101Message(data);
+    expect(msg.originatingVASP?.legalPerson?.nameIdentifier).toBeDefined();
+    expect(Array.isArray(msg.originatingVASP?.legalPerson?.nameIdentifier)).toBe(true);
+    const nameId = msg.originatingVASP!.legalPerson.nameIdentifier[0]!;
+    expect(typeof nameId.primaryIdentifier).toBe("string");
+    expect(nameId.primaryIdentifier.length).toBeGreaterThan(0);
+    expect(nameId.nameIdentifierType).toBe("LEGL");
+  });
+
+  it("single-word name produces primaryIdentifier only (no secondaryIdentifier)", async () => {
+    const checker = new TravelRuleChecker(makeConfig());
+    const data = makeTravelRuleData({
+      amountUsd: 5_000,
+      originator: { walletAddress: "0xORIG", name: "Nakamoto" },
+    });
+
+    const msg = checker.buildIVMS101Message(data);
+    const nameId = msg.originator.originatorPersons[0]!.naturalPerson!.nameIdentifier[0]!;
+    expect(nameId.primaryIdentifier).toBe("Nakamoto");
+    expect(nameId.secondaryIdentifier).toBeUndefined();
+  });
+
+  it("unknown/undefined name produces LEGL nameIdentifier with primaryIdentifier='Unknown'", async () => {
+    const checker = new TravelRuleChecker(makeConfig());
+    const data = makeTravelRuleData({
+      amountUsd: 5_000,
+      originator: { walletAddress: "0xORIG", name: undefined },
+    });
+
+    const msg = checker.buildIVMS101Message(data);
+    const nameId = msg.originator.originatorPersons[0]!.naturalPerson!.nameIdentifier[0]!;
+    expect(nameId.primaryIdentifier).toBe("Unknown");
+    expect(nameId.nameIdentifierType).toBe("LEGL");
+  });
+
+  it("IVMS101 message is transmitted when travelRuleApplies is true (amount >= threshold)", async () => {
+    let transmitted = false;
+    const captureProvider: TravelRuleProvider = {
+      async transmit(_msg: IVMS101Message) {
+        transmitted = true;
+        return { success: true, referenceId: "ref-sprint2" };
+      },
+    };
+
+    const checker = new TravelRuleChecker(makeConfig(), captureProvider);
+    const result = await checker.checkTravelRule(
+      makeTravelRuleData({ amountUsd: 3_000 }),
+    );
+
+    expect(result.required).toBe(true);
+    expect(result.status).toBe("TRANSMITTED");
+    expect(transmitted).toBe(true);
+  });
+
+  it("IVMS101 message is NOT transmitted when amount is below threshold", async () => {
+    let transmitted = false;
+    const captureProvider: TravelRuleProvider = {
+      async transmit(_msg: IVMS101Message) {
+        transmitted = true;
+        return { success: true, referenceId: "ref-sprint2" };
+      },
+    };
+
+    const checker = new TravelRuleChecker(makeConfig(), captureProvider);
+    const result = await checker.checkTravelRule(
+      makeTravelRuleData({ amountUsd: 2_999 }),
+    );
+
+    expect(result.required).toBe(false);
+    expect(result.status).toBe("NOT_REQUIRED");
+    expect(transmitted).toBe(false);
   });
 });

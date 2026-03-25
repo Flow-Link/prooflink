@@ -92,7 +92,8 @@ function resolveAp2(ctx: ProtocolComplianceContext): ProtocolComplianceResult {
     notes.push("AP2 transaction without mandate ID — elevated to standard risk profile");
   }
 
-  // Mandates carry identity data, so Travel Rule threshold is higher (identity already available)
+  // Mandates carry identity data, so Travel Rule threshold is higher (identity already available).
+  // Without a mandate, fall back to the standard FATF threshold.
   const travelRuleThreshold = hasMandate ? 5000 : DEFAULT_TRAVEL_RULE_THRESHOLD_USD;
 
   return {

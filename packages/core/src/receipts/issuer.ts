@@ -236,13 +236,13 @@ export class ReceiptIssuer {
   ): ComplianceReceipt["overallStatus"] {
     switch (status) {
       case "APPROVED":
-        return "COMPLIANT";
+        return "APPROVED";
       case "REJECTED":
-        return "BLOCKED";
+        return "REJECTED";
       case "ESCALATED":
-        return "REVIEW_REQUIRED";
+        return "ESCALATED";
       default:
-        return "REVIEW_REQUIRED";
+        return "ESCALATED";
     }
   }
 }

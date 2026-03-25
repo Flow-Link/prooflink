@@ -94,7 +94,7 @@ const TRAVEL_RULE_RESULT = {
 const COMPLIANCE_RECEIPT = {
   receiptId: "rcpt_001",
   checksPerformed: [],
-  overallStatus: "COMPLIANT",
+  overallStatus: "APPROVED",
   riskScore: 5,
   travelRuleStatus: "NOT_REQUIRED",
   signature: "0xsig",
@@ -167,9 +167,9 @@ const KYA_CREDENTIAL = {
   expirationDate: "2027-01-01T00:00:00Z",
   credentialSubject: {
     id: "did:flowlink:agent_001",
-    agentId: "agent_001",
+    agentDid: "agent_001",
     agentType: "autonomous",
-    controllingEntity: { name: "Acme Corp", kybVerified: true },
+    controllingEntityName: "Acme Corp",
     delegationScope: {
       maxTransactionValue: 10000,
       expiresAt: "2027-01-01T00:00:00Z",
@@ -334,7 +334,7 @@ describe("FlowLinkClient", () => {
       expect(lastFetchUrl()).toBe(
         "https://api.test.flowlink.io/v1/compliance/receipt/rcpt_001",
       );
-      expect(result.overallStatus).toBe("COMPLIANT");
+      expect(result.overallStatus).toBe("APPROVED");
     });
 
     it("throws FlowLinkValidationError when receiptId is empty", async () => {
@@ -557,7 +557,7 @@ describe("FlowLinkClient", () => {
       expect(lastFetchUrl()).toBe(
         "https://api.test.flowlink.io/v1/identity/kya/issue",
       );
-      expect(result.credentialSubject.agentId).toBe("agent_001");
+      expect(result.credentialSubject.agentDid).toBe("agent_001");
     });
   });
 

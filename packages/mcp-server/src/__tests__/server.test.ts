@@ -137,11 +137,12 @@ describe("FlowLink MCP Server", () => {
   // -------------------------------------------------------------------------
 
   describe("verify_kya", () => {
-    it("verifies an agent", async () => {
+    it("verifies a registered agent", async () => {
+      // Uses agent_001 from the seeded agent registry
       const result = await client.callTool({
         name: "verify_kya",
         arguments: {
-          agent_id: "erc8004:8453:0xABCDEF1234567890",
+          agent_id: "agent_001",
         },
       });
 
@@ -165,7 +166,7 @@ describe("FlowLink MCP Server", () => {
       const result = await client.callTool({
         name: "verify_kya",
         arguments: {
-          agent_id: "erc8004:8453:0xABCDEF",
+          agent_id: "agent_001",
           check_spending_limits: true,
         },
       });
@@ -175,6 +176,22 @@ describe("FlowLink MCP Server", () => {
       if (result.structuredContent) {
         const data = result.structuredContent as Record<string, unknown>;
         expect(data.spending_limits).toBeDefined();
+      }
+    });
+
+    it("fails for unregistered agent", async () => {
+      const result = await client.callTool({
+        name: "verify_kya",
+        arguments: {
+          agent_id: "agent_nonexistent",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      if (result.structuredContent) {
+        const data = result.structuredContent as Record<string, unknown>;
+        expect(data.verified).toBe(false);
+        expect(data.trust_score).toBe(0);
       }
     });
   });
@@ -394,7 +411,7 @@ describe("FlowLink MCP Server", () => {
         arguments: {
           recipient: {
             wallet_address: "0xRecipient789",
-            agent_id: "erc8004:8453:0xAGENT",
+            agent_id: "agent_001",
           },
           amount: { value: 2000, currency: "USDC" },
           chain: "ethereum",
@@ -441,7 +458,7 @@ describe("FlowLink MCP Server", () => {
         arguments: {
           recipient: {
             wallet_address: "0xRecipient789",
-            agent_id: "erc8004:8453:0xAGENT123",
+            agent_id: "agent_001",
           },
           amount: { value: 50, currency: "USDT" },
           chain: "polygon",

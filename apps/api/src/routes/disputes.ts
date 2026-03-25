@@ -43,7 +43,7 @@ const IdParams = z.object({
 
 const EvidenceBody = z.object({
   submittedBy: z.string().min(1).max(256),
-  type: z.string().min(1).max(50), // e.g. "screenshot", "log", "receipt", "statement"
+  type: z.string().min(1).max(50),
   description: z.string().min(1).max(2000),
   data: z.record(z.unknown()).optional(),
 });
@@ -97,36 +97,35 @@ function handleServiceError(c: Context, error: unknown) {
 
 const disputeRoutes = new Hono();
 
-// POST /v1/disputes — open a new dispute
+// POST /v1/disputes — open a new dispute (tenant-isolated)
 disputeRoutes.post("/", validate({ body: CreateDisputeBody }), async (c) => {
   const body = c.get("validatedBody") as z.infer<typeof CreateDisputeBody>;
-  const auth = c.get("auth") as AuthContext | undefined;
+  const auth = c.get("auth") as AuthContext;
 
   const dispute = await openDispute({
     ...body,
-    apiKeyId: auth?.apiKeyId,
+    apiKeyId: auth.apiKeyId,
   });
 
   return c.json({ success: true, data: dispute }, 201);
 });
 
-// GET /v1/disputes — list disputes with filters + pagination
+// GET /v1/disputes — list disputes with filters + pagination (tenant-isolated)
 disputeRoutes.get("/", validate({ query: ListQuery }), async (c) => {
   const query = c.get("validatedQuery") as z.infer<typeof ListQuery>;
   const { page, limit, state, category, initiatorDid, respondentDid } = query;
   const offset = (page - 1) * limit;
-  const auth = c.get("auth") as AuthContext | undefined;
+  const auth = c.get("auth") as AuthContext;
 
   const db = getDb();
-  const conditions = [];
+  const conditions = [eq(disputes.apiKeyId, auth.apiKeyId)];
 
-  if (auth?.apiKeyId) conditions.push(eq(disputes.apiKeyId, auth.apiKeyId));
   if (state) conditions.push(eq(disputes.state, state));
   if (category) conditions.push(eq(disputes.category, category));
   if (initiatorDid) conditions.push(eq(disputes.initiatorDid, initiatorDid));
   if (respondentDid) conditions.push(eq(disputes.respondentDid, respondentDid));
 
-  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+  const whereClause = and(...conditions);
 
   const [items, countResult] = await Promise.all([
     db
@@ -158,19 +157,16 @@ disputeRoutes.get("/", validate({ query: ListQuery }), async (c) => {
   });
 });
 
-// GET /v1/disputes/:id — get dispute details
+// GET /v1/disputes/:id — get dispute details (tenant-isolated)
 disputeRoutes.get("/:id", validate({ params: IdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof IdParams>;
-  const auth = c.get("auth") as AuthContext | undefined;
+  const auth = c.get("auth") as AuthContext;
   const db = getDb();
-
-  const conditions = [eq(disputes.id, id)];
-  if (auth?.apiKeyId) conditions.push(eq(disputes.apiKeyId, auth.apiKeyId));
 
   const [dispute] = await db
     .select()
     .from(disputes)
-    .where(and(...conditions))
+    .where(and(eq(disputes.id, id), eq(disputes.apiKeyId, auth.apiKeyId)))
     .limit(1);
 
   if (!dispute) {
@@ -183,34 +179,34 @@ disputeRoutes.get("/:id", validate({ params: IdParams }), async (c) => {
   return c.json({ success: true, data: dispute });
 });
 
-// POST /v1/disputes/:id/evidence — submit evidence
+// POST /v1/disputes/:id/evidence — submit evidence (tenant-isolated)
 disputeRoutes.post("/:id/evidence", validate({ params: IdParams, body: EvidenceBody }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof IdParams>;
   const body = c.get("validatedBody") as z.infer<typeof EvidenceBody>;
-  const auth = c.get("auth") as AuthContext | undefined;
+  const auth = c.get("auth") as AuthContext;
 
   try {
-    const dispute = await submitEvidence(id, body, auth?.apiKeyId);
+    const dispute = await submitEvidence(id, body, auth.apiKeyId);
     return c.json({ success: true, data: dispute });
   } catch (error: unknown) {
     return handleServiceError(c, error);
   }
 });
 
-// POST /v1/disputes/:id/escalate — escalate to arbitration
+// POST /v1/disputes/:id/escalate — escalate to arbitration (tenant-isolated)
 disputeRoutes.post("/:id/escalate", validate({ params: IdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof IdParams>;
-  const auth = c.get("auth") as AuthContext | undefined;
+  const auth = c.get("auth") as AuthContext;
 
   try {
-    const dispute = await escalateToArbitration(id, auth?.apiKeyId);
+    const dispute = await escalateToArbitration(id, auth.apiKeyId);
     return c.json({ success: true, data: dispute });
   } catch (error: unknown) {
     return handleServiceError(c, error);
   }
 });
 
-// POST /v1/disputes/:id/resolve — resolve (admin scope required)
+// POST /v1/disputes/:id/resolve — resolve (admin scope required, tenant-isolated)
 disputeRoutes.post(
   "/:id/resolve",
   requireScope("admin"),
@@ -218,10 +214,10 @@ disputeRoutes.post(
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof IdParams>;
     const body = c.get("validatedBody") as z.infer<typeof ResolveBody>;
-    const auth = c.get("auth") as AuthContext | undefined;
+    const auth = c.get("auth") as AuthContext;
 
     try {
-      const dispute = await resolveDispute(id, body, auth?.apiKeyId);
+      const dispute = await resolveDispute(id, body, auth.apiKeyId);
       return c.json({ success: true, data: dispute });
     } catch (error: unknown) {
       return handleServiceError(c, error);
@@ -229,13 +225,13 @@ disputeRoutes.post(
   },
 );
 
-// POST /v1/disputes/:id/close — close after resolution executed
+// POST /v1/disputes/:id/close — close after resolution executed (tenant-isolated)
 disputeRoutes.post("/:id/close", validate({ params: IdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof IdParams>;
-  const auth = c.get("auth") as AuthContext | undefined;
+  const auth = c.get("auth") as AuthContext;
 
   try {
-    const dispute = await closeDispute(id, auth?.apiKeyId);
+    const dispute = await closeDispute(id, auth.apiKeyId);
     return c.json({ success: true, data: dispute });
   } catch (error: unknown) {
     return handleServiceError(c, error);

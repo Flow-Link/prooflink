@@ -47,6 +47,7 @@ export type {
   TravelRuleResult,
   TravelRuleProvider,
   IVMS101Message,
+  IVMS101NameIdentifier,
 } from "./travel-rule/checker.js";
 
 // Identity (KYA)

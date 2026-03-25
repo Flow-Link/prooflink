@@ -98,7 +98,7 @@ export class ComplianceBridge {
         invoiceId: flowlinkInvoice.invoiceId,
       });
 
-      const approved = complianceResponse.overallStatus === "COMPLIANT";
+      const approved = complianceResponse.overallStatus === "APPROVED";
 
       // Build ProofLink receipt if compliant
       const proofLinkReceipt: ProofLinkReceipt | null = approved

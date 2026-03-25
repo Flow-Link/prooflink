@@ -205,25 +205,25 @@ describe("ReceiptIssuer — receipt structure", () => {
 // ---------------------------------------------------------------------------
 
 describe("ReceiptIssuer — decision status → overallStatus mapping", () => {
-  it("APPROVED decision maps to COMPLIANT receipt", async () => {
+  it("APPROVED decision maps to APPROVED receipt", async () => {
     const issuer = new ReceiptIssuer(makeConfig());
     const receipt = await issuer.issueReceipt(makeDecision("APPROVED"), makeTxContext());
 
-    expect(receipt.overallStatus).toBe("COMPLIANT");
+    expect(receipt.overallStatus).toBe("APPROVED");
   });
 
-  it("REJECTED decision maps to BLOCKED receipt", async () => {
+  it("REJECTED decision maps to REJECTED receipt", async () => {
     const issuer = new ReceiptIssuer(makeConfig());
     const receipt = await issuer.issueReceipt(makeDecision("REJECTED", 100), makeTxContext());
 
-    expect(receipt.overallStatus).toBe("BLOCKED");
+    expect(receipt.overallStatus).toBe("REJECTED");
   });
 
-  it("ESCALATED decision maps to REVIEW_REQUIRED receipt", async () => {
+  it("ESCALATED decision maps to ESCALATED receipt", async () => {
     const issuer = new ReceiptIssuer(makeConfig());
     const receipt = await issuer.issueReceipt(makeDecision("ESCALATED", 70), makeTxContext());
 
-    expect(receipt.overallStatus).toBe("REVIEW_REQUIRED");
+    expect(receipt.overallStatus).toBe("ESCALATED");
   });
 });
 

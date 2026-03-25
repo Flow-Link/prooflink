@@ -365,7 +365,7 @@ describe("NotabeneTravelRuleProvider", () => {
       originatorPersons: [
         {
           naturalPerson: {
-            name: "Alice",
+            nameIdentifier: [{ primaryIdentifier: "Alice", nameIdentifierType: "LEGL" as const }],
             geographicAddress: "123 Main St",
             nationalId: "US-ID-001",
           },
@@ -376,12 +376,13 @@ describe("NotabeneTravelRuleProvider", () => {
     beneficiary: {
       beneficiaryPersons: [
         {
-          naturalPerson: { name: "Bob" },
+          naturalPerson: { nameIdentifier: [{ primaryIdentifier: "Bob", nameIdentifierType: "LEGL" as const }] },
         },
       ],
       accountNumber: ["0xBob"],
     },
     transactionAmount: "5000",
+    transactionAmountCurrency: "USDC",
     transactionAsset: "USDC" as const,
     transactionChain: "ethereum" as const,
   };
@@ -468,7 +469,7 @@ describe("NotabeneTravelRuleProvider", () => {
         ...IVMS_MESSAGE.originator,
         originatorPersons: [
           {
-            legalPerson: { name: "Acme Corp" },
+            legalPerson: { nameIdentifier: [{ primaryIdentifier: "Acme Corp", nameIdentifierType: "LEGL" as const }] },
           },
         ],
       },

@@ -21,7 +21,7 @@ import {
 export const apiKeys = pgTable("api_keys", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 128 }).notNull(),
-  keyHash: varchar("key_hash", { length: 128 }).notNull().unique(),
+  keyHash: varchar("key_hash", { length: 128 }).notNull(),
   keyPrefix: varchar("key_prefix", { length: 12 }).notNull(),
   ownerId: varchar("owner_id", { length: 256 }).notNull(),
   scopes: jsonb("scopes").$type<string[]>().notNull().default([]),
@@ -42,7 +42,7 @@ export const apiKeys = pgTable("api_keys", {
 
 export const agents = pgTable("agents", {
   id: uuid("id").primaryKey().defaultRandom(),
-  agentDid: varchar("agent_did", { length: 256 }).notNull().unique(),
+  agentDid: varchar("agent_did", { length: 256 }).notNull(),
   erc8004Id: integer("erc8004_id"),
   erc8004Registry: varchar("erc8004_registry", { length: 128 }),
   name: varchar("name", { length: 256 }),
@@ -90,6 +90,8 @@ export const complianceChecks = pgTable("compliance_checks", {
   index("compliance_checks_sender_address_idx").on(table.senderAddress),
   index("compliance_checks_receiver_address_idx").on(table.receiverAddress),
   index("compliance_checks_trace_id_idx").on(table.traceId),
+  index("compliance_checks_status_created_idx").on(table.status, table.createdAt),
+  index("compliance_checks_sender_agent_did_idx").on(table.senderAgentDid),
 ]);
 
 // ---------------------------------------------------------------------------
@@ -337,7 +339,10 @@ export const auditLog = pgTable("audit_log", {
   apiKeyId: uuid("api_key_id").references(() => apiKeys.id),
   payload: jsonb("payload").$type<Record<string, unknown>>().notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}, (table) => [
+  index("audit_log_event_type_created_idx").on(table.eventType, table.createdAt),
+  index("audit_log_agent_did_idx").on(table.agentDid),
+]);
 
 // ---------------------------------------------------------------------------
 // Type exports for select/insert

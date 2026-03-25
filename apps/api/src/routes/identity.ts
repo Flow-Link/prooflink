@@ -11,6 +11,7 @@ import {
   createSelectiveProof,
   verifySelectiveProof,
 } from "../services/selective-disclosure.js";
+import { writeAuditLog } from "../utils/audit.js";
 
 // ---------------------------------------------------------------------------
 // Request schemas
@@ -358,6 +359,17 @@ identity.post("/kya/issue", validate({ body: IssueKYARequest }), async (c) => {
     },
   };
 
+  writeAuditLog({
+    eventType: "kya.credential.issued",
+    agentDid: agent.agentDid,
+    payload: {
+      agentId: agent.id,
+      agentDid: agent.agentDid,
+      agentType: agent.agentType,
+      walletAddress: agent.walletAddress,
+    },
+  });
+
   return c.json({
     success: true,
     data: {
@@ -431,6 +443,18 @@ identity.post("/agents", validate({ body: RegisterAgentRequest }), async (c) => 
       500,
     );
   }
+
+  writeAuditLog({
+    eventType: "agent.registered",
+    agentDid: agent.agentDid,
+    payload: {
+      agentId: agent.id,
+      agentDid: agent.agentDid,
+      name: agent.name,
+      agentType: agent.agentType,
+      walletAddress: agent.walletAddress,
+    },
+  });
 
   return c.json(
     {
@@ -508,6 +532,17 @@ identity.put(
         500,
       );
     }
+
+    writeAuditLog({
+      eventType: "agent.delegation.updated",
+      agentDid: updated.agentDid,
+      payload: {
+        agentId: updated.id,
+        agentDid: updated.agentDid,
+        previousScope: currentScope,
+        newScope,
+      },
+    });
 
     return c.json(
       {

@@ -26,7 +26,8 @@ let _screener: SanctionsScreener | null = null;
 export function getScreener(): SanctionsScreener {
   if (_screener) return _screener;
 
-  const config = loadConfig({ failOpen: true });
+  const isProduction = process.env.NODE_ENV === "production";
+  const config = loadConfig({ failOpen: !isProduction });
   const providers = [];
 
   if (process.env.CHAINALYSIS_API_KEY) {

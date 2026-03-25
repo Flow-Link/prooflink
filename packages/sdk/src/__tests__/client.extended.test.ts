@@ -478,7 +478,7 @@ describe("request structure", () => {
 
   it("does not send Content-Type on GET requests", async () => {
     mockFetch.mockResolvedValueOnce(
-      jsonResponse({ receiptId: "r1", checksPerformed: [], overallStatus: "COMPLIANT", riskScore: 0, travelRuleStatus: "NOT_REQUIRED", signature: "0xsig", timestamp: "2026-01-01T00:00:00Z", ttl: 300, proofLinkVersion: "1.0.0" }),
+      jsonResponse({ receiptId: "r1", checksPerformed: [], overallStatus: "APPROVED", riskScore: 0, travelRuleStatus: "NOT_REQUIRED", signature: "0xsig", timestamp: "2026-01-01T00:00:00Z", ttl: 300, proofLinkVersion: "1.0.0" }),
     );
     await client.getComplianceReceipt("r1");
     const headers = lastInit().headers as Record<string, string>;
@@ -487,7 +487,7 @@ describe("request structure", () => {
 
   it("URL-encodes path segments for getComplianceReceipt", async () => {
     mockFetch.mockResolvedValueOnce(
-      jsonResponse({ receiptId: "rcpt/with/slashes", checksPerformed: [], overallStatus: "COMPLIANT", riskScore: 0, travelRuleStatus: "NOT_REQUIRED", signature: "0x", timestamp: "2026-01-01T00:00:00Z", ttl: 300, proofLinkVersion: "1.0.0" }),
+      jsonResponse({ receiptId: "rcpt/with/slashes", checksPerformed: [], overallStatus: "APPROVED", riskScore: 0, travelRuleStatus: "NOT_REQUIRED", signature: "0x", timestamp: "2026-01-01T00:00:00Z", ttl: 300, proofLinkVersion: "1.0.0" }),
     );
     await client.getComplianceReceipt("rcpt/with/slashes");
     expect(lastUrl()).toContain("rcpt%2Fwith%2Fslashes");
@@ -629,9 +629,9 @@ describe("issueKYA", () => {
       expirationDate: "2027-01-01T00:00:00Z",
       credentialSubject: {
         id: "did:flowlink:agent_ext_001",
-        agentId: "agent_ext_001",
+        agentDid: "agent_ext_001",
         agentType: "autonomous",
-        controllingEntity: { name: "Corp", kybVerified: true },
+        controllingEntityName: "Corp",
         delegationScope: { maxTransactionValue: 5000, expiresAt: "2027-01-01T00:00:00Z" },
         walletAddress: "0xExtAgent",
       },
@@ -656,6 +656,6 @@ describe("issueKYA", () => {
 
     expect(lastInit().method).toBe("POST");
     expect(lastUrl()).toBe("https://api.test.flowlink.io/v1/identity/kya/issue");
-    expect(result.credentialSubject.agentId).toBe("agent_ext_001");
+    expect(result.credentialSubject.agentDid).toBe("agent_ext_001");
   });
 });

@@ -15,7 +15,7 @@ export interface ReceiptListOptions {
   /** Offset for pagination */
   offset?: number;
   /** Filter by status */
-  status?: "COMPLIANT" | "BLOCKED" | "REVIEW_REQUIRED";
+  status?: "APPROVED" | "REJECTED" | "ESCALATED";
 }
 
 /**

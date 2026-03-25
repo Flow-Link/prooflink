@@ -99,6 +99,8 @@ export const TravelRuleData = z.object({
   originator: IVMS101Person,
   beneficiary: IVMS101Person,
   amountUsd: z.number().positive(),
+  /** Native asset amount (before USD conversion). Used for IVMS101 message. */
+  nativeAmount: z.string().optional(),
   asset: z.string(),
   chain: z.string(),
   direction: z.enum(["outgoing", "incoming"]),
@@ -109,6 +111,7 @@ export type TravelRuleData = z.infer<typeof TravelRuleData>;
 
 export const TravelRuleStatus = z.enum([
   "NOT_REQUIRED",
+  "REQUIRED_PENDING",
   "TRANSMITTED",
   "PENDING",
   "FAILED",
@@ -150,7 +153,7 @@ export const ComplianceReceipt = z.object({
   receiptId: z.string(),
   txHash: z.string().optional(),
   checksPerformed: z.array(CheckPerformed),
-  overallStatus: z.enum(["COMPLIANT", "BLOCKED", "REVIEW_REQUIRED"]),
+  overallStatus: z.enum(["APPROVED", "REJECTED", "ESCALATED"]),
   riskScore: z.number().int().min(0).max(100),
   travelRuleStatus: TravelRuleStatus,
   easAttestationUid: z.string().optional(),

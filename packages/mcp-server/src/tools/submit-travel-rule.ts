@@ -1,9 +1,10 @@
 import { randomUUID } from "node:crypto";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { TRAVEL_RULE_THRESHOLDS } from "@flowlink/shared";
 import { formatMcpError } from "../errors.js";
 
-const TRAVEL_RULE_THRESHOLD_USD = 1_000;
+const TRAVEL_RULE_THRESHOLD_USD = TRAVEL_RULE_THRESHOLDS.US;
 
 function generateTravelRuleId(): string {
   return `tr_${randomUUID().replace(/-/g, "")}`;
@@ -55,7 +56,7 @@ export function registerSubmitTravelRule(server: McpServer): void {
   server.tool(
     "submit_travel_rule",
     [
-      "Transmit FATF Travel Rule originator/beneficiary information for transactions above the reporting threshold ($1,000 USD).",
+      "Transmit FATF Travel Rule originator/beneficiary information for transactions above the reporting threshold ($3,000 USD).",
       "Required for VASP-to-VASP transfers under GENIUS Act, MiCA, and FATF Recommendation 16.",
       "",
       "NOTE: Travel Rule data transmission is SIMULATED. In production, this would call",
@@ -70,7 +71,7 @@ export function registerSubmitTravelRule(server: McpServer): void {
       "  })",
       "",
       "Integrates with Notabene and Sygna Bridge for VASP-to-VASP messaging.",
-      "Returns below-threshold response without transmitting if amount < $1,000.",
+      "Returns below-threshold response without transmitting if amount < $3,000.",
     ].join("\n"),
     {
       transaction: TransactionSchema.describe("Transaction details."),

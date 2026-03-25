@@ -648,7 +648,7 @@ describe("ProofLinkEngine", () => {
       const decision = await engine.checkCompliance(request);
       const receipt = await engine.issueReceipt(decision, request);
 
-      expect(receipt.overallStatus).toBe("COMPLIANT");
+      expect(receipt.overallStatus).toBe("APPROVED");
       expect(receipt.receiptId).toMatch(/^pl-/);
       expect(receipt.txHash).toBe("0xhashvalue");
       expect(receipt.signature).toBeTruthy();

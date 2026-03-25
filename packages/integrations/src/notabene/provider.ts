@@ -46,27 +46,31 @@ export class NotabeneTravelRuleProvider implements TravelRuleProvider {
   ): Promise<{ success: boolean; referenceId?: string; error?: string }> {
     try {
       // Convert IVMS101Message back to TravelRuleData shape for the client
+      const extractName = (
+        person?: { nameIdentifier: Array<{ primaryIdentifier: string; secondaryIdentifier?: string }> },
+      ): string => {
+        if (!person?.nameIdentifier[0]) return "Unknown";
+        const ni = person.nameIdentifier[0];
+        return ni.secondaryIdentifier
+          ? `${ni.secondaryIdentifier} ${ni.primaryIdentifier}`
+          : ni.primaryIdentifier;
+      };
+
+      const origPerson = message.originator.originatorPersons[0];
+      const benePerson = message.beneficiary.beneficiaryPersons[0];
+
       const data: TravelRuleData = {
         originator: {
-          name:
-            message.originator.originatorPersons[0]?.naturalPerson?.name ??
-            message.originator.originatorPersons[0]?.legalPerson?.name ??
-            "Unknown",
+          name: extractName(origPerson?.naturalPerson ?? origPerson?.legalPerson),
           walletAddress: message.originator.accountNumber[0] ?? "",
-          physicalAddress:
-            message.originator.originatorPersons[0]?.naturalPerson
-              ?.geographicAddress,
-          nationalId:
-            message.originator.originatorPersons[0]?.naturalPerson?.nationalId,
+          physicalAddress: origPerson?.naturalPerson?.geographicAddress,
+          nationalId: origPerson?.naturalPerson?.nationalId,
         },
         beneficiary: {
-          name:
-            message.beneficiary.beneficiaryPersons[0]?.naturalPerson?.name ??
-            message.beneficiary.beneficiaryPersons[0]?.legalPerson?.name ??
-            "Unknown",
+          name: extractName(benePerson?.naturalPerson ?? benePerson?.legalPerson),
           walletAddress: message.beneficiary.accountNumber[0] ?? "",
         },
-        amountUsd: Number.parseFloat(message.transactionAmount),
+        amountUsd: Number.parseFloat(message.transactionAmountUsd ?? message.transactionAmount),
         asset: message.transactionAsset,
         chain: message.transactionChain,
         direction: "outgoing",

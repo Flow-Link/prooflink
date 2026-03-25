@@ -18,7 +18,14 @@ type WsEventType =
   | "invoice.created"
   | "invoice.paid"
   | "invoice.state_changed"
-  | "receipt.anchored";
+  | "receipt.anchored"
+  | "escrow.created"
+  | "escrow.funded"
+  | "escrow.activated"
+  | "escrow.completed"
+  | "escrow.disputed"
+  | "escrow.refunded"
+  | "escrow.expired";
 
 interface WsClient {
   id: string;
@@ -55,6 +62,13 @@ const VALID_EVENTS: WsEventType[] = [
   "invoice.paid",
   "invoice.state_changed",
   "receipt.anchored",
+  "escrow.created",
+  "escrow.funded",
+  "escrow.activated",
+  "escrow.completed",
+  "escrow.disputed",
+  "escrow.refunded",
+  "escrow.expired",
 ];
 
 // ---------------------------------------------------------------------------

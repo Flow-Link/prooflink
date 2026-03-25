@@ -1,68 +1,38 @@
 import { randomUUID } from "node:crypto";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import type { VerifiableCredential } from "@flowlink/core";
 import { formatMcpError } from "../errors.js";
-import { kyaVerifier } from "../context.js";
+import { lookupAgent } from "../agent-registry.js";
 
 function generateReceiptId(): string {
   return `kya_${randomUUID().replace(/-/g, "")}`;
-}
-
-/**
- * Build a minimal W3C Verifiable Credential from the MCP tool params.
- * When a real VC is not provided by the caller, we construct a synthetic one
- * so that KYAVerifier can still run its structural + delegation checks.
- */
-function buildSyntheticCredential(
-  agentId: string,
-  agentWallet?: string,
-  operatorDid?: string,
-): VerifiableCredential {
-  return {
-    "@context": [
-      "https://www.w3.org/2018/credentials/v1",
-      "https://flowlink.io/kya/v1",
-    ],
-    type: ["VerifiableCredential", "KYACredential"],
-    issuer: operatorDid ?? "did:web:flowlink.io",
-    issuanceDate: new Date().toISOString(),
-    credentialSubject: {
-      id: agentId,
-      walletAddress: agentWallet ?? "",
-      delegationScope: {
-        expiresAt: new Date(
-          Date.now() + 365 * 24 * 60 * 60 * 1000,
-        ).toISOString(),
-      },
-    },
-  };
 }
 
 export function registerVerifyKya(server: McpServer): void {
   server.tool(
     "verify_kya",
     [
-      "Verify an AI agent's identity, authorization, and compliance standing via ERC-8004 registry.",
-      "Checks operator identity, spending authorization scope, and FlowLink validation score.",
+      "Verify an AI agent's identity, authorization, and compliance standing via the FlowLink registry.",
+      "Checks whether the agent exists in the registry with a valid KYA credential,",
+      "is not expired, and has an active compliance standing.",
       "",
       "Example usage:",
       '  verify_kya({ agent_id: "agent_001", check_spending_limits: true })',
       "",
       "Use before accepting payment from or delegating tasks to an unknown agent.",
-      "Returns trust score (0-100), operator sanctions status, and spending limits.",
+      "Returns trust score (0-100) derived from complianceScore, operator status, and spending limits.",
     ].join("\n"),
     {
       agent_id: z
         .string()
         .describe(
-          "ERC-8004 agent identifier in format {namespace}:{chainId}:{identityRegistry} or raw tokenId.",
+          "Agent identifier — accepts agentId, DID, or wallet address.",
         ),
       agent_wallet: z
         .string()
         .optional()
         .describe(
-          "Agent's on-chain wallet address. Used to cross-verify against ERC-8004 agentWallet field.",
+          "Agent's on-chain wallet address. Used to cross-verify against registry record.",
         ),
       operator_did: z
         .string()
@@ -74,63 +44,100 @@ export function registerVerifyKya(server: McpServer): void {
         .boolean()
         .default(true)
         .describe(
-          "If true, retrieve and return the agent's authorized spending limits from ERC-8004 registration.",
+          "If true, retrieve and return the agent's authorized spending limits from registry.",
         ),
     },
     async (params) => {
       try {
         const receiptId = generateReceiptId();
+        const start = Date.now();
 
-        // Build a synthetic VC from the MCP params and run real verification
-        const credential = buildSyntheticCredential(
-          params.agent_id,
-          params.agent_wallet,
-          params.operator_did,
-        );
+        // Look up agent in the FlowLink registry instead of fabricating a credential
+        const lookup = lookupAgent(params.agent_id);
 
-        const verification = await kyaVerifier.verifyCredential(credential);
+        if (!lookup.found || !lookup.agent) {
+          const result = {
+            verified: false,
+            trust_score: 0,
+            agent_metadata: null,
+            operator_status: null,
+            spending_limits: undefined as Record<string, unknown> | undefined,
+            verification_errors: lookup.errors,
+            latency_ms: Date.now() - start,
+            validation_evidence: null,
+            receipt_id: receiptId,
+          };
 
-        // Map the core verification result to the MCP response structure
-        const trustScore = verification.verified ? 87 : 15;
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: `KYA verification FAILED for agent ${params.agent_id}. ${lookup.errors.join("; ")}`,
+              },
+            ],
+            structuredContent: result,
+            isError: true,
+          };
+        }
+
+        const agent = lookup.agent;
+        const errors: string[] = [...lookup.errors];
+
+        // Cross-verify wallet address if provided
+        if (
+          params.agent_wallet &&
+          agent.walletAddress.toLowerCase() !==
+            params.agent_wallet.toLowerCase()
+        ) {
+          errors.push(
+            `Wallet mismatch: registry has ${agent.walletAddress}, caller provided ${params.agent_wallet}`,
+          );
+        }
+
+        // Cross-verify operator DID if provided
+        if (
+          params.operator_did &&
+          agent.operator.did &&
+          agent.operator.did !== params.operator_did
+        ) {
+          errors.push(
+            `Operator DID mismatch: registry has ${agent.operator.did}, caller provided ${params.operator_did}`,
+          );
+        }
+
+        const verified = lookup.credentialValid && errors.length === 0;
+
+        // Trust score derived from actual complianceScore in registry, not hardcoded
+        const trustScore = verified ? agent.complianceScore : 0;
 
         const result = {
-          verified: verification.verified,
+          verified,
           trust_score: trustScore,
           agent_metadata: {
-            name: `Agent ${params.agent_id.slice(0, 8)}`,
-            type: "semi-autonomous" as const,
-            operator: params.operator_did ?? "unknown",
-            registered_at: new Date(
-              Date.now() - 30 * 24 * 60 * 60 * 1000,
-            ).toISOString(),
-            x402_support: true,
-            erc8004_registered: verification.erc8004Registered,
-            credential_expired: verification.credentialExpired,
-            delegation_valid: verification.delegationValid,
+            name: agent.name,
+            type: agent.type,
+            operator: agent.operator.did ?? "unknown",
+            registered_at: agent.registeredAt,
+            x402_support: agent.x402Support,
+            erc8004_registered: true,
+            credential_expired: !lookup.credentialValid,
+            delegation_valid:
+              new Date(agent.delegationScope.expiresAt) > new Date(),
           },
           operator_status: {
-            sanctions_cleared: true,
-            kyc_verified: verification.verified,
+            sanctions_cleared: agent.operator.sanctionsCleared,
+            kyc_verified: agent.operator.kycVerified,
           },
           spending_limits: params.check_spending_limits
-            ? verification.delegationScope
-              ? {
-                  per_transaction_usd:
-                    verification.delegationScope.maxTransactionAmount ??
-                    10_000,
-                  daily_usd: 50_000,
-                  allowed_chains: ["base", "ethereum", "polygon"],
-                  allowed_currencies: ["USDC", "USDT"],
-                }
-              : {
-                  per_transaction_usd: 10_000,
-                  daily_usd: 50_000,
-                  allowed_chains: ["base", "ethereum", "polygon"],
-                  allowed_currencies: ["USDC", "USDT"],
-                }
+            ? {
+                per_transaction_usd: agent.delegationScope.maxTransactionUsd,
+                daily_usd: agent.delegationScope.dailyLimitUsd,
+                allowed_chains: agent.delegationScope.allowedChains,
+                allowed_currencies: agent.delegationScope.allowedCurrencies,
+              }
             : undefined,
-          verification_errors: verification.errors,
-          latency_ms: verification.latencyMs,
+          verification_errors: errors,
+          latency_ms: Date.now() - start,
           validation_evidence: `https://base.easscan.org/attestation/view/${receiptId}`,
           receipt_id: receiptId,
         };
@@ -140,7 +147,7 @@ export function registerVerifyKya(server: McpServer): void {
             content: [
               {
                 type: "text" as const,
-                text: `KYA verification FAILED for agent ${params.agent_id}. ${verification.errors.join("; ")}`,
+                text: `KYA verification FAILED for agent ${params.agent_id}. ${errors.join("; ")}`,
               },
             ],
             structuredContent: result,

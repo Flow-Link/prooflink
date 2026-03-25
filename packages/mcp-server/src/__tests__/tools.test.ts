@@ -39,10 +39,16 @@ vi.mock("../context.js", () => {
   };
 });
 
+vi.mock("../agent-registry.js", () => {
+  const lookupAgent = vi.fn();
+  return { lookupAgent, registerAgent: vi.fn(), resetRegistry: vi.fn(), clearRegistry: vi.fn(), getAllAgents: vi.fn(() => []) };
+});
+
 // ── Import server AND mocked context AFTER mocks are wired ───────────────────
 import { createFlowLinkMCPServer } from "../server.js";
 import type { FlowLinkMCPHandle } from "../server.js";
 import * as ctx from "../context.js";
+import * as agentRegistry from "../agent-registry.js";
 
 // Typed handles to the mock functions — set after the module is imported.
 // These are the same vi.fn() instances created inside the vi.mock() factory.
@@ -52,6 +58,7 @@ const mockVerifyCredential = ctx.kyaVerifier
   .verifyCredential as ReturnType<typeof vi.fn>;
 const mockCalculateRiskScore = ctx.amlScorer
   .calculateRiskScore as ReturnType<typeof vi.fn>;
+const mockLookupAgent = agentRegistry.lookupAgent as ReturnType<typeof vi.fn>;
 
 // ── Shared fixtures ──────────────────────────────────────────────────────────
 
@@ -110,6 +117,46 @@ const FAILED_KYA_RESULT = {
   delegationValid: false,
   errors: ["Issuer did:web:unknown.example is not in the trusted issuers list"],
   latencyMs: 8,
+};
+
+/** Registry lookup result for a known, valid agent. */
+const FOUND_AGENT_LOOKUP = {
+  found: true,
+  agent: {
+    agentId: "agent_001",
+    did: "did:flowlink:agent_001",
+    name: "PaymentBot-v2",
+    type: "semi-autonomous" as const,
+    walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f2bD68",
+    operator: {
+      name: "Acme Corp",
+      did: "did:web:acme.com",
+      sanctionsCleared: true,
+      kycVerified: true,
+    },
+    delegationScope: {
+      maxTransactionUsd: 10_000,
+      dailyLimitUsd: 50_000,
+      allowedChains: ["base", "ethereum"],
+      allowedCurrencies: ["USDC"],
+      expiresAt: new Date(Date.now() + 365 * 86_400_000).toISOString(),
+    },
+    kyaCredentialHash: "sha256:a1b2c3d4e5f6",
+    complianceScore: 87,
+    x402Support: true,
+    status: "ACTIVE" as const,
+    registeredAt: new Date(Date.now() - 30 * 86_400_000).toISOString(),
+  },
+  credentialValid: true,
+  errors: [],
+};
+
+/** Registry lookup result for an unknown agent. */
+const NOT_FOUND_AGENT_LOOKUP = {
+  found: false,
+  agent: null,
+  credentialValid: false,
+  errors: ['Agent "agent_unknown" not found in registry'],
 };
 
 /** AML score result for a low-risk address. */
@@ -183,6 +230,7 @@ describe("FlowLink MCP Tools (unit)", () => {
     mockScreenAddress.mockResolvedValue(CLEARED_SCREEN_RESULT);
     mockVerifyCredential.mockResolvedValue(VERIFIED_KYA_RESULT);
     mockCalculateRiskScore.mockReturnValue(LOW_RISK_AML_RESULT);
+    mockLookupAgent.mockReturnValue(FOUND_AGENT_LOOKUP);
   });
 
   // ── register_agent ────────────────────────────────────────────────────────
@@ -435,23 +483,22 @@ describe("FlowLink MCP Tools (unit)", () => {
       expect(data.spending_limits).toBeUndefined();
     });
 
-    it("reflects operator_did in agent_metadata when supplied", async () => {
+    it("reflects operator_did from registry in agent_metadata", async () => {
       const result = await client.callTool({
         name: "verify_kya",
         arguments: {
-          agent_id: "agent_xyz",
-          operator_did: "did:web:mycompany.com",
+          agent_id: "agent_001",
         },
       });
 
       expect(result.isError).toBeFalsy();
       const data = getStructured(result);
       const meta = data.agent_metadata as Record<string, unknown>;
-      expect(meta.operator).toBe("did:web:mycompany.com");
+      expect(meta.operator).toBe("did:web:acme.com");
     });
 
-    it("returns isError:true and trust_score 15 when kyaVerifier returns verified:false", async () => {
-      mockVerifyCredential.mockResolvedValueOnce(FAILED_KYA_RESULT);
+    it("returns isError:true and trust_score 0 when agent not found in registry", async () => {
+      mockLookupAgent.mockReturnValueOnce(NOT_FOUND_AGENT_LOOKUP);
 
       const result = await client.callTool({
         name: "verify_kya",
@@ -461,16 +508,18 @@ describe("FlowLink MCP Tools (unit)", () => {
       expect(result.isError).toBe(true);
       const data = getStructured(result);
       expect(data.verified).toBe(false);
-      expect(data.trust_score).toBe(15);
+      expect(data.trust_score).toBe(0);
       const text = getText(result);
       expect(text).toContain("FAILED");
       expect(text).toContain("agent_unknown");
     });
 
     it("propagates verification errors in structured output", async () => {
-      mockVerifyCredential.mockResolvedValueOnce({
-        ...FAILED_KYA_RESULT,
-        errors: ["Issuer not trusted", "Delegation expired"],
+      mockLookupAgent.mockReturnValueOnce({
+        found: true,
+        agent: { ...FOUND_AGENT_LOOKUP.agent, kyaCredentialHash: null, status: "SUSPENDED" },
+        credentialValid: false,
+        errors: ["Agent has no KYA credential hash", "Agent status is SUSPENDED, not ACTIVE"],
       });
 
       const result = await client.callTool({
@@ -481,14 +530,14 @@ describe("FlowLink MCP Tools (unit)", () => {
       expect(result.isError).toBe(true);
       const data = getStructured(result);
       const errors = data.verification_errors as string[];
-      expect(errors).toContain("Issuer not trusted");
-      expect(errors).toContain("Delegation expired");
+      expect(errors).toContain("Agent has no KYA credential hash");
+      expect(errors).toContain("Agent status is SUSPENDED, not ACTIVE");
     });
 
-    it("returns error when kyaVerifier throws", async () => {
-      mockVerifyCredential.mockRejectedValueOnce(
-        new Error("Connection refused"),
-      );
+    it("returns error when lookupAgent throws", async () => {
+      mockLookupAgent.mockImplementationOnce(() => {
+        throw new Error("Connection refused");
+      });
 
       const result = await client.callTool({
         name: "verify_kya",
@@ -869,25 +918,26 @@ describe("FlowLink MCP Tools (unit)", () => {
       expect(summary.travel_rule_submitted).toBe(false);
     });
 
-    it("runs KYA verification when recipient has agent_id", async () => {
+    it("runs KYA verification via registry when recipient has agent_id", async () => {
       const result = await client.callTool({
         name: "pay_with_compliance",
         arguments: {
-          recipient: { wallet_address: "0xAgent456", agent_id: "agent_test" },
+          recipient: { wallet_address: "0xAgent456", agent_id: "agent_001" },
           amount: AMOUNT,
           chain: "base",
         },
       });
 
       expect(result.isError).toBeFalsy();
-      expect(mockVerifyCredential).toHaveBeenCalledTimes(1);
+      expect(mockLookupAgent).toHaveBeenCalledTimes(1);
+      expect(mockLookupAgent).toHaveBeenCalledWith("agent_001");
       const data = getStructured(result);
       const summary = data.compliance_summary as Record<string, unknown>;
       expect(summary.kya_verified).toBe(true);
     });
 
     it("blocks payment when KYA fails and require_kya is true", async () => {
-      mockVerifyCredential.mockResolvedValueOnce(FAILED_KYA_RESULT);
+      mockLookupAgent.mockReturnValueOnce(NOT_FOUND_AGENT_LOOKUP);
 
       const result = await client.callTool({
         name: "pay_with_compliance",
@@ -906,7 +956,7 @@ describe("FlowLink MCP Tools (unit)", () => {
     });
 
     it("does not block payment when KYA fails but require_kya is false", async () => {
-      mockVerifyCredential.mockResolvedValueOnce(FAILED_KYA_RESULT);
+      mockLookupAgent.mockReturnValueOnce(NOT_FOUND_AGENT_LOOKUP);
 
       const result = await client.callTool({
         name: "pay_with_compliance",
@@ -954,7 +1004,7 @@ describe("FlowLink MCP Tools (unit)", () => {
       });
 
       expect(result.isError).toBeFalsy();
-      expect(mockVerifyCredential).not.toHaveBeenCalled();
+      expect(mockLookupAgent).not.toHaveBeenCalled();
       const data = getStructured(result);
       const summary = data.compliance_summary as Record<string, unknown>;
       expect(summary.kya_verified).toBe(true);

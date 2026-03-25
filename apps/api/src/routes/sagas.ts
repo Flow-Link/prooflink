@@ -60,28 +60,28 @@ const ListSagasQuery = z.object({
 
 export const sagaRoutes = new Hono();
 
-// POST /sagas — create saga definition
+// POST /sagas — create saga definition (tenant-isolated)
 sagaRoutes.post("/", requireScope("write"), validate({ body: CreateSagaRequest }), async (c) => {
   const body = c.get("validatedBody") as z.infer<typeof CreateSagaRequest>;
-  const auth = c.get("auth") as AuthContext | undefined;
+  const auth = c.get("auth") as AuthContext;
 
   const saga = await createSaga({
     name: body.name,
     steps: body.steps,
     traceId: body.traceId,
-    apiKeyId: auth?.apiKeyId,
+    apiKeyId: auth.apiKeyId,
   });
 
   return c.json({ success: true, data: saga }, 201);
 });
 
-// POST /sagas/:id/execute — execute saga
+// POST /sagas/:id/execute — execute saga (tenant-isolated)
 sagaRoutes.post("/:id/execute", requireScope("write"), validate({ params: SagaIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof SagaIdParams>;
-  const auth = c.get("auth") as AuthContext | undefined;
+  const auth = c.get("auth") as AuthContext;
 
   try {
-    const saga = await executeSaga(id, auth?.apiKeyId);
+    const saga = await executeSaga(id, auth.apiKeyId);
     return c.json({ success: true, data: saga });
   } catch (err: unknown) {
     if (err instanceof SagaNotFoundError) {
@@ -94,13 +94,13 @@ sagaRoutes.post("/:id/execute", requireScope("write"), validate({ params: SagaId
   }
 });
 
-// GET /sagas/:id — get saga status
+// GET /sagas/:id — get saga status (tenant-isolated)
 sagaRoutes.get("/:id", validate({ params: SagaIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof SagaIdParams>;
-  const auth = c.get("auth") as AuthContext | undefined;
+  const auth = c.get("auth") as AuthContext;
 
   try {
-    const saga = await getSagaStatus(id, auth?.apiKeyId);
+    const saga = await getSagaStatus(id, auth.apiKeyId);
     return c.json({ success: true, data: saga });
   } catch (err: unknown) {
     if (err instanceof SagaNotFoundError) {
@@ -110,13 +110,13 @@ sagaRoutes.get("/:id", validate({ params: SagaIdParams }), async (c) => {
   }
 });
 
-// POST /sagas/:id/cancel — cancel and compensate
+// POST /sagas/:id/cancel — cancel and compensate (tenant-isolated)
 sagaRoutes.post("/:id/cancel", requireScope("write"), validate({ params: SagaIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof SagaIdParams>;
-  const auth = c.get("auth") as AuthContext | undefined;
+  const auth = c.get("auth") as AuthContext;
 
   try {
-    const saga = await cancelSaga(id, auth?.apiKeyId);
+    const saga = await cancelSaga(id, auth.apiKeyId);
     return c.json({ success: true, data: saga });
   } catch (err: unknown) {
     if (err instanceof SagaNotFoundError) {
@@ -129,19 +129,18 @@ sagaRoutes.post("/:id/cancel", requireScope("write"), validate({ params: SagaIdP
   }
 });
 
-// GET /sagas — list sagas
+// GET /sagas — list sagas (tenant-isolated)
 sagaRoutes.get("/", validate({ query: ListSagasQuery }), async (c) => {
   const query = c.get("validatedQuery") as z.infer<typeof ListSagasQuery>;
-  const auth = c.get("auth") as AuthContext | undefined;
+  const auth = c.get("auth") as AuthContext;
   const db = getDb();
 
-  const conditions = [];
-  if (auth?.apiKeyId) conditions.push(eq(sagas.apiKeyId, auth.apiKeyId));
+  const conditions = [eq(sagas.apiKeyId, auth.apiKeyId)];
   if (query.status) {
     conditions.push(eq(sagas.status, query.status));
   }
 
-  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+  const whereClause = and(...conditions);
 
   const [rows, countResult] = await Promise.all([
     db

@@ -27,17 +27,24 @@ export interface TravelRuleResult {
   latencyMs: number;
 }
 
+/** IVMS101 §7.1 name identifier structure. */
+export interface IVMS101NameIdentifier {
+  primaryIdentifier: string;
+  secondaryIdentifier?: string;
+  nameIdentifierType: "LEGL" | "BIRT" | "MAID" | "TRAD";
+}
+
 /** IVMS101 message structure for Travel Rule transmission. */
 export interface IVMS101Message {
   originator: {
     originatorPersons: Array<{
       naturalPerson?: {
-        name: string;
+        nameIdentifier: IVMS101NameIdentifier[];
         geographicAddress?: string;
         nationalId?: string;
       };
       legalPerson?: {
-        name: string;
+        nameIdentifier: IVMS101NameIdentifier[];
         lei?: string;
       };
     }>;
@@ -46,21 +53,26 @@ export interface IVMS101Message {
   beneficiary: {
     beneficiaryPersons: Array<{
       naturalPerson?: {
-        name: string;
+        nameIdentifier: IVMS101NameIdentifier[];
       };
       legalPerson?: {
-        name: string;
+        nameIdentifier: IVMS101NameIdentifier[];
       };
     }>;
     accountNumber: string[];
   };
   originatingVASP?: {
     legalPerson: {
-      name: string;
+      nameIdentifier: IVMS101NameIdentifier[];
       lei?: string;
     };
   };
+  /** Native asset amount (not USD-converted). */
   transactionAmount: string;
+  /** Currency/token of transactionAmount. */
+  transactionAmountCurrency: string;
+  /** USD equivalent for threshold checks. */
+  transactionAmountUsd?: string;
   transactionAsset: string;
   transactionChain: string;
 }
@@ -334,14 +346,35 @@ export class TravelRuleChecker {
 
   /**
    * Build an IVMS101-compliant message from TravelRuleData.
+   *
+   * Per IVMS101 §7.1, names use structured `nameIdentifier` arrays rather
+   * than flat strings. Transaction amount is expressed in the native asset
+   * currency, with a separate USD field for threshold reference.
    */
-  private buildIVMS101Message(data: TravelRuleData): IVMS101Message {
+  buildIVMS101Message(data: TravelRuleData): IVMS101Message {
+    const vaspName = process.env["FLOWLINK_VASP_NAME"] ?? "FlowLink Compliance Service";
+    const vaspLei = process.env["FLOWLINK_VASP_LEI"];
+
+    const parseNameIdentifier = (fullName: string | undefined): IVMS101NameIdentifier[] => {
+      if (!fullName || fullName === "Unknown") {
+        return [{ primaryIdentifier: "Unknown", nameIdentifierType: "LEGL" }];
+      }
+      const parts = fullName.trim().split(/\s+/);
+      const primaryIdentifier = parts.length > 1 ? parts[parts.length - 1]! : parts[0]!;
+      const secondaryIdentifier = parts.length > 1 ? parts.slice(0, -1).join(" ") : undefined;
+      return [{
+        primaryIdentifier,
+        secondaryIdentifier,
+        nameIdentifierType: "LEGL",
+      }];
+    };
+
     return {
       originator: {
         originatorPersons: [
           {
             naturalPerson: {
-              name: data.originator.name ?? "Unknown",
+              nameIdentifier: parseNameIdentifier(data.originator.name),
               geographicAddress: data.originator.physicalAddress,
               nationalId: data.originator.nationalId,
             },
@@ -353,7 +386,7 @@ export class TravelRuleChecker {
         beneficiaryPersons: [
           {
             naturalPerson: {
-              name: data.beneficiary.name ?? "Unknown",
+              nameIdentifier: parseNameIdentifier(data.beneficiary.name),
             },
           },
         ],
@@ -361,10 +394,13 @@ export class TravelRuleChecker {
       },
       originatingVASP: {
         legalPerson: {
-          name: "FlowLink Compliance Service",
+          nameIdentifier: [{ primaryIdentifier: vaspName, nameIdentifierType: "LEGL" }],
+          lei: vaspLei,
         },
       },
-      transactionAmount: data.amountUsd.toString(),
+      transactionAmount: data.nativeAmount ?? data.amountUsd.toString(),
+      transactionAmountCurrency: data.asset,
+      transactionAmountUsd: data.amountUsd.toString(),
       transactionAsset: data.asset,
       transactionChain: data.chain,
     };

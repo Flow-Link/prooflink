@@ -97,6 +97,28 @@ const ERC8004_REGISTRY_ABI = [
  *
  * Uses an LRU cache for verified credentials to avoid repeated on-chain lookups.
  */
+/** CAIP-2 chain ID to viem chain config mapping */
+const CHAIN_MAP: Record<string, string> = {
+  "eip155:1": "mainnet",
+  "eip155:8453": "base",
+  "eip155:137": "polygon",
+  "eip155:42161": "arbitrum",
+  "eip155:10": "optimism",
+  "eip155:11155111": "sepolia",
+  "eip155:84532": "baseSepolia",
+  // Short aliases
+  ethereum: "mainnet",
+  base: "base",
+  polygon: "polygon",
+  arbitrum: "arbitrum",
+  optimism: "optimism",
+  sepolia: "sepolia",
+  mainnet: "mainnet",
+};
+
+/** Cache for viem public clients keyed by chain name */
+const viemClientCache = new Map<string, unknown>();
+
 export class KYAVerifier {
   private readonly config: ProofLinkConfig;
   private readonly cache: LRUCache<KYAVerificationResult>;
@@ -138,6 +160,7 @@ export class KYAVerifier {
     credential: VerifiableCredential,
     transactionAmountUsd?: number,
     jurisdiction?: string,
+    chain?: string,
   ): Promise<KYAVerificationResult> {
     const start = Date.now();
     const errors: string[] = [];
@@ -184,6 +207,7 @@ export class KYAVerifier {
       try {
         erc8004Registered = await this.checkERC8004Registration(
           subject.walletAddress ?? subjectId,
+          chain,
         );
       } catch (error) {
         errors.push(
@@ -258,21 +282,56 @@ export class KYAVerifier {
 
   /**
    * Check if a wallet address is registered in the ERC-8004 Identity Registry.
-   * Makes an eth_call to the registry contract.
+   * Makes an eth_call to the registry contract on the appropriate chain.
+   *
+   * @param walletAddress - Address to check
+   * @param chain - CAIP-2 chain ID or short name (e.g. "base", "ethereum", "eip155:8453")
    */
-  async checkERC8004Registration(walletAddress: string): Promise<boolean> {
+  async checkERC8004Registration(
+    walletAddress: string,
+    chain?: string,
+  ): Promise<boolean> {
     if (!this.config.rpcUrl || !this.config.erc8004RegistryAddress) {
       return false;
     }
 
-    // Use viem for the RPC call
     const { createPublicClient, http } = await import("viem");
-    const { mainnet } = await import("viem/chains");
+    const chains = await import("viem/chains");
 
-    const client = createPublicClient({
-      chain: mainnet,
-      transport: http(this.config.rpcUrl, { timeout: 4_000 }),
-    });
+    // Resolve chain config from CAIP-2 ID or short name
+    const chainKey = chain ? (CHAIN_MAP[chain] ?? CHAIN_MAP[chain.toLowerCase()]) : "mainnet";
+
+    if (!chainKey) {
+      console.warn(
+        `[kya-verifier] Unknown chain "${chain}", skipping ERC-8004 check`,
+      );
+      return false;
+    }
+
+    const viemChain = (chains as Record<string, unknown>)[chainKey] as
+      | Parameters<typeof createPublicClient>[0]["chain"]
+      | undefined;
+
+    if (!viemChain) {
+      console.warn(
+        `[kya-verifier] No viem chain config for "${chainKey}", skipping ERC-8004 check`,
+      );
+      return false;
+    }
+
+    // Use cached client per chain to avoid recreating on every call
+    const cacheKey = `${chainKey}:${this.config.rpcUrl}`;
+    let client = viemClientCache.get(cacheKey) as ReturnType<
+      typeof createPublicClient
+    > | undefined;
+
+    if (!client) {
+      client = createPublicClient({
+        chain: viemChain,
+        transport: http(this.config.rpcUrl, { timeout: 4_000 }),
+      });
+      viemClientCache.set(cacheKey, client);
+    }
 
     try {
       const result = await client.readContract({
@@ -284,7 +343,7 @@ export class KYAVerifier {
       return result as boolean;
     } catch (error) {
       throw new Error(
-        `ERC-8004 registry call failed: ${error instanceof Error ? error.message : String(error)}`,
+        `ERC-8004 registry call failed on ${chainKey}: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }

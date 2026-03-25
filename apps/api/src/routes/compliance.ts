@@ -11,8 +11,8 @@ import { writeAuditLog } from "../utils/audit.js";
 import { logger } from "../utils/logger.js";
 import { convertToUsd } from "../utils/price-guard.js";
 import { emitComplianceEvent, emitSanctionsAlert } from "../utils/events.js";
-import { AMLScorer, loadConfig } from "@flowlink/core";
-import type { TransactionContext } from "@flowlink/core";
+import { AMLScorer, loadConfig, TravelRuleChecker } from "@flowlink/core";
+import type { TransactionContext, TravelRuleResult } from "@flowlink/core";
 import { checkDelegationScope } from "../utils/spend-enforcement.js";
 import { validateCrossChainSpend } from "../services/policy-sync.js";
 import { screenAddress } from "../services/screening.js";
@@ -47,6 +47,7 @@ import {
 // ---------------------------------------------------------------------------
 const proofLinkConfig = loadConfig();
 const amlScorer = new AMLScorer(proofLinkConfig);
+const travelRuleChecker = new TravelRuleChecker(proofLinkConfig);
 
 // ---------------------------------------------------------------------------
 // Request schemas
@@ -444,6 +445,43 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
     status,
   });
 
+  // Execute Travel Rule transmission when required (COMP-3 fix)
+  let travelRuleStatus: string = "NOT_REQUIRED";
+  let travelRuleResult: TravelRuleResult | null = null;
+
+  if (travelRuleApplies) {
+    try {
+      const travelRuleData = {
+        originator: {
+          name: senderOriginator?.controllingEntityName,
+          walletAddress: parsed.sender.address,
+          agentId: parsed.sender.agentDID,
+          vaspDid: parsed.sender.agentDID,
+        },
+        beneficiary: {
+          name: receiverOriginator?.controllingEntityName,
+          walletAddress: parsed.receiver.address,
+          agentId: parsed.receiver.agentDID,
+          vaspDid: parsed.receiver.agentDID,
+        },
+        amountUsd,
+        nativeAmount: parsed.amount,
+        asset: parsed.asset,
+        chain: parsed.sender.chain,
+        direction: "outgoing" as const,
+        preTransaction: false,
+      };
+      travelRuleResult = await travelRuleChecker.checkTravelRule(travelRuleData);
+      travelRuleStatus = travelRuleResult.status;
+    } catch (err) {
+      logger.error("Travel Rule transmission failed", {
+        error: err instanceof Error ? err.message : String(err),
+        checkId: check.id,
+      });
+      travelRuleStatus = "FAILED";
+    }
+  }
+
   const [receipt] = await db
     .insert(complianceReceipts)
     .values({
@@ -451,7 +489,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
       receiptHash,
       overallStatus: status,
       riskScore,
-      travelRuleStatus: travelRuleApplies ? "REQUIRED_PENDING" : "NOT_REQUIRED",
+      travelRuleStatus,
       commitmentHash: commitment.commitmentHash,
       commitmentSalt: commitment.salt,
       signature,
@@ -587,7 +625,8 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
         receiptHash,
         commitmentHash: commitment.commitmentHash,
         checks: checksPerformed,
-        travelRuleStatus: travelRuleApplies ? "REQUIRED_PENDING" : "NOT_REQUIRED",
+        travelRuleStatus,
+        travelRuleReferenceId: travelRuleResult?.referenceId ?? null,
         totalDurationMs,
         traceId,
         parentTraceId,

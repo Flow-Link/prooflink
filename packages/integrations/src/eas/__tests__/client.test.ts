@@ -33,7 +33,7 @@ const EAS_CONFIG: EASConfig = {
 const COMPLIANCE_RECEIPT: ComplianceReceipt = {
   receiptId: "rcpt_eas_001",
   checksPerformed: [],
-  overallStatus: "COMPLIANT",
+  overallStatus: "APPROVED",
   riskScore: 5,
   travelRuleStatus: "NOT_REQUIRED",
   signature: "0xsignature",
@@ -390,7 +390,7 @@ describe("encodeReceiptForAttestation", () => {
   const BASE_RECEIPT: ComplianceReceipt = {
     receiptId: "rcpt_enc_001",
     checksPerformed: [],
-    overallStatus: "COMPLIANT",
+    overallStatus: "APPROVED",
     riskScore: 10,
     travelRuleStatus: "NOT_REQUIRED",
     signature: "0xsig",
@@ -509,7 +509,7 @@ describe("decodeReceiptFromAttestation", () => {
     const receipt: ComplianceReceipt = {
       receiptId: "rcpt_rt_001",
       checksPerformed: [],
-      overallStatus: "COMPLIANT",
+      overallStatus: "APPROVED",
       riskScore: 42,
       travelRuleStatus: "TRANSMITTED",
       signature: "0xsig",
