@@ -14,6 +14,7 @@ import { emitComplianceEvent, emitSanctionsAlert } from "../utils/events.js";
 import { AMLScorer, loadConfig } from "@flowlink/core";
 import type { TransactionContext } from "@flowlink/core";
 import { checkDelegationScope } from "../utils/spend-enforcement.js";
+import { validateCrossChainSpend } from "../services/policy-sync.js";
 import { screenAddress } from "../services/screening.js";
 import {
   createComplianceCommitment,
@@ -33,6 +34,13 @@ import {
 } from "../services/travel-rule-config.js";
 import type { AgentOriginatorInfo } from "../services/travel-rule-config.js";
 import { recordUsage } from "../services/billing.js";
+import {
+  translatePermission,
+  validatePermission,
+  type PermissionProtocol,
+  type UnifiedPermission,
+  type PermissionValidationResult,
+} from "../services/permission-translator.js";
 
 // ---------------------------------------------------------------------------
 // AML Scorer (singleton — created once with default config)
@@ -65,6 +73,8 @@ const ComplianceCheckRequest = z.object({
   ap2MandateId: z.string().optional(),
   mppSessionId: z.string().optional(),
   acpCheckoutId: z.string().optional(),
+  // Protocol-specific permission data for cross-protocol translation (Gap 13)
+  permissionData: z.record(z.unknown()).optional(),
 });
 type ComplianceCheckRequest = z.infer<typeof ComplianceCheckRequest>;
 
@@ -140,6 +150,34 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
   };
   const protocolCompliance = getProtocolCompliance(protocolCtx);
 
+  // Cross-protocol permission translation (Gap 13)
+  // If the request includes protocol-specific permission data, translate and validate it
+  const PERMISSION_PROTOCOLS = new Set(["x402", "ap2", "mpp", "acp", "erc7715", "erc7710"]);
+  let translatedPermission: UnifiedPermission | null = null;
+  let permissionValidation: PermissionValidationResult | null = null;
+
+  if (parsed.permissionData && PERMISSION_PROTOCOLS.has(parsed.protocol)) {
+    try {
+      translatedPermission = translatePermission(
+        parsed.protocol as PermissionProtocol,
+        parsed.permissionData,
+      );
+      permissionValidation = validatePermission(translatedPermission);
+
+      if (!permissionValidation.valid) {
+        logger.warn("Permission validation failed during compliance check", {
+          protocol: parsed.protocol,
+          errors: permissionValidation.errors,
+        });
+      }
+    } catch (err) {
+      logger.warn("Permission translation failed during compliance check", {
+        protocol: parsed.protocol,
+        error: err instanceof Error ? err.message : "unknown",
+      });
+    }
+  }
+
   const kyaRequired = protocolCompliance.requiresKYA;
 
   // Jurisdiction-aware Travel Rule threshold resolution
@@ -161,7 +199,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
       parsed.receiver.agentDID ? resolveAgentOriginator(parsed.receiver.agentDID) : Promise.resolve(null),
     ]);
 
-  const checksPerformed = [
+  const checksPerformed: Record<string, unknown>[] = [
     {
       checkType: "SANCTIONS_SCREENING",
       target: "sender",
@@ -258,6 +296,18 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
     });
   }
 
+  // Add permission translation check if permission data was provided
+  if (translatedPermission && permissionValidation) {
+    checksPerformed.push({
+      checkType: "PERMISSION_TRANSLATION",
+      target: "transaction",
+      result: permissionValidation.valid ? "PASSED" : "FAILED",
+      provider: "flowlink_permission_translator",
+      performedAt: new Date().toISOString(),
+      durationMs: 1,
+    } as (typeof checksPerformed)[number]);
+  }
+
   // Build transaction context for AML scoring
   const txCtx: TransactionContext = {
     senderAddress: parsed.sender.address,
@@ -296,6 +346,36 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
         performedAt: new Date().toISOString(),
         durationMs: Date.now() - startTime - totalDurationMs,
       });
+    }
+
+    // Cross-chain global spend check — complements the per-agent delegation scope above
+    if (status !== "REJECTED") {
+      const crossChainCheck = await validateCrossChainSpend(
+        parsed.sender.agentDID,
+        parsed.sender.chain,
+        amountUsd,
+      );
+      if (!crossChainCheck.allowed) {
+        status = "REJECTED";
+        delegationScopeReason = crossChainCheck.reason;
+        checksPerformed.push({
+          checkType: "CROSS_CHAIN_SPEND_LIMIT",
+          target: "sender",
+          result: "FAILED",
+          provider: "flowlink_policy_sync",
+          performedAt: new Date().toISOString(),
+          durationMs: Date.now() - startTime - totalDurationMs,
+        });
+      } else {
+        checksPerformed.push({
+          checkType: "CROSS_CHAIN_SPEND_LIMIT",
+          target: "sender",
+          result: "PASSED",
+          provider: "flowlink_policy_sync",
+          performedAt: new Date().toISOString(),
+          durationMs: Date.now() - startTime - totalDurationMs,
+        });
+      }
     }
   }
 

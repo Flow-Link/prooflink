@@ -20,8 +20,13 @@ import { invoiceRoutes } from "./routes/invoices.js";
 import { openapi } from "./routes/openapi.js";
 import { receipts } from "./routes/receipts.js";
 import { reportRoutes } from "./routes/reports.js";
+import { sagaRoutes } from "./routes/sagas.js";
 import { webhookRoutes } from "./routes/webhooks.js";
+import { permissionRoutes } from "./routes/permissions.js";
 import { wsRoutes } from "./routes/ws.js";
+import { discovery, wellKnownAgent } from "./routes/discovery.js";
+import { policyRoutes } from "./routes/policies.js";
+import { streamRoutes } from "./routes/streams.js";
 import { requestIdMiddleware, requestLoggerMiddleware } from "./utils/logger.js";
 
 // ---------------------------------------------------------------------------
@@ -108,6 +113,7 @@ export function createApp(): Hono {
 
   app.route("/", health);
   app.route("/", openapi);
+  app.route("/.well-known", wellKnownAgent);
 
   // ---------------------------------------------------------------------------
   // API v1 — all authenticated routes under /v1/
@@ -125,9 +131,14 @@ export function createApp(): Hono {
   v1.route("/identity", identity);
   v1.route("/receipts", receipts);
   v1.route("/reports", reportRoutes);
+  v1.route("/sagas", sagaRoutes);
   v1.route("/webhooks", webhookRoutes);
   v1.route("/analytics", analytics);
   v1.route("/dashboard", dashboard);
+  v1.route("/discovery", discovery);
+  v1.route("/policies", policyRoutes);
+  v1.route("/streams", streamRoutes);
+  v1.route("/permissions", permissionRoutes);
   v1.route("/ws", wsRoutes);
 
   app.route("/v1", v1);

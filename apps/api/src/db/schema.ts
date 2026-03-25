@@ -233,6 +233,34 @@ export const disputes = pgTable("disputes", {
 ]);
 
 // ---------------------------------------------------------------------------
+// Payment Streams (event-driven streaming payments)
+// ---------------------------------------------------------------------------
+
+export const paymentStreams = pgTable("payment_streams", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  payerDid: varchar("payer_did", { length: 256 }).notNull(),
+  payeeDid: varchar("payee_did", { length: 256 }).notNull(),
+  model: varchar("model", { length: 20 }).notNull(), // PER_REQUEST, PER_SECOND, PER_TOKEN, PER_RESULT, MILESTONE
+  ratePerUnit: numeric("rate_per_unit", { precision: 38, scale: 18 }).notNull(),
+  unit: varchar("unit", { length: 64 }).notNull(),
+  totalBudget: numeric("total_budget", { precision: 38, scale: 18 }).notNull(),
+  spent: numeric("spent", { precision: 38, scale: 18 }).notNull().default("0"),
+  status: varchar("status", { length: 20 }).notNull().default("ACTIVE"), // ACTIVE, PAUSED, SETTLED, EXHAUSTED
+  traceId: varchar("trace_id", { length: 64 }),
+  startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  settledAt: timestamp("settled_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index("payment_streams_status_idx").on(table.status),
+  index("payment_streams_payer_did_idx").on(table.payerDid),
+  index("payment_streams_payee_did_idx").on(table.payeeDid),
+  index("payment_streams_model_idx").on(table.model),
+  index("payment_streams_trace_id_idx").on(table.traceId),
+]);
+
+// ---------------------------------------------------------------------------
 // Usage Records (metered billing)
 // ---------------------------------------------------------------------------
 
@@ -248,6 +276,42 @@ export const usageRecords = pgTable("usage_records", {
   index("usage_records_agent_did_idx").on(table.agentDid),
   index("usage_records_action_idx").on(table.action),
   index("usage_records_created_at_idx").on(table.createdAt),
+]);
+
+// ---------------------------------------------------------------------------
+// Agent Policies (cross-chain policy synchronization)
+// ---------------------------------------------------------------------------
+
+export const agentPolicies = pgTable("agent_policies", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  agentDid: varchar("agent_did", { length: 256 }).notNull().unique(),
+  policy: jsonb("policy").$type<Record<string, unknown>>().notNull(),
+  version: integer("version").notNull().default(1),
+  syncStatus: jsonb("sync_status").$type<Record<string, unknown>>().notNull().default({}),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  uniqueIndex("agent_policies_agent_did_idx").on(table.agentDid),
+]);
+
+// ---------------------------------------------------------------------------
+// Sagas (multi-step payment workflow orchestration)
+// ---------------------------------------------------------------------------
+
+export const sagas = pgTable("sagas", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 256 }).notNull(),
+  steps: jsonb("steps").$type<Record<string, unknown>[]>().notNull(),
+  status: varchar("status", { length: 20 }).notNull().default("PENDING"), // PENDING, RUNNING, COMPLETED, COMPENSATING, COMPENSATED, FAILED
+  currentStep: integer("current_step").notNull().default(0),
+  traceId: varchar("trace_id", { length: 64 }).notNull(),
+  error: text("error"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
+}, (table) => [
+  index("sagas_status_idx").on(table.status),
+  index("sagas_trace_id_idx").on(table.traceId),
 ]);
 
 // ---------------------------------------------------------------------------
@@ -300,3 +364,12 @@ export type NewUsageRecord = typeof usageRecords.$inferInsert;
 
 export type AuditLogEntry = typeof auditLog.$inferSelect;
 export type NewAuditLogEntry = typeof auditLog.$inferInsert;
+
+export type AgentPolicyRow = typeof agentPolicies.$inferSelect;
+export type NewAgentPolicy = typeof agentPolicies.$inferInsert;
+
+export type PaymentStream = typeof paymentStreams.$inferSelect;
+export type NewPaymentStream = typeof paymentStreams.$inferInsert;
+
+export type Saga = typeof sagas.$inferSelect;
+export type NewSaga = typeof sagas.$inferInsert;
