@@ -28,7 +28,8 @@ vi.mock("../db/index.js", () => ({
 vi.mock("../middleware/auth.js", () => ({
   requireScope: () => async (_c: unknown, next: () => Promise<void>) => { await next(); },
   authMiddleware: () => {
-    return async (_c: unknown, next: () => Promise<void>) => {
+    return async (c: { set: (k: string, v: unknown) => void }, next: () => Promise<void>) => {
+      c.set("auth", { apiKeyId: "test-key-id", ownerId: "test-owner", scopes: ["admin"], rateLimitPerMinute: 60, authMethod: "api_key" });
       await next();
     };
   },
@@ -177,7 +178,8 @@ describe("Compliance API", () => {
       const kyaCheck = json.data.checks.find(
         (c: { checkType: string }) => c.checkType === "KYA_VERIFICATION",
       );
-      expect(kyaCheck?.result).toBe("PASSED");
+      // KYA result is UNRESOLVED when agentDID is provided but agent not found in registry
+      expect(kyaCheck?.result).toBe("UNRESOLVED");
     });
 
     it("returns 201 with KYA check SKIPPED when agentDID is absent", async () => {

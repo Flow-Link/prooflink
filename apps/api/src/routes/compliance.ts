@@ -176,7 +176,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
     {
       checkType: "KYA_VERIFICATION",
       target: "sender",
-      result: parsed.sender.agentDID ? "PASSED" : kyaRequired ? "REQUIRED" : "SKIPPED",
+      result: senderOriginator ? "PASSED" : parsed.sender.agentDID ? "UNRESOLVED" : kyaRequired ? "REQUIRED" : "SKIPPED",
       provider: "flowlink",
       performedAt: new Date().toISOString(),
       durationMs: 30,
@@ -334,7 +334,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
       receiptHash,
       overallStatus: status,
       riskScore,
-      travelRuleStatus: travelRuleApplies ? "TRANSMITTED" : "NOT_REQUIRED",
+      travelRuleStatus: travelRuleApplies ? "REQUIRED_PENDING" : "NOT_REQUIRED",
       signature,
       checksPerformed,
       ttl: 300,
@@ -457,7 +457,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
         receiptId: receipt.id,
         receiptHash,
         checks: checksPerformed,
-        travelRuleStatus: travelRuleApplies ? "TRANSMITTED" : "NOT_REQUIRED",
+        travelRuleStatus: travelRuleApplies ? "REQUIRED_PENDING" : "NOT_REQUIRED",
         totalDurationMs,
         traceId,
         parentTraceId,
@@ -757,12 +757,17 @@ compliance.get("/history", validate({ query: HistoryQuery }), async (c) => {
   const db = getDb();
   const auth = c.get("auth") as AuthContext | undefined;
 
+  if (!auth?.apiKeyId) {
+    return c.json(
+      { success: false, error: { code: "UNAUTHORIZED", message: "Authentication required for history access." } },
+      401,
+    );
+  }
+
   const conditions = [];
 
   // Always scope to the caller's API key -- prevents cross-tenant reads
-  if (auth?.apiKeyId) {
-    conditions.push(eq(complianceChecks.apiKeyId, auth.apiKeyId));
-  }
+  conditions.push(eq(complianceChecks.apiKeyId, auth.apiKeyId));
   if (status) {
     conditions.push(eq(complianceChecks.status, status));
   }
@@ -813,10 +818,15 @@ compliance.get("/stats", async (c) => {
   const db = getDb();
   const auth = c.get("auth") as AuthContext | undefined;
 
-  const conditions = [];
-  if (auth?.apiKeyId) {
-    conditions.push(eq(complianceChecks.apiKeyId, auth.apiKeyId));
+  if (!auth?.apiKeyId) {
+    return c.json(
+      { success: false, error: { code: "UNAUTHORIZED", message: "Authentication required for stats access." } },
+      401,
+    );
   }
+
+  const conditions = [];
+  conditions.push(eq(complianceChecks.apiKeyId, auth.apiKeyId));
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
   const [breakdown, totalResult, avgResult] = await Promise.all([
