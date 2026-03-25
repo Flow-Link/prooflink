@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 
 import { getDb } from "../db/index.js";
 import { disputes } from "../db/schema.js";
@@ -317,7 +317,7 @@ export async function autoResolveExpired(): Promise<Dispute[]> {
   const expired = await db
     .select()
     .from(disputes)
-    .where(eq(disputes.state, "EVIDENCE"));
+    .where(or(eq(disputes.state, "OPEN"), eq(disputes.state, "EVIDENCE")));
 
   const resolved: Dispute[] = [];
 

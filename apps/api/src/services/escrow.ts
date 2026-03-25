@@ -236,7 +236,10 @@ export async function fundEscrow(escrowId: string): Promise<Escrow> {
   }, { traceId: existing.traceId ?? undefined });
 
   logger.info("Escrow funded", { escrowId });
-  return updated!;
+  if (!updated) {
+    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
+  }
+  return updated;
 }
 
 /**
@@ -267,7 +270,10 @@ export async function activateEscrow(escrowId: string): Promise<Escrow> {
   }, { traceId: existing.traceId ?? undefined });
 
   logger.info("Escrow activated", { escrowId });
-  return updated!;
+  if (!updated) {
+    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
+  }
+  return updated;
 }
 
 /**
@@ -320,7 +326,10 @@ export async function completeEscrow(
   }, { traceId: existing.traceId ?? undefined });
 
   logger.info("Escrow completed", { escrowId });
-  return updated!;
+  if (!updated) {
+    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
+  }
+  return updated;
 }
 
 /**
@@ -355,7 +364,10 @@ export async function disputeEscrow(
   }, { traceId: existing.traceId ?? undefined });
 
   logger.info("Escrow disputed", { escrowId, reason });
-  return updated!;
+  if (!updated) {
+    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
+  }
+  return updated;
 }
 
 /**
@@ -386,7 +398,10 @@ export async function refundEscrow(escrowId: string): Promise<Escrow> {
   }, { traceId: existing.traceId ?? undefined });
 
   logger.info("Escrow refunded", { escrowId });
-  return updated!;
+  if (!updated) {
+    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
+  }
+  return updated;
 }
 
 /**
@@ -441,5 +456,8 @@ export async function expireEscrow(escrowId: string): Promise<Escrow> {
   }, { traceId: existing.traceId ?? undefined });
 
   logger.info("Escrow expired", { escrowId });
-  return updated!;
+  if (!updated) {
+    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
+  }
+  return updated;
 }
