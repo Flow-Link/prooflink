@@ -225,8 +225,12 @@ describe("recordStreamUsage", () => {
 
   it("throws StreamBudgetExceededError when cost would exceed budget", async () => {
     // ratePerUnit=1, units=95, spent=10 → newSpent=105 > budget=100
+    // The atomic SQL WHERE clause blocks the update; service re-fetches to distinguish
+    // budget-exceeded (still ACTIVE) from concurrent modification (non-ACTIVE).
     const existing = makeStream({ spent: "10.0", totalBudget: "100.0", ratePerUnit: "1.0" });
-    mockSelectLimitFn.mockResolvedValue([existing]);
+    // First call: initial fetch in getStreamOrThrow; second call: re-fetch after failed update
+    mockSelectLimitFn.mockResolvedValueOnce([existing]).mockResolvedValueOnce([existing]);
+    mockUpdateReturningFn.mockResolvedValue([]);
 
     await expect(
       recordStreamUsage("stream-uuid-1", { units: "95" }),
@@ -235,7 +239,9 @@ describe("recordStreamUsage", () => {
 
   it("StreamBudgetExceededError carries code BUDGET_EXCEEDED", async () => {
     const existing = makeStream({ spent: "99.0", totalBudget: "100.0", ratePerUnit: "1.0" });
-    mockSelectLimitFn.mockResolvedValue([existing]);
+    // First call: initial fetch; second call: re-fetch after failed update (still ACTIVE = budget exceeded)
+    mockSelectLimitFn.mockResolvedValueOnce([existing]).mockResolvedValueOnce([existing]);
+    mockUpdateReturningFn.mockResolvedValue([]);
 
     const err = await recordStreamUsage("stream-uuid-1", { units: "5" }).catch((e) => e);
     expect(err.code).toBe("BUDGET_EXCEEDED");
@@ -269,8 +275,12 @@ describe("recordStreamUsage", () => {
   });
 
   it("throws StreamTransitionError on concurrent modification (update returns no row)", async () => {
+    // Simulate: stream is ACTIVE when first fetched, update fails (concurrent write),
+    // re-fetch shows stream has moved to a non-ACTIVE state (e.g. SETTLED by another request).
+    // The service distinguishes this from budget-exceeded by checking the re-fetched status.
     const existing = makeStream({ spent: "0", totalBudget: "100.0", ratePerUnit: "1.0" });
-    mockSelectLimitFn.mockResolvedValue([existing]);
+    const settledByOther = makeStream({ spent: "0", status: "SETTLED" });
+    mockSelectLimitFn.mockResolvedValueOnce([existing]).mockResolvedValueOnce([settledByOther]);
     mockUpdateReturningFn.mockResolvedValue([]);
 
     await expect(

@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { getDb } from "../db/index.js";
 import { escrows } from "../db/schema.js";
+import type { AuthContext } from "../middleware/auth.js";
 import { validate } from "../middleware/validate.js";
 import {
   createEscrow,
@@ -114,11 +115,13 @@ const escrowRoutes = new Hono();
 // POST /v1/escrow — Create escrow
 escrowRoutes.post("/", validate({ body: CreateEscrowRequest }), async (c) => {
   const parsed = c.get("validatedBody") as CreateEscrowRequest;
+  const auth = c.get("auth") as AuthContext;
 
   try {
     const escrow = await createEscrow({
       ...parsed,
       expiresAt: new Date(parsed.expiresAt),
+      apiKeyId: auth.apiKeyId,
     });
     return c.json({ success: true, data: escrow }, 201);
   } catch (err: unknown) {
@@ -126,15 +129,16 @@ escrowRoutes.post("/", validate({ body: CreateEscrowRequest }), async (c) => {
   }
 });
 
-// GET /v1/escrow/:id — Get escrow details
+// GET /v1/escrow/:id — Get escrow details (tenant-isolated)
 escrowRoutes.get("/:id", validate({ params: EscrowIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof EscrowIdParams>;
+  const auth = c.get("auth") as AuthContext;
 
   const db = getDb();
   const [escrow] = await db
     .select()
     .from(escrows)
-    .where(eq(escrows.id, id))
+    .where(and(eq(escrows.id, id), eq(escrows.apiKeyId, auth.apiKeyId)))
     .limit(1);
 
   if (!escrow) {
@@ -147,40 +151,43 @@ escrowRoutes.get("/:id", validate({ params: EscrowIdParams }), async (c) => {
   return c.json({ success: true, data: escrow }, 200);
 });
 
-// POST /v1/escrow/:id/fund — Fund escrow
+// POST /v1/escrow/:id/fund — Fund escrow (payer only)
 escrowRoutes.post("/:id/fund", validate({ params: EscrowIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof EscrowIdParams>;
+  const auth = c.get("auth") as AuthContext;
 
   try {
-    const escrow = await fundEscrow(id);
+    const escrow = await fundEscrow(id, auth.apiKeyId);
     return c.json({ success: true, data: escrow }, 200);
   } catch (err: unknown) {
     return handleServiceError(c, err);
   }
 });
 
-// POST /v1/escrow/:id/activate — Activate escrow
+// POST /v1/escrow/:id/activate — Activate escrow (tenant-isolated)
 escrowRoutes.post("/:id/activate", validate({ params: EscrowIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof EscrowIdParams>;
+  const auth = c.get("auth") as AuthContext;
 
   try {
-    const escrow = await activateEscrow(id);
+    const escrow = await activateEscrow(id, auth.apiKeyId);
     return c.json({ success: true, data: escrow }, 200);
   } catch (err: unknown) {
     return handleServiceError(c, err);
   }
 });
 
-// POST /v1/escrow/:id/complete — Complete with evaluator proof
+// POST /v1/escrow/:id/complete — Complete with evaluator proof (tenant-isolated)
 escrowRoutes.post(
   "/:id/complete",
   validate({ params: EscrowIdParams, body: CompleteEscrowRequest }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof EscrowIdParams>;
     const proof = c.get("validatedBody") as CompleteEscrowRequest;
+    const auth = c.get("auth") as AuthContext;
 
     try {
-      const escrow = await completeEscrow(id, proof);
+      const escrow = await completeEscrow(id, proof, auth.apiKeyId);
       return c.json({ success: true, data: escrow }, 200);
     } catch (err: unknown) {
       return handleServiceError(c, err);
@@ -188,16 +195,17 @@ escrowRoutes.post(
   },
 );
 
-// POST /v1/escrow/:id/dispute — Initiate dispute
+// POST /v1/escrow/:id/dispute — Initiate dispute (tenant-isolated)
 escrowRoutes.post(
   "/:id/dispute",
   validate({ params: EscrowIdParams, body: DisputeEscrowRequest }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof EscrowIdParams>;
     const { reason } = c.get("validatedBody") as DisputeEscrowRequest;
+    const auth = c.get("auth") as AuthContext;
 
     try {
-      const escrow = await disputeEscrow(id, reason);
+      const escrow = await disputeEscrow(id, reason, auth.apiKeyId);
       return c.json({ success: true, data: escrow }, 200);
     } catch (err: unknown) {
       return handleServiceError(c, err);
@@ -205,39 +213,42 @@ escrowRoutes.post(
   },
 );
 
-// POST /v1/escrow/:id/refund — Refund after dispute/expiry
+// POST /v1/escrow/:id/refund — Refund after dispute/expiry (tenant-isolated)
 escrowRoutes.post("/:id/refund", validate({ params: EscrowIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof EscrowIdParams>;
+  const auth = c.get("auth") as AuthContext;
 
   try {
-    const escrow = await refundEscrow(id);
+    const escrow = await refundEscrow(id, auth.apiKeyId);
     return c.json({ success: true, data: escrow }, 200);
   } catch (err: unknown) {
     return handleServiceError(c, err);
   }
 });
 
-// POST /v1/escrow/:id/expire — Check expiry and transition
+// POST /v1/escrow/:id/expire — Check expiry and transition (tenant-isolated)
 escrowRoutes.post("/:id/expire", validate({ params: EscrowIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof EscrowIdParams>;
+  const auth = c.get("auth") as AuthContext;
 
   try {
-    const escrow = await expireEscrow(id);
+    const escrow = await expireEscrow(id, auth.apiKeyId);
     return c.json({ success: true, data: escrow }, 200);
   } catch (err: unknown) {
     return handleServiceError(c, err);
   }
 });
 
-// GET /v1/escrow — List escrows with pagination
+// GET /v1/escrow — List escrows with pagination (tenant-isolated)
 escrowRoutes.get("/", validate({ query: ListEscrowsQuery }), async (c) => {
   const query = c.get("validatedQuery") as z.infer<typeof ListEscrowsQuery>;
   const { page, limit, state, escrowType, payer, payee, from, to } = query;
   const offset = (page - 1) * limit;
+  const auth = c.get("auth") as AuthContext;
 
   const db = getDb();
 
-  const conditions = [];
+  const conditions = [eq(escrows.apiKeyId, auth.apiKeyId)];
   if (state) conditions.push(eq(escrows.state, state));
   if (escrowType) conditions.push(eq(escrows.escrowType, escrowType));
   if (payer) conditions.push(eq(escrows.payerWallet, payer));
@@ -245,7 +256,7 @@ escrowRoutes.get("/", validate({ query: ListEscrowsQuery }), async (c) => {
   if (from) conditions.push(gte(escrows.createdAt, new Date(from)));
   if (to) conditions.push(lte(escrows.createdAt, new Date(to)));
 
-  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+  const whereClause = and(...conditions);
 
   const [items, countResult] = await Promise.all([
     db

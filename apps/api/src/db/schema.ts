@@ -191,6 +191,7 @@ export const escrows = pgTable("escrows", {
   evaluatorAddress: varchar("evaluator_address", { length: 128 }),
   complianceReceiptId: uuid("compliance_receipt_id").references(() => complianceReceipts.id),
   traceId: varchar("trace_id", { length: 64 }),
+  apiKeyId: uuid("api_key_id").references(() => apiKeys.id),
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
   fundedAt: timestamp("funded_at", { withTimezone: true }),
   completedAt: timestamp("completed_at", { withTimezone: true }),
@@ -202,6 +203,7 @@ export const escrows = pgTable("escrows", {
   index("escrows_payer_wallet_idx").on(table.payerWallet),
   index("escrows_payee_wallet_idx").on(table.payeeWallet),
   index("escrows_trace_id_idx").on(table.traceId),
+  index("escrows_api_key_id_idx").on(table.apiKeyId),
 ]);
 
 // ---------------------------------------------------------------------------
@@ -221,6 +223,7 @@ export const disputes = pgTable("disputes", {
   resolution: jsonb("resolution").$type<Record<string, unknown>>(),
   resolvedBy: varchar("resolved_by", { length: 256 }),
   traceId: varchar("trace_id", { length: 64 }),
+  apiKeyId: uuid("api_key_id").references(() => apiKeys.id),
   deadline: timestamp("deadline", { withTimezone: true }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -230,6 +233,7 @@ export const disputes = pgTable("disputes", {
   index("disputes_respondent_did_idx").on(table.respondentDid),
   index("disputes_escrow_id_idx").on(table.escrowId),
   index("disputes_invoice_id_idx").on(table.invoiceId),
+  index("disputes_api_key_id_idx").on(table.apiKeyId),
 ]);
 
 // ---------------------------------------------------------------------------
@@ -247,6 +251,7 @@ export const paymentStreams = pgTable("payment_streams", {
   spent: numeric("spent", { precision: 38, scale: 18 }).notNull().default("0"),
   status: varchar("status", { length: 20 }).notNull().default("ACTIVE"), // ACTIVE, PAUSED, SETTLED, EXHAUSTED
   traceId: varchar("trace_id", { length: 64 }),
+  apiKeyId: uuid("api_key_id").references(() => apiKeys.id),
   startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
   settledAt: timestamp("settled_at", { withTimezone: true }),
@@ -258,6 +263,7 @@ export const paymentStreams = pgTable("payment_streams", {
   index("payment_streams_payee_did_idx").on(table.payeeDid),
   index("payment_streams_model_idx").on(table.model),
   index("payment_streams_trace_id_idx").on(table.traceId),
+  index("payment_streams_api_key_id_idx").on(table.apiKeyId),
 ]);
 
 // ---------------------------------------------------------------------------
@@ -305,6 +311,7 @@ export const sagas = pgTable("sagas", {
   status: varchar("status", { length: 20 }).notNull().default("PENDING"), // PENDING, RUNNING, COMPLETED, COMPENSATING, COMPENSATED, FAILED
   currentStep: integer("current_step").notNull().default(0),
   traceId: varchar("trace_id", { length: 64 }).notNull(),
+  apiKeyId: uuid("api_key_id").references(() => apiKeys.id),
   error: text("error"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -312,6 +319,7 @@ export const sagas = pgTable("sagas", {
 }, (table) => [
   index("sagas_status_idx").on(table.status),
   index("sagas_trace_id_idx").on(table.traceId),
+  index("sagas_api_key_id_idx").on(table.apiKeyId),
 ]);
 
 // ---------------------------------------------------------------------------

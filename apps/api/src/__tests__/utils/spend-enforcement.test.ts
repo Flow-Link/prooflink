@@ -529,7 +529,9 @@ describe("checkDelegationScope", () => {
     expect(result.allowed).toBe(true);
   });
 
-  it("skips daily check and allows when invoices DB query fails (fail-open)", async () => {
+  it("blocks transaction when invoices DB query fails (fail-closed)", async () => {
+    // Daily limit check fails closed: if the DB is unavailable we cannot verify
+    // whether the agent has headroom, so we block to prevent limit bypass.
     mockGetDb.mockReturnValue(
       buildDailyErrorDb({
         delegationScope: { dailyLimitUsd: 100 },
@@ -544,8 +546,8 @@ describe("checkDelegationScope", () => {
       "0xabc",
     );
 
-    // Fails open — DB error on daily check should not block the transaction
-    expect(result.allowed).toBe(true);
+    expect(result.allowed).toBe(false);
+    expect(result.reason).toContain("unavailable");
   });
 
   // -------------------------------------------------------------------------

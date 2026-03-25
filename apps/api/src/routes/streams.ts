@@ -1,4 +1,5 @@
 import { requireScope } from "../middleware/auth.js";
+import type { AuthContext } from "../middleware/auth.js";
 import { and, desc, eq, gte, lte, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
@@ -115,11 +116,13 @@ const streamRoutes = new Hono();
 // POST /v1/streams — Create a payment stream
 streamRoutes.post("/", requireScope("write"), validate({ body: CreateStreamRequest }), async (c) => {
   const parsed = c.get("validatedBody") as CreateStreamRequest;
+  const auth = c.get("auth") as AuthContext | undefined;
 
   try {
     const stream = await createStream({
       ...parsed,
       expiresAt: new Date(parsed.expiresAt),
+      apiKeyId: auth?.apiKeyId,
     });
     return c.json({ success: true, data: stream }, 201);
   } catch (err: unknown) {
@@ -130,9 +133,10 @@ streamRoutes.post("/", requireScope("write"), validate({ body: CreateStreamReque
 // GET /v1/streams/:id — Get stream status with computed fields
 streamRoutes.get("/:id", validate({ params: StreamIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof StreamIdParams>;
+  const auth = c.get("auth") as AuthContext | undefined;
 
   try {
-    const status = await getStreamStatus(id);
+    const status = await getStreamStatus(id, auth?.apiKeyId);
     return c.json({ success: true, data: status }, 200);
   } catch (err: unknown) {
     return handleServiceError(c, err);
@@ -146,9 +150,10 @@ streamRoutes.post(
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof StreamIdParams>;
     const body = c.get("validatedBody") as RecordUsageRequest;
+    const auth = c.get("auth") as AuthContext | undefined;
 
     try {
-      const stream = await recordStreamUsage(id, body);
+      const stream = await recordStreamUsage(id, body, auth?.apiKeyId);
       return c.json({ success: true, data: stream }, 200);
     } catch (err: unknown) {
       return handleServiceError(c, err);
@@ -162,9 +167,10 @@ streamRoutes.post(
   validate({ params: StreamIdParams }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof StreamIdParams>;
+    const auth = c.get("auth") as AuthContext | undefined;
 
     try {
-      const stream = await pauseStream(id);
+      const stream = await pauseStream(id, auth?.apiKeyId);
       return c.json({ success: true, data: stream }, 200);
     } catch (err: unknown) {
       return handleServiceError(c, err);
@@ -178,9 +184,10 @@ streamRoutes.post(
   validate({ params: StreamIdParams }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof StreamIdParams>;
+    const auth = c.get("auth") as AuthContext | undefined;
 
     try {
-      const stream = await resumeStream(id);
+      const stream = await resumeStream(id, auth?.apiKeyId);
       return c.json({ success: true, data: stream }, 200);
     } catch (err: unknown) {
       return handleServiceError(c, err);
@@ -194,9 +201,10 @@ streamRoutes.post(
   validate({ params: StreamIdParams }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof StreamIdParams>;
+    const auth = c.get("auth") as AuthContext | undefined;
 
     try {
-      const stream = await settleStream(id);
+      const stream = await settleStream(id, auth?.apiKeyId);
       return c.json({ success: true, data: stream }, 200);
     } catch (err: unknown) {
       return handleServiceError(c, err);
@@ -209,10 +217,12 @@ streamRoutes.get("/", validate({ query: ListStreamsQuery }), async (c) => {
   const query = c.get("validatedQuery") as z.infer<typeof ListStreamsQuery>;
   const { page, limit, status, model, payer, payee, from, to } = query;
   const offset = (page - 1) * limit;
+  const auth = c.get("auth") as AuthContext | undefined;
 
   const db = getDb();
 
   const conditions = [];
+  if (auth?.apiKeyId) conditions.push(eq(paymentStreams.apiKeyId, auth.apiKeyId));
   if (status) conditions.push(eq(paymentStreams.status, status));
   if (model) conditions.push(eq(paymentStreams.model, model));
   if (payer) conditions.push(eq(paymentStreams.payerDid, payer));

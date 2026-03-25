@@ -115,10 +115,12 @@ disputeRoutes.get("/", validate({ query: ListQuery }), async (c) => {
   const query = c.get("validatedQuery") as z.infer<typeof ListQuery>;
   const { page, limit, state, category, initiatorDid, respondentDid } = query;
   const offset = (page - 1) * limit;
+  const auth = c.get("auth") as AuthContext | undefined;
 
   const db = getDb();
   const conditions = [];
 
+  if (auth?.apiKeyId) conditions.push(eq(disputes.apiKeyId, auth.apiKeyId));
   if (state) conditions.push(eq(disputes.state, state));
   if (category) conditions.push(eq(disputes.category, category));
   if (initiatorDid) conditions.push(eq(disputes.initiatorDid, initiatorDid));
@@ -159,12 +161,16 @@ disputeRoutes.get("/", validate({ query: ListQuery }), async (c) => {
 // GET /v1/disputes/:id — get dispute details
 disputeRoutes.get("/:id", validate({ params: IdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof IdParams>;
+  const auth = c.get("auth") as AuthContext | undefined;
   const db = getDb();
+
+  const conditions = [eq(disputes.id, id)];
+  if (auth?.apiKeyId) conditions.push(eq(disputes.apiKeyId, auth.apiKeyId));
 
   const [dispute] = await db
     .select()
     .from(disputes)
-    .where(eq(disputes.id, id))
+    .where(and(...conditions))
     .limit(1);
 
   if (!dispute) {

@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 
 import { getDb } from "../db/index.js";
 import { paymentStreams } from "../db/schema.js";
@@ -28,6 +28,7 @@ export interface CreateStreamParams {
   totalBudget: string;
   expiresAt: Date;
   traceId?: string;
+  apiKeyId?: string;
 }
 
 export interface RecordUsageParams {
@@ -88,12 +89,16 @@ export class StreamBudgetExceededError extends Error {
 // Helpers
 // ---------------------------------------------------------------------------
 
-async function getStreamOrThrow(streamId: string): Promise<PaymentStream> {
+async function getStreamOrThrow(streamId: string, apiKeyId?: string): Promise<PaymentStream> {
   const db = getDb();
+  const conditions = [eq(paymentStreams.id, streamId)];
+  if (apiKeyId) {
+    conditions.push(eq(paymentStreams.apiKeyId, apiKeyId));
+  }
   const [row] = await db
     .select()
     .from(paymentStreams)
-    .where(eq(paymentStreams.id, streamId))
+    .where(and(...conditions))
     .limit(1);
 
   if (!row) {
@@ -157,6 +162,7 @@ export async function createStream(
       spent: "0",
       status: "ACTIVE",
       traceId: params.traceId ?? null,
+      apiKeyId: params.apiKeyId ?? null,
       startedAt: new Date(),
       expiresAt: params.expiresAt,
     })
@@ -192,8 +198,9 @@ export async function createStream(
 export async function recordStreamUsage(
   streamId: string,
   params: RecordUsageParams,
+  apiKeyId?: string,
 ): Promise<PaymentStream> {
-  const existing = await getStreamOrThrow(streamId);
+  const existing = await getStreamOrThrow(streamId, apiKeyId);
 
   if (existing.status !== "ACTIVE") {
     throw new StreamTransitionError(
@@ -207,45 +214,58 @@ export async function recordStreamUsage(
   const rate = parseFloat(existing.ratePerUnit);
   const units = parseFloat(params.units);
   const cost = rate * units;
-  const currentSpent = parseFloat(existing.spent);
-  const budget = parseFloat(existing.totalBudget);
-  const newSpent = currentSpent + cost;
 
-  if (newSpent > budget) {
-    throw new StreamBudgetExceededError(
-      streamId,
-      cost.toString(),
-      (budget - currentSpent).toString(),
-    );
-  }
-
+  // Atomic budget check + spend update in a single SQL statement.
+  // Prevents race condition where two concurrent requests both pass the budget check.
   const db = getDb();
   const now = new Date();
-  const newStatus: StreamStatus = newSpent >= budget ? "EXHAUSTED" : "ACTIVE";
 
   const [updated] = await db
     .update(paymentStreams)
     .set({
-      spent: newSpent.toString(),
-      status: newStatus,
+      spent: sql`${paymentStreams.spent}::numeric + ${cost.toString()}::numeric`,
+      status: sql`CASE WHEN (${paymentStreams.spent}::numeric + ${cost.toString()}::numeric) >= ${paymentStreams.totalBudget}::numeric THEN 'EXHAUSTED' ELSE 'ACTIVE' END`,
       updatedAt: now,
     })
     .where(
       and(
         eq(paymentStreams.id, streamId),
         eq(paymentStreams.status, "ACTIVE"),
+        sql`(${paymentStreams.spent}::numeric + ${cost.toString()}::numeric) <= ${paymentStreams.totalBudget}::numeric`,
       ),
     )
     .returning();
 
   if (!updated) {
+    // Distinguish between budget exceeded and concurrent state change
+    const [current] = await db
+      .select()
+      .from(paymentStreams)
+      .where(eq(paymentStreams.id, streamId))
+      .limit(1);
+
+    if (current && current.status === "ACTIVE") {
+      // Stream is still ACTIVE but budget would be exceeded
+      const currentSpent = parseFloat(current.spent);
+      const budget = parseFloat(current.totalBudget);
+      throw new StreamBudgetExceededError(
+        streamId,
+        cost.toString(),
+        (budget - currentSpent).toString(),
+      );
+    }
+
     throw new StreamTransitionError(
       streamId,
-      existing.status,
+      current?.status ?? "UNKNOWN",
       "ACTIVE",
       "Concurrent modification — state changed by another request. Retry.",
     );
   }
+
+  const newSpent = parseFloat(updated.spent);
+  const budget = parseFloat(updated.totalBudget);
+  const newStatus = updated.status as StreamStatus;
 
   writeAuditLog({
     eventType: newStatus === "EXHAUSTED" ? "stream.exhausted" : "stream.usage_recorded",
@@ -273,8 +293,8 @@ export async function recordStreamUsage(
 /**
  * Pause an active stream.
  */
-export async function pauseStream(streamId: string): Promise<PaymentStream> {
-  const existing = await getStreamOrThrow(streamId);
+export async function pauseStream(streamId: string, apiKeyId?: string): Promise<PaymentStream> {
+  const existing = await getStreamOrThrow(streamId, apiKeyId);
 
   if (existing.status !== "ACTIVE") {
     throw new StreamTransitionError(
@@ -318,8 +338,8 @@ export async function pauseStream(streamId: string): Promise<PaymentStream> {
 /**
  * Resume a paused stream.
  */
-export async function resumeStream(streamId: string): Promise<PaymentStream> {
-  const existing = await getStreamOrThrow(streamId);
+export async function resumeStream(streamId: string, apiKeyId?: string): Promise<PaymentStream> {
+  const existing = await getStreamOrThrow(streamId, apiKeyId);
 
   if (existing.status !== "PAUSED") {
     throw new StreamTransitionError(
@@ -364,8 +384,8 @@ export async function resumeStream(streamId: string): Promise<PaymentStream> {
  * Settle a stream — calculate final amount and close it.
  * Can settle from ACTIVE, PAUSED, or EXHAUSTED states.
  */
-export async function settleStream(streamId: string): Promise<PaymentStream> {
-  const existing = await getStreamOrThrow(streamId);
+export async function settleStream(streamId: string, apiKeyId?: string): Promise<PaymentStream> {
+  const existing = await getStreamOrThrow(streamId, apiKeyId);
 
   if (existing.status === "SETTLED") {
     throw new StreamTransitionError(
@@ -432,8 +452,9 @@ export async function settleStream(streamId: string): Promise<PaymentStream> {
  */
 export async function getStreamStatus(
   streamId: string,
+  apiKeyId?: string,
 ): Promise<StreamStatusResult> {
-  const stream = await getStreamOrThrow(streamId);
+  const stream = await getStreamOrThrow(streamId, apiKeyId);
 
   const spent = parseFloat(stream.spent);
   const budget = parseFloat(stream.totalBudget);

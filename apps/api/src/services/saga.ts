@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { getDb } from "../db/index.js";
 import { sagas } from "../db/schema.js";
@@ -183,12 +183,16 @@ function buildRuntimeStep(step: SagaStepRecord): SagaStepRuntime {
   return { id: step.id, name: step.name, action, compensation };
 }
 
-async function getSagaOrThrow(sagaId: string): Promise<SagaRecord> {
+async function getSagaOrThrow(sagaId: string, apiKeyId?: string): Promise<SagaRecord> {
   const db = getDb();
+  const conditions = [eq(sagas.id, sagaId)];
+  if (apiKeyId) {
+    conditions.push(eq(sagas.apiKeyId, apiKeyId));
+  }
   const [row] = await db
     .select()
     .from(sagas)
-    .where(eq(sagas.id, sagaId))
+    .where(and(...conditions))
     .limit(1);
 
   if (!row) {
@@ -233,6 +237,7 @@ export interface CreateSagaInput {
     params: Record<string, unknown>;
   }>;
   traceId?: string;
+  apiKeyId?: string;
 }
 
 /**
@@ -258,6 +263,7 @@ export async function createSaga(input: CreateSagaInput): Promise<SagaRecord> {
       status: "PENDING",
       currentStep: 0,
       traceId,
+      apiKeyId: input.apiKeyId ?? null,
     })
     .returning();
 
@@ -283,8 +289,8 @@ export async function createSaga(input: CreateSagaInput): Promise<SagaRecord> {
 /**
  * Execute steps sequentially. On failure, run compensating actions in reverse.
  */
-export async function executeSaga(sagaId: string): Promise<SagaRecord> {
-  const saga = await getSagaOrThrow(sagaId);
+export async function executeSaga(sagaId: string, apiKeyId?: string): Promise<SagaRecord> {
+  const saga = await getSagaOrThrow(sagaId, apiKeyId);
 
   if (saga.status !== "PENDING") {
     throw new SagaInvalidStateError(sagaId, saga.status, "PENDING");
@@ -461,15 +467,15 @@ async function compensateSteps(
 /**
  * Get current execution state of a saga.
  */
-export async function getSagaStatus(sagaId: string): Promise<SagaRecord> {
-  return getSagaOrThrow(sagaId);
+export async function getSagaStatus(sagaId: string, apiKeyId?: string): Promise<SagaRecord> {
+  return getSagaOrThrow(sagaId, apiKeyId);
 }
 
 /**
  * Cancel a saga — trigger compensation for all completed steps.
  */
-export async function cancelSaga(sagaId: string): Promise<SagaRecord> {
-  const saga = await getSagaOrThrow(sagaId);
+export async function cancelSaga(sagaId: string, apiKeyId?: string): Promise<SagaRecord> {
+  const saga = await getSagaOrThrow(sagaId, apiKeyId);
 
   if (saga.status === "COMPENSATING" || saga.status === "COMPENSATED" || saga.status === "FAILED") {
     throw new SagaInvalidStateError(sagaId, saga.status, "PENDING | RUNNING | COMPLETED");

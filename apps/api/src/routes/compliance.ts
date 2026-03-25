@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { z } from "zod";
 
 import { getDb } from "../db/index.js";
-import { complianceChecks, complianceReceipts } from "../db/schema.js";
+import { agents, complianceChecks, complianceReceipts } from "../db/schema.js";
 import type { AuthContext } from "../middleware/auth.js";
 import { validate } from "../middleware/validate.js";
 import { writeAuditLog } from "../utils/audit.js";
@@ -219,18 +219,28 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
     {
       checkType: "KYA_VERIFICATION",
       target: "sender",
-      result: senderOriginator ? "PASSED" : parsed.sender.agentDID ? "UNRESOLVED" : kyaRequired ? "REQUIRED" : "SKIPPED",
+      result: await (async () => {
+        if (!senderOriginator) {
+          return parsed.sender.agentDID ? "UNRESOLVED" : kyaRequired ? "REQUIRED" : "SKIPPED";
+        }
+        if (!parsed.sender.agentDID) return kyaRequired ? "REQUIRED" : "SKIPPED";
+        // Verify the agent actually has a credential hash (not just DB existence)
+        try {
+          const [agentRow] = await db
+            .select({ kyaCredentialHash: agents.kyaCredentialHash, expiresAt: agents.expiresAt })
+            .from(agents)
+            .where(eq(agents.agentDid, parsed.sender.agentDID))
+            .limit(1);
+          if (!agentRow?.kyaCredentialHash) return "UNVERIFIED";
+          if (agentRow.expiresAt && agentRow.expiresAt < new Date()) return "UNVERIFIED";
+          return "PASSED";
+        } catch {
+          return "UNVERIFIED";
+        }
+      })(),
       provider: "flowlink",
       performedAt: new Date().toISOString(),
       durationMs: 30,
-    },
-    {
-      checkType: "AML_MONITORING",
-      target: "transaction",
-      result: "PASSED",
-      provider: "flowlink",
-      performedAt: new Date().toISOString(),
-      durationMs: 20,
     },
     {
       checkType: "TRAVEL_RULE",
@@ -318,7 +328,21 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
     transactionHourUtc: new Date().getUTCHours(),
   };
 
+  const amlStart = Date.now();
   const amlResult = amlScorer.calculateRiskScore(txCtx);
+  const amlDurationMs = Date.now() - amlStart;
+
+  // Add AML_MONITORING check AFTER scorer runs, with real result
+  checksPerformed.push({
+    checkType: "AML_MONITORING",
+    target: "transaction",
+    result: amlResult.exceeds ? "FAILED" : "PASSED",
+    details: { score: amlResult.score, threshold: amlResult.threshold, factors: amlResult.factors },
+    provider: "flowlink_aml_scorer",
+    performedAt: new Date().toISOString(),
+    durationMs: amlDurationMs,
+  });
+
   // Sanctioned addresses always get max risk score
   const riskScore = (senderSanctioned || receiverSanctioned) ? 100 : amlResult.score;
   let status = riskScore < 50 ? "APPROVED" : riskScore < 80 ? "ESCALATED" : "REJECTED";
@@ -330,7 +354,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
   if (parsed.sender.agentDID) {
     const scopeCheck = await checkDelegationScope(
       parsed.sender.agentDID,
-      Number(parsed.amount),
+      amountUsd,
       parsed.asset,
       parsed.sender.chain,
       parsed.receiver.address,
@@ -754,7 +778,7 @@ compliance.post("/batch", validate({ body: BatchComplianceRequest }), async (c) 
       ? await resolveAgentOriginator(req.sender.agentDID)
       : null;
 
-    const checksPerformed = [
+    const checksPerformed: Record<string, unknown>[] = [
       {
         checkType: "SANCTIONS_SCREENING",
         target: "sender",
@@ -770,14 +794,6 @@ compliance.post("/batch", validate({ body: BatchComplianceRequest }), async (c) 
         provider: batchReceiverScreen.provider,
         performedAt: batchReceiverScreen.screenedAt,
         durationMs: batchScreenDurationMs,
-      },
-      {
-        checkType: "AML_MONITORING",
-        target: "transaction",
-        result: "PASSED",
-        provider: "flowlink",
-        performedAt: new Date().toISOString(),
-        durationMs: 20,
       },
       {
         checkType: "TRAVEL_RULE",
@@ -823,7 +839,21 @@ compliance.post("/batch", validate({ body: BatchComplianceRequest }), async (c) 
       transactionHourUtc: new Date().getUTCHours(),
     };
 
+    const batchAmlStart = Date.now();
     const batchAmlResult = amlScorer.calculateRiskScore(batchTxCtx);
+    const batchAmlDurationMs = Date.now() - batchAmlStart;
+
+    // Add AML_MONITORING check AFTER scorer runs, with real result
+    checksPerformed.push({
+      checkType: "AML_MONITORING",
+      target: "transaction",
+      result: batchAmlResult.exceeds ? "FAILED" : "PASSED",
+      details: { score: batchAmlResult.score, threshold: batchAmlResult.threshold, factors: batchAmlResult.factors },
+      provider: "flowlink_aml_scorer",
+      performedAt: new Date().toISOString(),
+      durationMs: batchAmlDurationMs,
+    });
+
     const riskScore = (senderSanctioned || receiverSanctioned) ? 100 : batchAmlResult.score;
     const status = riskScore < 50 ? "APPROVED" : riskScore < 80 ? "ESCALATED" : "REJECTED";
     const totalDurationMs = Date.now() - startTime;
@@ -874,7 +904,7 @@ compliance.post("/batch", validate({ body: BatchComplianceRequest }), async (c) 
         receiptHash,
         overallStatus: status,
         riskScore,
-        travelRuleStatus: batchTravelRuleApplies ? "TRANSMITTED" : "NOT_REQUIRED",
+        travelRuleStatus: batchTravelRuleApplies ? "REQUIRED_PENDING" : "NOT_REQUIRED",
         commitmentHash: batchCommitment.commitmentHash,
         commitmentSalt: batchCommitment.salt,
         signature,

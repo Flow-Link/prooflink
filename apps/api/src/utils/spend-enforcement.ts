@@ -141,8 +141,11 @@ export async function checkDelegationScope(
           reason: `Adding ${amount} ${currency} would exceed daily limit of ${scope.dailyLimitUsd} USD (spent today: ${dailyTotal})`,
         };
       }
-    } catch {
-      // DB unavailable — skip daily limit check, fail open
+    } catch (err) {
+      // DB unavailable — fail closed to prevent spend limit bypass
+      // eslint-disable-next-line no-console
+      console.error("[spend-enforcement] Daily limit check failed, blocking transaction", { agentDid, error: String(err) });
+      return { allowed: false, reason: "Daily limit check unavailable — transaction blocked for safety" };
     }
   }
 

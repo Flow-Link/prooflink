@@ -1,4 +1,4 @@
-import { eq, or } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 
 import { getDb } from "../db/index.js";
 import { disputes } from "../db/schema.js";
@@ -102,6 +102,7 @@ export async function openDispute(params: OpenDisputeParams): Promise<Dispute> {
       reason: params.reason,
       category: params.category,
       traceId: params.traceId ?? null,
+      apiKeyId: params.apiKeyId ?? null,
       deadline,
     })
     .returning();
@@ -144,7 +145,7 @@ export async function submitEvidence(
   apiKeyId?: string,
 ): Promise<Dispute> {
   const db = getDb();
-  const dispute = await fetchDispute(disputeId);
+  const dispute = await fetchDispute(disputeId, apiKeyId);
 
   // Evidence can be submitted in OPEN or EVIDENCE states
   if (dispute.state !== "OPEN" && dispute.state !== "EVIDENCE") {
@@ -191,7 +192,7 @@ export async function escalateToArbitration(
   apiKeyId?: string,
 ): Promise<Dispute> {
   const db = getDb();
-  const dispute = await fetchDispute(disputeId);
+  const dispute = await fetchDispute(disputeId, apiKeyId);
 
   assertTransition(dispute.state, "ARBITRATION");
 
@@ -233,7 +234,7 @@ export async function resolveDispute(
   apiKeyId?: string,
 ): Promise<Dispute> {
   const db = getDb();
-  const dispute = await fetchDispute(disputeId);
+  const dispute = await fetchDispute(disputeId, apiKeyId);
 
   assertTransition(dispute.state, "RESOLVED");
 
@@ -280,7 +281,7 @@ export async function closeDispute(
   apiKeyId?: string,
 ): Promise<Dispute> {
   const db = getDb();
-  const dispute = await fetchDispute(disputeId);
+  const dispute = await fetchDispute(disputeId, apiKeyId);
 
   assertTransition(dispute.state, "CLOSED");
 
@@ -323,6 +324,45 @@ export async function autoResolveExpired(): Promise<Dispute[]> {
 
   for (const dispute of expired) {
     if (dispute.deadline <= now) {
+      // Step 1: Transition to intermediate states respecting the state machine
+      // OPEN → EVIDENCE (if currently OPEN)
+      if (dispute.state === "OPEN") {
+        const [stepped] = await db
+          .update(disputes)
+          .set({ state: "EVIDENCE", updatedAt: now })
+          .where(and(eq(disputes.id, dispute.id), eq(disputes.state, "OPEN")))
+          .returning();
+
+        if (!stepped) {
+          // Concurrent modification — skip this dispute
+          logger.warn("Auto-resolve: concurrent modification during OPEN→EVIDENCE", { disputeId: dispute.id });
+          continue;
+        }
+
+        writeAuditLog({
+          eventType: "dispute.auto-escalated",
+          payload: { disputeId: dispute.id, from: "OPEN", to: "EVIDENCE", reason: "respondent_deadline_expired" },
+        });
+      }
+
+      // Step 2: EVIDENCE → ARBITRATION
+      const [toArbitration] = await db
+        .update(disputes)
+        .set({ state: "ARBITRATION", updatedAt: now })
+        .where(and(eq(disputes.id, dispute.id), eq(disputes.state, "EVIDENCE")))
+        .returning();
+
+      if (!toArbitration) {
+        logger.warn("Auto-resolve: concurrent modification during EVIDENCE→ARBITRATION", { disputeId: dispute.id });
+        continue;
+      }
+
+      writeAuditLog({
+        eventType: "dispute.auto-escalated",
+        payload: { disputeId: dispute.id, from: "EVIDENCE", to: "ARBITRATION", reason: "respondent_deadline_expired" },
+      });
+
+      // Step 3: ARBITRATION → RESOLVED
       const resolution: Record<string, unknown> = {
         outcome: "REFUND_FULL",
         resolvedBy: "system:auto-resolve",
@@ -330,7 +370,6 @@ export async function autoResolveExpired(): Promise<Dispute[]> {
         resolvedAt: now.toISOString(),
       };
 
-      // Force transition to ARBITRATION then RESOLVED
       const [updated] = await db
         .update(disputes)
         .set({
@@ -339,7 +378,7 @@ export async function autoResolveExpired(): Promise<Dispute[]> {
           resolvedBy: "system:auto-resolve",
           updatedAt: now,
         })
-        .where(eq(disputes.id, dispute.id))
+        .where(and(eq(disputes.id, dispute.id), eq(disputes.state, "ARBITRATION")))
         .returning();
 
       if (updated) {
@@ -354,6 +393,8 @@ export async function autoResolveExpired(): Promise<Dispute[]> {
             reason: "respondent_deadline_expired",
           },
         });
+      } else {
+        logger.warn("Auto-resolve: concurrent modification during ARBITRATION→RESOLVED", { disputeId: dispute.id });
       }
     }
   }
@@ -365,13 +406,18 @@ export async function autoResolveExpired(): Promise<Dispute[]> {
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-async function fetchDispute(disputeId: string): Promise<Dispute> {
+async function fetchDispute(disputeId: string, apiKeyId?: string): Promise<Dispute> {
   const db = getDb();
+
+  const conditions = [eq(disputes.id, disputeId)];
+  if (apiKeyId) {
+    conditions.push(eq(disputes.apiKeyId, apiKeyId));
+  }
 
   const [dispute] = await db
     .select()
     .from(disputes)
-    .where(eq(disputes.id, disputeId))
+    .where(and(...conditions))
     .limit(1);
 
   if (!dispute) {

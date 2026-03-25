@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { getDb } from "../db/index.js";
 import { agents, disputes, escrows } from "../db/schema.js";
@@ -119,6 +119,12 @@ export async function autoArbitrate(
 
   if (!dispute) {
     throw new Error(`Dispute ${disputeId} not found`);
+  }
+
+  if (dispute.state !== "ARBITRATION") {
+    throw new Error(
+      `Cannot auto-arbitrate dispute ${disputeId}: expected state ARBITRATION, got ${dispute.state}.`,
+    );
   }
 
   const category = dispute.category as DisputeCategory;
@@ -264,7 +270,7 @@ export async function autoArbitrate(
   const newState =
     outcome === "REQUIRES_HUMAN" ? "ARBITRATION" : "RESOLVED";
 
-  await db
+  const [updatedRow] = await db
     .update(disputes)
     .set({
       state: newState,
@@ -272,7 +278,14 @@ export async function autoArbitrate(
       resolvedBy: outcome === "REQUIRES_HUMAN" ? undefined : "system:auto-arbitration",
       updatedAt: now,
     })
-    .where(eq(disputes.id, disputeId));
+    .where(and(eq(disputes.id, disputeId), eq(disputes.state, "ARBITRATION")))
+    .returning();
+
+  if (!updatedRow) {
+    throw new Error(
+      `Concurrent modification on dispute ${disputeId}: state changed during auto-arbitration. Retry.`,
+    );
+  }
 
   logger.info("Auto-arbitration completed", {
     disputeId,

@@ -36,6 +36,7 @@ export interface CreateEscrowParams {
   evaluatorAddress?: string;
   expiresAt: Date;
   traceId?: string;
+  apiKeyId?: string;
 }
 
 export interface EvaluatorProof {
@@ -108,12 +109,16 @@ export class EscrowComplianceError extends Error {
 // Fetch helper
 // ---------------------------------------------------------------------------
 
-async function getEscrowOrThrow(escrowId: string): Promise<Escrow> {
+async function getEscrowOrThrow(escrowId: string, apiKeyId?: string): Promise<Escrow> {
   const db = getDb();
+  const conditions = [eq(escrows.id, escrowId)];
+  if (apiKeyId) {
+    conditions.push(eq(escrows.apiKeyId, apiKeyId));
+  }
   const [row] = await db
     .select()
     .from(escrows)
-    .where(eq(escrows.id, escrowId))
+    .where(and(...conditions))
     .limit(1);
 
   if (!row) {
@@ -176,6 +181,7 @@ export async function createEscrow(
       evaluatorAddress: params.evaluatorAddress ?? null,
       expiresAt: params.expiresAt,
       traceId: params.traceId ?? null,
+      apiKeyId: params.apiKeyId ?? null,
     })
     .returning();
 
@@ -211,8 +217,8 @@ export async function createEscrow(
 /**
  * Transition CREATED -> FUNDED.
  */
-export async function fundEscrow(escrowId: string): Promise<Escrow> {
-  const existing = await getEscrowOrThrow(escrowId);
+export async function fundEscrow(escrowId: string, apiKeyId?: string): Promise<Escrow> {
+  const existing = await getEscrowOrThrow(escrowId, apiKeyId);
   assertTransition(escrowId, existing.state, "FUNDED");
 
   const db = getDb();
@@ -222,6 +228,10 @@ export async function fundEscrow(escrowId: string): Promise<Escrow> {
     .set({ state: "FUNDED", fundedAt: now, updatedAt: now })
     .where(and(eq(escrows.id, escrowId), eq(escrows.state, existing.state)))
     .returning();
+
+  if (!updated) {
+    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
+  }
 
   writeAuditLog({
     eventType: "escrow.funded",
@@ -236,17 +246,14 @@ export async function fundEscrow(escrowId: string): Promise<Escrow> {
   }, { traceId: existing.traceId ?? undefined });
 
   logger.info("Escrow funded", { escrowId });
-  if (!updated) {
-    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
-  }
   return updated;
 }
 
 /**
  * Transition FUNDED -> ACTIVE. Work can begin.
  */
-export async function activateEscrow(escrowId: string): Promise<Escrow> {
-  const existing = await getEscrowOrThrow(escrowId);
+export async function activateEscrow(escrowId: string, apiKeyId?: string): Promise<Escrow> {
+  const existing = await getEscrowOrThrow(escrowId, apiKeyId);
   assertTransition(escrowId, existing.state, "ACTIVE");
 
   const db = getDb();
@@ -256,6 +263,10 @@ export async function activateEscrow(escrowId: string): Promise<Escrow> {
     .set({ state: "ACTIVE", updatedAt: now })
     .where(and(eq(escrows.id, escrowId), eq(escrows.state, existing.state)))
     .returning();
+
+  if (!updated) {
+    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
+  }
 
   writeAuditLog({
     eventType: "escrow.activated",
@@ -270,9 +281,6 @@ export async function activateEscrow(escrowId: string): Promise<Escrow> {
   }, { traceId: existing.traceId ?? undefined });
 
   logger.info("Escrow activated", { escrowId });
-  if (!updated) {
-    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
-  }
   return updated;
 }
 
@@ -282,8 +290,9 @@ export async function activateEscrow(escrowId: string): Promise<Escrow> {
 export async function completeEscrow(
   escrowId: string,
   evaluatorProof: EvaluatorProof,
+  apiKeyId?: string,
 ): Promise<Escrow> {
-  const existing = await getEscrowOrThrow(escrowId);
+  const existing = await getEscrowOrThrow(escrowId, apiKeyId);
   assertTransition(escrowId, existing.state, "COMPLETED");
 
   // If an evaluator address is set, verify the proof comes from the right evaluator
@@ -303,6 +312,10 @@ export async function completeEscrow(
     .set({ state: "COMPLETED", completedAt: now, updatedAt: now })
     .where(and(eq(escrows.id, escrowId), eq(escrows.state, existing.state)))
     .returning();
+
+  if (!updated) {
+    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
+  }
 
   writeAuditLog({
     eventType: "escrow.completed",
@@ -326,9 +339,6 @@ export async function completeEscrow(
   }, { traceId: existing.traceId ?? undefined });
 
   logger.info("Escrow completed", { escrowId });
-  if (!updated) {
-    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
-  }
   return updated;
 }
 
@@ -338,8 +348,9 @@ export async function completeEscrow(
 export async function disputeEscrow(
   escrowId: string,
   reason: string,
+  apiKeyId?: string,
 ): Promise<Escrow> {
-  const existing = await getEscrowOrThrow(escrowId);
+  const existing = await getEscrowOrThrow(escrowId, apiKeyId);
   assertTransition(escrowId, existing.state, "DISPUTED");
 
   const db = getDb();
@@ -349,6 +360,10 @@ export async function disputeEscrow(
     .set({ state: "DISPUTED", disputedAt: now, updatedAt: now })
     .where(and(eq(escrows.id, escrowId), eq(escrows.state, existing.state)))
     .returning();
+
+  if (!updated) {
+    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
+  }
 
   writeAuditLog({
     eventType: "escrow.disputed",
@@ -364,17 +379,14 @@ export async function disputeEscrow(
   }, { traceId: existing.traceId ?? undefined });
 
   logger.info("Escrow disputed", { escrowId, reason });
-  if (!updated) {
-    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
-  }
   return updated;
 }
 
 /**
  * Transition DISPUTED/EXPIRED -> REFUNDED.
  */
-export async function refundEscrow(escrowId: string): Promise<Escrow> {
-  const existing = await getEscrowOrThrow(escrowId);
+export async function refundEscrow(escrowId: string, apiKeyId?: string): Promise<Escrow> {
+  const existing = await getEscrowOrThrow(escrowId, apiKeyId);
   assertTransition(escrowId, existing.state, "REFUNDED");
 
   const db = getDb();
@@ -384,6 +396,10 @@ export async function refundEscrow(escrowId: string): Promise<Escrow> {
     .set({ state: "REFUNDED", updatedAt: now })
     .where(and(eq(escrows.id, escrowId), eq(escrows.state, existing.state)))
     .returning();
+
+  if (!updated) {
+    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
+  }
 
   writeAuditLog({
     eventType: "escrow.refunded",
@@ -398,9 +414,6 @@ export async function refundEscrow(escrowId: string): Promise<Escrow> {
   }, { traceId: existing.traceId ?? undefined });
 
   logger.info("Escrow refunded", { escrowId });
-  if (!updated) {
-    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
-  }
   return updated;
 }
 
@@ -408,10 +421,10 @@ export async function refundEscrow(escrowId: string): Promise<Escrow> {
  * Check if an escrow has expired and transition to EXPIRED if so.
  * Only transitions from CREATED, FUNDED, or ACTIVE.
  */
-export async function expireEscrow(escrowId: string): Promise<Escrow> {
+export async function expireEscrow(escrowId: string, apiKeyId?: string): Promise<Escrow> {
   let existing: Escrow;
   try {
-    existing = await getEscrowOrThrow(escrowId);
+    existing = await getEscrowOrThrow(escrowId, apiKeyId);
   } catch (err) {
     // getEscrowOrThrow auto-expires past-due escrows and throws — that's exactly
     // what this function wants to do, so re-fetch the (now EXPIRED) row.
@@ -443,6 +456,10 @@ export async function expireEscrow(escrowId: string): Promise<Escrow> {
     .where(and(eq(escrows.id, escrowId), eq(escrows.state, existing.state)))
     .returning();
 
+  if (!updated) {
+    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
+  }
+
   writeAuditLog({
     eventType: "escrow.expired",
     payload: { escrowId, previousState: existing.state, expiresAt: existing.expiresAt },
@@ -456,8 +473,5 @@ export async function expireEscrow(escrowId: string): Promise<Escrow> {
   }, { traceId: existing.traceId ?? undefined });
 
   logger.info("Escrow expired", { escrowId });
-  if (!updated) {
-    throw new EscrowTransitionError(escrowId, existing.state, "UNKNOWN", undefined, "Concurrent modification — state changed by another request. Retry.");
-  }
   return updated;
 }
