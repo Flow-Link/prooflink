@@ -1,3 +1,4 @@
+import { requireScope } from "../middleware/auth.js";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -78,7 +79,7 @@ policyRoutes.get("/:agentDid", async (c) => {
 });
 
 // PUT /v1/policies/:agentDid — update policy (admin scope)
-policyRoutes.put("/:agentDid", validate({ body: UpdatePolicyBody }), async (c) => {
+policyRoutes.put("/:agentDid", requireScope("admin"), validate({ body: UpdatePolicyBody }), async (c) => {
   const agentDid = decodeURIComponent(c.req.param("agentDid"));
   const parsed = AgentDidParam.safeParse({ agentDid });
   if (!parsed.success) {
@@ -113,7 +114,7 @@ policyRoutes.put("/:agentDid", validate({ body: UpdatePolicyBody }), async (c) =
 });
 
 // POST /v1/policies/:agentDid/sync — trigger cross-chain sync for a specific chain
-policyRoutes.post("/:agentDid/sync", validate({ body: SyncBody }), async (c) => {
+policyRoutes.post("/:agentDid/sync", requireScope("admin"), validate({ body: SyncBody }), async (c) => {
   const agentDid = decodeURIComponent(c.req.param("agentDid"));
   const parsed = AgentDidParam.safeParse({ agentDid });
   if (!parsed.success) {

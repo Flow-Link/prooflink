@@ -1,3 +1,4 @@
+import { requireScope } from "../middleware/auth.js";
 import { desc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
@@ -59,7 +60,7 @@ const ListSagasQuery = z.object({
 export const sagaRoutes = new Hono();
 
 // POST /sagas — create saga definition
-sagaRoutes.post("/", validate({ body: CreateSagaRequest }), async (c) => {
+sagaRoutes.post("/", requireScope("write"), validate({ body: CreateSagaRequest }), async (c) => {
   const body = c.get("validatedBody") as z.infer<typeof CreateSagaRequest>;
 
   const saga = await createSaga({
@@ -72,7 +73,7 @@ sagaRoutes.post("/", validate({ body: CreateSagaRequest }), async (c) => {
 });
 
 // POST /sagas/:id/execute — execute saga
-sagaRoutes.post("/:id/execute", validate({ params: SagaIdParams }), async (c) => {
+sagaRoutes.post("/:id/execute", requireScope("write"), validate({ params: SagaIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof SagaIdParams>;
 
   try {
@@ -105,7 +106,7 @@ sagaRoutes.get("/:id", validate({ params: SagaIdParams }), async (c) => {
 });
 
 // POST /sagas/:id/cancel — cancel and compensate
-sagaRoutes.post("/:id/cancel", validate({ params: SagaIdParams }), async (c) => {
+sagaRoutes.post("/:id/cancel", requireScope("write"), validate({ params: SagaIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof SagaIdParams>;
 
   try {

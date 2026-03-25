@@ -1,3 +1,4 @@
+import { requireScope } from "../middleware/auth.js";
 import { and, desc, eq, gte, lte, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
@@ -112,7 +113,7 @@ function handleServiceError(c: any, err: unknown) {
 const streamRoutes = new Hono();
 
 // POST /v1/streams — Create a payment stream
-streamRoutes.post("/", validate({ body: CreateStreamRequest }), async (c) => {
+streamRoutes.post("/", requireScope("write"), validate({ body: CreateStreamRequest }), async (c) => {
   const parsed = c.get("validatedBody") as CreateStreamRequest;
 
   try {
@@ -140,7 +141,7 @@ streamRoutes.get("/:id", validate({ params: StreamIdParams }), async (c) => {
 
 // POST /v1/streams/:id/usage — Record usage against a stream
 streamRoutes.post(
-  "/:id/usage",
+  "/:id/usage", requireScope("write"),
   validate({ params: StreamIdParams, body: RecordUsageRequest }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof StreamIdParams>;
@@ -157,7 +158,7 @@ streamRoutes.post(
 
 // POST /v1/streams/:id/pause — Pause an active stream
 streamRoutes.post(
-  "/:id/pause",
+  "/:id/pause", requireScope("write"),
   validate({ params: StreamIdParams }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof StreamIdParams>;
@@ -173,7 +174,7 @@ streamRoutes.post(
 
 // POST /v1/streams/:id/resume — Resume a paused stream
 streamRoutes.post(
-  "/:id/resume",
+  "/:id/resume", requireScope("write"),
   validate({ params: StreamIdParams }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof StreamIdParams>;
@@ -189,7 +190,7 @@ streamRoutes.post(
 
 // POST /v1/streams/:id/settle — Settle and close a stream
 streamRoutes.post(
-  "/:id/settle",
+  "/:id/settle", requireScope("write"),
   validate({ params: StreamIdParams }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof StreamIdParams>;
