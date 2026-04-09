@@ -58,17 +58,17 @@ function makeValidCredential(
   return {
     "@context": [
       "https://www.w3.org/2018/credentials/v1",
-      "https://flowlink.io/kya/v1",
+      "https://prooflink.io/kya/v1",
     ],
     type: ["VerifiableCredential", "KYACredential"],
-    issuer: "did:web:flowlink.io",
+    issuer: "did:web:prooflink.io",
     issuanceDate: new Date(Date.now() - 60_000).toISOString(),
     expirationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
     credentialSubject: subject as unknown as VerifiableCredential["credentialSubject"],
     proof: {
       type: "Ed25519Signature2020",
       created: new Date(Date.now() - 60_000).toISOString(),
-      verificationMethod: "did:web:flowlink.io#key-1",
+      verificationMethod: "did:web:prooflink.io#key-1",
       proofPurpose: "assertionMethod",
       proofValue: "mock_proof_value",
     },
@@ -106,7 +106,7 @@ describe("KYAVerifier — valid credential", () => {
   it("should accept issuer as an object with id field", async () => {
     const verifier = new KYAVerifier(makeConfig());
     const credential = makeValidCredential();
-    credential.issuer = { id: "did:web:flowlink.io", name: "FlowLink" };
+    credential.issuer = { id: "did:web:prooflink.io", name: "ProofLink" };
 
     const result = await verifier.verifyCredential(credential);
 
@@ -318,7 +318,7 @@ describe("KYAVerifier — VC structure validation", () => {
   it("should fail when @context is missing the W3C credentials context", async () => {
     const verifier = new KYAVerifier(makeConfig());
     const credential = makeValidCredential();
-    credential["@context"] = ["https://flowlink.io/kya/v1"]; // missing W3C context
+    credential["@context"] = ["https://prooflink.io/kya/v1"]; // missing W3C context
 
     const result = await verifier.verifyCredential(credential);
 
@@ -401,10 +401,10 @@ describe("KYAVerifier — issuer trust", () => {
     expect(result.errors.some((e) => e.includes("trusted issuers"))).toBe(true);
   });
 
-  it("should accept default trusted issuers (did:web:flowlink.io)", async () => {
+  it("should accept default trusted issuers (did:web:prooflink.io)", async () => {
     const verifier = new KYAVerifier(makeConfig()); // uses default trusted issuers
     const credential = makeValidCredential();
-    // issuer is did:web:flowlink.io by default
+    // issuer is did:web:prooflink.io by default
 
     const result = await verifier.verifyCredential(credential);
 

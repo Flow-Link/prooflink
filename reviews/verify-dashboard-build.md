@@ -1,7 +1,7 @@
 # Dashboard Build Verification Report
 
 **Date:** 2026-03-21
-**Package:** `@flowlink/dashboard`
+**Package:** `@prooflink/dashboard`
 **Next.js:** 15.5.14
 **Build tool:** `next build`
 
@@ -21,9 +21,9 @@ None. Zero warnings, zero errors.
 
 ## Missing Dependencies
 
-None. All dependencies resolve from the pnpm lockfile. `pnpm install --filter @flowlink/dashboard` completes in <1s.
+None. All dependencies resolve from the pnpm lockfile. `pnpm install --filter @prooflink/dashboard` completes in <1s.
 
-**Note:** `next.config.ts` declares `transpilePackages: ["@flowlink/sdk"]` but no pages currently import from `@flowlink/sdk`. This is forward-compatible and does not cause issues.
+**Note:** `next.config.ts` declares `transpilePackages: ["@prooflink/sdk"]` but no pages currently import from `@prooflink/sdk`. This is forward-compatible and does not cause issues.
 
 ## Route List
 
@@ -73,7 +73,7 @@ None. All dependencies resolve from the pnpm lockfile. `pnpm install --filter @f
 
 ### next.config.ts
 - `reactStrictMode: true`
-- `transpilePackages: ["@flowlink/sdk"]` (future-proofing)
+- `transpilePackages: ["@prooflink/sdk"]` (future-proofing)
 - No output/image/redirect config (defaults are fine for dev)
 
 ### tsconfig.json

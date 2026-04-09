@@ -85,12 +85,12 @@ const BASE_CHECK = {
 const BASE_INVOICE = {
   seller: {
     walletAddress: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-    agentId: "did:flowlink:agent:seller-001",
+    agentId: "did:prooflink:agent:seller-001",
     legalName: "Acme Corp",
   },
   buyer: {
     walletAddress: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-    agentId: "did:flowlink:agent:buyer-001",
+    agentId: "did:prooflink:agent:buyer-001",
     legalName: "Test Client",
   },
   lineItems: [

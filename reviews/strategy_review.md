@@ -1,4 +1,4 @@
-# FlowLink Strategy Review — Investor-Readiness Assessment
+# ProofLink Strategy Review — Investor-Readiness Assessment
 **Reviewer:** Review Team 2 (Product Strategy & Investor-Readiness)
 **Date:** March 20, 2026
 **Verdict:** Strong thesis, under-proven execution. Not yet fundable at Series A. Fundable at pre-seed/seed if you plug the gaps below before the first LP meeting.
@@ -11,9 +11,9 @@
 
 **a16z Crypto:** Probably not in its current form. a16z is raising a $2B fund and has conviction on payments infrastructure — the thesis alignment is genuine. But a16z bets on teams that have either (a) shipped something with real traction, or (b) have dominant domain authority that makes them the obvious people to build this. Neither is established in the current deck. Slide 11 (Traction) is a template with placeholders. That kills the pitch at a fund of this size. a16z passed on infrastructure plays before the metrics showed up. They will ask: "Why you? You have two people."
 
-**Paradigm:** Better fit than a16z for the current stage. Paradigm backed Tempo with Stripe at the protocol layer and looks for technical founders who think in systems. The compliance-as-infrastructure framing is conceptually tight. However, Paradigm is also a Tempo LP/backer — they already have a position in the agent payment rail. They may view FlowLink as additive (good) or as a compliance wrapper that their existing portfolio company should build natively (bad). This conflict needs to be addressed proactively in the meeting, not discovered.
+**Paradigm:** Better fit than a16z for the current stage. Paradigm backed Tempo with Stripe at the protocol layer and looks for technical founders who think in systems. The compliance-as-infrastructure framing is conceptually tight. However, Paradigm is also a Tempo LP/backer — they already have a position in the agent payment rail. They may view ProofLink as additive (good) or as a compliance wrapper that their existing portfolio company should build natively (bad). This conflict needs to be addressed proactively in the meeting, not discovered.
 
-**ICONIQ:** ICONIQ led Rain's $250M Series C at $1.95B. Rain does stablecoin card issuance — a completely different use case. ICONIQ's interest is in enterprise fintech with clear revenue. FlowLink's Year 1 ARR projection of $550K is not an ICONIQ-size bet. ICONIQ is the right Series B/C target, not pre-seed.
+**ICONIQ:** ICONIQ led Rain's $250M Series C at $1.95B. Rain does stablecoin card issuance — a completely different use case. ICONIQ's interest is in enterprise fintech with clear revenue. ProofLink's Year 1 ARR projection of $550K is not an ICONIQ-size bet. ICONIQ is the right Series B/C target, not pre-seed.
 
 **Realistic first money:** Haun Ventures, Dragonfly, Pantera, or angel syndicates around compliance/fintech founders. A Base Batches grant ($50K) plus a hackathon win would be stronger proof than any slide in this deck.
 
@@ -23,7 +23,7 @@
 
 2. **The whitespace identification is genuine.** The gap analysis — no product does native Travel Rule for agent transactions — is defensible and backed by competitive research across 20+ players. This is real intellectual work that VCs will respect.
 
-3. **Protocol-agnostic positioning is correct.** x402 vs. MPP vs. AP2 is a genuine horse race. Being the neutral compliance layer that works across all of them is the right bet — it means FlowLink wins regardless of which protocol wins. This is not an obvious insight and it should be stated more prominently.
+3. **Protocol-agnostic positioning is correct.** x402 vs. MPP vs. AP2 is a genuine horse race. Being the neutral compliance layer that works across all of them is the right bet — it means ProofLink wins regardless of which protocol wins. This is not an obvious insight and it should be stated more prominently.
 
 4. **The acquisition exit narrative is coherent.** BVNK ($1.8B), Bridge ($1.1B), the implied next acquirer (Visa, JPMorgan, PayPal) — the thesis that compliance-native stablecoin infrastructure gets acquired is now proven by two data points. That is sufficient to anchor a funding argument.
 
@@ -76,15 +76,15 @@ For context: Request Finance hit $23.8M in a single month after years of operati
 
 **Critical inconsistency:** The strategy document uses "10-30 bps transaction fee" in the SOM table (section 2.3) but the pitch deck (Slide 9) shows "$0.01/transaction" for the Developer tier and "$299/mo + $0.005/tx" for Business. At $0.005/tx, a $100K B2B invoice generates $0.50 in revenue. At 15bps, the same invoice generates $150. These are not the same model. Pick one and make it consistent everywhere.
 
-**The subscription pricing is misaligned with the market.** Request Finance charges $600/month at their entry tier for the same target customer (mid-market B2B crypto companies). FlowLink is charging $499/month for the Business tier with "100,000 transactions/month, ProofLink receipts, KYA verification (100 agents)" — more feature-complete at a lower price. This is either a sustainable positioning advantage or unsustainable underpricing depending on cost structure. The cost of running Notabene Travel Rule compliance, TRM Labs AML scoring, and multiple sanctions list feeds is not modeled anywhere. Gross margin at $499/month is unknown.
+**The subscription pricing is misaligned with the market.** Request Finance charges $600/month at their entry tier for the same target customer (mid-market B2B crypto companies). ProofLink is charging $499/month for the Business tier with "100,000 transactions/month, ProofLink receipts, KYA verification (100 agents)" — more feature-complete at a lower price. This is either a sustainable positioning advantage or unsustainable underpricing depending on cost structure. The cost of running Notabene Travel Rule compliance, TRM Labs AML scoring, and multiple sanctions list feeds is not modeled anywhere. Gross margin at $499/month is unknown.
 
 ### Are the Pricing Tiers Competitive?
 
 The transaction fee tier (5-30bps) is competitive against BVNK (~15-25bps) and clearly superior to Coinbase Commerce (100bps) and BitPay (100bps). This is correct for the market.
 
-The subscription tier comparison against Request Finance ($600/month entry) shows FlowLink priced below a less-featured competitor. This could be aggressive customer acquisition pricing or unsustainable — the document does not address unit economics at all. No COGS estimate. No gross margin assumption.
+The subscription tier comparison against Request Finance ($600/month entry) shows ProofLink priced below a less-featured competitor. This could be aggressive customer acquisition pricing or unsustainable — the document does not address unit economics at all. No COGS estimate. No gross margin assumption.
 
-**What's missing:** A cost model. The strategy claims FlowLink is "capital efficient" but never shows why. What does it cost per transaction to run ProofLink? What are the Notabene API costs? Chainalysis data costs? TRM Labs? Without this, the revenue projections float free of any economic reality.
+**What's missing:** A cost model. The strategy claims ProofLink is "capital efficient" but never shows why. What does it cost per transaction to run ProofLink? What are the Notabene API costs? Chainalysis data costs? TRM Labs? Without this, the revenue projections float free of any economic reality.
 
 ### Is the Go-to-Market Sequence Correct?
 
@@ -118,25 +118,25 @@ The weakest moat claim is **regulatory credibility.** "Being the first to define
 
 **In the short term: No.** Chainalysis and Elliptic are post-hoc monitoring tools with $150K-$500K/year enterprise pricing. They are not in the payment flow. Moving into the payment flow would require them to compete with their own customers (VASPs who use Chainalysis for compliance and would not adopt a competing payment product from the same vendor). This is a genuine structural barrier.
 
-**In the medium term: Yes, if they want to.** Chainalysis has the data, the regulatory relationships, and the balance sheet to acquire a company like FlowLink and bolt on payment-flow compliance. The mitigation is speed — get acquired before they can build or buy competitively. The documents correctly identify this as a risk but underweight it.
+**In the medium term: Yes, if they want to.** Chainalysis has the data, the regulatory relationships, and the balance sheet to acquire a company like ProofLink and bolt on payment-flow compliance. The mitigation is speed — get acquired before they can build or buy competitively. The documents correctly identify this as a risk but underweight it.
 
 **Elliptic is less of a threat.** Elliptic's $100M Series C (2022) positions them in the monitoring space, not the payment infrastructure space. They are not building payment integrations.
 
-**TRM Labs is the sleeper threat.** TRM is growing fast, has deep regulatory relationships, and is explicitly building API-first compliance tools. They are closer to FlowLink's architecture than Chainalysis. This competitor is absent from the analysis entirely. This is a notable gap.
+**TRM Labs is the sleeper threat.** TRM is growing fast, has deep regulatory relationships, and is explicitly building API-first compliance tools. They are closer to ProofLink's architecture than Chainalysis. This competitor is absent from the analysis entirely. This is a notable gap.
 
 ### Can Protocol Owners (Coinbase, Stripe) Add This Natively?
 
 This is the highest-severity unaddressed risk in the entire strategy. The document acknowledges it ("Incumbents vertically integrate — High probability, High severity") but the mitigation is inadequate: "Build the compliance moat faster than they can ship." This is not a mitigation. This is a race.
 
 **Coinbase specifically:** Coinbase already has:
-- A compliance team larger than FlowLink's total headcount
+- A compliance team larger than ProofLink's total headcount
 - OFAC/sanctions screening built into every transaction on the platform
 - AgentKit, which is the x402 integration layer
 - Coinbase Wallet with built-in KYC
 
 What stops Coinbase from shipping "compliant x402 middleware" in a quarterly release? The honest answer is: nothing, if they prioritize it. The strategy needs a more credible answer here. Some options:
-- FlowLink is cross-protocol (x402 AND MPP AND AP2) — Coinbase only does x402
-- FlowLink provides compliance to non-Coinbase ecosystems; Coinbase's compliance only covers its own platform
+- ProofLink is cross-protocol (x402 AND MPP AND AP2) — Coinbase only does x402
+- ProofLink provides compliance to non-Coinbase ecosystems; Coinbase's compliance only covers its own platform
 - The open KYA standard creates ecosystem lock-in that Coinbase's proprietary solution cannot compete with
 
 These are real differentiators but they need to be stated crisply as the answer to this specific question.
@@ -147,42 +147,42 @@ These are real differentiators but they need to be stated crisply as the answer 
 
 ## 4. RISK ASSESSMENT
 
-### What Could Kill FlowLink?
+### What Could Kill ProofLink?
 
-**Kill risk 1 (Probability: High): Coinbase ships native x402 compliance middleware before FlowLink establishes customer lock-in.**
-This is the single scenario most likely to end FlowLink. AgentKit already has wallet management, fee abstraction, and account creation. A compliance hook in the x402 SDK is a natural Coinbase product addition, especially after GENIUS Act passed. If Coinbase ships this in Q2 2026, FlowLink's x402 compliance value proposition collapses entirely.
+**Kill risk 1 (Probability: High): Coinbase ships native x402 compliance middleware before ProofLink establishes customer lock-in.**
+This is the single scenario most likely to end ProofLink. AgentKit already has wallet management, fee abstraction, and account creation. A compliance hook in the x402 SDK is a natural Coinbase product addition, especially after GENIUS Act passed. If Coinbase ships this in Q2 2026, ProofLink's x402 compliance value proposition collapses entirely.
 
 **Kill risk 2 (Probability: Medium): VASP reclassification by FinCEN.**
-The "non-custodial middleware avoids MTL trigger" assumption is doing enormous load-bearing work in this strategy. FinCEN's interpretive guidance on what constitutes a money transmitter has been expanding. If FlowLink sits in the payment flow and facilitates transmission (even without custody), FinCEN could classify it as an MSB. The consequence is the need for 49 state MTLs ($1.3M-$3M+ upfront) — a company-killing regulatory burden before revenue scale. The document rates this "Low" probability for non-custodial architecture, but there is no regulatory opinion cited to support this. This is not a risk to dismiss without a formal legal opinion.
+The "non-custodial middleware avoids MTL trigger" assumption is doing enormous load-bearing work in this strategy. FinCEN's interpretive guidance on what constitutes a money transmitter has been expanding. If ProofLink sits in the payment flow and facilitates transmission (even without custody), FinCEN could classify it as an MSB. The consequence is the need for 49 state MTLs ($1.3M-$3M+ upfront) — a company-killing regulatory burden before revenue scale. The document rates this "Low" probability for non-custodial architecture, but there is no regulatory opinion cited to support this. This is not a risk to dismiss without a formal legal opinion.
 
 **Kill risk 3 (Probability: Medium): Notabene/TRM change pricing or access.**
-The ProofLink engine is built on top of Notabene (Travel Rule) and TRM Labs (AML). These are not free services. If either raises prices or restricts API access (as Chainalysis has done with certain data products), FlowLink's cost structure changes overnight. There is no evidence FlowLink has negotiated any preferential terms or alternative data sources.
+The ProofLink engine is built on top of Notabene (Travel Rule) and TRM Labs (AML). These are not free services. If either raises prices or restricts API access (as Chainalysis has done with certain data products), ProofLink's cost structure changes overnight. There is no evidence ProofLink has negotiated any preferential terms or alternative data sources.
 
 **Kill risk 4 (Probability: Medium): The A2A market develops more slowly than projected.**
-x402 real volume is $28K/day — $10.2M annualized. The strategy projects FlowLink processing $2B/month in Year 2 via "agent-assisted flows." That requires x402/MPP/AP2 real commerce volume to grow by 200x in 18 months. This is not impossible, but it is the most heroic assumption in the entire plan and it is never stress-tested.
+x402 real volume is $28K/day — $10.2M annualized. The strategy projects ProofLink processing $2B/month in Year 2 via "agent-assisted flows." That requires x402/MPP/AP2 real commerce volume to grow by 200x in 18 months. This is not impossible, but it is the most heroic assumption in the entire plan and it is never stress-tested.
 
-**Kill risk 5 (Probability: Low, Severity: Fatal): A major FlowLink-processed transaction facilitates sanctions evasion.**
-If a FlowLink-cleared transaction later appears in a OFAC enforcement action, the reputational and regulatory consequences are existential. The document never discusses FlowLink's own liability for incorrect compliance clearances. Is FlowLink liable if its ProofLink receipt clears a transaction that turns out to involve a sanctioned party? This legal exposure is unaddressed.
+**Kill risk 5 (Probability: Low, Severity: Fatal): A major ProofLink-processed transaction facilitates sanctions evasion.**
+If a ProofLink-cleared transaction later appears in a OFAC enforcement action, the reputational and regulatory consequences are existential. The document never discusses ProofLink's own liability for incorrect compliance clearances. Is ProofLink liable if its ProofLink receipt clears a transaction that turns out to involve a sanctioned party? This legal exposure is unaddressed.
 
 ### What If x402 Dies or MPP Wins Exclusively?
 
-**x402 dies:** FlowLink falls back to MPP, AP2, and ACP integration. The multi-protocol architecture is genuine protection here. x402 dying without a replacement would be a significant headwind but not a kill shot.
+**x402 dies:** ProofLink falls back to MPP, AP2, and ACP integration. The multi-protocol architecture is genuine protection here. x402 dying without a replacement would be a significant headwind but not a kill shot.
 
-**MPP wins exclusively:** If Stripe's MPP becomes the dominant agent payment protocol and Stripe decides to integrate compliance natively (they have the BSA/AML infrastructure), then FlowLink's largest single competitive threat materializes. The mitigation is the cross-protocol stance, but if MPP is 80% of agent payments, being on the remaining 20% is not a viable business.
+**MPP wins exclusively:** If Stripe's MPP becomes the dominant agent payment protocol and Stripe decides to integrate compliance natively (they have the BSA/AML infrastructure), then ProofLink's largest single competitive threat materializes. The mitigation is the cross-protocol stance, but if MPP is 80% of agent payments, being on the remaining 20% is not a viable business.
 
-**The actual tail risk:** None of the six protocols win decisively. Enterprise adoption of agent payments remains fragmented and slow. The A2A economy doesn't materialize at scale until 2028-2029. In this scenario, FlowLink's H2H B2B product becomes the core business, which is actually fine — but the current deck is pitched as though the agent economy is imminent, not a 3-year horizon. If VCs fund on the agent narrative and get a B2B invoicing business, that is a credibility problem at Series A.
+**The actual tail risk:** None of the six protocols win decisively. Enterprise adoption of agent payments remains fragmented and slow. The A2A economy doesn't materialize at scale until 2028-2029. In this scenario, ProofLink's H2H B2B product becomes the core business, which is actually fine — but the current deck is pitched as though the agent economy is imminent, not a 3-year horizon. If VCs fund on the agent narrative and get a B2B invoicing business, that is a credibility problem at Series A.
 
 ### What If Regulators Don't Enforce for Agents?
 
-This risk is not in the strategy document and it should be. The entire "enforcement wave is coming" narrative drives urgency for FlowLink's compliance product. If regulators explicitly exempt agent-to-agent transactions from Travel Rule requirements (e.g., treating micro-transactions by agents analogously to how FATF treats transactions under threshold), then the KYA and Agent Travel Rule products have no mandatory demand.
+This risk is not in the strategy document and it should be. The entire "enforcement wave is coming" narrative drives urgency for ProofLink's compliance product. If regulators explicitly exempt agent-to-agent transactions from Travel Rule requirements (e.g., treating micro-transactions by agents analogously to how FATF treats transactions under threshold), then the KYA and Agent Travel Rule products have no mandatory demand.
 
-FATF's current guidance applies to VASPs, not to every end-user making transfers. If regulators decide that AI agents are simply the "software" of their human principals (analogous to a bank's automated batch processing), the Travel Rule obligation falls on the VASP processing the transaction, not on a middleware layer. In this scenario, FlowLink's value proposition for agent compliance specifically shrinks to "nice to have" rather than "required."
+FATF's current guidance applies to VASPs, not to every end-user making transfers. If regulators decide that AI agents are simply the "software" of their human principals (analogous to a bank's automated batch processing), the Travel Rule obligation falls on the VASP processing the transaction, not on a middleware layer. In this scenario, ProofLink's value proposition for agent compliance specifically shrinks to "nice to have" rather than "required."
 
-The strategy should address this scenario explicitly and explain why FlowLink creates value even without enforcement.
+The strategy should address this scenario explicitly and explain why ProofLink creates value even without enforcement.
 
 ### What If a16z Invests in a Competitor Instead?
 
-**This is not a hypothetical — it is probable.** a16z is raising a $2B fund with a stated thesis on payments infrastructure. They will fund multiple bets in this space. If they fund a team of three ex-Chainalysis engineers plus a former FinCEN official building compliance middleware for agentic payments, FlowLink's differentiation shrinks to "we got there first" — which is only true if they are actually first.
+**This is not a hypothetical — it is probable.** a16z is raising a $2B fund with a stated thesis on payments infrastructure. They will fund multiple bets in this space. If they fund a team of three ex-Chainalysis engineers plus a former FinCEN official building compliance middleware for agentic payments, ProofLink's differentiation shrinks to "we got there first" — which is only true if they are actually first.
 
 The competitive moat in this scenario depends entirely on:
 1. Having real customer lock-in before the a16z-backed competitor launches
@@ -198,7 +198,7 @@ None of these are in place today. The document does not address what happens in 
 ### What the Strategy Needs That It Doesn't Have
 
 **1. A cost model / unit economics section.**
-Revenue projections without COGS are fiction. What does it cost FlowLink per transaction to run ProofLink? The total of Notabene API fees + TRM Labs + Chainalysis data + infrastructure per 1,000 transactions at each volume tier must be calculated before the business model is credible.
+Revenue projections without COGS are fiction. What does it cost ProofLink per transaction to run ProofLink? The total of Notabene API fees + TRM Labs + Chainalysis data + infrastructure per 1,000 transactions at each volume tier must be calculated before the business model is credible.
 
 **2. A legal opinion on VASP/MSB classification.**
 This is not optional. A company pitching "compliance as infrastructure" without a legal memo from a qualified fintech attorney confirming their non-custodial architecture avoids MSB classification is a liability in every investor meeting. Get this document before the first pitch.
@@ -210,22 +210,22 @@ If the product is live, every metric must be in the deck: transactions processed
 "Cofounder — Building Request Finance from ground up" is not a team slide. Investors fund people. Who is this person? What is their compliance, fintech, or protocol engineering background? Do they have specific knowledge of Travel Rule implementation? Their name, their prior work, and their relevant expertise must be in the deck.
 
 **5. One design partner or letter of intent.**
-A single enterprise customer or compliance team willing to be named in the deck as a design partner converts this from a concept pitch to a product pitch. Even a crypto-native startup with $10M-$50M in cross-border payables who has expressed intent to pilot FlowLink is worth more than all the market research combined.
+A single enterprise customer or compliance team willing to be named in the deck as a design partner converts this from a concept pitch to a product pitch. Even a crypto-native startup with $10M-$50M in cross-border payables who has expressed intent to pilot ProofLink is worth more than all the market research combined.
 
 **6. A regulatory engagement trail.**
-If FlowLink's goal is to be cited in FATF/FinCEN guidance on agent Travel Rule, there needs to be evidence of engagement with these bodies. Comment letter submissions, working group participation, advisory board members from regulatory agencies — something that shows the regulatory influence claim is being actively pursued, not aspirational.
+If ProofLink's goal is to be cited in FATF/FinCEN guidance on agent Travel Rule, there needs to be evidence of engagement with these bodies. Comment letter submissions, working group participation, advisory board members from regulatory agencies — something that shows the regulatory influence claim is being actively pursued, not aspirational.
 
 **7. A competitive response to TRM Labs.**
-TRM Labs is building API-first compliance infrastructure, growing fast, and is closer to FlowLink's architecture than any competitor named in the matrix. Their absence from the feature matrix is a gap that any informed VC will notice.
+TRM Labs is building API-first compliance infrastructure, growing fast, and is closer to ProofLink's architecture than any competitor named in the matrix. Their absence from the feature matrix is a gap that any informed VC will notice.
 
 **8. A stress test of the agent adoption timeline.**
-What does FlowLink's business look like if A2A commerce is 3 years away instead of 12 months? Build this scenario explicitly. If H2H alone can generate $2-3M ARR by Year 2, the agent upside is a bonus, not a dependency. If H2H alone cannot support the business, FlowLink needs to state this and explain why the agent timeline is reliable.
+What does ProofLink's business look like if A2A commerce is 3 years away instead of 12 months? Build this scenario explicitly. If H2H alone can generate $2-3M ARR by Year 2, the agent upside is a bonus, not a dependency. If H2H alone cannot support the business, ProofLink needs to state this and explain why the agent timeline is reliable.
 
 ### What Claims Are Unsupported?
 
 | Claim | Problem |
 |-------|---------|
-| "FlowLink's architecture becomes the reference implementation that regulators cite" | No regulatory engagement documented anywhere |
+| "ProofLink's architecture becomes the reference implementation that regulators cite" | No regulatory engagement documented anywhere |
 | "Being the first to define Travel Rule for agents creates a reference architecture regulators cite — this is locked in once established" | "Locked in" is extremely strong. Regulators adopt the most technically sound and well-lobbied standard, not necessarily the first |
 | "Multi-protocol integration cost is 12-18 months for any protocol owner" | Asserted without analysis. Coinbase has hundreds of engineers. 12-18 months for them, not 12-18 months for a team of two |
 | "73% of CFOs evaluating crypto payment options" | This is from a Chainup survey (vendor-sponsored research). Vendor surveys showing 73% adoption intent are systematically biased upward |
@@ -237,7 +237,7 @@ What does FlowLink's business look like if A2A commerce is 3 years away instead 
 
 1. **One live customer, fully named, with real transaction volume.** Nothing else in this list matters as much as this.
 
-2. **A compliance advisory board member.** A former FinCEN director, FATF working group member, or Chief Compliance Officer from a major bank lending their name to FlowLink converts the "compliance as moat" thesis from speculation to credibility.
+2. **A compliance advisory board member.** A former FinCEN director, FATF working group member, or Chief Compliance Officer from a major bank lending their name to ProofLink converts the "compliance as moat" thesis from speculation to credibility.
 
 3. **One protocol integration that is actually live.** A working x402 compliance middleware that any developer can install in 5 minutes, with a GitHub repo showing stars and forks, is worth more than 10 slides of architecture diagrams.
 
@@ -262,7 +262,7 @@ The question "Would you let an AI agent spend your company's money without an in
 **Slide 3 (Regulatory Tailwind):**
 Add: "59% of jurisdictions with Travel Rule laws have issued zero enforcement actions — the fine wave is coming." This converts the regulatory slide from background to urgency.
 
-Add the GENIUS Act's specific AML/BSA requirements for stablecoin issuers — this makes compliance non-optional for FlowLink's target customers, not just a nice-to-have.
+Add the GENIUS Act's specific AML/BSA requirements for stablecoin issuers — this makes compliance non-optional for ProofLink's target customers, not just a nice-to-have.
 
 **Slide 4 (Market):**
 "TAM: $260B+ stablecoin payments market × compliance layer" is not how TAM works. $260B is a volume figure, not a revenue figure. State the TAM as a revenue opportunity: "If compliance infrastructure captures 15bps of $260B in B2B stablecoin volume, that is $390M ARR in the addressable SAM." This is more honest and more impressive to VCs than a raw volume figure.
@@ -274,21 +274,21 @@ Add TRM Labs to the matrix. Add Notabene (Travel Rule specifically). Add thirdwe
 
 Remove "Superfluid/Sablier" from this slide. They are streaming protocols, not compliance or invoicing competitors. Their presence dilutes the competitive comparison.
 
-**Slide 6 (What FlowLink Does):**
+**Slide 6 (What ProofLink Does):**
 The text-based flow diagram is adequate for a strategy document. For a deck slide, it needs to be visual — a sequence diagram with logos. The current text version will lose investors who are not technical.
 
-Add: "Every FlowLink-processed transaction generates a ProofLink Compliance Receipt — a cryptographically signed, on-chain attestation that proves due diligence was performed. This is the document your CFO hands to the auditor."
+Add: "Every ProofLink-processed transaction generates a ProofLink Compliance Receipt — a cryptographically signed, on-chain attestation that proves due diligence was performed. This is the document your CFO hands to the auditor."
 
 **Slide 7 (Why Now):**
 This is the best-constructed slide in the deck. Keep it. Add one more event: "March 2026: a16z raising $2B crypto fund — capital is deploying NOW." This is a signal VCs recognize as evidence of institutional momentum.
 
 **Slide 8 (Product):**
-The six-item list is too abstract. Replace with a concrete user story: "Acme Corp's AI agent has $50K to pay for API services from DataVendor Inc. Here is exactly what happens in 500 milliseconds with FlowLink." Walk through ProofLink's decision tree with a real scenario. Concrete beats abstract every time in VC meetings.
+The six-item list is too abstract. Replace with a concrete user story: "Acme Corp's AI agent has $50K to pay for API services from DataVendor Inc. Here is exactly what happens in 500 milliseconds with ProofLink." Walk through ProofLink's decision tree with a real scenario. Concrete beats abstract every time in VC meetings.
 
 **Slide 9 (Business Model):**
 CRITICAL: The pricing table on this slide is inconsistent with the strategy document. The deck shows "$0.01/transaction" for Developer tier. The strategy shows "30bps" for Starter tier. At a $50K B2B invoice, these are $0.01 vs. $150 — a 15,000x difference. Reconcile this before any pitch. Pick a model and stick to it across every document.
 
-The business model slide must show unit economics: "At $10M/month volume, FlowLink generates X in transaction revenue, Y in subscriptions. Cost of revenue is Z. Gross margin is W." Without this, the slide is marketing, not a business model.
+The business model slide must show unit economics: "At $10M/month volume, ProofLink generates X in transaction revenue, Y in subscriptions. Cost of revenue is Z. Gross margin is W." Without this, the slide is marketing, not a business model.
 
 **Slide 10 (Go-to-Market):**
 "Target: Crypto-native companies paying contractors/vendors" is too narrow. The bigger opportunity is mid-market CFOs who have received board pressure to adopt stablecoin payments following the GENIUS Act but don't know how to do it compliantly. This is a warmer audience with more urgency.
@@ -303,7 +303,7 @@ CRITICAL: This slide cannot have placeholders. Either:
 A placeholder slide actively destroys credibility. It signals the team knows they have no traction and is hoping the investor doesn't notice.
 
 **Slide 12 (Validation):**
-Strong slide. The BVNK acquisition narrative is your strongest third-party validation. Consider adding: "BVNK's $1.8B exit validates that compliance-native stablecoin infrastructure commands premium acquisition multiples. FlowLink is building the compliance infrastructure layer that BVNK needed but didn't have." This reframes the competitor as proof of concept.
+Strong slide. The BVNK acquisition narrative is your strongest third-party validation. Consider adding: "BVNK's $1.8B exit validates that compliance-native stablecoin infrastructure commands premium acquisition multiples. ProofLink is building the compliance infrastructure layer that BVNK needed but didn't have." This reframes the competitor as proof of concept.
 
 **Slide 13 (Team):**
 CRITICAL: This slide is the most consequential slide in the deck and it is the weakest. Every word must earn its place.
@@ -318,9 +318,9 @@ CRITICAL: This slide is the most consequential slide in the deck and it is the w
 "Timeline: 18 months to Series A metrics" — state what those metrics are. Series A for a compliance infrastructure company in 2026 requires: $1M-$2M ARR minimum, 20-30 paying enterprise customers, and a demonstrated regulatory engagement story. If you can achieve this in 18 months, say so explicitly.
 
 **Slide 15 (Vision):**
-"$150 trillion in B2B payments. $52 billion in AI agents. $100 billion in RegTech. FlowLink sits at the intersection of all three."
+"$150 trillion in B2B payments. $52 billion in AI agents. $100 billion in RegTech. ProofLink sits at the intersection of all three."
 
-This is good. But end the deck with the acquisition narrative, not the TAM narrative: "Mastercard paid $1.8B for BVNK. Stripe paid $1.1B for Bridge. The next $1B+ stablecoin compliance acquisition will go to the company that owns the agent payment compliance layer. FlowLink is building that company."
+This is good. But end the deck with the acquisition narrative, not the TAM narrative: "Mastercard paid $1.8B for BVNK. Stripe paid $1.1B for Bridge. The next $1B+ stablecoin compliance acquisition will go to the company that owns the agent payment compliance layer. ProofLink is building that company."
 
 ### Alternative Positioning If the Current One Is Weak
 
@@ -355,7 +355,7 @@ Drop the agent narrative entirely for the seed pitch. Build the H2H product with
 
 ## SUMMARY VERDICT
 
-FlowLink's thesis is one of the best-timed and most intellectually coherent in the agentic payments space. The regulatory tailwinds are real. The whitespace is genuine. The protocol-agnostic positioning is correct. The BVNK acquisition timing is extraordinary.
+ProofLink's thesis is one of the best-timed and most intellectually coherent in the agentic payments space. The regulatory tailwinds are real. The whitespace is genuine. The protocol-agnostic positioning is correct. The BVNK acquisition timing is extraordinary.
 
 The execution evidence is absent and the team slide is thin. No VC at a16z, Paradigm, or ICONIQ will write a check on thesis alone in 2026 — they need at least one of: traction (even early), domain authority (compliance/regulatory background on the team), or a named design partner.
 

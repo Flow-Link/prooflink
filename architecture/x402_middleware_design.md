@@ -3,7 +3,7 @@
 **Version:** 1.0
 **Date:** March 20, 2026
 **Status:** Architecture Design (Pre-Implementation)
-**Package:** `@flowlink/x402-compliance`
+**Package:** `@prooflink/x402-compliance`
 **Target:** 4-6 week implementation by one engineer familiar with x402
 
 ---
@@ -12,7 +12,7 @@
 
 x402 processes 75M+ transactions per month with zero built-in compliance infrastructure. The protocol explicitly excludes KYC, sanctions screening, AML monitoring, Travel Rule compliance, and structured invoicing. The Coinbase CDP facilitator runs basic OFAC checks, but enterprises operating in regulated jurisdictions (US GENIUS Act, EU MiCA, FATF Travel Rule) cannot adopt x402 without a compliance layer that intercepts every payment and produces auditable proof of screening.
 
-FlowLink must intercept the x402 payment flow at the facilitator level -- between payment signature verification and on-chain settlement -- injecting compliance checks that add less than 200ms to total round-trip while producing cryptographic compliance receipts (ProofLinks) that satisfy regulatory audit requirements.
+ProofLink must intercept the x402 payment flow at the facilitator level -- between payment signature verification and on-chain settlement -- injecting compliance checks that add less than 200ms to total round-trip while producing cryptographic compliance receipts (ProofLinks) that satisfy regulatory audit requirements.
 
 ---
 
@@ -74,9 +74,9 @@ GET  /supported -- => SupportedResponse { kinds[], extensions[], signers }
 `VerifyResponse`: `{ isValid, invalidReason?, payer?, extensions? }`
 `SettleResponse`: `{ success, transaction, network, payer?, errorReason?, extensions? }`
 
-### 2.5 Constraints from FlowLink Technical Architecture
+### 2.5 Constraints from ProofLink Technical Architecture
 
-From `/home/akash/PROJECTS/FLOW-LINK/architecture/technical_design.md`:
+From `/home/akash/PROJECTS/prooflink/architecture/technical_design.md`:
 - ProofLink Engine latency budget: <500ms total compliance pipeline
 - Sanctions screening: <100ms per address (Chainalysis API)
 - AML risk scoring: <50ms
@@ -92,7 +92,7 @@ From `/home/akash/PROJECTS/FLOW-LINK/architecture/technical_design.md`:
 | Package manager | pnpm | x402 monorepo uses pnpm |
 | HTTP framework | Express.js (primary), Hono adapter (secondary) | Express is dominant x402 deployment pattern |
 | Compliance API client | Chainalysis KYT v3, Notabene v2 | Industry standard for sanctions + Travel Rule |
-| Cache | Redis (via ioredis) | Sub-ms screening result cache, required by FlowLink architecture |
+| Cache | Redis (via ioredis) | Sub-ms screening result cache, required by ProofLink architecture |
 | Attestation | EAS (Ethereum Attestation Service) | On-chain compliance receipt anchoring |
 
 ### 2.7 Assumptions
@@ -121,7 +121,7 @@ From `/home/akash/PROJECTS/FLOW-LINK/architecture/technical_design.md`:
                               │  │       x402ResourceServer          │  │
                               │  │                                   │  │
                               │  │  ┌─ onBeforeVerify ────────────┐  │  │
-                              │  │  │  FlowLink Compliance Hook   │  │  │
+                              │  │  │  ProofLink Compliance Hook   │  │  │
                               │  │  │  1. Extract sender/receiver │  │  │
                               │  │  │  2. Sanctions screen (both) │  │  │
                               │  │  │  3. AML risk score          │  │  │
@@ -144,7 +144,7 @@ From `/home/akash/PROJECTS/FLOW-LINK/architecture/technical_design.md`:
                               │  │  │  4. Generate invoice        │  │  │
                               │  │  └─────────────────────────────┘  │  │
                               │  │                                   │  │
-                              │  │  ┌─ Extension: "flowlink" ─────┐  │  │
+                              │  │  ┌─ Extension: "prooflink" ─────┐  │  │
                               │  │  │  enrichPaymentRequired:     │  │  │
                               │  │  │    compliance policy in 402 │  │  │
                               │  │  │  enrichSettlementResponse:  │  │  │
@@ -170,7 +170,7 @@ Two architectural options were evaluated:
 | **A. Hook injection** (recommended) | Zero network hops; runs in-process; uses stable SDK API; composable with any facilitator; no separate deployment | Requires TypeScript; coupled to x402 SDK version |
 | **B. Proxy facilitator** | Language-agnostic; decoupled deployment; works with any x402 server | Adds network hop (+50-100ms); requires running a separate service; must reimplement facilitator protocol |
 
-Hook-based injection is strictly superior for the TypeScript ecosystem. For non-TypeScript deployments (Python, Rust), we provide a proxy facilitator as a secondary package (`@flowlink/x402-facilitator-proxy`), but this document focuses on the primary hook-based approach.
+Hook-based injection is strictly superior for the TypeScript ecosystem. For non-TypeScript deployments (Python, Rust), we provide a proxy facilitator as a secondary package (`@prooflink/x402-facilitator-proxy`), but this document focuses on the primary hook-based approach.
 
 ### 3.3 Data Flow: Happy Path
 
@@ -178,10 +178,10 @@ Hook-based injection is strictly superior for the TypeScript ecosystem. For non-
 Step 1:  Client sends GET /api/data
 Step 2:  Express middleware matches route, finds no payment header
 Step 3:  x402HTTPResourceServer returns 402 with PAYMENT-REQUIRED header
-         ↳ FlowLink extension enriches 402 with compliance policy metadata
+         ↳ ProofLink extension enriches 402 with compliance policy metadata
 Step 4:  Client signs payment, retries with PAYMENT-SIGNATURE header
 Step 5:  x402HTTPResourceServer extracts payment payload
-Step 6:  ──── onBeforeVerify (FlowLink Compliance Hook) ────
+Step 6:  ──── onBeforeVerify (ProofLink Compliance Hook) ────
          │  a. Extract `from` address from payload (EVM: authorization.from)
          │  b. Extract `payTo` address from requirements
          │  c. Parallel: sanctions_screen(from) + sanctions_screen(payTo)  [<100ms]
@@ -207,7 +207,7 @@ Step 11: ──── onAfterSettle (ProofLink Receipt Hook) ────
          │  f. Enrich settlement response extensions with proofLink hash
          └────────────────────────────────────────────────
 Step 12: Server returns 200 with PAYMENT-RESPONSE header
-         ↳ Contains x402 transaction hash + FlowLink proofLink hash
+         ↳ Contains x402 transaction hash + ProofLink proofLink hash
 ```
 
 ### 3.4 Key Interfaces and Contracts
@@ -215,7 +215,7 @@ Step 12: Server returns 200 with PAYMENT-RESPONSE header
 ```typescript
 // ─── Configuration ───
 
-interface FlowLinkConfig {
+interface ProofLinkConfig {
   /** Chainalysis KYT API key */
   chainalysisApiKey: string;
 
@@ -349,7 +349,7 @@ function extractSenderAddress(payload: PaymentPayload): string | null {
 | File/Module | Action | Description | Dependencies |
 |-------------|--------|-------------|--------------|
 | `packages/core/src/hooks/` | New | Compliance hook implementations (beforeVerify, beforeSettle, afterSettle) | Chainalysis client, Redis, compliance policy |
-| `packages/core/src/extension/` | New | FlowLink ResourceServerExtension (enriches 402 and settlement responses) | @x402/core types |
+| `packages/core/src/extension/` | New | ProofLink ResourceServerExtension (enriches 402 and settlement responses) | @x402/core types |
 | `packages/core/src/screening/` | New | Sanctions screening client (Chainalysis KYT v3 wrapper) | Chainalysis API, Redis cache |
 | `packages/core/src/aml/` | New | AML risk scoring engine | Chainalysis KYT, behavioral model |
 | `packages/core/src/travel-rule/` | New | FATF Travel Rule IVMS101 transmission via Notabene | Notabene SDK |
@@ -357,10 +357,10 @@ function extractSenderAddress(payload: PaymentPayload): string | null {
 | `packages/core/src/invoice/` | New | Structured invoice generation from x402 settlement data | Receipt data |
 | `packages/core/src/cache/` | New | Redis cache layer for screening results | ioredis |
 | `packages/core/src/config.ts` | New | Configuration validation (zod schema) | zod |
-| `packages/core/src/index.ts` | New | Public API: `createFlowLinkCompliance()` factory | All above |
+| `packages/core/src/index.ts` | New | Public API: `createProofLinkCompliance()` factory | All above |
 | `packages/core/src/address.ts` | New | Multi-chain address extraction from PaymentPayload | @x402/core types |
 | `packages/core/src/metrics.ts` | New | Prometheus-compatible metrics for compliance latency | prom-client |
-| `packages/express/src/index.ts` | New | Express-specific convenience wrapper | @flowlink/x402-compliance core |
+| `packages/express/src/index.ts` | New | Express-specific convenience wrapper | @prooflink/x402-compliance core |
 | `packages/facilitator-proxy/` | New (Phase 3) | Standalone proxy facilitator for non-TypeScript servers | fastify, core |
 
 ---
@@ -369,16 +369,16 @@ function extractSenderAddress(payload: PaymentPayload): string | null {
 
 ### 5.1 Primary API: Hook Registration
 
-The FlowLink compliance layer registers itself onto an existing `x402ResourceServer` instance via hooks. It does not replace the x402 middleware -- it composes with it.
+The ProofLink compliance layer registers itself onto an existing `x402ResourceServer` instance via hooks. It does not replace the x402 middleware -- it composes with it.
 
 ```typescript
 // ─── Public API ───
 
 import { x402ResourceServer } from "@x402/core/server";
-import { createFlowLinkCompliance, type FlowLinkConfig } from "@flowlink/x402-compliance";
+import { createProofLinkCompliance, type ProofLinkConfig } from "@prooflink/x402-compliance";
 
 // Create compliance instance
-const compliance = createFlowLinkCompliance({
+const compliance = createProofLinkCompliance({
   chainalysisApiKey: process.env.CHAINALYSIS_API_KEY!,
   policy: {
     sanctionsLists: ["OFAC_SDN", "EU", "UN"],
@@ -394,19 +394,19 @@ const compliance = createFlowLinkCompliance({
 const server = new x402ResourceServer(facilitatorClient);
 server.register("eip155:*", new ExactEvmScheme());
 
-// Register FlowLink compliance (one line)
+// Register ProofLink compliance (one line)
 compliance.register(server);
 
-// Use standard x402 middleware — FlowLink is now active
+// Use standard x402 middleware — ProofLink is now active
 app.use(paymentMiddleware(routes, server));
 ```
 
 ### 5.2 Factory Implementation
 
 ```typescript
-function createFlowLinkCompliance(config: FlowLinkConfig): FlowLinkCompliance {
+function createProofLinkCompliance(config: ProofLinkConfig): ProofLinkCompliance {
   // Validate config with zod
-  const validated = flowLinkConfigSchema.parse(config);
+  const validated = proofLinkConfigSchema.parse(config);
 
   // Initialize services
   const screeningService = new SanctionsScreeningService(validated);
@@ -423,7 +423,7 @@ function createFlowLinkCompliance(config: FlowLinkConfig): FlowLinkCompliance {
     : new InMemoryCacheService();
   const metricsService = new MetricsService(validated.metricsPrefix);
 
-  return new FlowLinkCompliance({
+  return new ProofLinkCompliance({
     screeningService,
     amlService,
     travelRuleService,
@@ -439,7 +439,7 @@ function createFlowLinkCompliance(config: FlowLinkConfig): FlowLinkCompliance {
 ### 5.3 Hook Implementations
 
 ```typescript
-class FlowLinkCompliance {
+class ProofLinkCompliance {
   register(server: x402ResourceServer): void {
     // Register hooks
     server.onBeforeVerify(this.complianceScreeningHook.bind(this));
@@ -447,7 +447,7 @@ class FlowLinkCompliance {
     server.onAfterSettle(this.proofLinkReceiptHook.bind(this));
 
     // Register extension for 402 and settlement enrichment
-    server.registerExtension(this.flowLinkExtension);
+    server.registerExtension(this.proofLinkExtension);
   }
 
   // ─── Hook: Compliance Screening (onBeforeVerify) ───
@@ -632,11 +632,11 @@ class FlowLinkCompliance {
 }
 ```
 
-### 5.4 FlowLink Extension (enriches x402 responses)
+### 5.4 ProofLink Extension (enriches x402 responses)
 
 ```typescript
-const flowLinkExtension: ResourceServerExtension = {
-  key: "flowlink",
+const proofLinkExtension: ResourceServerExtension = {
+  key: "prooflink",
 
   // Enrich 402 response with compliance policy information
   enrichPaymentRequiredResponse: async (declaration, context) => {
@@ -664,7 +664,7 @@ const flowLinkExtension: ResourceServerExtension = {
 
 ---
 
-## 6. Configuration: How a Server Operator Adds FlowLink
+## 6. Configuration: How a Server Operator Adds ProofLink
 
 ### 6.1 Minimal Setup (sanctions screening only)
 
@@ -673,11 +673,11 @@ import express from "express";
 import { paymentMiddleware } from "@x402/express";
 import { x402ResourceServer, HTTPFacilitatorClient } from "@x402/core/server";
 import { ExactEvmScheme } from "@x402/evm/exact/server";
-import { createFlowLinkCompliance } from "@flowlink/x402-compliance";
+import { createProofLinkCompliance } from "@prooflink/x402-compliance";
 
 const app = express();
 
-const compliance = createFlowLinkCompliance({
+const compliance = createProofLinkCompliance({
   chainalysisApiKey: process.env.CHAINALYSIS_API_KEY!,
   policy: {
     sanctionsLists: ["OFAC_SDN"],
@@ -705,7 +705,7 @@ app.listen(3000);
 ### 6.2 Full Enterprise Setup
 
 ```typescript
-const compliance = createFlowLinkCompliance({
+const compliance = createProofLinkCompliance({
   chainalysisApiKey: process.env.CHAINALYSIS_API_KEY!,
   notabene: {
     apiKey: process.env.NOTABENE_API_KEY!,
@@ -725,7 +725,7 @@ const compliance = createFlowLinkCompliance({
     blocklist: ["0xKnownBadActor"],
   },
   eas: {
-    schemaUid: "0xFlowLinkComplianceSchemaUID",
+    schemaUid: "0xProofLinkComplianceSchemaUID",
     privateKey: process.env.EAS_PRIVATE_KEY! as `0x${string}`,
     rpcUrl: process.env.BASE_RPC_URL!,
   },
@@ -757,7 +757,7 @@ EAS_PRIVATE_KEY=0x...
 BASE_RPC_URL=https://mainnet.base.org
 
 # Optional: Invoice webhook
-FLOWLINK_INVOICE_WEBHOOK=https://erp.example.com/webhooks/invoices
+PROOFLINK_INVOICE_WEBHOOK=https://erp.example.com/webhooks/invoices
 ```
 
 ---
@@ -766,7 +766,7 @@ FLOWLINK_INVOICE_WEBHOOK=https://erp.example.com/webhooks/invoices
 
 ### 7.1 Client-Side Awareness
 
-The FlowLink extension enriches the 402 response. x402 clients that use `@x402/fetch` or `@x402/axios` will receive this data automatically in the `extensions.flowlink` field of the `PaymentRequired` response. This enables:
+The ProofLink extension enriches the 402 response. x402 clients that use `@x402/fetch` or `@x402/axios` will receive this data automatically in the `extensions.prooflink` field of the `PaymentRequired` response. This enables:
 
 - Agents to know that compliance screening is active before paying
 - Client-side UX to display compliance requirements
@@ -776,7 +776,7 @@ No changes to `@x402/fetch` or `@x402/axios` are required -- the extensions fiel
 
 ### 7.2 Custom Scheme Server Integration
 
-For servers that use custom schemes (not just `exact`), FlowLink hooks are scheme-agnostic. They operate on `PaymentPayload` and `PaymentRequirements` which are universal across all schemes.
+For servers that use custom schemes (not just `exact`), ProofLink hooks are scheme-agnostic. They operate on `PaymentPayload` and `PaymentRequirements` which are universal across all schemes.
 
 The only scheme-specific logic is address extraction (section 3.5), which handles EIP-3009, Permit2, and Solana. New chains require adding an extraction path -- this is the only extension point.
 
@@ -789,14 +789,14 @@ compliance.registerAddressExtractor("aptos:*", (payload) => {
 
 ---
 
-## 8. Modified Facilitator: FlowLink as Compliance-Enriched Facilitator
+## 8. Modified Facilitator: ProofLink as Compliance-Enriched Facilitator
 
-For deployments that cannot modify the x402 server code (e.g., using a third-party x402 server), FlowLink can operate as a proxy facilitator.
+For deployments that cannot modify the x402 server code (e.g., using a third-party x402 server), ProofLink can operate as a proxy facilitator.
 
 ### 8.1 Proxy Facilitator Architecture
 
 ```
-Resource Server ──POST /verify──▶ FlowLink Proxy Facilitator
+Resource Server ──POST /verify──▶ ProofLink Proxy Facilitator
                                         │
                                    Compliance Check
                                         │
@@ -805,7 +805,7 @@ Resource Server ──POST /verify──▶ FlowLink Proxy Facilitator
                                         │
                                  ◀──────┘
 
-Resource Server ──POST /settle──▶ FlowLink Proxy Facilitator
+Resource Server ──POST /settle──▶ ProofLink Proxy Facilitator
                                         │
                                    Travel Rule Check (if applicable)
                                         │
@@ -823,7 +823,7 @@ Resource Server ──POST /settle──▶ FlowLink Proxy Facilitator
 POST /verify      → compliance check → proxy to upstream /verify
 POST /settle      → travel rule check → proxy to upstream /settle → proofLink receipt
 GET  /supported   → proxy to upstream /supported (pass-through)
-GET  /compliance  → returns FlowLink compliance policy (new endpoint)
+GET  /compliance  → returns ProofLink compliance policy (new endpoint)
 ```
 
 ### 8.3 Deployment
@@ -834,14 +834,14 @@ docker run -p 8402:8402 \
   -e UPSTREAM_FACILITATOR_URL=https://x402.org/facilitator \
   -e CHAINALYSIS_API_KEY=... \
   -e REDIS_URL=redis://... \
-  ghcr.io/flowlink/x402-facilitator-proxy:latest
+  ghcr.io/prooflink/x402-facilitator-proxy:latest
 ```
 
 The server operator changes one environment variable:
 
 ```diff
 - FACILITATOR_URL=https://x402.org/facilitator
-+ FACILITATOR_URL=https://your-flowlink-proxy:8402
++ FACILITATOR_URL=https://your-prooflink-proxy:8402
 ```
 
 ---
@@ -866,12 +866,12 @@ Using Base Sepolia (`eip155:84532`) and Solana Devnet:
 
 ```typescript
 // Integration test: full flow with compliance
-describe("FlowLink x402 compliance integration", () => {
+describe("ProofLink x402 compliance integration", () => {
   let server: x402ResourceServer;
-  let compliance: FlowLinkCompliance;
+  let compliance: ProofLinkCompliance;
 
   beforeAll(async () => {
-    compliance = createFlowLinkCompliance({
+    compliance = createProofLinkCompliance({
       chainalysisApiKey: process.env.CHAINALYSIS_API_KEY_TESTNET!,
       policy: {
         sanctionsLists: ["OFAC_SDN"],
@@ -920,7 +920,7 @@ describe("Performance budget", () => {
   });
 
   test("full flow (compliance + settlement) adds <200ms to baseline x402", async () => {
-    // Measure end-to-end with and without FlowLink
+    // Measure end-to-end with and without ProofLink
     // Assert delta p99 < 200ms
   });
 });
@@ -928,9 +928,9 @@ describe("Performance budget", () => {
 
 ### 9.4 E2E Test with x402 Test Infrastructure
 
-The x402 repo provides a full e2e test harness at `e2e/servers/express/`. FlowLink tests should extend this pattern:
+The x402 repo provides a full e2e test harness at `e2e/servers/express/`. ProofLink tests should extend this pattern:
 
-1. Start Express server with FlowLink compliance registered
+1. Start Express server with ProofLink compliance registered
 2. Fund a test wallet on Base Sepolia with test USDC
 3. Use `@x402/fetch` to make paid requests
 4. Verify: payment succeeds, ProofLink receipt is generated, extensions contain compliance data
@@ -942,7 +942,7 @@ The x402 repo provides a full e2e test harness at `e2e/servers/express/`. FlowLi
 ### 10.1 Latency Allocation
 
 ```
-                                  Without FlowLink    With FlowLink
+                                  Without ProofLink    With ProofLink
                                   ────────────────    ─────────────
 Client → Server (402 response)          ~5ms              ~5ms
 Client signs payment                   ~10ms             ~10ms
@@ -988,18 +988,18 @@ After the first request from any wallet, subsequent requests hit cache and add <
 
 ## 11. npm Package Design
 
-### 11.1 Package: `@flowlink/x402-compliance`
+### 11.1 Package: `@prooflink/x402-compliance`
 
 ```
-@flowlink/x402-compliance/
+@prooflink/x402-compliance/
 ├── package.json
 ├── tsconfig.json
 ├── tsup.config.ts
 ├── vitest.config.ts
 ├── src/
-│   ├── index.ts                    # Public API: createFlowLinkCompliance()
-│   ├── config.ts                   # FlowLinkConfig type + zod validation
-│   ├── compliance.ts               # FlowLinkCompliance class
+│   ├── index.ts                    # Public API: createProofLinkCompliance()
+│   ├── config.ts                   # ProofLinkConfig type + zod validation
+│   ├── compliance.ts               # ProofLinkCompliance class
 │   ├── address.ts                  # Multi-chain sender address extraction
 │   ├── metrics.ts                  # Prometheus metrics
 │   ├── hooks/
@@ -1009,7 +1009,7 @@ After the first request from any wallet, subsequent requests hit cache and add <
 │   │   └── proofLinkReceipt.ts     # onAfterSettle hook
 │   ├── extension/
 │   │   ├── index.ts
-│   │   └── flowlinkExtension.ts    # ResourceServerExtension implementation
+│   │   └── prooflinkExtension.ts    # ResourceServerExtension implementation
 │   ├── screening/
 │   │   ├── index.ts
 │   │   ├── chainalysis.ts          # Chainalysis KYT v3 client
@@ -1061,7 +1061,7 @@ After the first request from any wallet, subsequent requests hit cache and add <
 
 ```json
 {
-  "name": "@flowlink/x402-compliance",
+  "name": "@prooflink/x402-compliance",
   "version": "0.1.0",
   "description": "Compliance middleware for x402 payment protocol — sanctions screening, AML, Travel Rule, ProofLink receipts",
   "license": "Apache-2.0",
@@ -1100,11 +1100,11 @@ After the first request from any wallet, subsequent requests hit cache and add <
 ### 11.3 Public API Surface
 
 ```typescript
-// @flowlink/x402-compliance
+// @prooflink/x402-compliance
 
-export { createFlowLinkCompliance } from "./compliance";
-export type { FlowLinkCompliance } from "./compliance";
-export type { FlowLinkConfig, CompliancePolicy } from "./config";
+export { createProofLinkCompliance } from "./compliance";
+export type { ProofLinkCompliance } from "./compliance";
+export type { ProofLinkConfig, CompliancePolicy } from "./config";
 export type {
   ComplianceDecision,
   ComplianceCheck,
@@ -1155,15 +1155,15 @@ Invoice webhook fails    → Invoice stored locally, retry queue
 **Goal:** Sanctions screening integrated into x402 payment flow via `onBeforeVerify`.
 
 **Deliverables:**
-- `@flowlink/x402-compliance` package scaffold (tsup, vitest, CI)
-- `FlowLinkConfig` + zod validation
+- `@prooflink/x402-compliance` package scaffold (tsup, vitest, CI)
+- `ProofLinkConfig` + zod validation
 - `SanctionsScreeningService` (Chainalysis KYT v3 client + OFAC SDN fallback)
 - `complianceScreeningHook` (onBeforeVerify)
 - Multi-chain address extraction (EVM EIP-3009, Permit2, Solana)
 - Redis cache layer + in-memory fallback
 - Allowlist/blocklist short-circuit
 - Unit tests: screening, address extraction, hook abort/pass logic
-- Integration test: Express + x402 + FlowLink on Base Sepolia
+- Integration test: Express + x402 + ProofLink on Base Sepolia
 
 **Acceptance criteria:**
 - Payment from clean address succeeds (settlement + ProofLink hash in response)
@@ -1183,7 +1183,7 @@ Invoice webhook fails    → Invoice stored locally, retry queue
 - `travelRuleHook` (onBeforeSettle)
 - `ProofLinkService` (deterministic hashing, audit log storage)
 - `proofLinkReceiptHook` (onAfterSettle)
-- FlowLink extension (enrichPaymentRequired, enrichSettlementResponse)
+- ProofLink extension (enrichPaymentRequired, enrichSettlementResponse)
 - Prometheus metrics for all compliance operations
 - Unit tests: AML, Travel Rule, ProofLink hashing
 - Integration test: Travel Rule triggers for >$3K payment
@@ -1204,7 +1204,7 @@ Invoice webhook fails    → Invoice stored locally, retry queue
 **Deliverables:**
 - EAS on-chain attestation (async, non-blocking)
 - `InvoiceService` (structured invoice generation, webhook delivery)
-- `@flowlink/x402-facilitator-proxy` (standalone HTTP proxy facilitator)
+- `@prooflink/x402-facilitator-proxy` (standalone HTTP proxy facilitator)
 - Docker image for proxy facilitator
 - Documentation: README, API reference, deployment guide
 - Performance benchmark suite
@@ -1223,7 +1223,7 @@ Invoice webhook fails    → Invoice stored locally, retry queue
 
 ## 14. Open Questions
 
-1. **Chainalysis API tier.** FlowLink needs Chainalysis KYT v3 API access. What tier? Real-time screening at x402 transaction volumes (potentially millions/month) requires enterprise pricing. Alternative: Elliptic, TRM Labs, or a lighter-weight API for MVP?
+1. **Chainalysis API tier.** ProofLink needs Chainalysis KYT v3 API access. What tier? Real-time screening at x402 transaction volumes (potentially millions/month) requires enterprise pricing. Alternative: Elliptic, TRM Labs, or a lighter-weight API for MVP?
 
 2. **Fail-open vs fail-closed default.** When the screening API is unreachable, should payments be allowed (fail-open, logged for later review) or blocked (fail-closed, zero risk tolerance)? Recommendation: fail-closed by default, configurable per policy.
 
@@ -1231,11 +1231,11 @@ Invoice webhook fails    → Invoice stored locally, retry queue
 
 4. **Invoice format.** XML (UBL/Peppol, European standard), JSON (simpler, agent-friendly), or both? Recommendation: JSON as primary, with optional UBL export for EU compliance.
 
-5. **Multi-tenant support.** Should a single FlowLink instance support multiple server operators with different compliance policies? This is relevant for the proxy facilitator. Recommendation: defer to Phase 4; single-tenant for now.
+5. **Multi-tenant support.** Should a single ProofLink instance support multiple server operators with different compliance policies? This is relevant for the proxy facilitator. Recommendation: defer to Phase 4; single-tenant for now.
 
 6. **ERC-8004 agent identity integration.** The technical design mentions KYA (Know Your Agent) via ERC-8004. Should the `onBeforeVerify` hook also validate agent identity if an ERC-8004 AgentID is present? Recommendation: yes, but as a separate optional hook, not in the core compliance hook. Target Phase 4.
 
-7. **x402 V2 extension key registration.** The `flowlink` extension key is not registered with the x402 Foundation. Should we propose formal registration? Recommendation: yes, file an issue on coinbase/x402 requesting extension key reservation.
+7. **x402 V2 extension key registration.** The `prooflink` extension key is not registered with the x402 Foundation. Should we propose formal registration? Recommendation: yes, file an issue on coinbase/x402 requesting extension key reservation.
 
 ---
 

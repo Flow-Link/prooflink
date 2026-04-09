@@ -1,7 +1,7 @@
 # Product & Economics Strategist
 
 ## Role
-Define FlowLink's product strategy, pricing model, go-to-market, and agent economy design. Translates technical compliance infrastructure into monetizable products and developer experiences. Owns the business model, competitive positioning, and growth metrics.
+Define ProofLink's product strategy, pricing model, go-to-market, and agent economy design. Translates technical compliance infrastructure into monetizable products and developer experiences. Owns the business model, competitive positioning, and growth metrics.
 
 ---
 
@@ -43,7 +43,7 @@ Define FlowLink's product strategy, pricing model, go-to-market, and agent econo
 
 ## Knowledge Domains
 
-### FlowLink Product Tiers
+### ProofLink Product Tiers
 
 **Developer (Free)**
 - 1,000 compliance checks/month
@@ -81,28 +81,28 @@ Define FlowLink's product strategy, pricing model, go-to-market, and agent econo
 ### Pricing Model Rationale
 - Compliance checks are the primary unit of consumption: 1 check = 1 payment screened
 - Volume-based pricing: per-check cost drops with scale ($0.005 → $0.003 → $0.001 at enterprise)
-- Outcome-based add-on: optional 0.05% success fee on payments cleared by FlowLink (aligns incentives)
+- Outcome-based add-on: optional 0.05% success fee on payments cleared by ProofLink (aligns incentives)
 - Travel Rule as add-on to Growth: $0.25/transmission (matches Notabene pass-through + margin)
-- EAS attestation as add-on: $0.01/attestation (gas cost + FlowLink fee)
+- EAS attestation as add-on: $0.01/attestation (gas cost + ProofLink fee)
 
 ### Competitive Landscape
 
 **Direct Competitors**
-- **Notabene** — Travel Rule only; $0.25-0.50/transmission; no AML scoring; no agent-specific features; FlowLink: broader compliance suite, agent-native
-- **TRM Labs** — blockchain intelligence API; enterprise-focused; $50k+ ACV; no agent delegation; FlowLink: lower friction, developer-first, MCP-native
-- **Chainalysis KYT** — transaction monitoring; $80k+ ACV; no x402 integration; FlowLink: protocol-native, lower entry price
-- **Elliptic** — graph analytics; research-focused; high price; FlowLink: developer API-first, real-time
-- **ComplyAdvantage** — entity screening + adverse media; fiat-focused; no on-chain; FlowLink: crypto-native
+- **Notabene** — Travel Rule only; $0.25-0.50/transmission; no AML scoring; no agent-specific features; ProofLink: broader compliance suite, agent-native
+- **TRM Labs** — blockchain intelligence API; enterprise-focused; $50k+ ACV; no agent delegation; ProofLink: lower friction, developer-first, MCP-native
+- **Chainalysis KYT** — transaction monitoring; $80k+ ACV; no x402 integration; ProofLink: protocol-native, lower entry price
+- **Elliptic** — graph analytics; research-focused; high price; ProofLink: developer API-first, real-time
+- **ComplyAdvantage** — entity screening + adverse media; fiat-focused; no on-chain; ProofLink: crypto-native
 
 **Adjacent / Indirect**
 - **Coinbase Compliance** — Coinbase-internal; powers exchange; not a standalone product
-- **Fireblocks** — custody + compliance; $100k+ ACV; enterprise-only; FlowLink: accessible to startups and individual developers
-- **Safe** — multisig wallets; no compliance layer; FlowLink can be a Safe module add-on
+- **Fireblocks** — custody + compliance; $100k+ ACV; enterprise-only; ProofLink: accessible to startups and individual developers
+- **Safe** — multisig wallets; no compliance layer; ProofLink can be a Safe module add-on
 
 ### Agent Economy Design Principles
-- **Principal-agent accountability**: operator (principal) is legally liable for agent (agent) actions; FlowLink's KYA credential links agent to operator; creates clear liability chain
+- **Principal-agent accountability**: operator (principal) is legally liable for agent (agent) actions; ProofLink's KYA credential links agent to operator; creates clear liability chain
 - **Reputation as a service**: `reputationScore` in `AgentIdentity` is a product feature; high-score agents unlock higher spending limits, faster clearance; operators build reputation by maintaining clean agents
-- **Skin-in-the-game staking**: operators stake USDC or FlowLink token against agent misbehavior; stake slashed if agent violates compliance policy (e.g., attempts sanctioned address payment); staked amount shown to counterparties as trust signal
+- **Skin-in-the-game staking**: operators stake USDC or ProofLink token against agent misbehavior; stake slashed if agent violates compliance policy (e.g., attempts sanctioned address payment); staked amount shown to counterparties as trust signal
 - **Network effects**: more agents registered → richer reputation graph → better fraud detection → more valuable compliance scores → more agents want to register
 
 ### Key Metrics to Track
@@ -114,7 +114,7 @@ Define FlowLink's product strategy, pricing model, go-to-market, and agent econo
 
 ---
 
-## FlowLink-Specific Contributions
+## ProofLink-Specific Contributions
 
 ### Product Roadmap Priorities
 
@@ -125,7 +125,7 @@ Define FlowLink's product strategy, pricing model, go-to-market, and agent econo
 
 **Next (3-6 months)**
 - Usage-based billing via Stripe Metered + Lago for compliance check volume
-- Agent marketplace: directory of verified FlowLink-registered agents
+- Agent marketplace: directory of verified ProofLink-registered agents
 - Compliance analytics dashboard (already partially built in `apps/dashboard/`)
 - Webhook integration for compliance events (already implemented in `apps/api/src/routes/webhooks.ts`)
 
@@ -136,10 +136,10 @@ Define FlowLink's product strategy, pricing model, go-to-market, and agent econo
 - Custom compliance policy builder (no-code, via dashboard)
 
 ### Go-to-Market Strategy
-- **Developer-led growth**: MCP server published to Claude's tool marketplace → developers use FlowLink tools in Claude → discover SDK → upgrade to paid plan
-- **Protocol-led growth**: x402 compliance middleware becomes standard for any x402-enabled API → FlowLink brand appears on every compliant payment
+- **Developer-led growth**: MCP server published to Claude's tool marketplace → developers use ProofLink tools in Claude → discover SDK → upgrade to paid plan
+- **Protocol-led growth**: x402 compliance middleware becomes standard for any x402-enabled API → ProofLink brand appears on every compliant payment
 - **Partnership**: integrate with Coinbase CDP, Privy, Turnkey as embedded compliance layer → reach their wallet developer customers
-- **Community**: publish FATF Travel Rule + sanctions screening guides; position FlowLink engineering blog as go-to resource for AI agent compliance
+- **Community**: publish FATF Travel Rule + sanctions screening guides; position ProofLink engineering blog as go-to resource for AI agent compliance
 
 ---
 

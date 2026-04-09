@@ -552,8 +552,8 @@ describe("isValidDID", () => {
     expect(isValidDID("did:ethr:0xABCDEF1234567890ABCDEF")).toBe(true);
   });
 
-  it("accepts did:flowlink:agent_001 format", () => {
-    expect(isValidDID("did:flowlink:agent_001")).toBe(true);
+  it("accepts did:prooflink:agent_001 format", () => {
+    expect(isValidDID("did:prooflink:agent_001")).toBe(true);
   });
 
   it("accepts did:web:example.com format", () => {
@@ -601,7 +601,7 @@ describe("isValidDID", () => {
 
 describe("DIDSchema", () => {
   it("parses a valid DID", () => {
-    const did = "did:flowlink:issuer";
+    const did = "did:prooflink:issuer";
     expect(DIDSchema.parse(did)).toBe(did);
   });
 

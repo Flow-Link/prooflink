@@ -83,10 +83,10 @@ function makeValidCredential(
   return {
     "@context": [
       "https://www.w3.org/2018/credentials/v1",
-      "https://flowlink.io/kya/v1",
+      "https://prooflink.io/kya/v1",
     ],
     type: ["VerifiableCredential", "KYACredential"],
-    issuer: "did:web:flowlink.io",
+    issuer: "did:web:prooflink.io",
     issuanceDate: new Date(Date.now() - 60_000).toISOString(),
     expirationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
     credentialSubject: {

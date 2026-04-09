@@ -4,7 +4,7 @@ import path from "node:path";
 /**
  * Vitest configuration for E2E scenario tests.
  *
- * Mirrors the integration test config structure — resolves @flowlink/* workspace
+ * Mirrors the integration test config structure — resolves @prooflink/* workspace
  * packages to their TypeScript source so no build step is required before testing.
  *
  * All external services (Postgres, Chainalysis API, blockchain RPC) are mocked
@@ -30,12 +30,12 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@flowlink/shared": path.resolve(__dirname, "../../packages/shared/src/index.ts"),
-      "@flowlink/shared/types": path.resolve(__dirname, "../../packages/shared/src/types/index.ts"),
-      "@flowlink/shared/constants": path.resolve(__dirname, "../../packages/shared/src/constants.ts"),
-      "@flowlink/shared/errors": path.resolve(__dirname, "../../packages/shared/src/errors.ts"),
-      "@flowlink/shared/utils": path.resolve(__dirname, "../../packages/shared/src/utils/index.ts"),
-      "@flowlink/core": path.resolve(__dirname, "../../packages/core/src/index.ts"),
+      "@prooflink/shared": path.resolve(__dirname, "../../packages/shared/src/index.ts"),
+      "@prooflink/shared/types": path.resolve(__dirname, "../../packages/shared/src/types/index.ts"),
+      "@prooflink/shared/constants": path.resolve(__dirname, "../../packages/shared/src/constants.ts"),
+      "@prooflink/shared/errors": path.resolve(__dirname, "../../packages/shared/src/errors.ts"),
+      "@prooflink/shared/utils": path.resolve(__dirname, "../../packages/shared/src/utils/index.ts"),
+      "@prooflink/core": path.resolve(__dirname, "../../packages/core/src/index.ts"),
     },
   },
 });

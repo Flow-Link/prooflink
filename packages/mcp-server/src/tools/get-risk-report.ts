@@ -1,7 +1,7 @@
 import { randomBytes, randomUUID } from "node:crypto";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { SupportedChain } from "@flowlink/shared";
+import { SupportedChain } from "@prooflink/shared";
 import { formatMcpError } from "../errors.js";
 import { sanctionsScreener, amlScorer } from "../context.js";
 
@@ -51,7 +51,7 @@ export function registerGetRiskReport(server: McpServer): void {
         const reportId = `rr_${randomUUID().replace(/-/g, "")}`;
         const generatedAt = new Date().toISOString();
 
-        // Real sanctions screening via @flowlink/core SanctionsScreener
+        // Real sanctions screening via @prooflink/core SanctionsScreener
         const screenResult = await sanctionsScreener.screenAddress(
           params.address,
           params.chain,
@@ -67,7 +67,7 @@ export function registerGetRiskReport(server: McpServer): void {
           })),
         };
 
-        // Real AML risk scoring via @flowlink/core AMLScorer
+        // Real AML risk scoring via @prooflink/core AMLScorer
         const amlResult = amlScorer.calculateRiskScore({
           senderAddress: params.address,
           receiverAddress: params.address,

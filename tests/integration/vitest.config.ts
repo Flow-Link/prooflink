@@ -8,7 +8,7 @@ const root = path.resolve(__dirname, "../..");
 /**
  * Vitest configuration for integration tests.
  *
- * Resolves @flowlink/* workspace packages to their TypeScript source so tests
+ * Resolves @prooflink/* workspace packages to their TypeScript source so tests
  * can exercise real internal logic without requiring a prior build step.
  *
  * External services (Chainalysis API, blockchain RPC, PostgreSQL) are mocked
@@ -36,46 +36,46 @@ export default defineConfig({
   resolve: {
     alias: [
       // Map workspace packages to their TypeScript source directories.
-      // Sub-path exports (e.g. @flowlink/core/webhooks/manager.js) must be
+      // Sub-path exports (e.g. @prooflink/core/webhooks/manager.js) must be
       // listed before the root entry so the more specific match wins.
       {
-        find: /^@flowlink\/core\/webhooks\/manager\.js$/,
+        find: /^@prooflink\/core\/webhooks\/manager\.js$/,
         replacement: path.join(root, "packages/core/src/webhooks/manager.ts"),
       },
       {
-        find: /^@flowlink\/core\/webhooks\/events\.js$/,
+        find: /^@prooflink\/core\/webhooks\/events\.js$/,
         replacement: path.join(root, "packages/core/src/webhooks/events.ts"),
       },
       {
-        find: /^@flowlink\/core\/webhooks\/types\.js$/,
+        find: /^@prooflink\/core\/webhooks\/types\.js$/,
         replacement: path.join(root, "packages/core/src/webhooks/types.ts"),
       },
       {
-        find: "@flowlink/shared/types",
+        find: "@prooflink/shared/types",
         replacement: path.join(root, "packages/shared/src/types/index.ts"),
       },
       {
-        find: "@flowlink/shared/constants",
+        find: "@prooflink/shared/constants",
         replacement: path.join(root, "packages/shared/src/constants.ts"),
       },
       {
-        find: "@flowlink/shared/errors",
+        find: "@prooflink/shared/errors",
         replacement: path.join(root, "packages/shared/src/errors.ts"),
       },
       {
-        find: "@flowlink/shared/utils",
+        find: "@prooflink/shared/utils",
         replacement: path.join(root, "packages/shared/src/utils/index.ts"),
       },
       {
-        find: "@flowlink/shared",
+        find: "@prooflink/shared",
         replacement: path.join(root, "packages/shared/src/index.ts"),
       },
       {
-        find: "@flowlink/core",
+        find: "@prooflink/core",
         replacement: path.join(root, "packages/core/src/index.ts"),
       },
       {
-        find: "@flowlink/x402-compliance",
+        find: "@prooflink/x402-compliance",
         replacement: path.join(root, "packages/x402-compliance/src/index.ts"),
       },
     ],

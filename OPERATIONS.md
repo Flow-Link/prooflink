@@ -1,4 +1,4 @@
-# FlowLink Operations Guide
+# ProofLink Operations Guide
 
 ## Quick Start (No Database)
 
@@ -12,7 +12,7 @@ pnpm install
 pnpm build
 
 # 3. Start the dashboard (port 3100)
-pnpm --filter=@flowlink/dashboard dev
+pnpm --filter=@prooflink/dashboard dev
 ```
 
 Open http://localhost:3100 to see the dashboard with mock data.
@@ -26,38 +26,38 @@ Open http://localhost:3100 to see the dashboard with mock data.
 docker compose up postgres redis -d
 
 # Wait for healthy
-docker compose exec postgres pg_isready -U flowlink
+docker compose exec postgres pg_isready -U prooflink
 
 # Copy env file
 cp .env.example .env
 
 # Run database migrations
-pnpm --filter=@flowlink/api db:migrate
+pnpm --filter=@prooflink/api db:migrate
 
 # Start API server (port 3001)
-pnpm --filter=@flowlink/api dev
+pnpm --filter=@prooflink/api dev
 
 # In another terminal — start dashboard (port 3100)
-pnpm --filter=@flowlink/dashboard dev
+pnpm --filter=@prooflink/dashboard dev
 ```
 
 ### Option B: Local Postgres
 
 ```bash
 # Create database
-createdb flowlink
-psql flowlink -c "CREATE USER flowlink WITH PASSWORD 'flowlink_dev';"
-psql flowlink -c "GRANT ALL PRIVILEGES ON DATABASE flowlink TO flowlink;"
+createdb prooflink
+psql prooflink -c "CREATE USER prooflink WITH PASSWORD 'prooflink_dev';"
+psql prooflink -c "GRANT ALL PRIVILEGES ON DATABASE prooflink TO prooflink;"
 
 # Set env
-export DATABASE_URL=postgresql://flowlink:flowlink_dev@localhost:5432/flowlink
+export DATABASE_URL=postgresql://prooflink:prooflink_dev@localhost:5432/prooflink
 
 # Run migrations
-pnpm --filter=@flowlink/api db:migrate
+pnpm --filter=@prooflink/api db:migrate
 
 # Start both
-pnpm --filter=@flowlink/api dev &
-pnpm --filter=@flowlink/dashboard dev &
+pnpm --filter=@prooflink/api dev &
+pnpm --filter=@prooflink/dashboard dev &
 ```
 
 ### Option C: Full Docker Dev
@@ -128,22 +128,22 @@ This starts postgres, redis, api, and dashboard all at once.
 pnpm test
 
 # Individual packages
-pnpm --filter=@flowlink/shared test     # 417 tests — types, validation, crypto
-pnpm --filter=@flowlink/core test       # 414 tests — compliance engine
-pnpm --filter=@flowlink/sdk test        # 111 tests — SDK client
-pnpm --filter=@flowlink/x402-compliance test  # 67 tests — middleware
-pnpm --filter=@flowlink/mcp-server test # 50 tests — MCP tools
-pnpm --filter=@flowlink/api test        # 133 tests — API routes
+pnpm --filter=@prooflink/shared test     # 417 tests — types, validation, crypto
+pnpm --filter=@prooflink/core test       # 414 tests — compliance engine
+pnpm --filter=@prooflink/sdk test        # 111 tests — SDK client
+pnpm --filter=@prooflink/x402-compliance test  # 67 tests — middleware
+pnpm --filter=@prooflink/mcp-server test # 50 tests — MCP tools
+pnpm --filter=@prooflink/api test        # 133 tests — API routes
 
 # Smart contracts (requires Foundry)
-pnpm --filter=@flowlink/contracts test
+pnpm --filter=@prooflink/contracts test
 ```
 
 ## Environment Variables
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `DATABASE_URL` | `postgresql://flowlink:flowlink_dev@localhost:5432/flowlink` | Postgres connection |
+| `DATABASE_URL` | `postgresql://prooflink:prooflink_dev@localhost:5432/prooflink` | Postgres connection |
 | `REDIS_URL` | `redis://localhost:6379` | Redis connection |
 | `PORT` | `3001` | API server port |
 | `CORS_ORIGIN` | `http://localhost:3000,http://localhost:3100` | Allowed origins |
@@ -168,11 +168,11 @@ curl -X POST $API_URL/identity/agents \
   -H "X-API-Key: $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "agentDid": "did:web:paybot.flowlink.io",
+    "agentDid": "did:web:paybot.prooflink.io",
     "name": "PayBot Prime",
     "agentType": "autonomous",
     "walletAddress": "0x1234567890abcdef1234567890abcdef12345678",
-    "controllingEntity": { "name": "FlowLink Inc" },
+    "controllingEntity": { "name": "ProofLink Inc" },
     "delegationScope": {
       "maxTransactionValue": 10000,
       "dailyLimit": 50000,
@@ -196,7 +196,7 @@ curl -X POST $API_URL/invoices \
   -H "X-API-Key: $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "seller": { "walletAddress": "0x1234567890abcdef1234567890abcdef12345678", "agentId": "did:web:paybot.flowlink.io" },
+    "seller": { "walletAddress": "0x1234567890abcdef1234567890abcdef12345678", "agentId": "did:web:paybot.prooflink.io" },
     "buyer": { "walletAddress": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" },
     "lineItems": [{ "description": "API Usage", "quantity": 1000, "unitPrice": 0.01, "total": 10 }],
     "currency": "USDC",
@@ -214,7 +214,7 @@ curl -X POST $API_URL/invoices \
 └──────────────┘            │
                             │
 ┌──────────────┐     ┌──────┴───────┐
-│  MCP Server  │────▶│  @flowlink/  │
+│  MCP Server  │────▶│  @prooflink/  │
 │  (Claude)    │     │  core        │
 └──────────────┘     │  (Compliance │
                      │   Engine)    │

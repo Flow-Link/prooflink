@@ -217,7 +217,7 @@ All v1 routes below require a valid API key looked up from the `api_keys` Postgr
 ### Required Environment Variables
 | Variable | Required | Default |
 |----------|----------|---------|
-| `DATABASE_URL` | Yes | `postgresql://flowlink:flowlink@localhost:5432/flowlink` |
+| `DATABASE_URL` | Yes | `postgresql://prooflink:prooflink@localhost:5432/prooflink` |
 | `PORT` | No | `3001` |
 | `API_KEY_SECRET` | Recommended | Falls back to bare SHA-256 |
 | `JWT_SECRET` | No | JWT auth disabled without it |
@@ -240,20 +240,20 @@ All v1 routes below require a valid API key looked up from the `api_keys` Postgr
 
 ```bash
 # 1. Clone and install dependencies
-cd /home/akash/PROJECTS/FLOW-LINK
+cd /home/akash/PROJECTS/prooflink
 pnpm install
 
 # 2. Start PostgreSQL (Docker)
-docker run -d --name flowlink-db \
-  -e POSTGRES_USER=flowlink \
-  -e POSTGRES_PASSWORD=flowlink_dev \
-  -e POSTGRES_DB=flowlink \
+docker run -d --name prooflink-db \
+  -e POSTGRES_USER=prooflink \
+  -e POSTGRES_PASSWORD=prooflink_dev \
+  -e POSTGRES_DB=prooflink \
   -p 5432:5432 \
   postgres:16-alpine
 
 # 3. Create .env file
 cp .env.example .env
-# Edit DATABASE_URL if needed: postgresql://flowlink:flowlink_dev@localhost:5432/flowlink
+# Edit DATABASE_URL if needed: postgresql://prooflink:prooflink_dev@localhost:5432/prooflink
 
 # 4. Run database migrations
 cd apps/api

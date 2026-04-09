@@ -480,7 +480,7 @@ describe("E2E Phase 2: Compliance Pipeline", () => {
 
   describe("Sanctioned address triggers risk score 100", () => {
     it("should set riskScore=100 when receiver is in offline OFAC SDN list (Tornado Cash)", async () => {
-      // The offline SDN list in @flowlink/core includes TORNADO_CASH_100ETH_POOL
+      // The offline SDN list in @prooflink/core includes TORNADO_CASH_100ETH_POOL
       seedInserts({ riskScore: 100, status: "REJECTED" });
 
       const res = await app.request("/api/v1/compliance/check", {

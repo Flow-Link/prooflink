@@ -2,7 +2,7 @@ import chalk from "chalk";
 import oraImport from "ora";
 
 import {
-  flowlinkLog,
+  prooflinkLog,
   agentLog,
   x402Log,
   statusCleared,
@@ -104,9 +104,9 @@ export async function runInvoiceDemo(): Promise<void> {
 
   formatInvoice(invoice);
 
-  flowlinkLog(`Invoice ${chalk.white(invoiceId)} created in ${chalk.white("DRAFT")} status`);
-  flowlinkLog(`  Total: ${chalk.white("$65.00 USDC")} on ${chalk.white("Base")}`);
-  flowlinkLog(`  Format: ${chalk.white("JSON-LD")} ${chalk.gray("(machine-readable, W3C compliant)")}`);
+  prooflinkLog(`Invoice ${chalk.white(invoiceId)} created in ${chalk.white("DRAFT")} status`);
+  prooflinkLog(`  Total: ${chalk.white("$65.00 USDC")} on ${chalk.white("Base")}`);
+  prooflinkLog(`  Format: ${chalk.white("JSON-LD")} ${chalk.gray("(machine-readable, W3C compliant)")}`);
 
   reporter.addEvent({
     type: "receipt",
@@ -124,7 +124,7 @@ export async function runInvoiceDemo(): Promise<void> {
 
   stepHeader("\u{1F50D}", "Running compliance check on payer (AI agent)...");
 
-  flowlinkLog(`Compliance pipeline initiated for payer ${chalk.white(truncateAddress(PAYER_WALLET))}`);
+  prooflinkLog(`Compliance pipeline initiated for payer ${chalk.white(truncateAddress(PAYER_WALLET))}`);
   await sleep(200);
 
   // Sanctions screening
@@ -191,9 +191,9 @@ export async function runInvoiceDemo(): Promise<void> {
   await sleep(kyaLatency + 100);
   spinnerKya.stop();
 
-  flowlinkLog(`KYA: ${chalk.white(AGENT_DID)} ${chalk.green.bold("VERIFIED")}`);
-  flowlinkLog(`  Agent: ${chalk.white("inference-agent-v3")} | Trust: ${chalk.green("87/100")}`);
-  flowlinkLog(`  Operator: ${chalk.white("Acme AI Corp")} ${chalk.gray("(LEI verified)")}`);
+  prooflinkLog(`KYA: ${chalk.white(AGENT_DID)} ${chalk.green.bold("VERIFIED")}`);
+  prooflinkLog(`  Agent: ${chalk.white("inference-agent-v3")} | Trust: ${chalk.green("87/100")}`);
+  prooflinkLog(`  Operator: ${chalk.white("Acme AI Corp")} ${chalk.gray("(LEI verified)")}`);
 
   reporter.addEvent({
     type: "kya",
@@ -237,7 +237,7 @@ export async function runInvoiceDemo(): Promise<void> {
     riskScore: 11,
     checks: [
       { checkType: "SANCTIONS_SCREENING", result: "PASSED", provider: "Chainalysis KYT", latencyMs: sanctionsLatency + payeeLatency },
-      { checkType: "AML_MONITORING", result: "PASSED", provider: "FlowLink Engine", latencyMs: amlLatency },
+      { checkType: "AML_MONITORING", result: "PASSED", provider: "ProofLink Engine", latencyMs: amlLatency },
       { checkType: "KYA_VERIFICATION", result: "PASSED", provider: "ERC-8004 Registry", latencyMs: kyaLatency },
       { checkType: "TRAVEL_RULE", result: "SKIPPED", provider: "N/A (below $3,000)", latencyMs: 0 },
     ],
@@ -248,9 +248,9 @@ export async function runInvoiceDemo(): Promise<void> {
 
   reporter.addReceipt(complianceReceipt);
 
-  flowlinkLog(`Invoice ${chalk.white(invoiceId)} updated: ${chalk.white("DRAFT")} -> ${chalk.yellow.bold("COMPLIANCE_VERIFIED")}`);
-  flowlinkLog(`  Compliance receipt: ${chalk.white(compReceiptId)}`);
-  flowlinkLog(`  Receipt signature:  ${chalk.white(truncateAddress(compSignature))}`);
+  prooflinkLog(`Invoice ${chalk.white(invoiceId)} updated: ${chalk.white("DRAFT")} -> ${chalk.yellow.bold("COMPLIANCE_VERIFIED")}`);
+  prooflinkLog(`  Compliance receipt: ${chalk.white(compReceiptId)}`);
+  prooflinkLog(`  Receipt signature:  ${chalk.white(truncateAddress(compSignature))}`);
 
   // Show the invoice with compliance stamp
   const invoiceWithCompliance: InvoiceDisplay = {
@@ -272,8 +272,8 @@ export async function runInvoiceDemo(): Promise<void> {
   stepHeader("\u{1F4B0}", "Simulating payment...");
 
   agentLog(`Paying invoice ${chalk.white(invoiceId)}...`);
-  flowlinkLog("Intercepting x402 payment...");
-  flowlinkLog(`Pre-payment compliance: ${chalk.green.bold("ALREADY VERIFIED")} ${chalk.gray("(receipt attached)")}`);
+  prooflinkLog("Intercepting x402 payment...");
+  prooflinkLog(`Pre-payment compliance: ${chalk.green.bold("ALREADY VERIFIED")} ${chalk.gray("(receipt attached)")}`);
   await sleep(200);
 
   paymentApproved();
@@ -297,7 +297,7 @@ export async function runInvoiceDemo(): Promise<void> {
     latencyMs: 700,
   });
 
-  flowlinkLog(`Invoice ${chalk.white(invoiceId)}: ${chalk.yellow("COMPLIANCE_VERIFIED")} -> ${chalk.green.bold("PAID")}`);
+  prooflinkLog(`Invoice ${chalk.white(invoiceId)}: ${chalk.yellow("COMPLIANCE_VERIFIED")} -> ${chalk.green.bold("PAID")}`);
 
   await sleep(400);
 
@@ -328,9 +328,9 @@ export async function runInvoiceDemo(): Promise<void> {
   await sleep(250);
   spinnerIpfs.succeed(chalk.gray("Archived to IPFS"));
 
-  flowlinkLog(`Final receipt: ${chalk.white(finalReceiptId)}`);
-  flowlinkLog(`EAS attestation: ${chalk.white(truncateAddress(easUid))}`);
-  flowlinkLog(`IPFS archive: ${chalk.white(truncateAddress(ipfsCid))}`);
+  prooflinkLog(`Final receipt: ${chalk.white(finalReceiptId)}`);
+  prooflinkLog(`EAS attestation: ${chalk.white(truncateAddress(easUid))}`);
+  prooflinkLog(`IPFS archive: ${chalk.white(truncateAddress(ipfsCid))}`);
 
   const finalReceipt: ReceiptData = {
     receiptId: finalReceiptId,
@@ -338,10 +338,10 @@ export async function runInvoiceDemo(): Promise<void> {
     riskScore: 11,
     checks: [
       { checkType: "SANCTIONS_SCREENING", result: "PASSED", provider: "Chainalysis KYT", latencyMs: sanctionsLatency + payeeLatency },
-      { checkType: "AML_MONITORING", result: "PASSED", provider: "FlowLink Engine", latencyMs: amlLatency },
+      { checkType: "AML_MONITORING", result: "PASSED", provider: "ProofLink Engine", latencyMs: amlLatency },
       { checkType: "KYA_VERIFICATION", result: "PASSED", provider: "ERC-8004 Registry", latencyMs: kyaLatency },
       { checkType: "TRAVEL_RULE", result: "SKIPPED", provider: "N/A (below $3,000)", latencyMs: 0 },
-      { checkType: "INVOICE_VALIDATION", result: "PASSED", provider: "FlowLink Engine", latencyMs: 8 },
+      { checkType: "INVOICE_VALIDATION", result: "PASSED", provider: "ProofLink Engine", latencyMs: 8 },
       { checkType: "PAYMENT_SETTLEMENT", result: "PASSED", provider: "x402 Protocol", latencyMs: 700 },
     ],
     travelRuleStatus: "NOT_REQUIRED",

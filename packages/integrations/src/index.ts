@@ -1,13 +1,13 @@
 // ---------------------------------------------------------------------------
-// @flowlink/integrations — Optional external service integrations
+// @prooflink/integrations — Optional external service integrations
 // ---------------------------------------------------------------------------
 //
 // Each integration is independently importable via subpath exports:
-//   import { NotabeneClient } from "@flowlink/integrations/notabene"
-//   import { TRMClient } from "@flowlink/integrations/trm"
-//   import { EASClient } from "@flowlink/integrations/eas"
-//   import { IPFSClient } from "@flowlink/integrations/ipfs"
-//   import { SlackNotifier } from "@flowlink/integrations/slack"
+//   import { NotabeneClient } from "@prooflink/integrations/notabene"
+//   import { TRMClient } from "@prooflink/integrations/trm"
+//   import { EASClient } from "@prooflink/integrations/eas"
+//   import { IPFSClient } from "@prooflink/integrations/ipfs"
+//   import { SlackNotifier } from "@prooflink/integrations/slack"
 //
 // This barrel export provides convenience access to all integrations.
 // Heavy modules use lazy dynamic imports — importing this module does

@@ -331,11 +331,11 @@ describe("ProofLink — KYA credential verification", () => {
     return {
       "@context": ["https://www.w3.org/2018/credentials/v1"],
       type: ["VerifiableCredential", "KYACredential"],
-      issuer: "did:web:flowlink.io",
+      issuer: "did:web:prooflink.io",
       issuanceDate: "2026-01-01T00:00:00Z",
       expirationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
       credentialSubject: {
-        id: "did:flowlink:agent:001",
+        id: "did:prooflink:agent:001",
         walletAddress: CLEAN_SENDER,
         delegationScope: {
           maxTransactionAmount: 100_000,
@@ -372,10 +372,10 @@ describe("ProofLink — KYA credential verification", () => {
     const invalidCredential = {
       "@context": [] as string[], // missing required context
       type: ["VerifiableCredential", "KYACredential"],
-      issuer: "did:web:flowlink.io",
+      issuer: "did:web:prooflink.io",
       issuanceDate: "2026-01-01T00:00:00Z",
       credentialSubject: {
-        id: "did:flowlink:agent:bad",
+        id: "did:prooflink:agent:bad",
         walletAddress: CLEAN_SENDER,
         delegationScope: {
           expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
@@ -609,11 +609,11 @@ describe("ProofLink — performance", () => {
     const kyaCredential = {
       "@context": ["https://www.w3.org/2018/credentials/v1"],
       type: ["VerifiableCredential", "KYACredential"],
-      issuer: "did:web:flowlink.io",
+      issuer: "did:web:prooflink.io",
       issuanceDate: "2026-01-01T00:00:00Z",
       expirationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
       credentialSubject: {
-        id: "did:flowlink:agent:perf-test",
+        id: "did:prooflink:agent:perf-test",
         walletAddress: CLEAN_SENDER,
         delegationScope: {
           maxTransactionAmount: 100_000,

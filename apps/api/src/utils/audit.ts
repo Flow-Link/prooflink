@@ -19,12 +19,18 @@ interface AuditLogParams {
 }
 
 // ---------------------------------------------------------------------------
-// In-process serialization queue
+// Postgres advisory lock ID for hash-chain serialization (ARCH-2)
 // ---------------------------------------------------------------------------
 
-// All audit writes are funneled through a single promise chain so that
-// concurrent requests cannot read the same previousLogHash before the
-// prior insert commits (which would fork the hash chain).
+// Equivalent to SELECT hashtext('prooflink_audit_log') → deterministic int4.
+// We use a fixed constant so every process/pod acquires the same lock.
+const AUDIT_LOCK_ID = 749_382_056;
+
+// ---------------------------------------------------------------------------
+// In-process serialization queue (fallback when not using transactions)
+// ---------------------------------------------------------------------------
+
+// Keeps fire-and-forget semantics: callers never await this.
 let _queue: Promise<void> = Promise.resolve();
 
 // ---------------------------------------------------------------------------
@@ -38,45 +44,45 @@ let _queue: Promise<void> = Promise.resolve();
  * swallows errors (logging them) so that a broken audit path cannot take
  * down the request path.
  *
- * Concurrency note: writes are serialized through an in-process promise
- * queue to prevent two concurrent requests from reading the same
- * previousLogHash and forking the chain. For multi-process deployments
- * a DB-level advisory lock or a dedicated audit writer process is required.
+ * Concurrency: uses a Postgres advisory lock (`pg_advisory_xact_lock`) so
+ * that the SELECT-then-INSERT is atomic across ALL processes/pods, not just
+ * the current one. The in-process queue is retained as a secondary guard to
+ * reduce lock contention from concurrent requests within the same process.
  */
 export function writeAuditLog(params: AuditLogParams): void {
   const { eventType, payload, receiptId, invoiceId, agentDid, apiKeyId } = params;
 
-  // Chain onto the queue — each write waits for the previous one to settle.
   _queue = _queue.then(async () => {
     try {
       const db = getDb();
 
-      // Fetch the most recent log entry for the hash chain.
-      // Uses FOR UPDATE SKIP LOCKED as an advisory guard in multi-statement
-      // transactions; here it is a plain SELECT since we rely on the in-process
-      // queue for single-process deployments.
-      const [lastEntry] = await db
-        .select({ logHash: auditLog.logHash })
-        .from(auditLog)
-        .orderBy(desc(auditLog.id))
-        .limit(1);
+      await db.transaction(async (tx) => {
+        // Acquire a transaction-scoped advisory lock — released on COMMIT/ROLLBACK.
+        await tx.execute(sql`SELECT pg_advisory_xact_lock(${AUDIT_LOCK_ID})`);
 
-      const previousLogHash = lastEntry?.logHash ?? "genesis";
-      const timestamp = new Date().toISOString();
+        const [lastEntry] = await tx
+          .select({ logHash: auditLog.logHash })
+          .from(auditLog)
+          .orderBy(desc(auditLog.id))
+          .limit(1);
 
-      const logHash = createHash("sha256")
-        .update(previousLogHash + eventType + JSON.stringify(payload) + timestamp)
-        .digest("hex");
+        const previousLogHash = lastEntry?.logHash ?? "genesis";
+        const timestamp = new Date().toISOString();
 
-      await db.insert(auditLog).values({
-        logHash,
-        previousLogHash,
-        eventType,
-        receiptId: receiptId ?? null,
-        invoiceId: invoiceId ?? null,
-        agentDid: agentDid ?? null,
-        apiKeyId: apiKeyId ?? null,
-        payload,
+        const logHash = createHash("sha256")
+          .update(previousLogHash + eventType + JSON.stringify(payload) + timestamp)
+          .digest("hex");
+
+        await tx.insert(auditLog).values({
+          logHash,
+          previousLogHash,
+          eventType,
+          receiptId: receiptId ?? null,
+          invoiceId: invoiceId ?? null,
+          agentDid: agentDid ?? null,
+          apiKeyId: apiKeyId ?? null,
+          payload,
+        });
       });
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);

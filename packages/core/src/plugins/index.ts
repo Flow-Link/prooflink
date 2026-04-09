@@ -2,7 +2,7 @@
 // Plugin System
 // ---------------------------------------------------------------------------
 
-import type { ComplianceDecision } from "@flowlink/shared";
+import type { ComplianceDecision } from "@prooflink/shared";
 import type { ComplianceRequest } from "../engine/prooflink.js";
 
 // ---------------------------------------------------------------------------
@@ -24,7 +24,7 @@ export interface PluginDecisionContext extends PluginContext {
 }
 
 /**
- * FlowLink plugin interface.
+ * ProofLink plugin interface.
  *
  * Plugins can hook into the compliance pipeline at four points:
  * - beforeCheck: Before any compliance checks run
@@ -34,7 +34,7 @@ export interface PluginDecisionContext extends PluginContext {
  *
  * All hooks are optional. Plugins should implement only the hooks they need.
  */
-export interface FlowLinkPlugin {
+export interface ProofLinkPlugin {
   /** Unique plugin name */
   readonly name: string;
   /** Plugin version (semver) */
@@ -66,13 +66,13 @@ export interface FlowLinkPlugin {
  * the error is propagated and subsequent plugins for that hook are skipped.
  */
 export class PluginManager {
-  private readonly plugins: FlowLinkPlugin[] = [];
+  private readonly plugins: ProofLinkPlugin[] = [];
 
   /**
    * Register a plugin. Calls onRegister if defined.
    * Throws if a plugin with the same name is already registered.
    */
-  async registerPlugin(plugin: FlowLinkPlugin): Promise<void> {
+  async registerPlugin(plugin: ProofLinkPlugin): Promise<void> {
     const existing = this.plugins.find((p) => p.name === plugin.name);
     if (existing) {
       throw new Error(
@@ -107,7 +107,7 @@ export class PluginManager {
   /**
    * Get all registered plugins.
    */
-  getPlugins(): ReadonlyArray<FlowLinkPlugin> {
+  getPlugins(): ReadonlyArray<ProofLinkPlugin> {
     return this.plugins;
   }
 

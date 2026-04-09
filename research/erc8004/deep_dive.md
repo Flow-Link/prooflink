@@ -1,5 +1,5 @@
 # ERC-8004: Deep Dive Research
-**For: FlowLink — Agentic Payment Trust Layer**
+**For: ProofLink — Agentic Payment Trust Layer**
 **Researched: 2026-03-20**
 **Researcher: Team Beta**
 
@@ -32,7 +32,7 @@
 14. [Security Risks](#14-security-risks)
 15. [Comparison to Other ERCs](#15-comparison-to-other-ercs)
 16. [The Full Agentic Protocol Stack](#16-the-full-agentic-protocol-stack)
-17. [FlowLink Implications](#17-flowlink-implications)
+17. [ProofLink Implications](#17-prooflink-implications)
 18. [Open Questions & Gaps](#18-open-questions--gaps)
 
 ---
@@ -618,7 +618,7 @@ transfer() called
 
 **Forced transfers:** Agents (delegated operators) can `forcedTransfer()` for regulatory recovery scenarios.
 
-**Relevance to FlowLink:** ERC-3643 is the gold standard for **compliant tokenized assets**. If FlowLink issues compliance tokens, stablecoin representations, or needs to gate payment access by verified identity, ERC-3643 is the template.
+**Relevance to ProofLink:** ERC-3643 is the gold standard for **compliant tokenized assets**. If ProofLink issues compliance tokens, stablecoin representations, or needs to gate payment access by verified identity, ERC-3643 is the template.
 
 **EIP:** https://eips.ethereum.org/EIPS/eip-3643
 **Docs:** https://docs.erc3643.org/
@@ -643,7 +643,7 @@ Any field where an ERC-20 address would be used but ETH is the underlying token
 MUST use: 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
 ```
 
-**Relevance to FlowLink:** When implementing payment routing that handles both native ETH and ERC-20 tokens, always use this address convention to maintain compatibility with indexers, wallets, and aggregators.
+**Relevance to ProofLink:** When implementing payment routing that handles both native ETH and ERC-20 tokens, always use this address convention to maintain compatibility with indexers, wallets, and aggregators.
 
 **EIP:** https://eips.ethereum.org/EIPS/eip-7528
 
@@ -674,7 +674,7 @@ cspr://eip155:1:0xab16a96D359eC26a11e2C2b3d8f8B8942d5Bfcdb/100/0xA0b86991c6218b3
 
 **Relevant prior art:** Supersedes ERC-681 (Ethereum-only payment URLs), extends to all CAIP-10-compatible chains.
 
-**Relevance to FlowLink:** This is the most complete existing standard for payment request URIs. FlowLink invoices could natively encode into ERC-7856 `cspr://` URIs, making them wallet-parseable and cross-chain compatible.
+**Relevance to ProofLink:** This is the most complete existing standard for payment request URIs. ProofLink invoices could natively encode into ERC-7856 `cspr://` URIs, making them wallet-parseable and cross-chain compatible.
 
 **EIP:** https://eips.ethereum.org/EIPS/eip-7856
 
@@ -742,7 +742,7 @@ An emerging compliance paradigm analogous to KYC for human customers. As of earl
 - NIST AI Risk Management Framework provides vocabulary
 - NIST SP 800-63 adapted for AI agent identity assurance
 
-**ERC-3643 as KYA building block:** If FlowLink needs to gate agent access to payment rails by verified identity (operator KYC, OFAC screening, jurisdictional limits), ERC-3643's on-chain identity + claims framework is the proven template. ERC-8004's reputation registry could reference ONCHAINID claims.
+**ERC-3643 as KYA building block:** If ProofLink needs to gate agent access to payment rails by verified identity (operator KYC, OFAC screening, jurisdictional limits), ERC-3643's on-chain identity + claims framework is the proven template. ERC-8004's reputation registry could reference ONCHAINID claims.
 
 ### High-Risk Industry Permissionlessness
 
@@ -941,69 +941,69 @@ Understanding where ERC-8004 sits in the full stack:
 
 ---
 
-## 17. FlowLink Implications
+## 17. ProofLink Implications
 
-FlowLink is described as an "agentic payment trust layer with invoicing and compliance." Here is how ERC-8004 and the surrounding ecosystem maps to FlowLink's core functionality:
+ProofLink is described as an "agentic payment trust layer with invoicing and compliance." Here is how ERC-8004 and the surrounding ecosystem maps to ProofLink's core functionality:
 
-### 1. Agent Identity for FlowLink Nodes
+### 1. Agent Identity for ProofLink Nodes
 
-Every FlowLink participant (payer agent, payee agent, validator, compliance oracle) should have an ERC-8004 identity. This gives:
+Every ProofLink participant (payer agent, payee agent, validator, compliance oracle) should have an ERC-8004 identity. This gives:
 - Portable, censorship-resistant identity across chains
 - Human-readable naming via ENS subnames
 - Transferable ownership for custody/operational key separation
 
-**Implementation:** Register FlowLink's own agent infrastructure on the ERC-8004 Identity Registry. Each FlowLink sub-agent (invoice processor, compliance checker, payment router) gets its own `agentId`.
+**Implementation:** Register ProofLink's own agent infrastructure on the ERC-8004 Identity Registry. Each ProofLink sub-agent (invoice processor, compliance checker, payment router) gets its own `agentId`.
 
 ### 2. Reputation as a Payment Rail Signal
 
-Before routing a payment through an agent path, FlowLink can query `ReputationRegistry.getSummary()` to weight routing decisions:
+Before routing a payment through an agent path, ProofLink can query `ReputationRegistry.getSummary()` to weight routing decisions:
 - Route high-value payments through agents with verified payment-execution track records
 - Penalize routing through agents with `tag1 = "late_payment"` or `tag2 = "dispute"` feedback
 - Use `feedbackURI` payment proof references to build value-weighted trust scores
 
 ### 3. Invoicing as Validation Requests
 
-FlowLink invoices can be modeled as ERC-8004 Validation Requests:
-1. Invoice issuer calls `validationRequest(validatorAddress=FlowLinkOracle, agentId, requestURI=ipfs://invoiceHash, requestHash)`
-2. FlowLink oracle verifies service delivery, calls `validationResponse(requestHash, response=100, ...)`
+ProofLink invoices can be modeled as ERC-8004 Validation Requests:
+1. Invoice issuer calls `validationRequest(validatorAddress=ProofLinkOracle, agentId, requestURI=ipfs://invoiceHash, requestHash)`
+2. ProofLink oracle verifies service delivery, calls `validationResponse(requestHash, response=100, ...)`
 3. Escrow contract (ERC-8183 style) reads the validation response and releases payment
 
 This creates a fully on-chain, cryptographically auditable invoice → payment → completion cycle without centralized intermediaries.
 
-### 4. ERC-8183 as FlowLink's Core Commerce Primitive
+### 4. ERC-8183 as ProofLink's Core Commerce Primitive
 
-FlowLink should seriously evaluate ERC-8183 as the escrow foundation:
-- Job lifecycle maps directly to FlowLink invoice lifecycle (created → funded → delivered → settled)
-- The Hook system allows FlowLink to inject custom logic (compliance checks, multi-sig approvals, reputation thresholds) without modifying core contracts
-- Evaluator role can be FlowLink's compliance oracle, a zkML verifier, or a DAO
+ProofLink should seriously evaluate ERC-8183 as the escrow foundation:
+- Job lifecycle maps directly to ProofLink invoice lifecycle (created → funded → delivered → settled)
+- The Hook system allows ProofLink to inject custom logic (compliance checks, multi-sig approvals, reputation thresholds) without modifying core contracts
+- Evaluator role can be ProofLink's compliance oracle, a zkML verifier, or a DAO
 - `claimRefund` timeout provides automatic dispute resolution without human intervention
 
 ### 5. Compliance via ERC-3643 Integration
 
-If FlowLink needs to gate payment access by verified identity (institutional clients, OFAC screening, jurisdictional limits):
+If ProofLink needs to gate payment access by verified identity (institutional clients, OFAC screening, jurisdictional limits):
 - Use ERC-3643's `ONCHAINID` as the identity layer
-- Trusted claim issuers (KYC providers) sign claims about FlowLink participants
-- FlowLink's compliance contract calls `isVerified()` before releasing payments from escrow
+- Trusted claim issuers (KYC providers) sign claims about ProofLink participants
+- ProofLink's compliance contract calls `isVerified()` before releasing payments from escrow
 - The combination of ERC-8004 (agent reputation) + ERC-3643 (participant compliance) provides the full trust stack
 
 ### 6. Payment URI Standard for Invoices
 
-FlowLink invoices should be serializable as ERC-7856 `cspr://` URIs for maximum wallet compatibility:
+ProofLink invoices should be serializable as ERC-7856 `cspr://` URIs for maximum wallet compatibility:
 ```
-cspr://eip155:8453:0xFlowLinkEscrow/100/0xUSDCAddress?on-success=https://flowlink.io/confirm/inv123
+cspr://eip155:8453:0xProofLinkEscrow/100/0xUSDCAddress?on-success=https://prooflink.io/confirm/inv123
 ```
-This makes FlowLink invoices parseable by any ERC-7856-compatible wallet, enabling direct payment from human wallets and agent wallets alike.
+This makes ProofLink invoices parseable by any ERC-7856-compatible wallet, enabling direct payment from human wallets and agent wallets alike.
 
 ### 7. x402 for Sub-Invoice Micropayments
 
-For FlowLink use cases involving streaming payments or per-API-call billing (e.g., a data agent billing per query within a larger workflow), x402 is the right primitive:
+For ProofLink use cases involving streaming payments or per-API-call billing (e.g., a data agent billing per query within a larger workflow), x402 is the right primitive:
 - Agents advertise `x402Support: true` in their ERC-8004 registration file
-- FlowLink acts as the x402 facilitator for its network participants
+- ProofLink acts as the x402 facilitator for its network participants
 - Payment receipts from x402 transactions feed back into ERC-8004 reputation
 
 ### 8. The "No Work, No Pay" Guarantee
 
-FlowLink's core value proposition ("payment trust layer") maps exactly to the ERC-8004 + ERC-8183 architecture. The stack delivers:
+ProofLink's core value proposition ("payment trust layer") maps exactly to the ERC-8004 + ERC-8183 architecture. The stack delivers:
 - Cryptographic proof of work delivery (Validation Registry / ERC-8183 submit)
 - Automatic escrow release on verified completion
 - Immutable audit trail for dispute resolution
@@ -1011,15 +1011,15 @@ FlowLink's core value proposition ("payment trust layer") maps exactly to the ER
 
 ### 9. KYA (Know Your Agent) as Compliance Product
 
-FlowLink can differentiate by offering KYA compliance as a managed service on top of ERC-8004:
+ProofLink can differentiate by offering KYA compliance as a managed service on top of ERC-8004:
 - Run validation oracles that verify agent capability claims
 - Issue ERC-3643-style compliance claims for agents that pass screening
-- Maintain a trusted issuer registry for FlowLink-verified agents
-- This is the enterprise/institutional moat: "ERC-8004 reputation, FlowLink-verified compliance"
+- Maintain a trusted issuer registry for ProofLink-verified agents
+- This is the enterprise/institutional moat: "ERC-8004 reputation, ProofLink-verified compliance"
 
 ### 10. High-Risk Industry Opportunity
 
-The research surfaced an explicit gap: mainstream payment processors systematically exclude high-risk industries. ERC-8004 + x402 + ERC-8183 provide permissionless infrastructure that cannot discriminate. FlowLink could explicitly target this market as a compliant but permissionless payment layer — using ERC-3643 claims to provide optional compliance without mandatory gatekeeping.
+The research surfaced an explicit gap: mainstream payment processors systematically exclude high-risk industries. ERC-8004 + x402 + ERC-8183 provide permissionless infrastructure that cannot discriminate. ProofLink could explicitly target this market as a compliant but permissionless payment layer — using ERC-3643 claims to provide optional compliance without mandatory gatekeeping.
 
 ---
 
@@ -1029,13 +1029,13 @@ These are unresolved issues discovered during research:
 
 1. **Domain ownership verification:** The EIP requires domain-based agent discovery but has no mechanism for on-chain domain ownership proof. This remains explicitly unresolved in the Ethereum Magicians discussion.
 
-2. **Smart contract composability of reputation:** Off-chain aggregation of reputation means on-chain contracts cannot natively query an agent's reputation score for conditional logic. The `getSummary()` function exists but is raw data. FlowLink would need its own on-chain reputation oracle.
+2. **Smart contract composability of reputation:** Off-chain aggregation of reputation means on-chain contracts cannot natively query an agent's reputation score for conditional logic. The `getSummary()` function exists but is raw data. ProofLink would need its own on-chain reputation oracle.
 
-3. **Validator incentive design:** ERC-8004 explicitly externalizes validator economics. FlowLink must design the collateral/reward/slashing model for its validation oracle network.
+3. **Validator incentive design:** ERC-8004 explicitly externalizes validator economics. ProofLink must design the collateral/reward/slashing model for its validation oracle network.
 
 4. **v2 specification timeline:** v2 with enhanced MCP support, improved x402 integration, and optional on-chain storage for reputation is "in development" as of early 2026. No formal ETA.
 
-5. **ERC-8183 maturity:** Proposed February 25, 2026. Still early draft. Not yet deployed to mainnet at research date. FlowLink should track closely but not build critical infrastructure on it without stable spec.
+5. **ERC-8183 maturity:** Proposed February 25, 2026. Still early draft. Not yet deployed to mainnet at research date. ProofLink should track closely but not build critical infrastructure on it without stable spec.
 
 6. **Cross-chain identity coherence:** An agent with 35+ chain registrations has 35 different `agentId` values. The `registrations[]` array in the agent file provides cross-chain pointers, but there is no canonical cross-chain identity standard yet. CAIP-10 addresses this at the account level but not at the agent abstraction level.
 

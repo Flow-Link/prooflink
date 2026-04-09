@@ -1,11 +1,11 @@
 # Architecture Guide
 
-This guide covers FlowLink's system architecture, package dependencies, data flow, and decision pipeline.
+This guide covers ProofLink's system architecture, package dependencies, data flow, and decision pipeline.
 
 ## System Architecture
 
 ```
-                                    FlowLink System Architecture
+                                    ProofLink System Architecture
                                     ============================
 
     +-----------+     +-----------+     +-----------+     +-----------+
@@ -16,7 +16,7 @@ This guide covers FlowLink's system architecture, package dependencies, data flo
           |  MCP Protocol   |  REST API       |  Hooks          |  REST API
           v                 v                 v                 v
     +-----+-----+     +--------------------------------------------+
-    | MCP Server |     |              FlowLink API                  |
+    | MCP Server |     |              ProofLink API                  |
     | (stdio)    +---->|         (Hono on port 3001)                |
     +------------+     |                                            |
                        |  /compliance  /invoices  /identity         |
@@ -25,7 +25,7 @@ This guide covers FlowLink's system architecture, package dependencies, data flo
                              |         |         |
                              v         v         v
                        +-----+---------+---------+------------------+
-                       |           @flowlink/core                   |
+                       |           @prooflink/core                   |
                        |       ProofLink Decision Engine            |
                        |                                            |
                        |  +------------+  +-----------+  +--------+ |
@@ -46,7 +46,7 @@ This guide covers FlowLink's system architecture, package dependencies, data flo
                        +---------+     +--------+  +--------+
 
                        +--------------------------------------------+
-                       |        @flowlink/x402-compliance           |
+                       |        @prooflink/x402-compliance           |
                        |    (Intercepts x402 payment flow)          |
                        |                                            |
                        |  onBeforeVerify --> Sanctions + AML        |
@@ -60,46 +60,46 @@ This guide covers FlowLink's system architecture, package dependencies, data flo
 ## Package Dependency Graph
 
 ```
-@flowlink/shared          (Zod schemas, types, constants, errors)
+@prooflink/shared          (Zod schemas, types, constants, errors)
     |
-    +---> @flowlink/core             (ProofLink engine, sanctions, AML, travel rule, KYA)
+    +---> @prooflink/core             (ProofLink engine, sanctions, AML, travel rule, KYA)
     |         |
-    |         +---> @flowlink/x402-compliance   (x402 middleware hooks)
-    |         +---> @flowlink/api               (Hono REST API server)
-    |         +---> @flowlink/demo              (Terminal-based hackathon demo)
+    |         +---> @prooflink/x402-compliance   (x402 middleware hooks)
+    |         +---> @prooflink/api               (Hono REST API server)
+    |         +---> @prooflink/demo              (Terminal-based hackathon demo)
     |
-    +---> @flowlink/sdk              (TypeScript client SDK)
-    +---> @flowlink/mcp-server       (MCP compliance server for AI agents)
-    +---> @flowlink/request-finance  (Request Network integration)
-    +---> @flowlink/api              (also depends on shared directly)
-    +---> @flowlink/demo
+    +---> @prooflink/sdk              (TypeScript client SDK)
+    +---> @prooflink/mcp-server       (MCP compliance server for AI agents)
+    +---> @prooflink/request-finance  (Request Network integration)
+    +---> @prooflink/api              (also depends on shared directly)
+    +---> @prooflink/demo
 
-@flowlink/contracts  (standalone -- Foundry/Solidity, no TS dependencies)
+@prooflink/contracts  (standalone -- Foundry/Solidity, no TS dependencies)
 ```
 
 ### Package descriptions
 
 | Package                       | Description                                    |
 |-------------------------------|------------------------------------------------|
-| `@flowlink/shared`            | Shared Zod schemas, TypeScript types, constants, error classes, utilities |
-| `@flowlink/core`              | ProofLink compliance decision engine -- sanctions, AML, Travel Rule, KYA, receipts |
-| `@flowlink/x402-compliance`   | x402 HTTP 402 payment protocol compliance middleware |
-| `@flowlink/mcp-server`        | Model Context Protocol server exposing compliance tools for AI agents |
-| `@flowlink/sdk`               | TypeScript client SDK for the FlowLink REST API |
-| `@flowlink/request-finance`   | Request Network / Request Finance compliance integration |
-| `@flowlink/api`               | Hono-based REST API server (port 3001)          |
-| `@flowlink/dashboard`         | Next.js 15 admin dashboard (port 3100)          |
-| `@flowlink/demo`              | Terminal-based hackathon demo                   |
-| `@flowlink/contracts`         | Solidity smart contracts (Foundry)              |
+| `@prooflink/shared`            | Shared Zod schemas, TypeScript types, constants, error classes, utilities |
+| `@prooflink/core`              | ProofLink compliance decision engine -- sanctions, AML, Travel Rule, KYA, receipts |
+| `@prooflink/x402-compliance`   | x402 HTTP 402 payment protocol compliance middleware |
+| `@prooflink/mcp-server`        | Model Context Protocol server exposing compliance tools for AI agents |
+| `@prooflink/sdk`               | TypeScript client SDK for the ProofLink REST API |
+| `@prooflink/request-finance`   | Request Network / Request Finance compliance integration |
+| `@prooflink/api`               | Hono-based REST API server (port 3001)          |
+| `@prooflink/dashboard`         | Next.js 15 admin dashboard (port 3100)          |
+| `@prooflink/demo`              | Terminal-based hackathon demo                   |
+| `@prooflink/contracts`         | Solidity smart contracts (Foundry)              |
 
 ### Smart contracts
 
 | Contract                     | Purpose                                |
 |------------------------------|----------------------------------------|
 | `ProofLinkRegistry.sol`      | On-chain compliance receipt registry   |
-| `FlowLinkKYA.sol`            | Know Your Agent identity attestations  |
+| `ProofLinkKYA.sol`            | Know Your Agent identity attestations  |
 | `AgentInvoice.sol`           | Autonomous agent invoice management    |
-| `FlowLinkFacilitator.sol`    | x402 compliant payment facilitator     |
+| `ProofLinkFacilitator.sol`    | x402 compliant payment facilitator     |
 
 ---
 
@@ -142,7 +142,7 @@ Client                    API                     Core Engine
 ### x402 payment flow with compliance
 
 ```
-Client          x402 Server       FlowLink Middleware       Chainalysis
+Client          x402 Server       ProofLink Middleware       Chainalysis
   |                 |                     |                      |
   |  GET /resource  |                     |                      |
   |---------------->|                     |                      |
@@ -314,9 +314,9 @@ ORM: Drizzle ORM with type-safe schema definitions.
 | Component                  | Network       | Purpose                   |
 |---------------------------|---------------|---------------------------|
 | `ProofLinkRegistry`       | Base mainnet  | Compliance receipt registry|
-| `FlowLinkKYA`             | Base mainnet  | Agent identity attestations|
+| `ProofLinkKYA`             | Base mainnet  | Agent identity attestations|
 | `AgentInvoice`            | Base mainnet  | Invoice anchoring          |
-| `FlowLinkFacilitator`     | Base mainnet  | x402 payment facilitator   |
+| `ProofLinkFacilitator`     | Base mainnet  | x402 payment facilitator   |
 | EAS attestations          | Base mainnet  | Compliance proof anchoring |
 
 ---

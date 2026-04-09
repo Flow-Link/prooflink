@@ -27,7 +27,7 @@ const defaultHttpClient: IPFSHttpClient = {
  *
  * Usage:
  * ```ts
- * import { IPFSClient } from "@flowlink/integrations/ipfs";
+ * import { IPFSClient } from "@prooflink/integrations/ipfs";
  *
  * const client = new IPFSClient({
  *   gateway: "https://gateway.pinata.cloud/ipfs",

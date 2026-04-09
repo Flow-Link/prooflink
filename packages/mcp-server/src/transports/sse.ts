@@ -33,7 +33,7 @@ export interface SSETransportHandle {
 }
 
 /**
- * Create an SSE (Server-Sent Events) transport for the FlowLink MCP server.
+ * Create an SSE (Server-Sent Events) transport for the ProofLink MCP server.
  * Enables browser/HTTP clients to connect without stdio.
  *
  * Architecture:
@@ -138,7 +138,7 @@ export function createSSETransport(
         httpServer.on("error", reject);
         httpServer.listen(opts.port, opts.hostname, () => {
           process.stderr.write(
-            `[flowlink-mcp] SSE transport listening on http://${opts.hostname}:${opts.port}${opts.basePath}\n`,
+            `[prooflink-mcp] SSE transport listening on http://${opts.hostname}:${opts.port}${opts.basePath}\n`,
           );
           resolve();
         });

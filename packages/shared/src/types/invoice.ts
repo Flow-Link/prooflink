@@ -93,7 +93,7 @@ export type InvoiceCurrency = z.infer<typeof InvoiceCurrency>;
 export const AgentInvoice = z.object({
   "@context": z.array(z.string()).default([
     "https://schema.org",
-    "https://flowlink.io/invoices/v1",
+    "https://prooflink.io/invoices/v1",
   ]),
   "@type": z.string().default("Invoice"),
   invoiceId: z.string(),

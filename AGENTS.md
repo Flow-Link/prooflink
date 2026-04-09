@@ -1,4 +1,4 @@
-# FlowLink Agent Team Configuration
+# ProofLink Agent Team Configuration
 
 ## Parallel Agent Dispatch Protocol
 
@@ -65,4 +65,4 @@ When working on any task in this repository, spawn up to 8 relevant agents in pa
 5. **Coordinate results** — synthesize outputs from all agents before presenting to user
 
 ## Research Corpus Location
-Raw research data from 25 agents (6.5MB+): `/tmp/claude-1000/-home-akash-PROJECTS-FLOW-LINK/*/tasks/`
+Raw research data from 25 agents (6.5MB+): `/tmp/claude-1000/-home-akash-PROJECTS-prooflink/*/tasks/`

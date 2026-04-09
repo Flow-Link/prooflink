@@ -7,7 +7,7 @@ import {
   type IVMS101Message,
   type IVMS101NameIdentifier,
 } from "../travel-rule/checker.js";
-import type { TravelRuleData } from "@flowlink/shared";
+import type { TravelRuleData } from "@prooflink/shared";
 import type { ProofLinkConfig } from "../config.js";
 
 // ---------------------------------------------------------------------------
@@ -428,7 +428,7 @@ describe("NotabeneProvider", () => {
 
     const provider = new NotabeneProvider({
       apiKey: "test-api-key",
-      vaspDID: "did:web:vasp.flowlink.io",
+      vaspDID: "did:web:vasp.prooflink.io",
       baseUrl: "https://api.notabene.id/v1",
     });
 
@@ -461,7 +461,7 @@ describe("NotabeneProvider", () => {
 
     const provider = new NotabeneProvider({
       apiKey: "my-secret-key",
-      vaspDID: "did:web:vasp.flowlink.io",
+      vaspDID: "did:web:vasp.prooflink.io",
       baseUrl: "https://api.notabene.id/v1",
     });
 
@@ -495,7 +495,7 @@ describe("NotabeneProvider", () => {
 
     const provider = new NotabeneProvider({
       apiKey: "key",
-      vaspDID: "did:web:vasp.flowlink.io",
+      vaspDID: "did:web:vasp.prooflink.io",
       baseUrl: "https://api.notabene.id/v1",
     });
 
@@ -523,7 +523,7 @@ describe("NotabeneProvider", () => {
 
     const provider = new NotabeneProvider({
       apiKey: "key",
-      vaspDID: "did:web:vasp.flowlink.io",
+      vaspDID: "did:web:vasp.prooflink.io",
       baseUrl: "https://api.notabene.id/v1",
     });
 
@@ -556,7 +556,7 @@ describe("NotabeneProvider", () => {
 
     const provider = new NotabeneProvider({
       apiKey: "key",
-      vaspDID: "did:web:vasp.flowlink.io",
+      vaspDID: "did:web:vasp.prooflink.io",
       baseUrl: "https://api.notabene.id/v1",
     });
 
@@ -603,7 +603,7 @@ describe("TravelRuleChecker — provider selection", () => {
       makeConfig({
         notabene: {
           apiKey: "test-key",
-          vaspDID: "did:web:vasp.flowlink.io",
+          vaspDID: "did:web:vasp.prooflink.io",
           baseUrl: "https://api.notabene.id/v1",
           testnet: false,
         },

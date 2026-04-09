@@ -1,32 +1,32 @@
 # Quick Start Guide
 
-Get up and running with FlowLink compliance in under 5 minutes.
+Get up and running with ProofLink compliance in under 5 minutes.
 
 ## Install the SDK
 
 ```bash
-npm install @flowlink/sdk
+npm install @prooflink/sdk
 # or
-pnpm add @flowlink/sdk
+pnpm add @prooflink/sdk
 # or
-bun add @flowlink/sdk
+bun add @prooflink/sdk
 ```
 
 ## Set Up Your API Key
 
-Get an API key from the [FlowLink Dashboard](https://dashboard.flowlink.io). Store it as an environment variable:
+Get an API key from the [ProofLink Dashboard](https://dashboard.prooflink.io). Store it as an environment variable:
 
 ```bash
-export FLOWLINK_API_KEY=fl_live_your_api_key
+export PROOFLINK_API_KEY=fl_live_your_api_key
 ```
 
 ## Initialize the Client
 
 ```ts
-import { FlowLinkClient } from "@flowlink/sdk";
+import { ProofLinkClient } from "@prooflink/sdk";
 
-const flowlink = new FlowLinkClient({
-  apiKey: process.env.FLOWLINK_API_KEY!,
+const prooflink = new ProofLinkClient({
+  apiKey: process.env.PROOFLINK_API_KEY!,
 });
 ```
 
@@ -34,8 +34,8 @@ const flowlink = new FlowLinkClient({
 
 | Option       | Default                        | Description                       |
 |-------------|--------------------------------|-----------------------------------|
-| `apiKey`    | --                             | Your FlowLink API key (required)  |
-| `baseUrl`   | `https://api.flowlink.io/v1`   | Override for self-hosted deploys  |
+| `apiKey`    | --                             | Your ProofLink API key (required)  |
+| `baseUrl`   | `https://api.prooflink.io/v1`   | Override for self-hosted deploys  |
 | `timeout`   | `30000`                        | Request timeout in ms             |
 | `maxRetries`| `3`                            | Auto-retries on transient errors  |
 
@@ -44,11 +44,11 @@ const flowlink = new FlowLinkClient({
 ## First Compliance Check (5 Lines)
 
 ```ts
-import { FlowLinkClient } from "@flowlink/sdk";
+import { ProofLinkClient } from "@prooflink/sdk";
 
-const flowlink = new FlowLinkClient({ apiKey: process.env.FLOWLINK_API_KEY! });
+const prooflink = new ProofLinkClient({ apiKey: process.env.PROOFLINK_API_KEY! });
 
-const decision = await flowlink.checkCompliance({
+const decision = await prooflink.checkCompliance({
   sender: { address: "0xAlice", chain: "base" },
   receiver: { address: "0xBob", chain: "base" },
   amount: "5000",
@@ -68,7 +68,7 @@ This single call runs the full pipeline: sanctions screening on both parties, AM
 Check a wallet against OFAC, EU, UN, and HMT sanctions lists:
 
 ```ts
-const result = await flowlink.screenAddress(
+const result = await prooflink.screenAddress(
   "0x742d35Cc6634C0532925a3b844Bc9e7595f2bD68",
   "base"
 );
@@ -87,10 +87,10 @@ if (result.matched) {
 Create a compliance-stamped invoice for agent-to-agent services:
 
 ```ts
-const invoice = await flowlink.createInvoice({
+const invoice = await prooflink.createInvoice({
   seller: {
     walletAddress: "0xAlice",
-    agentId: "did:flowlink:agent:data-processor",
+    agentId: "did:prooflink:agent:data-processor",
     legalName: "DataCo AI",
   },
   buyer: {
@@ -115,7 +115,7 @@ console.log(invoice.id);    // UUID
 console.log(invoice.state); // "DRAFT"
 
 // Transition through the invoice lifecycle
-await flowlink.updateInvoiceState(invoice.id, "ISSUED");
+await prooflink.updateInvoiceState(invoice.id, "ISSUED");
 ```
 
 ---
@@ -125,7 +125,7 @@ await flowlink.updateInvoiceState(invoice.id, "ISSUED");
 Check if an AI agent has a valid KYA credential:
 
 ```ts
-const verification = await flowlink.verifyAgent("did:flowlink:agent:bob-bot");
+const verification = await prooflink.verifyAgent("did:prooflink:agent:bob-bot");
 
 if (verification.verified) {
   console.log("Trust score:", verification.trustScore);
@@ -143,8 +143,8 @@ if (verification.verified) {
 Register an AI agent and issue a KYA verifiable credential:
 
 ```ts
-const agent = await flowlink.registerAgent({
-  agentDid: "did:flowlink:agent:my-bot",
+const agent = await prooflink.registerAgent({
+  agentDid: "did:prooflink:agent:my-bot",
   agentType: "autonomous",
   controllingEntity: {
     name: "My Company Inc",
@@ -169,26 +169,26 @@ const agent = await flowlink.registerAgent({
 End-to-end: screen, verify, check compliance, invoice, and settle.
 
 ```ts
-import { FlowLinkClient } from "@flowlink/sdk";
+import { ProofLinkClient } from "@prooflink/sdk";
 
-const flowlink = new FlowLinkClient({ apiKey: process.env.FLOWLINK_API_KEY! });
+const prooflink = new ProofLinkClient({ apiKey: process.env.PROOFLINK_API_KEY! });
 
 // 1. Screen the recipient
-const screen = await flowlink.screenAddress("0xBob", "base");
+const screen = await prooflink.screenAddress("0xBob", "base");
 if (screen.matched) {
   throw new Error(`Recipient sanctioned: ${JSON.stringify(screen.matchDetails)}`);
 }
 
 // 2. Verify the counterparty agent
-const verification = await flowlink.verifyAgent("did:flowlink:agent:bob-bot");
+const verification = await prooflink.verifyAgent("did:prooflink:agent:bob-bot");
 if (!verification.verified) {
   throw new Error("Agent KYA verification failed");
 }
 
 // 3. Run full compliance check
-const decision = await flowlink.checkCompliance({
-  sender: { address: "0xAlice", chain: "base", agentDID: "did:flowlink:agent:alice-bot" },
-  receiver: { address: "0xBob", chain: "base", agentDID: "did:flowlink:agent:bob-bot" },
+const decision = await prooflink.checkCompliance({
+  sender: { address: "0xAlice", chain: "base", agentDID: "did:prooflink:agent:alice-bot" },
+  receiver: { address: "0xBob", chain: "base", agentDID: "did:prooflink:agent:bob-bot" },
   amount: "5000",
   asset: "USDC",
 });
@@ -197,9 +197,9 @@ if (decision.status === "REJECTED") {
 }
 
 // 4. Create the invoice
-const invoice = await flowlink.createInvoice({
-  seller: { walletAddress: "0xAlice", agentId: "did:flowlink:agent:alice-bot" },
-  buyer: { walletAddress: "0xBob", agentId: "did:flowlink:agent:bob-bot" },
+const invoice = await prooflink.createInvoice({
+  seller: { walletAddress: "0xAlice", agentId: "did:prooflink:agent:alice-bot" },
+  buyer: { walletAddress: "0xBob", agentId: "did:prooflink:agent:bob-bot" },
   lineItems: [
     { description: "GPU compute - 2 hours", quantity: 2, unitPrice: 2500, total: 5000, serviceCategory: "compute" },
   ],
@@ -209,13 +209,13 @@ const invoice = await flowlink.createInvoice({
 });
 
 // 5. Progress through invoice lifecycle
-await flowlink.updateInvoiceState(invoice.id, "ISSUED");
+await prooflink.updateInvoiceState(invoice.id, "ISSUED");
 // ... execute payment via x402 ...
-await flowlink.updateInvoiceState(invoice.id, "PAID");
-await flowlink.updateInvoiceState(invoice.id, "SETTLED");
+await prooflink.updateInvoiceState(invoice.id, "PAID");
+await prooflink.updateInvoiceState(invoice.id, "SETTLED");
 
 // 6. Retrieve the compliance receipt for audit
-const receipt = await flowlink.getComplianceReceipt(decision.receiptId);
+const receipt = await prooflink.getComplianceReceipt(decision.receiptId);
 console.log("ProofLink receipt hash:", receipt.receiptHash);
 ```
 
@@ -223,7 +223,7 @@ console.log("ProofLink receipt hash:", receipt.receiptHash);
 
 ## Dashboard Setup
 
-The FlowLink dashboard provides real-time visibility into compliance activity:
+The ProofLink dashboard provides real-time visibility into compliance activity:
 
 1. Start infrastructure:
    ```bash
@@ -232,14 +232,14 @@ The FlowLink dashboard provides real-time visibility into compliance activity:
 
 2. Run the API server:
    ```bash
-   pnpm --filter=@flowlink/api db:migrate
-   pnpm --filter=@flowlink/api dev
+   pnpm --filter=@prooflink/api db:migrate
+   pnpm --filter=@prooflink/api dev
    # -> http://localhost:3001
    ```
 
 3. Start the dashboard:
    ```bash
-   pnpm --filter=@flowlink/dashboard dev
+   pnpm --filter=@prooflink/dashboard dev
    # -> http://localhost:3100
    ```
 
@@ -258,26 +258,26 @@ The SDK provides typed error classes for precise error handling:
 
 ```ts
 import {
-  FlowLinkClient,
-  FlowLinkAPIError,
-  FlowLinkValidationError,
-  FlowLinkTimeoutError,
-  FlowLinkNetworkError,
-} from "@flowlink/sdk";
+  ProofLinkClient,
+  ProofLinkAPIError,
+  ProofLinkValidationError,
+  ProofLinkTimeoutError,
+  ProofLinkNetworkError,
+} from "@prooflink/sdk";
 
 try {
-  const decision = await flowlink.checkCompliance({ ... });
+  const decision = await prooflink.checkCompliance({ ... });
 } catch (err) {
-  if (err instanceof FlowLinkAPIError) {
+  if (err instanceof ProofLinkAPIError) {
     // API returned an error (4xx, 5xx)
     console.error(`API error ${err.status}: ${err.body?.code} - ${err.body?.message}`);
-  } else if (err instanceof FlowLinkValidationError) {
+  } else if (err instanceof ProofLinkValidationError) {
     // Client-side validation failed (no network call made)
     console.error(`Validation error on field "${err.field}": ${err.message}`);
-  } else if (err instanceof FlowLinkTimeoutError) {
+  } else if (err instanceof ProofLinkTimeoutError) {
     // Request timed out after all retries
     console.error(`Timeout after ${err.timeoutMs}ms: ${err.url}`);
-  } else if (err instanceof FlowLinkNetworkError) {
+  } else if (err instanceof ProofLinkNetworkError) {
     // DNS, connection refused, etc.
     console.error("Network error:", err.message);
   }

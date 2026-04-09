@@ -1,4 +1,4 @@
-# FlowLink Integration Completeness Review
+# ProofLink Integration Completeness Review
 
 **Reviewed by:** Research Agent
 **Date:** 2026-03-21
@@ -11,9 +11,9 @@
 ### Finding: Functionally Complete, But ABI Encoding Delegated to Consumer
 
 **Files:**
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/src/eas/client.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/src/eas/schema.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/src/eas/types.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/src/eas/client.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/src/eas/schema.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/src/eas/types.ts`
 
 **What Works:**
 - `EASClient` implements the full lifecycle: `attest()`, `verify()`, `revoke()`, `getAttestationsByRecipient()`
@@ -40,8 +40,8 @@ The `attest()` method passes `JSON.stringify(attestationData)` as the `data` fie
 ### Finding: Complete for All Three Providers; web3.storage Stale API
 
 **Files:**
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/src/ipfs/client.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/src/ipfs/types.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/src/ipfs/client.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/src/ipfs/types.ts`
 
 **What Works:**
 - All three providers implemented: Pinata (JWT auth via `pinJSONToIPFS`), web3.storage (Bearer upload), Infura (Basic auth multipart)
@@ -66,15 +66,15 @@ The `pinToWeb3Storage()` method uses `POST /upload` (client.ts:219) and `listW3S
 ### Finding: Core API Complete; Missing VASP Discovery and Status Polling
 
 **Files:**
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/src/notabene/client.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/src/notabene/provider.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/src/notabene/types.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/src/notabene/client.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/src/notabene/provider.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/src/notabene/types.ts`
 
 **What Works:**
 - `submitTransfer()` correctly maps `TravelRuleData` to the Notabene IVMS101 transfer payload with proper nested structure
 - `getTransfer()` and `listTransfers()` are implemented with pagination and filtering support
 - Testnet/mainnet URL switching via `config.testnet` boolean
-- `NotabeneTravelRuleProvider` correctly implements `TravelRuleProvider` from `@flowlink/core`
+- `NotabeneTravelRuleProvider` correctly implements `TravelRuleProvider` from `@prooflink/core`
 - Error handling via Error constructor with HTTP status in message
 
 **Missing Critical VASP Operations:**
@@ -97,9 +97,9 @@ Uses `DEFAULT_BASE_URL = "https://api.notabene.id/v1"` — this is the correct c
 ### Finding: v2 Screening API Used; Account Endpoint Uses Legacy v1
 
 **Files:**
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/src/trm/client.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/src/trm/provider.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/src/trm/types.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/src/trm/client.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/src/trm/provider.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/src/trm/types.ts`
 
 **What Works:**
 - `screenAddress()` correctly uses `/public/v2/screening/addresses` (client.ts:85) — the current TRM v2 batch screening endpoint
@@ -127,8 +127,8 @@ Uses `DEFAULT_BASE_URL = "https://api.notabene.id/v1"` — this is the correct c
 ### Finding: Three Core Notification Types Present; Missing Operational Alerts
 
 **Files:**
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/src/slack/webhook.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/src/slack/types.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/src/slack/webhook.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/src/slack/types.ts`
 
 **What Works:**
 - `sendComplianceAlert()`, `sendSanctionsAlert()`, `sendEscalation()` all implemented with Block Kit formatting
@@ -156,15 +156,15 @@ Uses `DEFAULT_BASE_URL = "https://api.notabene.id/v1"` — this is the correct c
 ### Finding: Spec-Compliant and Well-Architected; Two Production Gaps
 
 **Files:**
-- `/home/akash/PROJECTS/FLOW-LINK/packages/x402-compliance/src/middleware.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/x402-compliance/src/hooks/before-verify.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/x402-compliance/src/hooks/before-settle.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/x402-compliance/src/hooks/after-settle.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/x402-compliance/src/adapters/express.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/x402-compliance/src/adapters/hono.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/x402-compliance/src/extension.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/x402-compliance/src/receipt.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/x402-compliance/src/rate-limiter.ts`
+- `/home/akash/PROJECTS/prooflink/packages/x402-compliance/src/middleware.ts`
+- `/home/akash/PROJECTS/prooflink/packages/x402-compliance/src/hooks/before-verify.ts`
+- `/home/akash/PROJECTS/prooflink/packages/x402-compliance/src/hooks/before-settle.ts`
+- `/home/akash/PROJECTS/prooflink/packages/x402-compliance/src/hooks/after-settle.ts`
+- `/home/akash/PROJECTS/prooflink/packages/x402-compliance/src/adapters/express.ts`
+- `/home/akash/PROJECTS/prooflink/packages/x402-compliance/src/adapters/hono.ts`
+- `/home/akash/PROJECTS/prooflink/packages/x402-compliance/src/extension.ts`
+- `/home/akash/PROJECTS/prooflink/packages/x402-compliance/src/receipt.ts`
+- `/home/akash/PROJECTS/prooflink/packages/x402-compliance/src/rate-limiter.ts`
 
 **HTTP 402 Spec Compliance:**
 The middleware returns `403` on compliance blocks (express.ts:100, hono.ts:113), not `402`. The x402 protocol uses 402 for payment required and separate error channels for compliance rejection. Whether returning 403 vs. a custom 402 with compliance error extension is correct depends on the x402 spec version targeted — if the facilitator handles 402 and compliance is a pre-step, 403 is appropriate. This is borderline acceptable but worth confirming against the x402 spec.
@@ -175,7 +175,7 @@ The middleware returns `403` on compliance blocks (express.ts:100, hono.ts:113),
 - `onAfterSettle`: ProofLink receipt generation, hash computation, async EAS attestation, async invoice generation, extension enrichment — complete and correctly non-blocking for async operations
 
 **Extension System — Correct:**
-`createFlowLinkExtension()` enriches the 402 payment-required response with compliance policy info and the settlement response with the `proofLinkHash`. The one-time-read pattern (delete after consumption at extension.ts:52) correctly prevents stale hashes being returned for subsequent payments.
+`createProofLinkExtension()` enriches the 402 payment-required response with compliance policy info and the settlement response with the `proofLinkHash`. The one-time-read pattern (delete after consumption at extension.ts:52) correctly prevents stale hashes being returned for subsequent payments.
 
 **Critical Gap — Default Stubs Allow All Payments:**
 `DefaultSanctionsScreener` always returns `{ clean: true }` and `DefaultAmlScorer` always returns `{ score: 0 }` (middleware.ts:76-85). A warning is emitted once but only if a logger is provided. A production deployment that omits `services.screener` and `services.amlScorer` will silently bypass all compliance screening. This should fail-closed (throw) rather than fail-open.
@@ -199,9 +199,9 @@ The default `extractPayload` and `extractRequirements` both parse the request bo
 ### Finding: 11 Tools, 3 Resources Registered; Several Are Partially Stubbed
 
 **Files:**
-- `/home/akash/PROJECTS/FLOW-LINK/packages/mcp-server/src/server.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/mcp-server/src/context.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/mcp-server/src/transports/sse.ts`
+- `/home/akash/PROJECTS/prooflink/packages/mcp-server/src/server.ts`
+- `/home/akash/PROJECTS/prooflink/packages/mcp-server/src/context.ts`
+- `/home/akash/PROJECTS/prooflink/packages/mcp-server/src/transports/sse.ts`
 - All tool and resource files
 
 ### Tool Completeness Matrix
@@ -224,11 +224,11 @@ The default `extractPayload` and `extractRequirements` both parse the request bo
 
 | Resource | URI | Status |
 |---|---|---|
-| `compliance-policy` | `flowlink://compliance/policy` | Hardcoded policy values, not read from config |
-| `compliance-stats` | `flowlink://compliance/stats` | Hardcoded sample numbers |
-| `registered-agents` | `flowlink://agents/registered` | Two hardcoded sample agents |
+| `compliance-policy` | `prooflink://compliance/policy` | Hardcoded policy values, not read from config |
+| `compliance-stats` | `prooflink://compliance/stats` | Hardcoded sample numbers |
+| `registered-agents` | `prooflink://agents/registered` | Two hardcoded sample agents |
 
-**Compliance-policy resource does not reflect the live `FlowLinkConfig`** — it returns static values regardless of how the server is configured (compliance-policy.ts:22-35). If `maxRiskScore` is set to 50 in config, the resource still reports the hardcoded thresholds from `@flowlink/shared` constants.
+**Compliance-policy resource does not reflect the live `ProofLinkConfig`** — it returns static values regardless of how the server is configured (compliance-policy.ts:22-35). If `maxRiskScore` is set to 50 in config, the resource still reports the hardcoded thresholds from `@prooflink/shared` constants.
 
 ### SSE Transport
 
@@ -239,7 +239,7 @@ CORS `Access-Control-Allow-Origin` defaults to `"*"` in non-production environme
 
 ### Context and Singleton Services
 
-`context.ts` correctly initializes `SanctionsScreener`, `AMLScorer`, and `KYAVerifier` as singletons from `@flowlink/core`. The `failOpen` default (`true` unless `FLOWLINK_FAIL_OPEN=false`) means the MCP server will pass all screenings if the Chainalysis API is unreachable. This is documented but is the opposite of the fail-closed behavior appropriate for a production compliance system.
+`context.ts` correctly initializes `SanctionsScreener`, `AMLScorer`, and `KYAVerifier` as singletons from `@prooflink/core`. The `failOpen` default (`true` unless `PROOFLINK_FAIL_OPEN=false`) means the MCP server will pass all screenings if the Chainalysis API is unreachable. This is documented but is the opposite of the fail-closed behavior appropriate for a production compliance system.
 
 ---
 
@@ -248,21 +248,21 @@ CORS `Access-Control-Allow-Origin` defaults to `"*"` in non-production environme
 ### Finding: Complete and Well-Designed; Compliance Bridge Has Missing Link
 
 **Files:**
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/request-finance/src/client.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/request-finance/src/adapter.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/request-finance/src/compliance-bridge.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/integrations/request-finance/src/types.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/request-finance/src/client.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/request-finance/src/adapter.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/request-finance/src/compliance-bridge.ts`
+- `/home/akash/PROJECTS/prooflink/packages/integrations/request-finance/src/types.ts`
 
 **What Works:**
 - `RequestNetworkClient` covers create, get, payment detection, and IPFS content fetch
-- `RequestFinanceAdapter` correctly handles bidirectional conversion (FlowLink `AgentInvoice` ↔ Request Network invoice)
+- `RequestFinanceAdapter` correctly handles bidirectional conversion (ProofLink `AgentInvoice` ↔ Request Network invoice)
 - State mapping is complete; `DISPUTED` correctly degrades to `created` (no RN equivalent)
 - Stablecoin address registry covers mainnet, base, polygon, arbitrum
 - `ComplianceBridge.checkBeforePayment()` correctly wraps the ProofLink API call and enriches the RN invoice with compliance metadata
 - `failOpen` behavior is explicit and configurable
 
 **Missing Link in `ComplianceBridge`:**
-`callProofLink()` calls `this.postToProofLink("/compliance/check", params)` (compliance-bridge.ts:255) which is the FlowLink compliance REST API. This API is not implemented anywhere in the codebase — there is no HTTP server in `@flowlink/core` or `@flowlink/api` exposing a `/compliance/check` endpoint. The bridge assumes a deployed ProofLink API service exists but no such service is built. This is a hard dependency gap.
+`callProofLink()` calls `this.postToProofLink("/compliance/check", params)` (compliance-bridge.ts:255) which is the ProofLink compliance REST API. This API is not implemented anywhere in the codebase — there is no HTTP server in `@prooflink/core` or `@prooflink/api` exposing a `/compliance/check` endpoint. The bridge assumes a deployed ProofLink API service exists but no such service is built. This is a hard dependency gap.
 
 **Infra:**
 `RequestNetworkClient` correctly uses `AbortSignal.timeout()` (client.ts:154) rather than manual `AbortController` — appropriate for Node.js 18+. Uses `@requestnetwork/request-client.js` is intentionally not imported (as noted in comments) — the implementation wraps their HTTP node API instead, which is the correct decoupling approach.
@@ -272,7 +272,7 @@ CORS `Access-Control-Allow-Origin` defaults to `"*"` in non-production environme
 ## 9. Missing Integrations
 
 ### Chainalysis KYT/Reactor
-`FlowLinkConfigSchema` requires `chainalysisApiKey` (types.ts:303) and `context.ts` instantiates `SanctionsScreener` using it. But there is no `integrations/src/chainalysis/` package. Chainalysis integration is entirely within `@flowlink/core` (which is not in scope here). The integrations package does not expose a standalone Chainalysis client, meaning consumers cannot use it without the full core package.
+`ProofLinkConfigSchema` requires `chainalysisApiKey` (types.ts:303) and `context.ts` instantiates `SanctionsScreener` using it. But there is no `integrations/src/chainalysis/` package. Chainalysis integration is entirely within `@prooflink/core` (which is not in scope here). The integrations package does not expose a standalone Chainalysis client, meaning consumers cannot use it without the full core package.
 
 ### Circle/USDC Native Integration
 No integration exists. `STABLECOIN_ADDRESSES` in the Request Network adapter has hardcoded USDC contract addresses, which is a reasonable substitute, but there is no Circle CCTP bridging support, Circle Accounts API integration, or programmable wallets capability.
@@ -306,7 +306,7 @@ Referenced in compliance-policy resource (`vasp_messaging_providers: ["notabene"
 | x402 Compliance | 80% | Default stubs fail-open silently; Hono body double-read bug; adapters missing settle/after-settle |
 | MCP Server | 60% | 7 of 11 tools are stubs; SSE multi-client routing broken; resources return hardcoded data |
 | Request Network | 75% | ProofLink REST API dependency not implemented |
-| Chainalysis | N/A | No standalone package; only in @flowlink/core |
+| Chainalysis | N/A | No standalone package; only in @prooflink/core |
 | Circle/USDC | 0% | Not implemented |
 | DEX Price Feeds | 0% | Not implemented; default converter silently wrong for non-stablecoins |
 | Block Explorers | 0% | Not implemented |

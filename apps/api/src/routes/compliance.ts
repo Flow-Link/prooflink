@@ -6,13 +6,14 @@ import { z } from "zod";
 import { getDb } from "../db/index.js";
 import { agents, complianceChecks, complianceReceipts } from "../db/schema.js";
 import type { AuthContext } from "../middleware/auth.js";
+import { requireScope } from "../middleware/auth.js";
 import { validate } from "../middleware/validate.js";
 import { writeAuditLog } from "../utils/audit.js";
 import { logger } from "../utils/logger.js";
 import { convertToUsd } from "../utils/price-guard.js";
 import { emitComplianceEvent, emitSanctionsAlert } from "../utils/events.js";
-import { AMLScorer, loadConfig, TravelRuleChecker } from "@flowlink/core";
-import type { TransactionContext, TravelRuleResult } from "@flowlink/core";
+import { AMLScorer, loadConfig, TravelRuleChecker } from "@prooflink/core";
+import type { TransactionContext, TravelRuleResult } from "@prooflink/core";
 import { checkDelegationScope } from "../utils/spend-enforcement.js";
 import { validateCrossChainSpend } from "../services/policy-sync.js";
 import { screenAddress } from "../services/screening.js";
@@ -109,7 +110,7 @@ const HistoryQuery = z.object({
 const compliance = new Hono();
 
 // POST /v1/compliance/check -- Run full compliance check
-compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) => {
+compliance.post("/check", requireScope("write"), validate({ body: ComplianceCheckRequest }), async (c) => {
   const parsed = c.get("validatedBody") as ComplianceCheckRequest;
 
   // Resolve trace context: body > header > generate
@@ -239,7 +240,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
           return "UNVERIFIED";
         }
       })(),
-      provider: "flowlink",
+      provider: "prooflink",
       performedAt: new Date().toISOString(),
       durationMs: 30,
     },
@@ -277,7 +278,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
         triggeringJurisdiction: jurisdictionResult.triggeringJurisdiction,
         regulatoryBody: jurisdictionResult.appliedRule.regulatoryBody,
       },
-      provider: "flowlink",
+      provider: "prooflink",
       performedAt: new Date().toISOString(),
       durationMs: 3,
     },
@@ -289,7 +290,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
       checkType: additionalCheck,
       target: "transaction",
       result: "PERFORMED",
-      provider: "flowlink_protocol_adapter",
+      provider: "prooflink_protocol_adapter",
       performedAt: new Date().toISOString(),
       durationMs: 1,
     });
@@ -301,7 +302,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
       checkType: "ENHANCED_DUE_DILIGENCE",
       target: "transaction",
       result: "REQUIRED",
-      provider: "flowlink_protocol_adapter",
+      provider: "prooflink_protocol_adapter",
       performedAt: new Date().toISOString(),
       durationMs: 1,
     });
@@ -313,7 +314,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
       checkType: "PERMISSION_TRANSLATION",
       target: "transaction",
       result: permissionValidation.valid ? "PASSED" : "FAILED",
-      provider: "flowlink_permission_translator",
+      provider: "prooflink_permission_translator",
       performedAt: new Date().toISOString(),
       durationMs: 1,
     } as (typeof checksPerformed)[number]);
@@ -339,7 +340,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
     target: "transaction",
     result: amlResult.exceeds ? "FAILED" : "PASSED",
     details: { score: amlResult.score, threshold: amlResult.threshold, factors: amlResult.factors },
-    provider: "flowlink_aml_scorer",
+    provider: "prooflink_aml_scorer",
     performedAt: new Date().toISOString(),
     durationMs: amlDurationMs,
   });
@@ -367,7 +368,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
         checkType: "DELEGATION_SCOPE",
         target: "sender",
         result: "FAILED",
-        provider: "flowlink",
+        provider: "prooflink",
         performedAt: new Date().toISOString(),
         durationMs: Date.now() - startTime - totalDurationMs,
       });
@@ -387,7 +388,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
           checkType: "CROSS_CHAIN_SPEND_LIMIT",
           target: "sender",
           result: "FAILED",
-          provider: "flowlink_policy_sync",
+          provider: "prooflink_policy_sync",
           performedAt: new Date().toISOString(),
           durationMs: Date.now() - startTime - totalDurationMs,
         });
@@ -396,7 +397,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
           checkType: "CROSS_CHAIN_SPEND_LIMIT",
           target: "sender",
           result: "PASSED",
-          provider: "flowlink_policy_sync",
+          provider: "prooflink_policy_sync",
           performedAt: new Date().toISOString(),
           durationMs: Date.now() - startTime - totalDurationMs,
         });
@@ -638,7 +639,7 @@ compliance.post("/check", validate({ body: ComplianceCheckRequest }), async (c) 
 });
 
 // POST /v1/compliance/screen -- Screen a single address
-compliance.post("/screen", validate({ body: ScreenRequest }), async (c) => {
+compliance.post("/screen", requireScope("write"), validate({ body: ScreenRequest }), async (c) => {
   const parsed = c.get("validatedBody") as ScreenRequest;
 
   // Screen address via real-time sanctions screener (with offline fallback)
@@ -740,7 +741,7 @@ compliance.get("/receipt/:id", validate({ params: ReceiptParams }), async (c) =>
 });
 
 // POST /v1/compliance/batch -- Batch compliance check
-compliance.post("/batch", validate({ body: BatchComplianceRequest }), async (c) => {
+compliance.post("/batch", requireScope("write"), validate({ body: BatchComplianceRequest }), async (c) => {
   const parsed = c.get("validatedBody") as z.infer<typeof BatchComplianceRequest>;
 
   const db = getDb();
@@ -863,7 +864,7 @@ compliance.post("/batch", validate({ body: BatchComplianceRequest }), async (c) 
         checkType: additionalCheck,
         target: "transaction",
         result: "PERFORMED",
-        provider: "flowlink_protocol_adapter",
+        provider: "prooflink_protocol_adapter",
         performedAt: new Date().toISOString(),
         durationMs: 1,
       });
@@ -888,7 +889,7 @@ compliance.post("/batch", validate({ body: BatchComplianceRequest }), async (c) 
       target: "transaction",
       result: batchAmlResult.exceeds ? "FAILED" : "PASSED",
       details: { score: batchAmlResult.score, threshold: batchAmlResult.threshold, factors: batchAmlResult.factors },
-      provider: "flowlink_aml_scorer",
+      provider: "prooflink_aml_scorer",
       performedAt: new Date().toISOString(),
       durationMs: batchAmlDurationMs,
     });

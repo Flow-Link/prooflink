@@ -14,12 +14,12 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { FlowLinkClient } from "../client.js";
+import { ProofLinkClient } from "../client.js";
 import {
-  FlowLinkAPIError,
-  FlowLinkNetworkError,
-  FlowLinkTimeoutError,
-  FlowLinkValidationError,
+  ProofLinkAPIError,
+  ProofLinkNetworkError,
+  ProofLinkTimeoutError,
+  ProofLinkValidationError,
 } from "../errors.js";
 
 // ---------------------------------------------------------------------------
@@ -54,9 +54,9 @@ function errorResponse(status: number, code: string, message: string): Response 
 // Shared client (no retries for speed)
 // ---------------------------------------------------------------------------
 
-const client = new FlowLinkClient({
+const client = new ProofLinkClient({
   apiKey: "fl_test_extended",
-  baseUrl: "https://api.test.flowlink.io/v1",
+  baseUrl: "https://api.test.prooflink.io/v1",
   maxRetries: 0,
   timeout: 5000,
 });
@@ -84,7 +84,7 @@ const SANCTIONS_RESULT = {
 
 const AGENT_IDENTITY = {
   agentId: "agent_ext_001",
-  did: "did:flowlink:agent_ext_001",
+  did: "did:prooflink:agent_ext_001",
   type: "autonomous",
   principalEntity: { name: "Corp", kycVerified: true, sanctionsCleared: true },
   walletAddress: "0xExtAgent",
@@ -98,41 +98,41 @@ const AGENT_IDENTITY = {
 // Constructor
 // ---------------------------------------------------------------------------
 
-describe("FlowLinkClient constructor", () => {
-  it("throws FlowLinkValidationError for missing apiKey", () => {
-    expect(() => new FlowLinkClient({ apiKey: "" })).toThrow(FlowLinkValidationError);
+describe("ProofLinkClient constructor", () => {
+  it("throws ProofLinkValidationError for missing apiKey", () => {
+    expect(() => new ProofLinkClient({ apiKey: "" })).toThrow(ProofLinkValidationError);
   });
 
-  it("throws FlowLinkValidationError with field=apiKey", () => {
+  it("throws ProofLinkValidationError with field=apiKey", () => {
     try {
-      new FlowLinkClient({ apiKey: "" });
+      new ProofLinkClient({ apiKey: "" });
     } catch (err) {
-      expect(err).toBeInstanceOf(FlowLinkValidationError);
-      expect((err as FlowLinkValidationError).field).toBe("apiKey");
+      expect(err).toBeInstanceOf(ProofLinkValidationError);
+      expect((err as ProofLinkValidationError).field).toBe("apiKey");
     }
   });
 
   it("uses default base URL when not specified", async () => {
     mockFetch.mockResolvedValueOnce(jsonResponse(SANCTIONS_RESULT));
-    const c = new FlowLinkClient({ apiKey: "fl_live_key", maxRetries: 0 });
+    const c = new ProofLinkClient({ apiKey: "fl_live_key", maxRetries: 0 });
     await c.screenAddress("0xtest", "ethereum");
-    expect(lastUrl().startsWith("https://api.flowlink.io/v1")).toBe(true);
+    expect(lastUrl().startsWith("https://api.prooflink.io/v1")).toBe(true);
   });
 
   it("uses custom base URL when specified", async () => {
     mockFetch.mockResolvedValueOnce(jsonResponse(SANCTIONS_RESULT));
-    const c = new FlowLinkClient({
+    const c = new ProofLinkClient({
       apiKey: "fl_test_key",
-      baseUrl: "https://staging.flowlink.io/v1",
+      baseUrl: "https://staging.prooflink.io/v1",
       maxRetries: 0,
     });
     await c.screenAddress("0xtest", "ethereum");
-    expect(lastUrl().startsWith("https://staging.flowlink.io/v1")).toBe(true);
+    expect(lastUrl().startsWith("https://staging.prooflink.io/v1")).toBe(true);
   });
 
   it("accepts valid apiKey and constructs without error", () => {
     expect(
-      () => new FlowLinkClient({ apiKey: "fl_live_abc123" }),
+      () => new ProofLinkClient({ apiKey: "fl_live_abc123" }),
     ).not.toThrow();
   });
 });
@@ -142,7 +142,7 @@ describe("FlowLinkClient constructor", () => {
 // ---------------------------------------------------------------------------
 
 describe("HTTP error handling", () => {
-  it("throws FlowLinkAPIError with status 401 and correct body", async () => {
+  it("throws ProofLinkAPIError with status 401 and correct body", async () => {
     mockFetch.mockResolvedValueOnce(
       errorResponse(401, "UNAUTHORIZED", "Invalid API key"),
     );
@@ -150,15 +150,15 @@ describe("HTTP error handling", () => {
       await client.screenAddress("0xTest", "ethereum");
       expect.fail("should have thrown");
     } catch (err) {
-      expect(err).toBeInstanceOf(FlowLinkAPIError);
-      const apiErr = err as FlowLinkAPIError;
+      expect(err).toBeInstanceOf(ProofLinkAPIError);
+      const apiErr = err as ProofLinkAPIError;
       expect(apiErr.status).toBe(401);
       expect(apiErr.body?.code).toBe("UNAUTHORIZED");
       expect(apiErr.body?.message).toBe("Invalid API key");
     }
   });
 
-  it("throws FlowLinkAPIError with status 403", async () => {
+  it("throws ProofLinkAPIError with status 403", async () => {
     mockFetch.mockResolvedValueOnce(
       errorResponse(403, "FORBIDDEN", "Insufficient permissions"),
     );
@@ -167,10 +167,10 @@ describe("HTTP error handling", () => {
       receiver: { address: "0xB", chain: "base" },
       amount: "100",
       asset: "USDC",
-    })).rejects.toThrow(FlowLinkAPIError);
+    })).rejects.toThrow(ProofLinkAPIError);
   });
 
-  it("throws FlowLinkAPIError with status 404 on getInvoice", async () => {
+  it("throws ProofLinkAPIError with status 404 on getInvoice", async () => {
     mockFetch.mockResolvedValueOnce(
       errorResponse(404, "NOT_FOUND", "Invoice not found"),
     );
@@ -178,13 +178,13 @@ describe("HTTP error handling", () => {
       await client.getInvoice("inv_missing");
       expect.fail("should have thrown");
     } catch (err) {
-      expect(err).toBeInstanceOf(FlowLinkAPIError);
-      const apiErr = err as FlowLinkAPIError;
+      expect(err).toBeInstanceOf(ProofLinkAPIError);
+      const apiErr = err as ProofLinkAPIError;
       expect(apiErr.status).toBe(404);
     }
   });
 
-  it("throws FlowLinkAPIError with null body when response is not valid JSON", async () => {
+  it("throws ProofLinkAPIError with null body when response is not valid JSON", async () => {
     mockFetch.mockResolvedValueOnce(
       new Response("Internal Server Error", {
         status: 500,
@@ -193,19 +193,19 @@ describe("HTTP error handling", () => {
     );
     // maxRetries=0, so after 1 attempt it throws
     await expect(client.screenAddress("0xTest", "ethereum")).rejects.toThrow(
-      FlowLinkAPIError,
+      ProofLinkAPIError,
     );
   });
 
   it("does not retry on 4xx (non-retryable)", async () => {
     mockFetch.mockResolvedValueOnce(errorResponse(422, "UNPROCESSABLE", "Bad data"));
-    const retryClient = new FlowLinkClient({
+    const retryClient = new ProofLinkClient({
       apiKey: "fl_test",
-      baseUrl: "https://api.test.flowlink.io/v1",
+      baseUrl: "https://api.test.prooflink.io/v1",
       maxRetries: 3,
     });
     await expect(retryClient.screenAddress("0xTest", "ethereum")).rejects.toThrow(
-      FlowLinkAPIError,
+      ProofLinkAPIError,
     );
     // Only 1 call — no retries on 4xx
     expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -217,43 +217,43 @@ describe("HTTP error handling", () => {
 // ---------------------------------------------------------------------------
 
 describe("network and timeout error handling", () => {
-  it("throws FlowLinkNetworkError when fetch rejects with TypeError", async () => {
+  it("throws ProofLinkNetworkError when fetch rejects with TypeError", async () => {
     mockFetch.mockRejectedValueOnce(new TypeError("Failed to fetch"));
     await expect(client.screenAddress("0xTest", "ethereum")).rejects.toThrow(
-      FlowLinkNetworkError,
+      ProofLinkNetworkError,
     );
   });
 
-  it("throws FlowLinkTimeoutError when fetch rejects with DOMException TimeoutError", async () => {
+  it("throws ProofLinkTimeoutError when fetch rejects with DOMException TimeoutError", async () => {
     const timeoutErr = new DOMException("signal timed out", "TimeoutError");
     mockFetch.mockRejectedValueOnce(timeoutErr);
     await expect(client.screenAddress("0xTest", "ethereum")).rejects.toThrow(
-      FlowLinkTimeoutError,
+      ProofLinkTimeoutError,
     );
   });
 
-  it("FlowLinkTimeoutError message includes timeout duration and URL", async () => {
+  it("ProofLinkTimeoutError message includes timeout duration and URL", async () => {
     const timeoutErr = new DOMException("signal timed out", "TimeoutError");
     mockFetch.mockRejectedValueOnce(timeoutErr);
     try {
       await client.screenAddress("0xTest", "ethereum");
       expect.fail("should have thrown");
     } catch (err) {
-      expect(err).toBeInstanceOf(FlowLinkTimeoutError);
-      const tErr = err as FlowLinkTimeoutError;
+      expect(err).toBeInstanceOf(ProofLinkTimeoutError);
+      const tErr = err as ProofLinkTimeoutError;
       expect(tErr.message).toContain("5000ms");
       expect(tErr.url).toContain("/compliance/screen");
     }
   });
 
-  it("FlowLinkNetworkError message includes attempt count", async () => {
+  it("ProofLinkNetworkError message includes attempt count", async () => {
     mockFetch.mockRejectedValue(new TypeError("ECONNREFUSED"));
     try {
       await client.screenAddress("0xTest", "ethereum");
       expect.fail("should have thrown");
     } catch (err) {
-      expect(err).toBeInstanceOf(FlowLinkNetworkError);
-      expect((err as FlowLinkNetworkError).message).toContain("attempt");
+      expect(err).toBeInstanceOf(ProofLinkNetworkError);
+      expect((err as ProofLinkNetworkError).message).toContain("attempt");
     }
   });
 });
@@ -264,9 +264,9 @@ describe("network and timeout error handling", () => {
 
 describe("retry logic", () => {
   it("retries on 500 and succeeds on second attempt", async () => {
-    const retryClient = new FlowLinkClient({
+    const retryClient = new ProofLinkClient({
       apiKey: "fl_test",
-      baseUrl: "https://api.test.flowlink.io/v1",
+      baseUrl: "https://api.test.prooflink.io/v1",
       maxRetries: 1,
       timeout: 5000,
     });
@@ -280,9 +280,9 @@ describe("retry logic", () => {
   });
 
   it("retries on 502 Bad Gateway", async () => {
-    const retryClient = new FlowLinkClient({
+    const retryClient = new ProofLinkClient({
       apiKey: "fl_test",
-      baseUrl: "https://api.test.flowlink.io/v1",
+      baseUrl: "https://api.test.prooflink.io/v1",
       maxRetries: 1,
       timeout: 5000,
     });
@@ -296,9 +296,9 @@ describe("retry logic", () => {
   });
 
   it("retries on 503 Service Unavailable", async () => {
-    const retryClient = new FlowLinkClient({
+    const retryClient = new ProofLinkClient({
       apiKey: "fl_test",
-      baseUrl: "https://api.test.flowlink.io/v1",
+      baseUrl: "https://api.test.prooflink.io/v1",
       maxRetries: 1,
       timeout: 5000,
     });
@@ -312,9 +312,9 @@ describe("retry logic", () => {
   });
 
   it("retries on 408 Request Timeout", async () => {
-    const retryClient = new FlowLinkClient({
+    const retryClient = new ProofLinkClient({
       apiKey: "fl_test",
-      baseUrl: "https://api.test.flowlink.io/v1",
+      baseUrl: "https://api.test.prooflink.io/v1",
       maxRetries: 1,
       timeout: 5000,
     });
@@ -328,9 +328,9 @@ describe("retry logic", () => {
   });
 
   it("exhausts retries and throws the last API error", async () => {
-    const retryClient = new FlowLinkClient({
+    const retryClient = new ProofLinkClient({
       apiKey: "fl_test",
-      baseUrl: "https://api.test.flowlink.io/v1",
+      baseUrl: "https://api.test.prooflink.io/v1",
       maxRetries: 2,
       timeout: 5000,
     });
@@ -340,15 +340,15 @@ describe("retry logic", () => {
       .mockResolvedValueOnce(errorResponse(503, "UNAVAILABLE", "Down"));
 
     await expect(retryClient.screenAddress("0xTest", "ethereum")).rejects.toThrow(
-      FlowLinkAPIError,
+      ProofLinkAPIError,
     );
     expect(mockFetch).toHaveBeenCalledTimes(3);
   });
 
   it("respects Retry-After header on 429", async () => {
-    const retryClient = new FlowLinkClient({
+    const retryClient = new ProofLinkClient({
       apiKey: "fl_test",
-      baseUrl: "https://api.test.flowlink.io/v1",
+      baseUrl: "https://api.test.prooflink.io/v1",
       maxRetries: 1,
       timeout: 5000,
     });
@@ -366,9 +366,9 @@ describe("retry logic", () => {
   });
 
   it("does not retry on DOMException TimeoutError after maxRetries exhausted", async () => {
-    const retryClient = new FlowLinkClient({
+    const retryClient = new ProofLinkClient({
       apiKey: "fl_test",
-      baseUrl: "https://api.test.flowlink.io/v1",
+      baseUrl: "https://api.test.prooflink.io/v1",
       maxRetries: 1,
       timeout: 5000,
     });
@@ -378,7 +378,7 @@ describe("retry logic", () => {
       .mockRejectedValueOnce(timeoutErr);
 
     await expect(retryClient.screenAddress("0xTest", "ethereum")).rejects.toThrow(
-      FlowLinkTimeoutError,
+      ProofLinkTimeoutError,
     );
     expect(mockFetch).toHaveBeenCalledTimes(2);
   });
@@ -391,47 +391,47 @@ describe("retry logic", () => {
 describe("client-side validation errors", () => {
   it("screenAddress throws when address is empty string", async () => {
     await expect(client.screenAddress("", "ethereum")).rejects.toThrow(
-      FlowLinkValidationError,
+      ProofLinkValidationError,
     );
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it("screenAddress throws when chain is empty string", async () => {
     await expect(client.screenAddress("0xTest", "")).rejects.toThrow(
-      FlowLinkValidationError,
+      ProofLinkValidationError,
     );
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it("getComplianceReceipt throws when receiptId is empty", async () => {
     await expect(client.getComplianceReceipt("")).rejects.toThrow(
-      FlowLinkValidationError,
+      ProofLinkValidationError,
     );
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it("getInvoice throws when id is empty", async () => {
     await expect(client.getInvoice("")).rejects.toThrow(
-      FlowLinkValidationError,
+      ProofLinkValidationError,
     );
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it("updateInvoiceState throws when invoiceId is empty", async () => {
     await expect(client.updateInvoiceState("", "ISSUED")).rejects.toThrow(
-      FlowLinkValidationError,
+      ProofLinkValidationError,
     );
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it("verifyAgent throws when agentId is empty", async () => {
-    await expect(client.verifyAgent("")).rejects.toThrow(FlowLinkValidationError);
+    await expect(client.verifyAgent("")).rejects.toThrow(ProofLinkValidationError);
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it("getAgentIdentity throws when agentId is empty", async () => {
     await expect(client.getAgentIdentity("")).rejects.toThrow(
-      FlowLinkValidationError,
+      ProofLinkValidationError,
     );
     expect(mockFetch).not.toHaveBeenCalled();
   });
@@ -441,8 +441,8 @@ describe("client-side validation errors", () => {
       await client.screenAddress("", "ethereum");
       expect.fail("should have thrown");
     } catch (err) {
-      expect(err).toBeInstanceOf(FlowLinkValidationError);
-      expect((err as FlowLinkValidationError).field).toBe("address");
+      expect(err).toBeInstanceOf(ProofLinkValidationError);
+      expect((err as ProofLinkValidationError).field).toBe("address");
     }
   });
 
@@ -451,8 +451,8 @@ describe("client-side validation errors", () => {
       await client.screenAddress("0xTest", "");
       expect.fail("should have thrown");
     } catch (err) {
-      expect(err).toBeInstanceOf(FlowLinkValidationError);
-      expect((err as FlowLinkValidationError).field).toBe("chain");
+      expect(err).toBeInstanceOf(ProofLinkValidationError);
+      expect((err as ProofLinkValidationError).field).toBe("chain");
     }
   });
 });
@@ -507,21 +507,21 @@ describe("request structure", () => {
     await client.getComplianceHistory({});
     // URL should end cleanly without a ? or with only ?
     const url = lastUrl();
-    expect(url).toBe("https://api.test.flowlink.io/v1/compliance/history");
+    expect(url).toBe("https://api.test.prooflink.io/v1/compliance/history");
   });
 
   it("listInvoices sends no query params when called with empty object", async () => {
     const paginated = { items: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } };
     mockFetch.mockResolvedValueOnce(jsonResponse(paginated));
     await client.listInvoices({});
-    expect(lastUrl()).toBe("https://api.test.flowlink.io/v1/invoices");
+    expect(lastUrl()).toBe("https://api.test.prooflink.io/v1/invoices");
   });
 
   it("listAgents sends no query params when called with empty object", async () => {
     const paginated = { items: [AGENT_IDENTITY], pagination: { page: 1, limit: 10, total: 1, totalPages: 1 } };
     mockFetch.mockResolvedValueOnce(jsonResponse(paginated));
     await client.listAgents({});
-    expect(lastUrl()).toBe("https://api.test.flowlink.io/v1/identity/agents");
+    expect(lastUrl()).toBe("https://api.test.prooflink.io/v1/identity/agents");
   });
 
   it("updateInvoiceState sends state and optional reason in body", async () => {
@@ -623,12 +623,12 @@ describe("issueKYA", () => {
     const credential = {
       "@context": ["https://www.w3.org/2018/credentials/v1"],
       type: ["VerifiableCredential", "KYACredential"],
-      id: "urn:flowlink:kya:cred_ext_001",
-      issuer: { id: "did:flowlink:issuer", name: "FlowLink" },
+      id: "urn:prooflink:kya:cred_ext_001",
+      issuer: { id: "did:prooflink:issuer", name: "ProofLink" },
       issuanceDate: "2026-01-01T00:00:00Z",
       expirationDate: "2027-01-01T00:00:00Z",
       credentialSubject: {
-        id: "did:flowlink:agent_ext_001",
+        id: "did:prooflink:agent_ext_001",
         agentDid: "agent_ext_001",
         agentType: "autonomous",
         controllingEntityName: "Corp",
@@ -638,7 +638,7 @@ describe("issueKYA", () => {
       proof: {
         type: "EcdsaSecp256k1Signature2019",
         created: "2026-01-01T00:00:00Z",
-        verificationMethod: "did:flowlink:issuer#key-1",
+        verificationMethod: "did:prooflink:issuer#key-1",
         proofPurpose: "assertionMethod",
         jws: "eyJ...",
       },
@@ -655,7 +655,7 @@ describe("issueKYA", () => {
     });
 
     expect(lastInit().method).toBe("POST");
-    expect(lastUrl()).toBe("https://api.test.flowlink.io/v1/identity/kya/issue");
+    expect(lastUrl()).toBe("https://api.test.prooflink.io/v1/identity/kya/issue");
     expect(result.credentialSubject.agentDid).toBe("agent_ext_001");
   });
 });

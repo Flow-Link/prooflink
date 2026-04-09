@@ -97,7 +97,7 @@ export type ProofLinkConfig = z.infer<typeof ProofLinkConfigSchema>;
 
 /**
  * Load ProofLink configuration from environment variables, with optional overrides.
- * Environment variables are prefixed with `FLOWLINK_`.
+ * Environment variables are prefixed with `PROOFLINK_`.
  */
 export function loadConfig(
   overrides?: Partial<ProofLinkConfig>,
@@ -106,45 +106,45 @@ export function loadConfig(
 
   const fromEnv: Record<string, unknown> = {};
 
-  if (env.FLOWLINK_CHAINALYSIS_API_KEY) {
-    fromEnv.chainalysisApiKey = env.FLOWLINK_CHAINALYSIS_API_KEY;
+  if (env.PROOFLINK_CHAINALYSIS_API_KEY) {
+    fromEnv.chainalysisApiKey = env.PROOFLINK_CHAINALYSIS_API_KEY;
   }
-  if (env.FLOWLINK_CHAINALYSIS_BASE_URL) {
-    fromEnv.chainalysisBaseUrl = env.FLOWLINK_CHAINALYSIS_BASE_URL;
+  if (env.PROOFLINK_CHAINALYSIS_BASE_URL) {
+    fromEnv.chainalysisBaseUrl = env.PROOFLINK_CHAINALYSIS_BASE_URL;
   }
-  if (env.FLOWLINK_MAX_RISK_SCORE) {
-    fromEnv.maxRiskScore = Number(env.FLOWLINK_MAX_RISK_SCORE);
+  if (env.PROOFLINK_MAX_RISK_SCORE) {
+    fromEnv.maxRiskScore = Number(env.PROOFLINK_MAX_RISK_SCORE);
   }
-  if (env.FLOWLINK_ESCALATION_THRESHOLD) {
-    fromEnv.escalationThreshold = Number(env.FLOWLINK_ESCALATION_THRESHOLD);
+  if (env.PROOFLINK_ESCALATION_THRESHOLD) {
+    fromEnv.escalationThreshold = Number(env.PROOFLINK_ESCALATION_THRESHOLD);
   }
-  if (env.FLOWLINK_FAIL_OPEN) {
-    fromEnv.failOpen = env.FLOWLINK_FAIL_OPEN === "true";
+  if (env.PROOFLINK_FAIL_OPEN) {
+    fromEnv.failOpen = env.PROOFLINK_FAIL_OPEN === "true";
   }
-  if (env.FLOWLINK_RPC_URL) {
-    fromEnv.rpcUrl = env.FLOWLINK_RPC_URL;
+  if (env.PROOFLINK_RPC_URL) {
+    fromEnv.rpcUrl = env.PROOFLINK_RPC_URL;
   }
-  if (env.FLOWLINK_CHAIN_ID) {
-    fromEnv.chainId = Number(env.FLOWLINK_CHAIN_ID);
+  if (env.PROOFLINK_CHAIN_ID) {
+    fromEnv.chainId = Number(env.PROOFLINK_CHAIN_ID);
   }
-  if (env.FLOWLINK_SIGNER_PRIVATE_KEY) {
-    fromEnv.signerPrivateKey = env.FLOWLINK_SIGNER_PRIVATE_KEY;
+  if (env.PROOFLINK_SIGNER_PRIVATE_KEY) {
+    fromEnv.signerPrivateKey = env.PROOFLINK_SIGNER_PRIVATE_KEY;
   }
-  if (env.FLOWLINK_ERC8004_REGISTRY) {
-    fromEnv.erc8004RegistryAddress = env.FLOWLINK_ERC8004_REGISTRY;
+  if (env.PROOFLINK_ERC8004_REGISTRY) {
+    fromEnv.erc8004RegistryAddress = env.PROOFLINK_ERC8004_REGISTRY;
   }
-  if (env.FLOWLINK_IPFS_GATEWAY_URL) {
-    fromEnv.ipfsGatewayUrl = env.FLOWLINK_IPFS_GATEWAY_URL;
+  if (env.PROOFLINK_IPFS_GATEWAY_URL) {
+    fromEnv.ipfsGatewayUrl = env.PROOFLINK_IPFS_GATEWAY_URL;
   }
 
   // Notabene from env
-  if (env.FLOWLINK_NOTABENE_API_KEY && env.FLOWLINK_NOTABENE_VASP_DID) {
+  if (env.PROOFLINK_NOTABENE_API_KEY && env.PROOFLINK_NOTABENE_VASP_DID) {
     fromEnv.notabene = {
-      apiKey: env.FLOWLINK_NOTABENE_API_KEY,
-      vaspDID: env.FLOWLINK_NOTABENE_VASP_DID,
+      apiKey: env.PROOFLINK_NOTABENE_API_KEY,
+      vaspDID: env.PROOFLINK_NOTABENE_VASP_DID,
       baseUrl:
-        env.FLOWLINK_NOTABENE_BASE_URL ?? "https://api.notabene.id/v1",
-      testnet: env.FLOWLINK_NOTABENE_TESTNET === "true",
+        env.PROOFLINK_NOTABENE_BASE_URL ?? "https://api.notabene.id/v1",
+      testnet: env.PROOFLINK_NOTABENE_TESTNET === "true",
     };
   }
 

@@ -64,7 +64,7 @@ export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
 // Base Error
 // ---------------------------------------------------------------------------
 
-export class FlowLinkError extends Error {
+export class ProofLinkError extends Error {
   public readonly code: ErrorCode;
   public readonly statusCode: number;
   public readonly details: Record<string, unknown>;
@@ -76,7 +76,7 @@ export class FlowLinkError extends Error {
     details: Record<string, unknown> = {},
   ) {
     super(message);
-    this.name = "FlowLinkError";
+    this.name = "ProofLinkError";
     this.code = code;
     this.statusCode = statusCode;
     this.details = details;
@@ -102,7 +102,7 @@ export class FlowLinkError extends Error {
 // Compliance Errors
 // ---------------------------------------------------------------------------
 
-export class ComplianceError extends FlowLinkError {
+export class ComplianceError extends ProofLinkError {
   constructor(
     checkType: string,
     reason: string,
@@ -120,7 +120,7 @@ export class ComplianceError extends FlowLinkError {
   }
 }
 
-export class SanctionsError extends FlowLinkError {
+export class SanctionsError extends ProofLinkError {
   constructor(
     address: string,
     matchedLists: string[],
@@ -139,7 +139,7 @@ export class SanctionsError extends FlowLinkError {
 /** @deprecated Use SanctionsError instead. */
 export const SanctionsMatchError = SanctionsError;
 
-export class AMLError extends FlowLinkError {
+export class AMLError extends ProofLinkError {
   constructor(
     riskScore: number,
     threshold: number,
@@ -155,7 +155,7 @@ export class AMLError extends FlowLinkError {
   }
 }
 
-export class TravelRuleError extends FlowLinkError {
+export class TravelRuleError extends ProofLinkError {
   constructor(
     reason: string,
     details: Record<string, unknown> = {},
@@ -174,7 +174,7 @@ export class TravelRuleError extends FlowLinkError {
 // KYA Verification
 // ---------------------------------------------------------------------------
 
-export class KYAVerificationError extends FlowLinkError {
+export class KYAVerificationError extends ProofLinkError {
   constructor(
     agentId: string,
     reason: string,
@@ -209,7 +209,7 @@ export class ComplianceCheckFailedError extends ComplianceError {
 // Network Errors
 // ---------------------------------------------------------------------------
 
-export class NetworkError extends FlowLinkError {
+export class NetworkError extends ProofLinkError {
   constructor(
     reason: string,
     details: Record<string, unknown> = {},
@@ -224,7 +224,7 @@ export class NetworkError extends FlowLinkError {
   }
 }
 
-export class TimeoutError extends FlowLinkError {
+export class TimeoutError extends ProofLinkError {
   public readonly timeoutMs: number;
 
   constructor(
@@ -247,7 +247,7 @@ export class TimeoutError extends FlowLinkError {
 // Validation Error
 // ---------------------------------------------------------------------------
 
-export class ValidationError extends FlowLinkError {
+export class ValidationError extends ProofLinkError {
   public readonly fieldErrors: Array<{ field: string; message: string }>;
 
   constructor(
@@ -271,7 +271,7 @@ export class ValidationError extends FlowLinkError {
 // Auth Errors
 // ---------------------------------------------------------------------------
 
-export class AuthError extends FlowLinkError {
+export class AuthError extends ProofLinkError {
   constructor(
     reason: string,
     code: ErrorCode = ErrorCode.AUTHENTICATION_FAILED,
@@ -299,7 +299,7 @@ export class AuthenticationError extends AuthError {
 // Invoice Validation
 // ---------------------------------------------------------------------------
 
-export class InvoiceValidationError extends FlowLinkError {
+export class InvoiceValidationError extends ProofLinkError {
   constructor(
     invoiceId: string | undefined,
     reason: string,
@@ -319,7 +319,7 @@ export class InvoiceValidationError extends FlowLinkError {
 // Rate Limiting
 // ---------------------------------------------------------------------------
 
-export class RateLimitError extends FlowLinkError {
+export class RateLimitError extends ProofLinkError {
   public readonly retryAfterSeconds: number;
 
   constructor(
@@ -341,7 +341,7 @@ export class RateLimitError extends FlowLinkError {
 // Payment
 // ---------------------------------------------------------------------------
 
-export class PaymentError extends FlowLinkError {
+export class PaymentError extends ProofLinkError {
   constructor(
     reason: string,
     protocol: string,
@@ -361,7 +361,7 @@ export class PaymentError extends FlowLinkError {
 // Configuration
 // ---------------------------------------------------------------------------
 
-export class ConfigurationError extends FlowLinkError {
+export class ConfigurationError extends ProofLinkError {
   constructor(field: string, reason: string, details: Record<string, unknown> = {}) {
     super(
       `Invalid configuration for '${field}': ${reason}`,
@@ -377,7 +377,7 @@ export class ConfigurationError extends FlowLinkError {
 // Not Found
 // ---------------------------------------------------------------------------
 
-export class NotFoundError extends FlowLinkError {
+export class NotFoundError extends ProofLinkError {
   constructor(resource: string, id: string, details: Record<string, unknown> = {}) {
     super(
       `${resource} not found: ${id}`,
@@ -393,7 +393,7 @@ export class NotFoundError extends FlowLinkError {
 // Upstream / External Service
 // ---------------------------------------------------------------------------
 
-export class UpstreamServiceError extends FlowLinkError {
+export class UpstreamServiceError extends ProofLinkError {
   constructor(
     service: string,
     reason: string,

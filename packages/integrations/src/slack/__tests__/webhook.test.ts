@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { SlackWebhook } from "../webhook.js";
-import type { ComplianceDecision, SanctionsCheckResult } from "@flowlink/shared";
+import type { ComplianceDecision, SanctionsCheckResult } from "@prooflink/shared";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -199,7 +199,7 @@ describe("SlackWebhook", () => {
       expect(attachments[0]?.color).toBe("#ffc107");
     });
 
-    it("uses default username FlowLink Compliance when none configured", async () => {
+    it("uses default username ProofLink Compliance when none configured", async () => {
       const fetchMock = vi.fn().mockResolvedValue(okResponse());
       const webhook = new SlackWebhook(
         { webhookUrl: WEBHOOK_URL },
@@ -210,7 +210,7 @@ describe("SlackWebhook", () => {
 
       const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
       const body = JSON.parse(init.body as string) as Record<string, unknown>;
-      expect(body.username).toBe("FlowLink Compliance");
+      expect(body.username).toBe("ProofLink Compliance");
     });
 
     it("uses configured username override", async () => {

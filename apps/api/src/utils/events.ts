@@ -77,10 +77,13 @@ export function emitComplianceEvent(
     ...(options?.traceId ? { traceId: options.traceId } : {}),
   };
 
-  // Broadcast to WebSocket clients
+  // Broadcast to WebSocket clients (tenant-scoped when apiKeyId is provided)
   // Cast to WsEvent — ComplianceEventType is a superset of WsEventType;
   // extra event types are forwarded to clients that subscribe to them
-  broadcastWsEvent(event as unknown as Parameters<typeof broadcastWsEvent>[0]);
+  broadcastWsEvent({
+    ...event,
+    ...(options?.apiKeyId ? { apiKeyId: options.apiKeyId } : {}),
+  } as unknown as Parameters<typeof broadcastWsEvent>[0]);
 
   // Fire-and-forget audit persistence
   fireAuditLog(`event.${type}`, {
@@ -119,10 +122,13 @@ export function emitSanctionsAlert(
     ...(options?.traceId ? { traceId: options.traceId } : {}),
   };
 
-  // Broadcast immediately
+  // Broadcast immediately (tenant-scoped when apiKeyId is provided)
   // Cast to WsEvent — ComplianceEventType is a superset of WsEventType;
   // extra event types are forwarded to clients that subscribe to them
-  broadcastWsEvent(event as unknown as Parameters<typeof broadcastWsEvent>[0]);
+  broadcastWsEvent({
+    ...event,
+    ...(options?.apiKeyId ? { apiKeyId: options.apiKeyId } : {}),
+  } as unknown as Parameters<typeof broadcastWsEvent>[0]);
 
   // Log at ERROR level — sanctions matches are high priority
   logger.error("SANCTIONS ALERT: address matched sanctions list", {

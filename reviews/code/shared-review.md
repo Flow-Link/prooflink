@@ -18,7 +18,7 @@ and viem. Any on-chain hash verification (ProofLink receipts, EAS attestation
 UIDs, EIP-712 domain separators) would silently produce wrong values.
 
 Fix: renamed to `sha3_256Stub` with a deprecation warning and a prominent
-comment directing callers to `@flowlink/core`'s viem-backed keccak256. The
+comment directing callers to `@prooflink/core`'s viem-backed keccak256. The
 misleading `keccak256` export is gone.
 
 ---
@@ -36,19 +36,19 @@ for EIP-712 even if the encoding were correct.
 Fix: renamed to `domainSeparatorHashOffChain` and `computeReceiptHashOffChain`,
 switched to null-byte-delimited field encoding, and added clear documentation
 that these are off-chain-only utilities (not EVM-compatible). EIP-712 domain
-separators must be computed in `@flowlink/core` with viem.
+separators must be computed in `@prooflink/core` with viem.
 
 ---
 
 **CRITICAL: `verifyPersonalSign` and `verifyTypedDataSignature` exported but always throw — `src/utils/crypto.ts`**
 
-Both functions were exported from `@flowlink/shared` with valid type signatures but
+Both functions were exported from `@prooflink/shared` with valid type signatures but
 threw `Error` on every call. Any consumer that imports them at the module level
 will not crash on import, but will crash at runtime the first time they are called,
 with no compile-time warning. The exports were a runtime trap.
 
 Fix: removed both exports entirely. A comment explains they live in
-`@flowlink/core` and why they are intentionally absent from shared.
+`@prooflink/core` and why they are intentionally absent from shared.
 
 ---
 
@@ -141,8 +141,8 @@ Fix: added `blockReason: z.string().optional()` to `ComplianceDecision`.
 **SUGGESTION: `ProofLinkReceipt` and `CompliancePolicy` were missing from shared — `src/types/compliance.ts`**
 
 Both types are referenced extensively in `architecture/x402_middleware_design.md`
-and will be the primary shared contract between `@flowlink/x402-compliance`,
-`@flowlink/core`, and `apps/api`. Without them in shared, each package would define
+and will be the primary shared contract between `@prooflink/x402-compliance`,
+`@prooflink/core`, and `apps/api`. Without them in shared, each package would define
 its own version, causing divergence.
 
 Fix: added both as Zod schemas with inferred TypeScript types.
@@ -191,17 +191,17 @@ Critical test cases to add:
 
 ## Files Modified
 
-- `/home/akash/PROJECTS/FLOW-LINK/packages/shared/src/utils/crypto.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/shared/src/utils/validation.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/shared/src/types/compliance.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/shared/src/types/identity.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/shared/src/types/invoice.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/shared/src/types/index.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/shared/src/errors.ts`
+- `/home/akash/PROJECTS/prooflink/packages/shared/src/utils/crypto.ts`
+- `/home/akash/PROJECTS/prooflink/packages/shared/src/utils/validation.ts`
+- `/home/akash/PROJECTS/prooflink/packages/shared/src/types/compliance.ts`
+- `/home/akash/PROJECTS/prooflink/packages/shared/src/types/identity.ts`
+- `/home/akash/PROJECTS/prooflink/packages/shared/src/types/invoice.ts`
+- `/home/akash/PROJECTS/prooflink/packages/shared/src/types/index.ts`
+- `/home/akash/PROJECTS/prooflink/packages/shared/src/errors.ts`
 
 ## Files Created
 
-- `/home/akash/PROJECTS/FLOW-LINK/packages/shared/src/types/mcp.ts`
+- `/home/akash/PROJECTS/prooflink/packages/shared/src/types/mcp.ts`
 
 ## TypeScript Status
 

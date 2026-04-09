@@ -2,7 +2,7 @@
 // EAS (Ethereum Attestation Service) — client
 // ---------------------------------------------------------------------------
 
-import type { ComplianceReceipt } from "@flowlink/shared";
+import type { ComplianceReceipt } from "@prooflink/shared";
 import type {
   AttestationData,
   AttestationResult,
@@ -25,7 +25,7 @@ import {
  *
  * Usage:
  * ```ts
- * import { EASClient } from "@flowlink/integrations/eas";
+ * import { EASClient } from "@prooflink/integrations/eas";
  *
  * const client = new EASClient(config, signer, reader);
  * const result = await client.attest(receipt);

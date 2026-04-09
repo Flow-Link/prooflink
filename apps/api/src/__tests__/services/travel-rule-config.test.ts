@@ -253,7 +253,7 @@ describe("resolveAgentOriginator", () => {
     vi.clearAllMocks();
   });
 
-  const agentDid = "did:web:agent.flowlink.io";
+  const agentDid = "did:web:agent.prooflink.io";
 
   function makeAgentRow(overrides: Record<string, unknown> = {}) {
     return {

@@ -3,20 +3,30 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: flowlink
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-flowlink_dev}
-      POSTGRES_DB: flowlink
+      POSTGRES_USER: prooflink
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-prooflink_dev}
+      POSTGRES_DB: prooflink
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U flowlink"]
+      test: ["CMD-SHELL", "pg_isready -U prooflink"]
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
-      - flowlink
+      - prooflink
 
   redis:
     image: redis:7-alpine
@@ -31,8 +41,18 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
-      - flowlink
+      - prooflink
 
   api:
     build:
@@ -46,7 +66,7 @@ services:
       - path: .env
         required: false
     environment:
-      DATABASE_URL: postgresql://flowlink:${POSTGRES_PASSWORD:-flowlink_dev}@postgres:5432/flowlink
+      DATABASE_URL: postgresql://prooflink:${POSTGRES_PASSWORD:-prooflink_dev}@postgres:5432/prooflink
       REDIS_URL: redis://redis:6379
       NODE_ENV: production
       PORT: "3001"
@@ -61,8 +81,18 @@ services:
       timeout: 5s
       start_period: 15s
       retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 1G
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
-      - flowlink
+      - prooflink
 
   api-dev:
     profiles: ["dev"]
@@ -70,14 +100,14 @@ services:
       context: .
       dockerfile: Dockerfile
       target: builder
-    command: ["pnpm", "--filter=@flowlink/api", "dev"]
+    command: ["pnpm", "--filter=@prooflink/api", "dev"]
     ports:
       - "${API_PORT:-3001}:3001"
     env_file:
       - path: .env
         required: false
     environment:
-      DATABASE_URL: postgresql://flowlink:${POSTGRES_PASSWORD:-flowlink_dev}@postgres:5432/flowlink
+      DATABASE_URL: postgresql://prooflink:${POSTGRES_PASSWORD:-prooflink_dev}@postgres:5432/prooflink
       REDIS_URL: redis://redis:6379
       NODE_ENV: development
     volumes:
@@ -90,8 +120,18 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 1G
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
-      - flowlink
+      - prooflink
 
   dashboard:
     profiles: ["dev"]
@@ -99,7 +139,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: builder
-    command: ["pnpm", "--filter=@flowlink/dashboard", "dev"]
+    command: ["pnpm", "--filter=@prooflink/dashboard", "dev"]
     ports:
       - "${DASHBOARD_PORT:-3100}:3100"
     volumes:
@@ -109,13 +149,23 @@ services:
       NEXT_PUBLIC_API_URL: http://localhost:${API_PORT:-3001}
     depends_on:
       - api-dev
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
-      - flowlink
+      - prooflink
 
 volumes:
   postgres_data:
   redis_data:
 
 networks:
-  flowlink:
+  prooflink:
     driver: bridge

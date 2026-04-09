@@ -3,9 +3,9 @@ pragma solidity ^0.8.25;
 
 import {Types} from "../libraries/Types.sol";
 
-/// @title IFlowLinkKYA
-/// @notice Interface for the FlowLink KYA (Know Your Agent) credential and identity registry.
-interface IFlowLinkKYA {
+/// @title IProofLinkKYA
+/// @notice Interface for the ProofLink KYA (Know Your Agent) credential and identity registry.
+interface IProofLinkKYA {
     // ──────────────────────────────────────────────
     // Events
     // ──────────────────────────────────────────────

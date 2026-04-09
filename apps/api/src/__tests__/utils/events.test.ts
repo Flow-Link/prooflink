@@ -145,7 +145,7 @@ describe("emitComplianceEvent", () => {
         {
           receiptId: "receipt-001",
           invoiceId: "inv-001",
-          agentDid: "did:flowlink:agent:001",
+          agentDid: "did:prooflink:agent:001",
           apiKeyId: "key-001",
         },
       ),

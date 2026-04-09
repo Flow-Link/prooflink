@@ -1,13 +1,13 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 /**
- * Resource: flowlink://compliance/stats
+ * Resource: prooflink://compliance/stats
  * Exposes real-time compliance statistics.
  */
 export function registerComplianceStatsResource(server: McpServer): void {
   server.resource(
     "compliance-stats",
-    "flowlink://compliance/stats",
+    "prooflink://compliance/stats",
     {
       description:
         "Real-time compliance statistics — screening volumes, pass rates, Travel Rule submissions, and system health.",
@@ -53,7 +53,7 @@ export function registerComplianceStatsResource(server: McpServer): void {
       return {
         contents: [
           {
-            uri: "flowlink://compliance/stats",
+            uri: "prooflink://compliance/stats",
             mimeType: "application/json",
             text: JSON.stringify(stats, null, 2),
           },

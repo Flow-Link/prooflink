@@ -97,7 +97,7 @@ export default function ApiKeysPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">API Keys</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manage API keys for FlowLink integration
+            Manage API keys for ProofLink integration
           </p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) handleCloseDialog(); else setDialogOpen(true); }}>
@@ -259,7 +259,7 @@ export default function ApiKeysPage() {
             <div>
               <CardTitle>Your API Keys</CardTitle>
               <CardDescription>
-                Keys are used to authenticate API requests to FlowLink
+                Keys are used to authenticate API requests to ProofLink
               </CardDescription>
             </div>
           </div>
@@ -335,9 +335,9 @@ export default function ApiKeysPage() {
         <CardContent>
           <div className="rounded-lg bg-secondary/30 border border-border/50 p-4">
             <pre className="text-xs font-mono text-muted-foreground overflow-x-auto">
-              <code>{`import { FlowLink } from '@flowlink/sdk';
+              <code>{`import { ProofLink } from '@prooflink/sdk';
 
-const client = new FlowLink({
+const client = new ProofLink({
   apiKey: 'fl_live_...',
 });
 

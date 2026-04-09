@@ -1,5 +1,5 @@
-# Agentic Payment Protocol Comparison: FlowLink Integration Analysis
-**Team Delta — FlowLink Research**
+# Agentic Payment Protocol Comparison: ProofLink Integration Analysis
+**Team Delta — ProofLink Research**
 **Date: March 20, 2026**
 **Classification: Internal Strategy**
 
@@ -7,7 +7,7 @@
 
 ## Overview
 
-Six agentic payment protocols launched between April 2025 and March 2026. Each emerged from a different coalition with different architectural philosophies, compliance postures, and developer audiences. FlowLink's compliance-first positioning creates distinct integration angles with each. This document provides a side-by-side technical and strategic comparison, then outputs a prioritized integration roadmap.
+Six agentic payment protocols launched between April 2025 and March 2026. Each emerged from a different coalition with different architectural philosophies, compliance postures, and developer audiences. ProofLink's compliance-first positioning creates distinct integration angles with each. This document provides a side-by-side technical and strategic comparison, then outputs a prioritized integration roadmap.
 
 ---
 
@@ -75,26 +75,26 @@ x402 is permissionless by design: no accounts, no KYC, no API keys required. The
 - Geographic restrictions are mentioned in the V2 roadmap as "optional attestations for sellers" — not live
 - The World ID integration (March 2026) is the first attempt at human-backing verification, but it is opt-in and covers only the buyer, not the agent itself
 
-**The compliance gap FlowLink fills:** Every x402 transaction that passes through a non-Coinbase facilitator — or any transaction above Travel Rule thresholds — is effectively unscreened. FlowLink's ProofLink Engine inserted as a compliance middleware layer before the facilitator settles would provide OFAC/UN/EU/HMT sanctions screening, FATF Travel Rule information packaging, and KYA verification for any x402 payment.
+**The compliance gap ProofLink fills:** Every x402 transaction that passes through a non-Coinbase facilitator — or any transaction above Travel Rule thresholds — is effectively unscreened. ProofLink's ProofLink Engine inserted as a compliance middleware layer before the facilitator settles would provide OFAC/UN/EU/HMT sanctions screening, FATF Travel Rule information packaging, and KYA verification for any x402 payment.
 
-### How FlowLink Integrates
+### How ProofLink Integrates
 
 **Integration model: Compliance Facilitator.**
 
-FlowLink runs a custom x402 facilitator (the protocol is open-source, facilitators are pluggable). Any resource server that points to FlowLink's facilitator endpoint gets every payment automatically screened before on-chain settlement:
+ProofLink runs a custom x402 facilitator (the protocol is open-source, facilitators are pluggable). Any resource server that points to ProofLink's facilitator endpoint gets every payment automatically screened before on-chain settlement:
 
 ```
-Agent → 402 header (signed payment) → FlowLink Facilitator
-FlowLink: sanctions_screen(agent_id, principal_id, amount, destination)
-FlowLink: travel_rule_check(amount, threshold) → attach IVMS101 data if required
-FlowLink: kya_verify(agent_did, erc8004_registry)
-FlowLink: prooflink_stamp(tx_hash, compliance_status) → on-chain attestation
-FlowLink → Coinbase Facilitator (if clean) → on-chain settlement
+Agent → 402 header (signed payment) → ProofLink Facilitator
+ProofLink: sanctions_screen(agent_id, principal_id, amount, destination)
+ProofLink: travel_rule_check(amount, threshold) → attach IVMS101 data if required
+ProofLink: kya_verify(agent_did, erc8004_registry)
+ProofLink: prooflink_stamp(tx_hash, compliance_status) → on-chain attestation
+ProofLink → Coinbase Facilitator (if clean) → on-chain settlement
 ```
 
-Resource servers can also call FlowLink's compliance check as a pre-authorization step before returning the 200 OK, creating a two-layer assurance model.
+Resource servers can also call ProofLink's compliance check as a pre-authorization step before returning the 200 OK, creating a two-layer assurance model.
 
-**MCP angle:** Expose FlowLink compliance as an MCP tool: `check_sanctions(counterparty)`, `verify_travel_rule(transfer)`, `get_kya_score(agent_id)`. Any MCP-compatible agent using x402 can call FlowLink compliance the same way it calls any other tool — making compliance ambient and automatic.
+**MCP angle:** Expose ProofLink compliance as an MCP tool: `check_sanctions(counterparty)`, `verify_travel_rule(transfer)`, `get_kya_score(agent_id)`. Any MCP-compatible agent using x402 can call ProofLink compliance the same way it calls any other tool — making compliance ambient and automatic.
 
 ### Partnership Decision-Maker
 
@@ -105,7 +105,7 @@ Resource servers can also call FlowLink's compliance check as a pre-authorizatio
 
 ### Open Source Status
 
-**Apache 2.0.** Full reference implementation on GitHub (`coinbase/x402`). 686+ commits. No permission needed to implement a custom facilitator. FlowLink can build on x402 without any formal partnership.
+**Apache 2.0.** Full reference implementation on GitHub (`coinbase/x402`). 686+ commits. No permission needed to implement a custom facilitator. ProofLink can build on x402 without any formal partnership.
 
 ---
 
@@ -170,35 +170,35 @@ MPP inherits Stripe's compliance infrastructure for fiat payments (SPTs). Stripe
 - Sessions that aggregate multiple micropayments into one settlement create AML monitoring challenges (the individual payment that triggered the aggregated threshold is not visible)
 - MPP is rail-agnostic — Lightning and stablecoin paths have different compliance requirements than the Stripe fiat path; no unified compliance layer exists
 
-**The compliance gap FlowLink fills:** MPP's Session primitive is specifically designed for sub-cent, continuous, high-velocity micropayments. This is the exact pattern that breaks traditional AML velocity monitoring. FlowLink's agent behavioral monitoring — trained on agent-scale transaction patterns vs. human patterns — is the missing compliance layer for MPP sessions.
+**The compliance gap ProofLink fills:** MPP's Session primitive is specifically designed for sub-cent, continuous, high-velocity micropayments. This is the exact pattern that breaks traditional AML velocity monitoring. ProofLink's agent behavioral monitoring — trained on agent-scale transaction patterns vs. human patterns — is the missing compliance layer for MPP sessions.
 
-### How FlowLink Integrates
+### How ProofLink Integrates
 
 **Integration model: Session Compliance Hook.**
 
-MPP's spec is open. FlowLink integrates as a session authorization middleware:
+MPP's spec is open. ProofLink integrates as a session authorization middleware:
 
 ```
 Agent → Session authorization request (spending cap, service)
-FlowLink: pre_session_screen(agent_id, service_id, spending_cap, session_duration)
+ProofLink: pre_session_screen(agent_id, service_id, spending_cap, session_duration)
    → sanctions_check(agent + service)
    → kya_verify(agent_did)
    → velocity_check(agent session history)
    → issue_compliance_token(session_id, prooflink_attestation)
-Agent → MPP session proceeds with FlowLink token attached
-FlowLink: session_monitor(micropayment_stream, behavioral_model)
+Agent → MPP session proceeds with ProofLink token attached
+ProofLink: session_monitor(micropayment_stream, behavioral_model)
    → flag if pattern deviates from agent baseline
-FlowLink: travel_rule_package(session_close, aggregated_amount, IVMS101_data)
+ProofLink: travel_rule_package(session_close, aggregated_amount, IVMS101_data)
 ```
 
-For Stripe merchants: FlowLink compliance token becomes a metadata field in the PaymentIntent, giving Stripe merchants audit-trail access without changing their integration.
+For Stripe merchants: ProofLink compliance token becomes a metadata field in the PaymentIntent, giving Stripe merchants audit-trail access without changing their integration.
 
 ### Partnership Decision-Maker
 
 - **Stripe:** Developer Relations team (`stripe.com/contact/sales`). For compliance partnerships, Stripe's Head of Platform Partnerships or their Risk and Compliance product team.
 - **Tempo:** Direct contact via `tempo.xyz` — small team (Stripe + Paradigm-incubated), likely reachable via Paradigm network or the Tempo founders directly.
-- **MPP spec governance:** Open standard — FlowLink can implement without formal permission. Partnership for co-marketing or official compliance designation requires direct engagement.
-- **Key angle:** Stripe is actively looking for compliance partners given their entry into stablecoin settlement. FlowLink's regulated-entity positioning is a differentiated value proposition for Stripe's enterprise merchant base.
+- **MPP spec governance:** Open standard — ProofLink can implement without formal permission. Partnership for co-marketing or official compliance designation requires direct engagement.
+- **Key angle:** Stripe is actively looking for compliance partners given their entry into stablecoin settlement. ProofLink's regulated-entity positioning is a differentiated value proposition for Stripe's enterprise merchant base.
 
 ### Open Source Status
 
@@ -268,37 +268,37 @@ AP2 is the most compliance-aware protocol by design. Its mandate architecture di
 - Travel Rule compliance is unspecified — the mandate chain proves intent but does not package IVMS101 data for VASP reporting
 - No live deployment means no tested compliance edge cases
 
-**The compliance gap FlowLink fills:** AP2's mandate architecture is the ideal substrate for FlowLink's ProofLink Engine. FlowLink can act as a registered Validator in the AP2 trust chain: after mandate verification, FlowLink appends a compliance attestation (sanctions clean, KYA verified, Travel Rule packaged). This creates a four-mandate effectively: Intent → Cart → Payment → **Compliance Proof**.
+**The compliance gap ProofLink fills:** AP2's mandate architecture is the ideal substrate for ProofLink's ProofLink Engine. ProofLink can act as a registered Validator in the AP2 trust chain: after mandate verification, ProofLink appends a compliance attestation (sanctions clean, KYA verified, Travel Rule packaged). This creates a four-mandate effectively: Intent → Cart → Payment → **Compliance Proof**.
 
-### How FlowLink Integrates
+### How ProofLink Integrates
 
 **Integration model: AP2 Compliance Validator.**
 
-AP2's architecture explicitly supports validators. FlowLink registers as a compliance validator in the AP2 ecosystem:
+AP2's architecture explicitly supports validators. ProofLink registers as a compliance validator in the AP2 ecosystem:
 
 ```
 User signs Intent Mandate → Agent received
 Agent → Cart Mandate (item + price confirmed)
 Agent → Payment Mandate (to payment network)
-FlowLink Validator:
+ProofLink Validator:
    mandate_chain_verify(intent_mandate, cart_mandate)
    sanctions_screen(user_did, agent_did, merchant_id)
    kya_verify(agent_id, issuer_verification, behavioral_history)
    travel_rule_check(amount, threshold, currency_type)
    → prooflink_attestation(compliance_stamp, mandate_chain_hash)
-Payment network receives: Payment Mandate + FlowLink Compliance Attestation
+Payment network receives: Payment Mandate + ProofLink Compliance Attestation
 ```
 
-For Google's 60+ AP2 partners, FlowLink becomes the canonical compliance validator — embedded into the protocol flow itself rather than bolted on externally.
+For Google's 60+ AP2 partners, ProofLink becomes the canonical compliance validator — embedded into the protocol flow itself rather than bolted on externally.
 
-**UCP integration:** The Universal Commerce Protocol provides the discovery and post-purchase layers. FlowLink's compliance stamp can be surfaced at the discovery layer (merchants can advertise "FlowLink Compliant" agents) and the post-purchase layer (compliance receipts for audit).
+**UCP integration:** The Universal Commerce Protocol provides the discovery and post-purchase layers. ProofLink's compliance stamp can be surfaced at the discovery layer (merchants can advertise "ProofLink Compliant" agents) and the post-purchase layer (compliance receipts for audit).
 
 ### Partnership Decision-Maker
 
 - **Google:** Google Cloud's AI and Machine Learning team, specifically the AP2 product lead at `cloud.google.com`. Given AP2 is also on GitHub (`google-agentic-commerce/AP2`), the technical entry point is through contributions and proposals.
 - **Key contacts:** Jordan Ellis (Google, co-author of ERC-8004 and AP2 contributor) — bridge between the on-chain identity world and AP2.
-- **Trulioo integration:** Trulioo is already an AP2 KYA partner. FlowLink's positioning must differentiate from Trulioo — the angle is VASP-grade compliance (Travel Rule, AML) rather than identity verification alone.
-- **Access path:** GitHub contribution + direct engagement with Google Cloud's developer partnerships team. AP2's open-source nature means FlowLink can implement without permission; becoming an official compliance partner requires a direct relationship.
+- **Trulioo integration:** Trulioo is already an AP2 KYA partner. ProofLink's positioning must differentiate from Trulioo — the angle is VASP-grade compliance (Travel Rule, AML) rather than identity verification alone.
+- **Access path:** GitHub contribution + direct engagement with Google Cloud's developer partnerships team. AP2's open-source nature means ProofLink can implement without permission; becoming an official compliance partner requires a direct relationship.
 
 ### Open Source Status
 
@@ -370,33 +370,33 @@ ACP inherits Stripe's compliance stack for the card payment layer:
 - No cross-platform compliance — ACP is currently OpenAI-centric. When other platforms (Anthropic Claude, Google Gemini) implement ACP, each will bring their own compliance posture; there is no unified layer.
 - Consent model: the protocol logs SPT usage but does not produce a regulatory-grade compliance receipt that a CFO could hand to an auditor
 
-**The compliance gap FlowLink fills:** When ACP expands beyond Stripe's direct handling (non-Stripe PSPs, stablecoin extensions, multi-platform deployments), the compliance gap opens. FlowLink's angle is twofold: (1) ACP compliance certification for non-Stripe PSPs implementing the Delegated Payment Spec, and (2) cross-platform ACP compliance monitoring when multiple AI platforms (not just ChatGPT) use the protocol.
+**The compliance gap ProofLink fills:** When ACP expands beyond Stripe's direct handling (non-Stripe PSPs, stablecoin extensions, multi-platform deployments), the compliance gap opens. ProofLink's angle is twofold: (1) ACP compliance certification for non-Stripe PSPs implementing the Delegated Payment Spec, and (2) cross-platform ACP compliance monitoring when multiple AI platforms (not just ChatGPT) use the protocol.
 
-### How FlowLink Integrates
+### How ProofLink Integrates
 
 **Integration model: Delegated Payment Spec Compliance Wrapper.**
 
-FlowLink implements the Delegated Payment Spec as a PSP-agnostic compliance layer. Any PSP wishing to be ACP-compatible routes through FlowLink for KYA and sanctions screening before issuing their token equivalent to an SPT:
+ProofLink implements the Delegated Payment Spec as a PSP-agnostic compliance layer. Any PSP wishing to be ACP-compatible routes through ProofLink for KYA and sanctions screening before issuing their token equivalent to an SPT:
 
 ```
 AI Platform → ACP checkout request → Merchant
 Merchant → PSP (non-Stripe) → Delegated Payment Spec
-PSP calls FlowLink:
+PSP calls ProofLink:
    kya_check(platform_id, agent_session_id)
    sanctions_screen(buyer_identity, merchant_id)
    → compliance_token(prooflink_stamp)
-PSP issues SPT-equivalent with FlowLink compliance stamp attached
+PSP issues SPT-equivalent with ProofLink compliance stamp attached
 Merchant receives: SPT + compliance attestation → accept or decline
 ```
 
-**MCP angle (highest leverage):** ACP merchants publish checkout configs as MCP endpoints. FlowLink publishes a compliance check tool on the same MCP layer: before any agent triggers a checkout, it calls `flowlink.verify_transaction(agent_id, merchant_id, amount)`. If FlowLink's compliance check fails, the agent does not proceed. This makes FlowLink's compliance check a prerequisite step in the ACP checkout flow — invisible to the user, mandatory for enterprise deployments.
+**MCP angle (highest leverage):** ACP merchants publish checkout configs as MCP endpoints. ProofLink publishes a compliance check tool on the same MCP layer: before any agent triggers a checkout, it calls `prooflink.verify_transaction(agent_id, merchant_id, amount)`. If ProofLink's compliance check fails, the agent does not proceed. This makes ProofLink's compliance check a prerequisite step in the ACP checkout flow — invisible to the user, mandatory for enterprise deployments.
 
 ### Partnership Decision-Maker
 
 - **OpenAI:** Commerce product team; ACP is maintained by OpenAI's developer platform division. Contact via `developers.openai.com/commerce` or OpenAI's enterprise partnerships team.
 - **Stripe:** Platform Partnerships and the Risk/Compliance product team. Stripe actively wants compliance partners for their non-Stripe PSP rollout.
 - **Salesforce:** Salesforce's MuleSoft and Commerce Cloud teams (announced ACP support October 2025).
-- **Key insight:** The highest-leverage partnership is with Stripe — FlowLink as a certified compliance provider for the ACP Delegated Payment Spec gives Stripe something they need: a way to tell enterprise merchants that non-Stripe PSPs can meet Stripe-equivalent compliance standards via FlowLink.
+- **Key insight:** The highest-leverage partnership is with Stripe — ProofLink as a certified compliance provider for the ACP Delegated Payment Spec gives Stripe something they need: a way to tell enterprise merchants that non-Stripe PSPs can meet Stripe-equivalent compliance standards via ProofLink.
 
 ### Open Source Status
 
@@ -470,38 +470,38 @@ TAP sits on top of Visa's existing payment network, which already has:
 - The KYA registry is Visa-controlled — for non-Visa payment methods, the trust signal is absent
 - No Travel Rule solution for any crypto-rail integration
 
-**The compliance gap FlowLink fills:** TAP gives Visa merchants confidence that an agent is Visa-registered. FlowLink completes the picture: that the agent is also sanctions-clean, jurisdiction-compliant, and AML-monitored. The integration angle is **FlowLink as the compliance enrichment layer** on top of TAP's identity verification — adding the regulatory substance that Visa's trust registry alone cannot provide.
+**The compliance gap ProofLink fills:** TAP gives Visa merchants confidence that an agent is Visa-registered. ProofLink completes the picture: that the agent is also sanctions-clean, jurisdiction-compliant, and AML-monitored. The integration angle is **ProofLink as the compliance enrichment layer** on top of TAP's identity verification — adding the regulatory substance that Visa's trust registry alone cannot provide.
 
-### How FlowLink Integrates
+### How ProofLink Integrates
 
 **Integration model: TAP Compliance Enrichment Layer.**
 
-FlowLink builds a TAP integration that adds compliance data to Visa's existing agent verification flow:
+ProofLink builds a TAP integration that adds compliance data to Visa's existing agent verification flow:
 
 ```
 Agent → HTTP request with TAP signature
 Merchant/CDN → Visa Key Store lookup (agent identity verification)
-Merchant → FlowLink (parallel call):
+Merchant → ProofLink (parallel call):
    prooflink_verify(visa_agent_id, transaction_metadata)
    → sanctions_check(agent + principal)
    → jurisdiction_check(origin, destination)
    → behavioral_check(agent history)
    → compliance_response(pass/flag/block, reason_code)
-Merchant receives: Visa trust signal + FlowLink compliance signal
+Merchant receives: Visa trust signal + ProofLink compliance signal
 Decision: accept / step-up authentication / decline
 ```
 
-The CDN-layer architecture means FlowLink can integrate as a Cloudflare Worker or Akamai EdgeWorker alongside TAP verification — adding compliance decisioning at the same layer as identity verification, with no additional latency from separate backend calls.
+The CDN-layer architecture means ProofLink can integrate as a Cloudflare Worker or Akamai EdgeWorker alongside TAP verification — adding compliance decisioning at the same layer as identity verification, with no additional latency from separate backend calls.
 
-**Enterprise angle:** Merchants processing high-value agent transactions (travel, B2B procurement, financial services) need more than "this is a Visa-registered agent." They need "this agent is sanctions-clean, its principal is KYC-verified, and this transaction pattern matches its behavioral history." FlowLink provides that second layer.
+**Enterprise angle:** Merchants processing high-value agent transactions (travel, B2B procurement, financial services) need more than "this is a Visa-registered agent." They need "this agent is sanctions-clean, its principal is KYC-verified, and this transaction pattern matches its behavioral history." ProofLink provides that second layer.
 
 ### Partnership Decision-Maker
 
 - **Visa Intelligent Commerce (VIC):** The sandbox program is the entry point. Apply at `developer.visa.com/capabilities/trusted-agent-protocol`
 - **Visa Developer Center:** Technical integration available without formal partnership; production integration with Visa's merchant and acquirer network requires Visa partnership engagement
-- **Key contact tier:** Visa's Head of Agentic Commerce (VP level, likely reporting to Visa's Chief Product Officer) — the exec leading the VIC program. Visa's Fintech and Startup partnership team (for companies like FlowLink)
+- **Key contact tier:** Visa's Head of Agentic Commerce (VP level, likely reporting to Visa's Chief Product Officer) — the exec leading the VIC program. Visa's Fintech and Startup partnership team (for companies like ProofLink)
 - **Cloudflare co-governance:** Cloudflare's Worker ecosystem team — TAP runs on Cloudflare infrastructure; being a Cloudflare Workers integration is a fast path to TAP deployment
-- **Co-marketing angle:** Visa is actively looking for compliance validators to make TAP enterprise-credible. The "Visa Trusted Agent + FlowLink Compliant" two-layer message addresses enterprise procurement teams directly.
+- **Co-marketing angle:** Visa is actively looking for compliance validators to make TAP enterprise-credible. The "Visa Trusted Agent + ProofLink Compliant" two-layer message addresses enterprise procurement teams directly.
 
 ### Open Source Status
 
@@ -583,38 +583,38 @@ Mastercard brings the deepest compliance infrastructure of any protocol in this 
 - KYA covers the agent's registration, not the agent's principal's full KYC/AML history
 - No jurisdiction-level compliance beyond Mastercard's standard network rules
 
-**The compliance gap FlowLink fills:** Mastercard has the best starting point for compliance — KYA registration, network-level AML, tokenization. What's missing is the cross-protocol compliance view (when that same agent also uses x402 or MPP), the stablecoin Travel Rule capability, and behavioral AML monitoring calibrated for agent-scale activity. FlowLink fills the gaps Mastercard's infrastructure doesn't cover natively.
+**The compliance gap ProofLink fills:** Mastercard has the best starting point for compliance — KYA registration, network-level AML, tokenization. What's missing is the cross-protocol compliance view (when that same agent also uses x402 or MPP), the stablecoin Travel Rule capability, and behavioral AML monitoring calibrated for agent-scale activity. ProofLink fills the gaps Mastercard's infrastructure doesn't cover natively.
 
-### How FlowLink Integrates
+### How ProofLink Integrates
 
 **Integration model: Agent Pay Compliance Co-Validator.**
 
-Mastercard's KYA registry and Agent Pay Acceptance Framework are the closest thing to FlowLink's own KYA capabilities in the traditional payment world. Rather than competing, FlowLink augments:
+Mastercard's KYA registry and Agent Pay Acceptance Framework are the closest thing to ProofLink's own KYA capabilities in the traditional payment world. Rather than competing, ProofLink augments:
 
 ```
 Agent → Agent Pay transaction attempt
 Mastercard: kya_check(agent_id) → Mastercard registry lookup (is agent registered?)
 Mastercard: agentic_token_issue(agent_id, scope, transaction_context)
-FlowLink (called in parallel or as enrichment):
+ProofLink (called in parallel or as enrichment):
    cross_protocol_screen(agent_id, x402_history, mpp_history)
    → sanctions_check (beyond Mastercard's standard OFAC) + EU/UN/HMT
    → behavioral_aml(agent_session_pattern, baseline_model)
    → jurisdiction_check(origin, destination, regulatory_requirements)
    → prooflink_stamp(compliance_attestation)
-Issuer/Merchant receives: Mastercard Agent Pay signal + FlowLink enrichment
+Issuer/Merchant receives: Mastercard Agent Pay signal + ProofLink enrichment
 ```
 
-**B2B angle via IBM watsonx:** Mastercard's IBM partnership targets B2B enterprise procurement. Enterprise buyers need compliance receipts for every agent payment — FlowLink's ProofLink Engine generates the audit-grade receipt that Mastercard's token alone cannot provide. This is the CFO-facing integration: "every Agent Pay transaction generates a FlowLink compliance receipt, automatically filed in your AP system."
+**B2B angle via IBM watsonx:** Mastercard's IBM partnership targets B2B enterprise procurement. Enterprise buyers need compliance receipts for every agent payment — ProofLink's ProofLink Engine generates the audit-grade receipt that Mastercard's token alone cannot provide. This is the CFO-facing integration: "every Agent Pay transaction generates a ProofLink compliance receipt, automatically filed in your AP system."
 
-**Agent Suite partnership (Q2 2026):** Mastercard's Agent Suite combines AI agents with advisory services. FlowLink's KYA capability can be positioned as the compliance layer of the Agent Suite — every Mastercard-deployed agent carries FlowLink compliance certification.
+**Agent Suite partnership (Q2 2026):** Mastercard's Agent Suite combines AI agents with advisory services. ProofLink's KYA capability can be positioned as the compliance layer of the Agent Suite — every Mastercard-deployed agent carries ProofLink compliance certification.
 
 ### Partnership Decision-Maker
 
 - **Mastercard Developers:** `developer.mastercard.com` — Agent Pay developer documentation available. The Agent Pay Acceptance Framework is the entry point for payment processor and merchant integrations.
 - **Mastercard's AI and Commerce partnership team:** For companies integrating at the compliance/trust layer level (not just merchant acceptance), the decision-maker is Mastercard's VP/SVP of AI and Emerging Commerce or their Chief Product Officer's organization.
 - **IBM partnership angle:** IBM Global Business Services manages the watsonx Orchestrate relationship with Mastercard. For enterprise B2B deployments, the go-to-market path runs through IBM.
-- **Agent Suite (Q2 2026):** The Agent Suite launch creates a formal partnership program. FlowLink should target this launch window for co-marketing.
-- **Key insight:** Mastercard's KYA process is the closest analog to FlowLink's own KYA. Positioning FlowLink as the cross-protocol extension of Mastercard's KYA — "Mastercard KYA for their rail, FlowLink KYA for everywhere else" — avoids head-on competition and creates a complementary narrative.
+- **Agent Suite (Q2 2026):** The Agent Suite launch creates a formal partnership program. ProofLink should target this launch window for co-marketing.
+- **Key insight:** Mastercard's KYA process is the closest analog to ProofLink's own KYA. Positioning ProofLink as the cross-protocol extension of Mastercard's KYA — "Mastercard KYA for their rail, ProofLink KYA for everywhere else" — avoids head-on competition and creates a complementary narrative.
 
 ### Open Source Status
 
@@ -636,18 +636,18 @@ Issuer/Merchant receives: Mastercard Agent Pay signal + FlowLink enrichment
 | **Travel Rule** | None | None | Not specified | Not specified | Not applicable (card rail) | Not applicable (card rail) |
 | **Sanctions screening** | Coinbase facilitator only | Via Stripe | None native | Via Stripe | Visa network | Mastercard network |
 | **Integration complexity** | Low (HTTP headers, Apache 2.0) | Medium (Stripe SDK) | High (spec-stage only) | Low for Stripe merchants | Low (CDN layer) | Medium (requires Mastercard partnership) |
-| **FlowLink integration model** | Compliance Facilitator | Session Compliance Hook | AP2 Compliance Validator | Delegated Payment Spec Wrapper | TAP Enrichment Layer | Cross-Protocol Co-Validator |
+| **ProofLink integration model** | Compliance Facilitator | Session Compliance Hook | AP2 Compliance Validator | Delegated Payment Spec Wrapper | TAP Enrichment Layer | Cross-Protocol Co-Validator |
 | **Partnership entry point** | GitHub + x402 Foundation | Stripe partnerships | Google Cloud developer program | OpenAI/Stripe developer program | Visa Developer Center + VIC sandbox | Mastercard Developers + Agent Pay Acceptance Framework |
 | **Decision-maker** | Dan Kim (Coinbase BD), x402 Foundation | Stripe Platform Partnerships | Google Cloud AI/ML product team | OpenAI Commerce team + Stripe Partnerships | Visa Intelligent Commerce program | Mastercard VP AI and Emerging Commerce |
-| **FlowLink priority** | 1 (highest) | 2 | 5 | 3 | 4 | 4 |
+| **ProofLink priority** | 1 (highest) | 2 | 5 | 3 | 4 | 4 |
 
 ---
 
 ## Compliance Gap Matrix
 
-The table below maps each compliance requirement against each protocol's native capability (where "—" means the protocol has no native solution and FlowLink provides the missing capability).
+The table below maps each compliance requirement against each protocol's native capability (where "—" means the protocol has no native solution and ProofLink provides the missing capability).
 
-| Compliance Requirement | x402 | MPP | AP2 | ACP | Visa TAP | MC Agent Pay | FlowLink Provides |
+| Compliance Requirement | x402 | MPP | AP2 | ACP | Visa TAP | MC Agent Pay | ProofLink Provides |
 |-----------------------|------|-----|-----|-----|----------|-------------|-------------------|
 | OFAC sanctions screening | Coinbase facilitator only | Via Stripe | — | Via Stripe | Visa network | MC network | Cross-protocol, all rails |
 | EU/UN/HMT sanctions | — | — | — | — | Visa network | MC network | All protocols |
@@ -659,11 +659,11 @@ The table below maps each compliance requirement against each protocol's native 
 | Regulatory reporting (SAR) | — | — | — | — | — | — | Automated SAR generation |
 | Cross-protocol compliance view | N/A | N/A | N/A | N/A | N/A | N/A | Unified across all 6 |
 
-The last row — cross-protocol compliance view — is the single capability that no protocol provides and that FlowLink uniquely can provide by integrating across all six.
+The last row — cross-protocol compliance view — is the single capability that no protocol provides and that ProofLink uniquely can provide by integrating across all six.
 
 ---
 
-## FlowLink Integration Priority Matrix
+## ProofLink Integration Priority Matrix
 
 ### Priority 1: x402 (Coinbase)
 
@@ -673,13 +673,13 @@ The last row — cross-protocol compliance view — is the single capability tha
 - Only protocol with proven transaction volume (75M transactions, $24M value)
 - Zero native compliance — the compliance gap is total
 - Apache 2.0 license — zero partnership friction to launch a custom compliant facilitator
-- Coinbase facilitator charges $0.001/transaction — FlowLink's compliance-enabled facilitator can charge a compliance premium
+- Coinbase facilitator charges $0.001/transaction — ProofLink's compliance-enabled facilitator can charge a compliance premium
 - World ID integration (March 2026) demonstrates the market is ready for trust layers on x402
 - Stripe validated x402 in February 2026 — enterprise adoption is beginning
-- FATF Travel Rule gap is a legal liability for any platform building on x402 at scale — FlowLink eliminates that liability
+- FATF Travel Rule gap is a legal liability for any platform building on x402 at scale — ProofLink eliminates that liability
 - Entry path: build a compliant x402 facilitator, publish it, approach x402 Foundation for co-marketing
 
-**Expected enterprise buyer conversation:** "You're using x402 for API payments. Every transaction above $3,000 in aggregate requires Travel Rule information. None of your current x402 infrastructure provides this. FlowLink's compliant facilitator adds Travel Rule, OFAC screening, and KYA verification with one config change."
+**Expected enterprise buyer conversation:** "You're using x402 for API payments. Every transaction above $3,000 in aggregate requires Travel Rule information. None of your current x402 infrastructure provides this. ProofLink's compliant facilitator adds Travel Rule, OFAC screening, and KYA verification with one config change."
 
 **Timeline to first integration: 4-6 weeks** (build compliant facilitator, test on Base, integrate ProofLink Engine)
 
@@ -691,13 +691,13 @@ The last row — cross-protocol compliance view — is the single capability tha
 
 **Rationale:**
 - Stripe's PaymentIntents API integration means 1M+ merchants are one line of code from MPP
-- Sessions ("OAuth for money") are a compliance monitoring nightmare — aggregated micropayment streams obscure individual transaction AML signals. FlowLink's session-level compliance monitoring fills this gap
+- Sessions ("OAuth for money") are a compliance monitoring nightmare — aggregated micropayment streams obscure individual transaction AML signals. ProofLink's session-level compliance monitoring fills this gap
 - Stripe is actively expanding into stablecoin settlement (Tempo chain) — their compliance coverage for stablecoin sessions is materially weaker than for card payments
-- Launched March 18, 2026 — FlowLink can be the first compliance partner at launch, not a follower
+- Launched March 18, 2026 — ProofLink can be the first compliance partner at launch, not a follower
 - Stripe enterprise sales team is a channel into large enterprise merchants who need compliance receipts
-- Sessions create new regulatory questions (is a session a single "transaction" for Travel Rule purposes? When does velocity monitoring trigger?) — FlowLink can define the compliance standard here
+- Sessions create new regulatory questions (is a session a single "transaction" for Travel Rule purposes? When does velocity monitoring trigger?) — ProofLink can define the compliance standard here
 
-**Expected enterprise buyer conversation:** "Your AI agents are running MPP sessions — authorizing $50 spending caps and streaming 500 micropayments per hour. Your fraud system was built for human transaction patterns. FlowLink monitors agent session behavior, detects anomalies, and produces the compliance audit trail your CFO needs."
+**Expected enterprise buyer conversation:** "Your AI agents are running MPP sessions — authorizing $50 spending caps and streaming 500 micropayments per hour. Your fraud system was built for human transaction patterns. ProofLink monitors agent session behavior, detects anomalies, and produces the compliance audit trail your CFO needs."
 
 **Timeline to first integration: 6-8 weeks** (MPP spec study + Session compliance hook implementation)
 
@@ -710,11 +710,11 @@ The last row — cross-protocol compliance view — is the single capability tha
 **Rationale:**
 - 800M+ weekly ChatGPT users is the largest distribution moat in agentic commerce
 - ACP today has a compliance gap that Stripe partially covers — but as ACP expands to non-Stripe PSPs and non-OpenAI platforms, the gap opens
-- The Delegated Payment Spec (the open standard within ACP) has no compliance requirement — FlowLink can become the de facto compliance standard for any PSP implementing Delegated Payment
+- The Delegated Payment Spec (the open standard within ACP) has no compliance requirement — ProofLink can become the de facto compliance standard for any PSP implementing Delegated Payment
 - Salesforce's ACP integration (October 2025) signals enterprise B2B expansion — enterprise buyers will need compliance receipts that ChatGPT's SPT logs alone cannot provide
-- SPT usage logs are not regulatory audit trails — FlowLink's ProofLink Stamp on SPT transactions creates the regulatory-grade receipt
+- SPT usage logs are not regulatory audit trails — ProofLink's ProofLink Stamp on SPT transactions creates the regulatory-grade receipt
 
-**Note on timing:** ACP with Stripe-only is well-covered by Stripe's compliance infrastructure. The priority accelerates when non-Stripe PSPs go live. Watch Adyen, Worldpay, Checkout.com for ACP implementation announcements — that triggers FlowLink's entry window.
+**Note on timing:** ACP with Stripe-only is well-covered by Stripe's compliance infrastructure. The priority accelerates when non-Stripe PSPs go live. Watch Adyen, Worldpay, Checkout.com for ACP implementation announcements — that triggers ProofLink's entry window.
 
 **Timeline to first integration: 8-10 weeks** (Delegated Payment Spec implementation + non-Stripe PSP partnership)
 
@@ -726,22 +726,22 @@ The last row — cross-protocol compliance view — is the single capability tha
 
 **Visa TAP rationale:**
 - 30+ partners actively building in sandbox — ecosystem is maturing fast
-- CDN-layer architecture is ideal for FlowLink's real-time compliance checks (same latency tier)
+- CDN-layer architecture is ideal for ProofLink's real-time compliance checks (same latency tier)
 - Visa Intelligent Commerce sandbox is accessible today
-- Compliance enrichment (FlowLink layered on TAP's identity verification) is a natural two-layer message for enterprise merchants
-- The "Visa Trusted + FlowLink Compliant" positioning appeals to risk and compliance teams at any merchant considering agent payments
+- Compliance enrichment (ProofLink layered on TAP's identity verification) is a natural two-layer message for enterprise merchants
+- The "Visa Trusted + ProofLink Compliant" positioning appeals to risk and compliance teams at any merchant considering agent payments
 
 **Mastercard Agent Pay rationale:**
 - Most enterprise-deployed protocol by reach (all US cardholders, Fiserv live)
-- Mastercard's own KYA process creates a natural conversation partner — FlowLink extends KYA across protocols that Mastercard's infrastructure doesn't touch
+- Mastercard's own KYA process creates a natural conversation partner — ProofLink extends KYA across protocols that Mastercard's infrastructure doesn't touch
 - Agent Suite launch (Q2 2026) creates a co-marketing window
 - IBM watsonx Orchestrate partnership is a B2B enterprise channel that needs compliance receipts
 
 **Why these are Priority 4 (not higher):**
 - Both operate on traditional card rails where Visa/Mastercard's own network AML provides substantial baseline coverage
-- The compliance incremental value FlowLink adds is cross-protocol and stablecoin-specific — neither Visa nor Mastercard has meaningful stablecoin transaction volume yet
+- The compliance incremental value ProofLink adds is cross-protocol and stablecoin-specific — neither Visa nor Mastercard has meaningful stablecoin transaction volume yet
 - Partnership entry requires formal engagement with Visa and Mastercard business development teams — higher friction than x402's open-source self-serve approach
-- Revenue timing: card-rail integrations are slower to generate FlowLink-specific compliance revenue because so much compliance is already handled by the network
+- Revenue timing: card-rail integrations are slower to generate ProofLink-specific compliance revenue because so much compliance is already handled by the network
 
 **Timeline to first integration: 12-16 weeks** (formal partnership engagement required for production access to Visa/MC networks)
 
@@ -757,31 +757,31 @@ The last row — cross-protocol compliance view — is the single capability tha
 - Google's 60+ partner ecosystem has not yet converged on a live deployment
 
 **Rationale to watch:**
-- AP2 has the most compliance-aligned architecture of any protocol — its mandate chain is the ideal substrate for FlowLink's ProofLink Engine
+- AP2 has the most compliance-aligned architecture of any protocol — its mandate chain is the ideal substrate for ProofLink's ProofLink Engine
 - Google's partner roster (Mastercard, PayPal, Coinbase, Adyen, American Express, Alibaba) represents the broadest coalition in the space
-- AP2's Validation Registry is an explicit extension point for compliance validators — FlowLink can be a named validator
+- AP2's Validation Registry is an explicit extension point for compliance validators — ProofLink can be a named validator
 - When AP2 ships a live product (expect 2026 H2 based on partner activity), it will likely be adopted fast given Google's distribution
-- ERC-8004 cross-authors (Jordan Ellis at Google, Erik Reppel at Coinbase) create a bridge between FlowLink's on-chain identity work and AP2's mandate architecture
+- ERC-8004 cross-authors (Jordan Ellis at Google, Erik Reppel at Coinbase) create a bridge between ProofLink's on-chain identity work and AP2's mandate architecture
 
-**Recommended action now:** Contribute to the AP2 GitHub repository. Establish FlowLink as a proposed Compliance Validator in the spec. This positions FlowLink for instant integration when AP2 goes live, without building speculative integration code against an undeployed protocol.
+**Recommended action now:** Contribute to the AP2 GitHub repository. Establish ProofLink as a proposed Compliance Validator in the spec. This positions ProofLink for instant integration when AP2 goes live, without building speculative integration code against an undeployed protocol.
 
 **Timeline to production integration: 16-20 weeks** (after AP2 live product launch — follow the GitHub activity)
 
 ---
 
-## Strategic Synthesis: FlowLink's Positioning Across All Protocols
+## Strategic Synthesis: ProofLink's Positioning Across All Protocols
 
 Every protocol in this comparison has made the same architectural decision: separate identity/trust from compliance. They solve identity (who is this agent?), they solve authorization (did the user consent?), but they do not solve regulatory compliance (is this transaction FATF-compliant, sanctions-clean, AML-monitored?).
 
 This separation is not accidental — it reflects the technical and organizational reality that payment protocol developers are not compliance experts, and compliance requirements vary by jurisdiction in ways that cannot be hardcoded into a protocol spec.
 
-This creates a structural gap that a neutral, cross-protocol compliance layer fills. FlowLink's position is not to compete with any of these protocols but to be the compliance infrastructure they all need and none of them wants to build.
+This creates a structural gap that a neutral, cross-protocol compliance layer fills. ProofLink's position is not to compete with any of these protocols but to be the compliance infrastructure they all need and none of them wants to build.
 
 The sustainable competitive moat:
-1. **First-mover in cross-protocol compliance** — the more protocols FlowLink integrates, the more valuable the unified compliance view becomes
+1. **First-mover in cross-protocol compliance** — the more protocols ProofLink integrates, the more valuable the unified compliance view becomes
 2. **Behavioral dataset** — every agent transaction screened contributes to the behavioral baseline model; no single protocol can replicate this cross-protocol dataset
 3. **Regulatory credibility** — compliance infrastructure requires regulatory relationships and licensing that protocol developers do not want to maintain
-4. **The ERC-8004 validator position** — if FlowLink becomes a named validator in ERC-8004's Validation Registry with 49K+ agents already registered, the compliance attestation dataset becomes a structural moat
+4. **The ERC-8004 validator position** — if ProofLink becomes a named validator in ERC-8004's Validation Registry with 49K+ agents already registered, the compliance attestation dataset becomes a structural moat
 
 The single most important technical deliverable in the near term: a cross-protocol compliance API that accepts a transaction from any of the six protocols above and returns a ProofLink compliance stamp in under 200ms. That API, plugged into all six protocols, is the network effect that compounds over time.
 
@@ -834,4 +834,4 @@ The single most important technical deliverable in the near term: a cross-protoc
 ---
 
 *Research compiled by Team Delta — March 20, 2026*
-*For internal FlowLink strategy use only*
+*For internal ProofLink strategy use only*

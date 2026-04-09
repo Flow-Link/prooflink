@@ -1,8 +1,8 @@
 {
-  "name": "@flowlink/sdk",
+  "name": "@prooflink/sdk",
   "version": "0.1.0",
   "type": "module",
-  "description": "TypeScript client SDK for the FlowLink compliance API",
+  "description": "TypeScript client SDK for the ProofLink compliance API",
   "license": "MIT",
   "exports": {
     ".": {
@@ -19,7 +19,7 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "@flowlink/shared": "workspace:*"
+    "@prooflink/shared": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.8.0",

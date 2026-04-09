@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { InvoiceState, InvoiceCurrency } from "@flowlink/shared";
+import { InvoiceState, InvoiceCurrency } from "@prooflink/shared";
 import { formatMcpError } from "../errors.js";
 
 const MAX_PAGE_SIZE = 100;

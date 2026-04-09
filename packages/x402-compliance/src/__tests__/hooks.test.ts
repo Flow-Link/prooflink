@@ -3,7 +3,7 @@ import { createBeforeVerifyHook, payloadKey } from "../hooks/before-verify.js";
 import { createBeforeSettleHook } from "../hooks/before-settle.js";
 import { createAfterSettleHook } from "../hooks/after-settle.js";
 import type {
-  FlowLinkConfig,
+  ProofLinkConfig,
   PaymentPayload,
   PaymentRequirements,
   PendingDecision,
@@ -71,7 +71,7 @@ function makeRequirements(
   };
 }
 
-function makeConfig(overrides?: Partial<FlowLinkConfig["policy"]>): FlowLinkConfig {
+function makeConfig(overrides?: Partial<ProofLinkConfig["policy"]>): ProofLinkConfig {
   return {
     chainalysisApiKey: "test-key",
     policy: {
@@ -1078,7 +1078,7 @@ describe("createAfterSettleHook", () => {
       latencyMs: 5,
     });
 
-    const configWithEAS: FlowLinkConfig = {
+    const configWithEAS: ProofLinkConfig = {
       ...makeConfig(),
       eas: {
         schemaUid: "0xschema1234",

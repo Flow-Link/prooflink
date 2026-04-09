@@ -1,6 +1,6 @@
 # Crypto Compliance & Regulation Landscape
 ## Research Date: March 2026
-## Purpose: FlowLink Trust Layer Positioning
+## Purpose: ProofLink Trust Layer Positioning
 
 ---
 
@@ -14,7 +14,7 @@
 6. [Compliance-as-a-Service](#6-compliance-as-a-service)
 7. [On-Chain Compliance Standards](#7-on-chain-compliance-standards)
 8. [Agentic Payments: The Compliance Frontier](#8-agentic-payments-the-compliance-frontier)
-9. [FlowLink Positioning: Differentiation Strategy](#9-flowlink-positioning-differentiation-strategy)
+9. [ProofLink Positioning: Differentiation Strategy](#9-prooflink-positioning-differentiation-strategy)
 
 ---
 
@@ -354,9 +354,9 @@ For a VASP doing $100M/month in volume, realistic compliance stack cost:
 | MiCA CASP Compliance | Internal + external audit | $100K–$500K |
 | **Total** | | **$670K–$2M+/year** |
 
-This is the cost incumbents face. It is the moat FlowLink can undercut OR the market FlowLink can serve as infrastructure.
+This is the cost incumbents face. It is the moat ProofLink can undercut OR the market ProofLink can serve as infrastructure.
 
-### Can FlowLink Build on Top of These?
+### Can ProofLink Build on Top of These?
 
 **Yes — and this is the right architecture:**
 - Use Chainalysis free SDN API for baseline sanctions (free)
@@ -364,7 +364,7 @@ This is the cost incumbents face. It is the moat FlowLink can undercut OR the ma
 - Integrate Notabene for Travel Rule data transmission
 - Add Polygon ID / ONCHAINID for on-chain identity attestations
 - Layer ChainAware for DeFi-specific MiCA screening
-- Abstract all of this behind a single FlowLink "ProofLink" API
+- Abstract all of this behind a single ProofLink "ProofLink" API
 
 The differentiation is NOT in the underlying data — it's in the orchestration, the agent-native identity layer, and the real-time compliance decision engine embedded in payment flows.
 
@@ -414,7 +414,7 @@ Transfer attempt →
 - GLEIF vLEI integration for legal entity identity on-chain
 - Compliance checks: KYC, AML risk screening, exploit protection, rate limits, continuous monitoring
 
-**Key insight:** ACE represents the convergence of TradFi compliance infrastructure (GLEIF LEIs, ISO 20022) with on-chain execution — exactly the type of infrastructure FlowLink should interface with.
+**Key insight:** ACE represents the convergence of TradFi compliance infrastructure (GLEIF LEIs, ISO 20022) with on-chain execution — exactly the type of infrastructure ProofLink should interface with.
 
 ### Soul-Bound Tokens (SBTs) for Compliance
 
@@ -430,7 +430,7 @@ The GLEIF Global Legal Entity Identifier Foundation's verifiable LEI standard is
 - Every legal entity in the world has or can get a LEI
 - vLEI is a W3C VC-wrapped LEI — machine-verifiable, cryptographically signed
 - Chainlink brought vLEI on-chain via ACE
-- FlowLink could use vLEI as the enterprise identity anchor for business counterparty verification
+- ProofLink could use vLEI as the enterprise identity anchor for business counterparty verification
 
 ---
 
@@ -468,7 +468,7 @@ AP2's compliance architecture is the most sophisticated emerging standard:
 - **SCA integration**: Strong Customer Authentication embedded in agent payment flows
 - **Audit trail**: Non-repudiable accountability chain from human principal to agent action
 
-**FlowLink opportunity**: AP2 defines the architecture but not the compliance implementation. Who does the AML screening on mandate execution? Who runs the Travel Rule data exchange? Who maintains the agent identity registry? These are open questions.
+**ProofLink opportunity**: AP2 defines the architecture but not the compliance implementation. Who does the AML screening on mandate execution? Who runs the Travel Rule data exchange? Who maintains the agent identity registry? These are open questions.
 
 ### The Regulatory Gap is a Time-Bounded Window
 
@@ -476,7 +476,7 @@ FATF is aware of agentic payments but has not yet issued formal guidance. FinCEN
 
 ---
 
-## 9. FlowLink Positioning: Differentiation Strategy
+## 9. ProofLink Positioning: Differentiation Strategy
 
 ### The Honest Assessment of the Competitive Landscape
 
@@ -492,26 +492,26 @@ FATF is aware of agentic payments but has not yet issued formal guidance. FinCEN
 - A real-time Travel Rule implementation that works for agent-to-agent flows
 - A unified compliance API that orchestrates sanctions + KYC + Travel Rule + agent identity in a single decision in <500ms
 
-### FlowLink's Genuine Differentiation Opportunities
+### ProofLink's Genuine Differentiation Opportunities
 
 **1. Agent-Native Identity (KYA — Know Your Agent)**
 
-Neither the compliance incumbents nor the agentic payment protocols have defined how to verify the identity and compliance status of an autonomous AI agent. FlowLink should build:
+Neither the compliance incumbents nor the agentic payment protocols have defined how to verify the identity and compliance status of an autonomous AI agent. ProofLink should build:
 - An Agent Identity Registry using W3C DIDs + Verifiable Credentials
 - Agent "KYA" credentials: who controls the agent, what its authorized spending scope is, which principal entity it represents
-- Integration with ERC-8004 (which FlowLink already references — 49K+ agents registered)
+- Integration with ERC-8004 (which ProofLink already references — 49K+ agents registered)
 - GLEIF vLEI as the enterprise identity anchor for the controlling entity
 - On-chain credential commitment so agents can prove compliance status without revealing sensitive data
 
-This positions FlowLink as the **identity infrastructure layer for the agentic economy** — not just a payment processor.
+This positions ProofLink as the **identity infrastructure layer for the agentic economy** — not just a payment processor.
 
 **2. Compliance-in-the-Payment-Flow (not post-hoc monitoring)**
 
-Chainalysis KYT is retrospective batch monitoring. ERC-3643 compliance is transfer-time but only on permissioned tokens. FlowLink's ProofLink Engine should enforce compliance **at transaction initiation**, in the payment flow, before funds move:
+Chainalysis KYT is retrospective batch monitoring. ERC-3643 compliance is transfer-time but only on permissioned tokens. ProofLink's ProofLink Engine should enforce compliance **at transaction initiation**, in the payment flow, before funds move:
 
 ```
 Agent initiates payment →
-  FlowLink ProofLink:
+  ProofLink ProofLink:
     1. Resolve agent DID → verify KYA credential (is this agent authorized?)
     2. Screen beneficiary address (OFAC + EU + UN in <100ms via Chainalysis API)
     3. Check counterparty VASP identity (Travel Rule pre-flight)
@@ -526,7 +526,7 @@ The key differentiator: **a signed compliance receipt attached to every transact
 
 **3. Composable Compliance for the Developer Ecosystem**
 
-The $100K–$500K/year Chainalysis model locks out 99% of the ecosystem. FlowLink should offer:
+The $100K–$500K/year Chainalysis model locks out 99% of the ecosystem. ProofLink should offer:
 - **Free tier**: OFAC SDN screening only (using Chainalysis free API underneath, zero marginal cost)
 - **Developer tier**: Full sanctions + basic AML, pay-per-transaction API
 - **VASP tier**: Full KYT + Travel Rule + agent identity, monthly subscription
@@ -536,7 +536,7 @@ This mirrors Stripe's model in TradFi — abstract the complexity, price on cons
 
 **4. The Travel Rule for Agents Problem**
 
-Current Travel Rule protocols (Notabene, Sygna, TRISA) assume both parties are VASPs with registered compliance officers. Agent-to-agent payments break this assumption entirely. FlowLink can define:
+Current Travel Rule protocols (Notabene, Sygna, TRISA) assume both parties are VASPs with registered compliance officers. Agent-to-agent payments break this assumption entirely. ProofLink can define:
 - A **lightweight Travel Rule protocol for agent payments** — the originating human principal's identity travels with agent transactions as a VC claim
 - Integration with AP2's mandate architecture so that compliance data is embedded in the mandate itself
 - A registry of agent-to-VASP mapping so regulators can trace agentic transactions back to human principals
@@ -545,7 +545,7 @@ This is a genuine standards-creation opportunity. Being the first mover on "Trav
 
 **5. Compliance Receipts as On-Chain Attestations**
 
-Every FlowLink-processed payment should generate a cryptographically signed, tamper-evident compliance receipt:
+Every ProofLink-processed payment should generate a cryptographically signed, tamper-evident compliance receipt:
 - What was screened (sanctions lists, AML checks, identity verification)
 - At what time (timestamp with proof)
 - Result of each check
@@ -556,20 +556,20 @@ These receipts stored as on-chain commitments (IPFS hash anchored to chain) give
 - Satisfy auditor requirements without exposing PII
 - Prove due diligence was exercised in real-time
 - Are portable across jurisdictions
-- Can be verified by counterparties without trusting FlowLink
+- Can be verified by counterparties without trusting ProofLink
 
 **6. The Compliance Stack Aggregator**
 
-Rather than build underlying compliance data from scratch, FlowLink's moat is orchestration:
+Rather than build underlying compliance data from scratch, ProofLink's moat is orchestration:
 - Sanctions data: Chainalysis (free SDN) + upgrade path to full KYT
 - Travel Rule: Notabene Gateway (multi-protocol interoperability)
 - On-chain identity: ONCHAINID / Polygon ID / Civic
 - Enterprise identity: GLEIF vLEI
-- Agent identity: FlowLink's own KYA registry (proprietary, not available elsewhere)
+- Agent identity: ProofLink's own KYA registry (proprietary, not available elsewhere)
 
-This aggregator position means FlowLink improves as each underlying provider improves, while the unique value — the orchestration logic, the compliance receipt format, the agent identity layer — stays proprietary.
+This aggregator position means ProofLink improves as each underlying provider improves, while the unique value — the orchestration logic, the compliance receipt format, the agent identity layer — stays proprietary.
 
-### What FlowLink Should NOT Try to Do
+### What ProofLink Should NOT Try to Do
 
 - Build its own blockchain analytics from scratch (Chainalysis has a decade of data; compete on orchestration not data)
 - Try to become a licensed VASP itself (regulatory burden is enormous; stay in the infrastructure layer)
@@ -578,19 +578,19 @@ This aggregator position means FlowLink improves as each underlying provider imp
 
 ### Differentiation Summary
 
-| Dimension | Incumbents | FlowLink |
+| Dimension | Incumbents | ProofLink |
 |---|---|---|
 | Agent identity | Not addressed | KYA credential registry with DID + VC |
 | Compliance timing | Post-hoc monitoring | Pre-payment, in-flow enforcement |
 | Proof artifacts | Internal audit logs | Cryptographically signed, on-chain compliance receipts |
 | Pricing | $100K–$500K/year enterprise | Consumption-based, accessible to startups |
 | Protocol support | Single protocol per vendor | Aggregated (multi-protocol, multi-jurisdiction) |
-| Agent Travel Rule | Undefined in standards | FlowLink defines the standard |
+| Agent Travel Rule | Undefined in standards | ProofLink defines the standard |
 | DeFi compatibility | Minimal | ERC-3643 / Chainlink ACE compatible |
 
 ### The Tagline That Follows From This
 
-FlowLink is not a compliance tool bolted onto payments. It is the **trust protocol for money moving at machine speed** — where every transaction carries cryptographic proof of who authorized it, who received it, and what rules were verified before it moved.
+ProofLink is not a compliance tool bolted onto payments. It is the **trust protocol for money moving at machine speed** — where every transaction carries cryptographic proof of who authorized it, who received it, and what rules were verified before it moved.
 
 ---
 

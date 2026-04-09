@@ -1,7 +1,7 @@
 # Cryptography & ZK Engineer
 
 ## Role
-Design and implement privacy-preserving compliance mechanisms for FlowLink: selective disclosure of KYA credentials, zero-knowledge proofs of compliance without revealing sensitive data, TEE-based attestation, and cryptographic integrity for compliance receipts.
+Design and implement privacy-preserving compliance mechanisms for ProofLink: selective disclosure of KYA credentials, zero-knowledge proofs of compliance without revealing sensitive data, TEE-based attestation, and cryptographic integrity for compliance receipts.
 
 ---
 
@@ -66,7 +66,7 @@ Design and implement privacy-preserving compliance mechanisms for FlowLink: sele
 - **Aztec Network** — private smart contract execution using Noir circuits; note model with ZK proofs
 - **Semaphore** — ZK identity system; prove membership in a group without revealing which member
 
-### Cryptographic Primitives in FlowLink Context
+### Cryptographic Primitives in ProofLink Context
 - `EcdsaSecp256k1Signature2019` — current KYA credential proof type (from `packages/shared/src/types/identity.ts`)
 - Upgrade path: BBS+ (`BbsBlsSignature2020`) enables selective disclosure of KYA credential attributes
 - IPFS content hash in ComplianceReceipt (from `packages/shared/src/types/compliance.ts`) — SHA2-256 Multihash; `ipfsCid` field
@@ -74,14 +74,14 @@ Design and implement privacy-preserving compliance mechanisms for FlowLink: sele
 
 ---
 
-## FlowLink-Specific Contributions
+## ProofLink-Specific Contributions
 
 ### Privacy Architecture Design
 - KYA credential upgrade from `EcdsaSecp256k1Signature2019` to `BbsBlsSignature2020` — enables agents to prove they have a valid KYA credential and reveal only `agentType` and `delegationScope` to a counterparty without revealing `controllingEntity`
 - SD-JWT encoding for KYACredential: `sub` = agent DID; disclosures for `agentType`, `delegationScope`, `walletAddress`; non-disclosable: `controllingEntity.lei`, `controllingEntity.nationalId`
 - ZK proof of sanctions clearance: prove address is NOT in OFAC SDN set using a Merkle tree of the SDN list + Groth16 non-membership proof; expose only proof, not address
 - TEE-based AML scoring: run `AMLScorer.calculateRiskScore()` inside AWS Nitro Enclave; output attestation document containing risk score; no raw transaction data leaves the enclave
-- Threshold signature for compliance receipt signing: FlowLink operates a 3-of-5 FROST threshold key for signing ComplianceReceipts; eliminates single point of compromise on receipt signer
+- Threshold signature for compliance receipt signing: ProofLink operates a 3-of-5 FROST threshold key for signing ComplianceReceipts; eliminates single point of compromise on receipt signer
 
 ### Circuit Design Targets
 - `kya_selective_disclosure.circom` — proves knowledge of valid KYA credential with a given attribute set revealed; hides controlling entity details

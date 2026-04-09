@@ -91,8 +91,8 @@ function makeDisputeRow(overrides: Record<string, unknown> = {}) {
     escrowId: TEST_ESCROW_ID,
     invoiceId: null,
     state: "OPEN",
-    initiatorDid: "did:flowlink:agent:initiator-001",
-    respondentDid: "did:flowlink:agent:respondent-001",
+    initiatorDid: "did:prooflink:agent:initiator-001",
+    respondentDid: "did:prooflink:agent:respondent-001",
     reason: "Service was not delivered as agreed.",
     category: "NON_DELIVERY",
     evidence: [],
@@ -108,14 +108,14 @@ function makeDisputeRow(overrides: Record<string, unknown> = {}) {
 
 const BASE_CREATE_DISPUTE = {
   escrowId: TEST_ESCROW_ID,
-  initiatorDid: "did:flowlink:agent:initiator-001",
-  respondentDid: "did:flowlink:agent:respondent-001",
+  initiatorDid: "did:prooflink:agent:initiator-001",
+  respondentDid: "did:prooflink:agent:respondent-001",
   reason: "Service was not delivered as agreed.",
   category: "NON_DELIVERY",
 };
 
 const BASE_EVIDENCE = {
-  submittedBy: "did:flowlink:agent:initiator-001",
+  submittedBy: "did:prooflink:agent:initiator-001",
   type: "screenshot",
   description: "Screenshot showing incomplete deliverable",
   data: { url: "https://storage.example.com/evidence/001.png" },
@@ -203,8 +203,8 @@ describe("E2E: Dispute Resolution Flow", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          initiatorDid: "did:flowlink:agent:initiator-001",
-          respondentDid: "did:flowlink:agent:respondent-001",
+          initiatorDid: "did:prooflink:agent:initiator-001",
+          respondentDid: "did:prooflink:agent:respondent-001",
           reason: "No reference ID.",
           category: "OTHER",
         }),
@@ -335,7 +335,7 @@ describe("E2E: Dispute Resolution Flow", () => {
       const res = await app.request(`/api/v1/disputes/${TEST_DISPUTE_ID}/evidence`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ submittedBy: "did:flowlink:agent:initiator-001" }),
+        body: JSON.stringify({ submittedBy: "did:prooflink:agent:initiator-001" }),
       });
 
       expect(res.status).toBe(400);
@@ -422,10 +422,10 @@ describe("E2E: Dispute Resolution Flow", () => {
       mockUpdateReturning.mockResolvedValue([
         makeDisputeRow({
           state: "RESOLVED",
-          resolvedBy: "did:flowlink:agent:arbitrator-001",
+          resolvedBy: "did:prooflink:agent:arbitrator-001",
           resolution: {
             outcome: "REFUND_FULL",
-            resolvedBy: "did:flowlink:agent:arbitrator-001",
+            resolvedBy: "did:prooflink:agent:arbitrator-001",
             notes: "Initiator claim verified.",
             resolvedAt: new Date().toISOString(),
           },
@@ -437,7 +437,7 @@ describe("E2E: Dispute Resolution Flow", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           outcome: "REFUND_FULL",
-          resolvedBy: "did:flowlink:agent:arbitrator-001",
+          resolvedBy: "did:prooflink:agent:arbitrator-001",
           notes: "Initiator claim verified.",
         }),
       });
@@ -456,7 +456,7 @@ describe("E2E: Dispute Resolution Flow", () => {
           state: "RESOLVED",
           resolution: {
             outcome: "REFUND_PARTIAL",
-            resolvedBy: "did:flowlink:agent:arbitrator-001",
+            resolvedBy: "did:prooflink:agent:arbitrator-001",
             refundAmount: "250.00",
             resolvedAt: new Date().toISOString(),
           },
@@ -468,7 +468,7 @@ describe("E2E: Dispute Resolution Flow", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           outcome: "REFUND_PARTIAL",
-          resolvedBy: "did:flowlink:agent:arbitrator-001",
+          resolvedBy: "did:prooflink:agent:arbitrator-001",
           refundAmount: "250.00",
         }),
       });
@@ -486,7 +486,7 @@ describe("E2E: Dispute Resolution Flow", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           outcome: "REFUND_FULL",
-          resolvedBy: "did:flowlink:agent:arbitrator-001",
+          resolvedBy: "did:prooflink:agent:arbitrator-001",
         }),
       });
 
@@ -501,7 +501,7 @@ describe("E2E: Dispute Resolution Flow", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           outcome: "INVALID_OUTCOME",
-          resolvedBy: "did:flowlink:agent:arbitrator-001",
+          resolvedBy: "did:prooflink:agent:arbitrator-001",
         }),
       });
 
@@ -698,7 +698,7 @@ describe("E2E: Dispute Resolution Flow", () => {
       mockUpdateReturning.mockResolvedValueOnce([
         makeDisputeRow({
           state: "RESOLVED",
-          resolution: { outcome: "REFUND_FULL", resolvedBy: "did:flowlink:agent:arb-001" },
+          resolution: { outcome: "REFUND_FULL", resolvedBy: "did:prooflink:agent:arb-001" },
         }),
       ]);
       const resolveRes = await app.request(`/api/v1/disputes/${TEST_DISPUTE_ID}/resolve`, {
@@ -706,7 +706,7 @@ describe("E2E: Dispute Resolution Flow", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           outcome: "REFUND_FULL",
-          resolvedBy: "did:flowlink:agent:arb-001",
+          resolvedBy: "did:prooflink:agent:arb-001",
         }),
       });
       expect(resolveRes.status).toBe(200);

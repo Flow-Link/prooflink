@@ -1,31 +1,31 @@
 # SDK Reference
 
-`@flowlink/sdk` is the TypeScript client SDK for the FlowLink compliance API. It provides typed methods for every endpoint with automatic retries, error handling, and full type coverage.
+`@prooflink/sdk` is the TypeScript client SDK for the ProofLink compliance API. It provides typed methods for every endpoint with automatic retries, error handling, and full type coverage.
 
 ## Installation
 
 ```bash
-npm install @flowlink/sdk
+npm install @prooflink/sdk
 # or
-pnpm add @flowlink/sdk
+pnpm add @prooflink/sdk
 ```
 
-## FlowLinkClient
+## ProofLinkClient
 
 ### Constructor
 
 ```ts
-import { FlowLinkClient } from "@flowlink/sdk";
+import { ProofLinkClient } from "@prooflink/sdk";
 
-const client = new FlowLinkClient(config: FlowLinkClientConfig);
+const client = new ProofLinkClient(config: ProofLinkClientConfig);
 ```
 
-**FlowLinkClientConfig:**
+**ProofLinkClientConfig:**
 
 | Property     | Type   | Required | Default                        | Description                       |
 |-------------|--------|----------|--------------------------------|-----------------------------------|
-| `apiKey`    | string | yes      | --                             | Your FlowLink API key             |
-| `baseUrl`   | string | no       | `https://api.flowlink.io/v1`   | API base URL                      |
+| `apiKey`    | string | yes      | --                             | Your ProofLink API key             |
+| `baseUrl`   | string | no       | `https://api.prooflink.io/v1`   | API base URL                      |
 | `timeout`   | number | no       | `30000`                        | Request timeout in milliseconds   |
 | `maxRetries`| number | no       | `3`                            | Max retries for transient errors  |
 
@@ -59,7 +59,7 @@ async checkCompliance(params: ComplianceCheckParams): Promise<ComplianceDecision
 
 ```ts
 const decision = await client.checkCompliance({
-  sender: { address: "0xAlice", chain: "base", agentDID: "did:flowlink:agent:alice" },
+  sender: { address: "0xAlice", chain: "base", agentDID: "did:prooflink:agent:alice" },
   receiver: { address: "0xBob", chain: "base" },
   amount: "5000",
   asset: "USDC",
@@ -88,7 +88,7 @@ console.log(result.listsChecked); // ["OFAC_SDN", "EU_CONSOLIDATED", ...]
 console.log(result.riskScore);    // 0
 ```
 
-**Throws:** `FlowLinkValidationError` if `address` or `chain` is empty.
+**Throws:** `ProofLinkValidationError` if `address` or `chain` is empty.
 
 ---
 
@@ -170,7 +170,7 @@ console.log(receipt.receiptHash);       // "0x..."
 console.log(receipt.travelRuleStatus);  // "TRANSMITTED"
 ```
 
-**Throws:** `FlowLinkValidationError` if `receiptId` is empty.
+**Throws:** `ProofLinkValidationError` if `receiptId` is empty.
 
 ---
 
@@ -233,7 +233,7 @@ async createInvoice(params: CreateInvoiceParams): Promise<AgentInvoice>
 
 ```ts
 const invoice = await client.createInvoice({
-  seller: { walletAddress: "0xAlice", agentId: "did:flowlink:agent:alice" },
+  seller: { walletAddress: "0xAlice", agentId: "did:prooflink:agent:alice" },
   buyer: { walletAddress: "0xBob" },
   lineItems: [
     { description: "Data analysis", quantity: 1, unitPrice: 250, total: 250, serviceCategory: "analysis" },
@@ -253,7 +253,7 @@ Fetch an invoice by ID.
 async getInvoice(id: string): Promise<AgentInvoice>
 ```
 
-**Throws:** `FlowLinkValidationError` if `id` is empty.
+**Throws:** `ProofLinkValidationError` if `id` is empty.
 
 ---
 
@@ -305,7 +305,7 @@ await client.updateInvoiceState(invoice.id, "PAID");
 await client.updateInvoiceState(invoice.id, "SETTLED");
 ```
 
-**Throws:** `FlowLinkValidationError` if `invoiceId` is empty.
+**Throws:** `ProofLinkValidationError` if `invoiceId` is empty.
 
 ---
 
@@ -322,14 +322,14 @@ async verifyAgent(agentId: string): Promise<KYAVerificationResult>
 **Example:**
 
 ```ts
-const result = await client.verifyAgent("did:flowlink:agent:bob-bot");
+const result = await client.verifyAgent("did:prooflink:agent:bob-bot");
 if (result.verified) {
   console.log("Trust score:", result.trustScore);
   console.log("Operator:", result.agentMetadata?.operator);
 }
 ```
 
-**Throws:** `FlowLinkValidationError` if `agentId` is empty.
+**Throws:** `ProofLinkValidationError` if `agentId` is empty.
 
 ---
 
@@ -363,7 +363,7 @@ Retrieve the full identity profile of a registered agent.
 async getAgentIdentity(agentId: string): Promise<AgentIdentity>
 ```
 
-**Throws:** `FlowLinkValidationError` if `agentId` is empty.
+**Throws:** `ProofLinkValidationError` if `agentId` is empty.
 
 ---
 
@@ -405,19 +405,19 @@ async issueKYA(params: IssueKYAParams): Promise<KYACredential>
 The SDK provides a typed error hierarchy:
 
 ```ts
-FlowLinkError                     // Base class for all SDK errors
-  +-- FlowLinkAPIError            // API returned non-2xx response
-  +-- FlowLinkValidationError     // Client-side validation failed
-  +-- FlowLinkTimeoutError        // Request exceeded timeout
-  +-- FlowLinkNetworkError        // DNS, connection, or network failure
+ProofLinkError                     // Base class for all SDK errors
+  +-- ProofLinkAPIError            // API returned non-2xx response
+  +-- ProofLinkValidationError     // Client-side validation failed
+  +-- ProofLinkTimeoutError        // Request exceeded timeout
+  +-- ProofLinkNetworkError        // DNS, connection, or network failure
 ```
 
-### FlowLinkAPIError
+### ProofLinkAPIError
 
 Thrown when the API returns a non-2xx HTTP response.
 
 ```ts
-class FlowLinkAPIError extends FlowLinkError {
+class ProofLinkAPIError extends ProofLinkError {
   readonly status: number;         // HTTP status code
   readonly body: ApiErrorBody | null; // Parsed error body
   readonly headers: Headers;       // Response headers
@@ -430,33 +430,33 @@ interface ApiErrorBody {
 }
 ```
 
-### FlowLinkValidationError
+### ProofLinkValidationError
 
 Thrown when client-side validation fails (no network call is made).
 
 ```ts
-class FlowLinkValidationError extends FlowLinkError {
+class ProofLinkValidationError extends ProofLinkError {
   readonly field?: string;         // Which field failed validation
 }
 ```
 
-### FlowLinkTimeoutError
+### ProofLinkTimeoutError
 
 Thrown when a request exceeds the configured timeout after all retries.
 
 ```ts
-class FlowLinkTimeoutError extends FlowLinkError {
+class ProofLinkTimeoutError extends ProofLinkError {
   readonly timeoutMs: number;      // Configured timeout
   readonly url: string;            // Request URL
 }
 ```
 
-### FlowLinkNetworkError
+### ProofLinkNetworkError
 
 Thrown on network-level failures after all retries are exhausted.
 
 ```ts
-class FlowLinkNetworkError extends FlowLinkError {
+class ProofLinkNetworkError extends ProofLinkError {
   // Wraps the underlying network error as `cause`
 }
 ```
@@ -465,28 +465,28 @@ class FlowLinkNetworkError extends FlowLinkError {
 
 ```ts
 import {
-  FlowLinkClient,
-  FlowLinkAPIError,
-  FlowLinkValidationError,
-  FlowLinkTimeoutError,
-  FlowLinkNetworkError,
-} from "@flowlink/sdk";
+  ProofLinkClient,
+  ProofLinkAPIError,
+  ProofLinkValidationError,
+  ProofLinkTimeoutError,
+  ProofLinkNetworkError,
+} from "@prooflink/sdk";
 
 try {
   const decision = await client.checkCompliance({ ... });
 } catch (err) {
-  if (err instanceof FlowLinkAPIError) {
+  if (err instanceof ProofLinkAPIError) {
     console.error(`API error ${err.status}: ${err.body?.code}`);
 
     if (err.status === 429) {
       const retryAfter = err.headers.get("Retry-After");
       console.log(`Rate limited. Retry after ${retryAfter}s`);
     }
-  } else if (err instanceof FlowLinkValidationError) {
+  } else if (err instanceof ProofLinkValidationError) {
     console.error(`Validation: ${err.field} - ${err.message}`);
-  } else if (err instanceof FlowLinkTimeoutError) {
+  } else if (err instanceof ProofLinkTimeoutError) {
     console.error(`Timeout after ${err.timeoutMs}ms`);
-  } else if (err instanceof FlowLinkNetworkError) {
+  } else if (err instanceof ProofLinkNetworkError) {
     console.error("Network error:", err.message);
   }
 }
@@ -499,10 +499,10 @@ try {
 For advanced use cases, the `HttpClient` is also exported:
 
 ```ts
-import { HttpClient } from "@flowlink/sdk";
+import { HttpClient } from "@prooflink/sdk";
 
 const http = new HttpClient({
-  baseUrl: "https://api.flowlink.io/v1",
+  baseUrl: "https://api.prooflink.io/v1",
   apiKey: "fl_live_...",
   timeoutMs: 30000,
   maxRetries: 3,
@@ -524,7 +524,7 @@ const result = await http.post<MyType>("/custom/endpoint", { body: "data" });
 
 ## TypeScript Types
 
-All types from `@flowlink/shared` are re-exported from `@flowlink/sdk` for convenience:
+All types from `@prooflink/shared` are re-exported from `@prooflink/sdk` for convenience:
 
 ```ts
 import type {
@@ -550,7 +550,7 @@ import type {
   PaymentProtocol,
   SupportedChain,
   SupportedToken,
-} from "@flowlink/sdk";
+} from "@prooflink/sdk";
 ```
 
 ---

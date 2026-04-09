@@ -113,7 +113,7 @@ function ApiKeyConnect() {
   // Load from localStorage on mount
   useState(() => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("flowlink_api_key");
+      const saved = localStorage.getItem("prooflink_api_key");
       if (saved) {
         setKey(saved);
         setConnected(true);
@@ -133,7 +133,7 @@ function ApiKeyConnect() {
     setApiKey("");
     setKey("");
     setConnected(false);
-    if (typeof window !== "undefined") localStorage.removeItem("flowlink_api_key");
+    if (typeof window !== "undefined") localStorage.removeItem("prooflink_api_key");
   };
 
   return (
@@ -190,7 +190,7 @@ function ApiKeyConnect() {
 }
 
 function GeneralSection() {
-  const [orgName, setOrgName] = useState("FlowLink Inc.");
+  const [orgName, setOrgName] = useState("ProofLink Inc.");
   const [timezone, setTimezone] = useState("UTC");
   const [saving, setSaving] = useState(false);
 
@@ -346,7 +346,7 @@ function ApiKeysSection() {
         <div>
           <h3 className="text-lg font-semibold">API Keys</h3>
           <p className="text-sm text-muted-foreground">
-            Manage API keys for FlowLink integration
+            Manage API keys for ProofLink integration
           </p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) handleClose(); else setDialogOpen(true); }}>
@@ -887,7 +887,7 @@ function TeamSection() {
         <div>
           <h3 className="text-lg font-semibold">Team Members</h3>
           <p className="text-sm text-muted-foreground">
-            Manage who has access to your FlowLink dashboard
+            Manage who has access to your ProofLink dashboard
           </p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -1004,7 +1004,7 @@ export default function SettingsPage() {
       <div className="animate-fade-in">
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Manage your FlowLink configuration and team
+          Manage your ProofLink configuration and team
         </p>
       </div>
 

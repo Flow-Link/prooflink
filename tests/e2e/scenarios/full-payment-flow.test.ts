@@ -1,7 +1,7 @@
 /**
  * E2E: Full Payment Flow
  *
- * Simulates the complete FlowLink payment lifecycle:
+ * Simulates the complete ProofLink payment lifecycle:
  * 1. Create invoice via POST /api/v1/invoices
  * 2. Run compliance check on payer via POST /api/v1/compliance/check
  * 3. Simulate payment (mock blockchain tx — no real settlement)
@@ -236,7 +236,7 @@ describe("E2E: Full Payment Flow", () => {
 
   describe("Step 3 — Simulate payment (mock blockchain tx)", () => {
     /**
-     * FlowLink does not own the settlement layer — x402 / blockchain handles that.
+     * ProofLink does not own the settlement layer — x402 / blockchain handles that.
      * We simulate the payment by transitioning the invoice to PAID state and
      * attaching a mock tx hash, mirroring what the x402 ResourceServer webhook
      * or a settlement callback would do.

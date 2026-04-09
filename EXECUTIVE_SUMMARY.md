@@ -1,13 +1,13 @@
-# FlowLink -- Executive Summary
+# ProofLink -- Executive Summary
 **Date:** March 20, 2026 | **Classification:** Investor-Ready | **Synthesized from:** 20+ research and strategy documents
 
 ---
 
-## What FlowLink Is
+## What ProofLink Is
 
-FlowLink is the compliance layer for stablecoin and AI agent payments. It sits between payment protocols (x402, MPP, AP2, ACP) and settlement rails (USDC, card networks), providing real-time sanctions screening, FATF Travel Rule compliance, and the industry's first Know Your Agent (KYA) standard for autonomous AI transactions. Every payment through FlowLink generates a cryptographically signed, on-chain compliance receipt -- the document a CFO hands to an auditor.
+ProofLink is the compliance layer for stablecoin and AI agent payments. It sits between payment protocols (x402, MPP, AP2, ACP) and settlement rails (USDC, card networks), providing real-time sanctions screening, FATF Travel Rule compliance, and the industry's first Know Your Agent (KYA) standard for autonomous AI transactions. Every payment through ProofLink generates a cryptographically signed, on-chain compliance receipt -- the document a CFO hands to an auditor.
 
-FlowLink is not a payment processor. It never holds funds. It is neutral compliance middleware that makes every stablecoin payment legal, auditable, and enterprise-safe.
+ProofLink is not a payment processor. It never holds funds. It is neutral compliance middleware that makes every stablecoin payment legal, auditable, and enterprise-safe.
 
 ---
 
@@ -29,7 +29,7 @@ Three forces converged in the past 12 months that did not exist before and will 
 
 **1. Regulation crystallized.** The GENIUS Act (signed July 2025) created the first US federal stablecoin framework. MiCA is fully enforceable across the EU by mid-2026. Compliance is no longer optional -- it is a legal requirement for every stablecoin transaction above threshold.
 
-**2. Agent payment protocols exploded.** Six competing protocols shipped between April 2025 and March 2026. None have built-in compliance. Each new protocol creates a new compliance surface that FlowLink fills. More fragmentation = more value for the neutral middleware.
+**2. Agent payment protocols exploded.** Six competing protocols shipped between April 2025 and March 2026. None have built-in compliance. Each new protocol creates a new compliance surface that ProofLink fills. More fragmentation = more value for the neutral middleware.
 
 **3. Acquirers are buying now.** Mastercard bought BVNK for $1.8B. Stripe bought Bridge for $1.1B. a16z is raising a $2B crypto fund. The "build compliant stablecoin infrastructure, get acquired" thesis is proven by two $1B+ exits in 12 months.
 
@@ -39,11 +39,11 @@ Three forces converged in the past 12 months that did not exist before and will 
 
 After analyzing 21 competitors, 6 agent payment protocols, and 8 infrastructure projects, we identified five things nobody is building:
 
-1. **Cross-protocol compliance orchestration.** When an agent pays via x402, with the payer's treasury on Kinexys, settled on Tempo -- no compliance layer spans all of these. FlowLink does.
+1. **Cross-protocol compliance orchestration.** When an agent pays via x402, with the payer's treasury on Kinexys, settled on Tempo -- no compliance layer spans all of these. ProofLink does.
 
 2. **Travel Rule for AI agents.** Current Travel Rule protocols assume both parties are human-run VASPs. Agent-to-agent payments break this assumption entirely. Nobody has defined how originator information travels with agent transactions.
 
-3. **MCP Compliance Server.** Payment MCP servers are proliferating (PayPal, Worldpay, Marqeta). Compliance MCP servers: zero. FlowLink makes compliance an ambient tool call -- agents call `check_sanctions()` the way they call `get_weather()`.
+3. **MCP Compliance Server.** Payment MCP servers are proliferating (PayPal, Worldpay, Marqeta). Compliance MCP servers: zero. ProofLink makes compliance an ambient tool call -- agents call `check_sanctions()` the way they call `get_weather()`.
 
 4. **Compliance receipts as verifiable attestations.** Every protocol creates logs. None create the structured, cryptographically signed proof that satisfies SOX, PCI DSS, or financial auditors.
 
@@ -84,15 +84,15 @@ Full Agent Invoice Standard. Agent Travel Rule protocol. Behavioral AML models t
 
 **Risk 1: Coinbase or Stripe vertically integrates compliance into their protocol.**
 Severity: High. Probability: High. This is the existential threat.
-*Mitigation:* FlowLink is cross-protocol -- it works across x402 AND MPP AND AP2 AND ACP simultaneously. Coinbase's compliance only covers Coinbase. Stripe's only covers Stripe. A neutral compliance layer is structurally different from a vertically integrated one. Additionally, publishing the KYA standard as an open spec creates ecosystem adoption that a proprietary solution cannot match. Speed is everything -- establish the standard before incumbents prioritize this.
+*Mitigation:* ProofLink is cross-protocol -- it works across x402 AND MPP AND AP2 AND ACP simultaneously. Coinbase's compliance only covers Coinbase. Stripe's only covers Stripe. A neutral compliance layer is structurally different from a vertically integrated one. Additionally, publishing the KYA standard as an open spec creates ecosystem adoption that a proprietary solution cannot match. Speed is everything -- establish the standard before incumbents prioritize this.
 
-**Risk 2: FlowLink classified as a VASP/MSB, triggering expensive licensing requirements.**
+**Risk 2: ProofLink classified as a VASP/MSB, triggering expensive licensing requirements.**
 Severity: High. Probability: Medium.
-*Mitigation:* Architecture is explicitly non-custodial -- FlowLink never holds or transmits funds. However, this classification has not been confirmed by legal counsel. A formal legal opinion on MSB/VASP status is required before any investor meeting. Budget: $5-15K. If reclassified, fallback is a partner bank model.
+*Mitigation:* Architecture is explicitly non-custodial -- ProofLink never holds or transmits funds. However, this classification has not been confirmed by legal counsel. A formal legal opinion on MSB/VASP status is required before any investor meeting. Budget: $5-15K. If reclassified, fallback is a partner bank model.
 
 **Risk 3: Agentic commerce develops slower than projected.**
 Severity: Medium. Probability: Medium. x402 real volume is $28K/day (not the headline 75M transactions, which include significant artificial activity).
-*Mitigation:* Phase 1 (H2H B2B stablecoin payments) is the revenue engine. The $226B/year B2B stablecoin market exists today with real paying customers. Agent compliance is the Year 2-3 expansion, not the Year 1 dependency. If A2A is 3 years away instead of 12 months, FlowLink still builds a viable compliance business on H2H alone.
+*Mitigation:* Phase 1 (H2H B2B stablecoin payments) is the revenue engine. The $226B/year B2B stablecoin market exists today with real paying customers. Agent compliance is the Year 2-3 expansion, not the Year 1 dependency. If A2A is 3 years away instead of 12 months, ProofLink still builds a viable compliance business on H2H alone.
 
 ---
 

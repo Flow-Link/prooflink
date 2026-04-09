@@ -123,8 +123,8 @@ export const RequestNetworkInvoice = z.object({
           address: z.record(z.string(), z.string()).optional(),
         })
         .optional(),
-      // FlowLink compliance extension data
-      flowlinkCompliance: z
+      // ProofLink compliance extension data
+      prooflinkCompliance: z
         .object({
           proofLinkReceiptId: z.string().optional(),
           complianceStatus: z.string().optional(),
@@ -186,17 +186,17 @@ export const RequestNetworkClientConfig = z.object({
 export type RequestNetworkClientConfig = z.infer<typeof RequestNetworkClientConfig>;
 
 // ---------------------------------------------------------------------------
-// Chain Mapping: FlowLink SupportedChain <-> RequestNetworkChain
+// Chain Mapping: ProofLink SupportedChain <-> RequestNetworkChain
 // ---------------------------------------------------------------------------
 
-export const FLOWLINK_TO_RN_CHAIN: Record<string, RequestNetworkChain> = {
+export const PROOFLINK_TO_RN_CHAIN: Record<string, RequestNetworkChain> = {
   ethereum: "mainnet",
   base: "base",
   polygon: "polygon",
   arbitrum: "arbitrum",
 };
 
-export const RN_TO_FLOWLINK_CHAIN: Record<string, string> = {
+export const RN_TO_PROOFLINK_CHAIN: Record<string, string> = {
   mainnet: "ethereum",
   base: "base",
   polygon: "polygon",

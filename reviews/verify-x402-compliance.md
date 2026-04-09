@@ -1,6 +1,6 @@
 # x402 Compliance Package Verification
 
-**Package:** `@flowlink/x402-compliance` v0.2.0
+**Package:** `@prooflink/x402-compliance` v0.2.0
 **Path:** `packages/x402-compliance/`
 **Date:** 2026-03-21
 **Verdict:** PASS — 67/67 tests passing, architecture is sound
@@ -188,7 +188,7 @@ Test Files  2 passed (2)
 
 4. **No retry logic** — `RetryPolicy` and `RetryPolicySchema` are defined but not used anywhere. Sanctions/AML API calls have no retry/backoff.
 
-5. **No metrics integration** — `MetricsCollector` interface is defined and `FlowLinkConfig` accepts a `metrics` field, but no code calls `metrics.increment()` or `metrics.histogram()`.
+5. **No metrics integration** — `MetricsCollector` interface is defined and `ProofLinkConfig` accepts a `metrics` field, but no code calls `metrics.increment()` or `metrics.histogram()`.
 
 6. **No route-level policy overrides** — `RouteCompliancePolicy` is defined in types but the middleware does not consult `config.routePolicies` to apply per-route overrides.
 
@@ -208,13 +208,13 @@ Test Files  2 passed (2)
 
 ```ts
 import express from "express";
-import { createFlowLinkCompliance } from "@flowlink/x402-compliance";
-import { createExpressComplianceMiddleware } from "@flowlink/x402-compliance/adapters/express";
+import { createProofLinkCompliance } from "@prooflink/x402-compliance";
+import { createExpressComplianceMiddleware } from "@prooflink/x402-compliance/adapters/express";
 
 const app = express();
 app.use(express.json());
 
-const compliance = createFlowLinkCompliance({
+const compliance = createProofLinkCompliance({
   chainalysisApiKey: process.env.CHAINALYSIS_API_KEY!,
   policy: {
     sanctionsLists: ["OFAC_SDN", "EU", "UN"],
@@ -249,12 +249,12 @@ process.on("SIGTERM", () => {
 
 ```ts
 import { Hono } from "hono";
-import { createFlowLinkCompliance } from "@flowlink/x402-compliance";
-import { createHonoComplianceMiddleware } from "@flowlink/x402-compliance/adapters/hono";
+import { createProofLinkCompliance } from "@prooflink/x402-compliance";
+import { createHonoComplianceMiddleware } from "@prooflink/x402-compliance/adapters/hono";
 
 const app = new Hono();
 
-const compliance = createFlowLinkCompliance({
+const compliance = createProofLinkCompliance({
   chainalysisApiKey: process.env.CHAINALYSIS_API_KEY!,
   policy: {
     sanctionsLists: ["OFAC_SDN"],
@@ -278,10 +278,10 @@ export default app;
 ### Full Lifecycle with x402 Resource Server
 
 ```ts
-import { createFlowLinkCompliance } from "@flowlink/x402-compliance";
-import { ComplianceLogger, ConsoleJsonTransport } from "@flowlink/x402-compliance/logger";
+import { createProofLinkCompliance } from "@prooflink/x402-compliance";
+import { ComplianceLogger, ConsoleJsonTransport } from "@prooflink/x402-compliance/logger";
 
-const compliance = createFlowLinkCompliance(config, services);
+const compliance = createProofLinkCompliance(config, services);
 
 // Set up structured logging
 const logger = new ComplianceLogger({
@@ -296,5 +296,5 @@ compliance.register(x402ResourceServer);
 //   - onBeforeVerify (sanctions, AML, KYA)
 //   - onBeforeSettle (receiver re-check, travel rule)
 //   - onAfterSettle  (ProofLink receipt, EAS attestation, audit log)
-//   - FlowLink extension (enriches 402 and settlement responses)
+//   - ProofLink extension (enriches 402 and settlement responses)
 ```

@@ -46,11 +46,10 @@ const mockLogger = vi.mocked(logger);
 // ---------------------------------------------------------------------------
 
 /**
- * Build a mock db where:
- * - select().from().orderBy().limit(1) → resolves to lastEntries
- * - insert().values() → resolves (no return value needed for fire-and-forget)
+ * Build a tx object (passed to the transaction callback) with select and insert.
+ * Also mocks tx.execute() for the pg_advisory_xact_lock call.
  */
-function buildDb(
+function buildTx(
   lastEntries: Array<{ logHash: string }> = [],
   insertError?: Error,
 ) {
@@ -65,17 +64,55 @@ function buildDb(
   const from = vi.fn().mockReturnValue({ orderBy });
   const select = vi.fn().mockReturnValue({ from });
 
-  return { select, insert, _insertValues: insertValues };
+  // tx.execute() is called for SELECT pg_advisory_xact_lock(...)
+  const execute = vi.fn().mockResolvedValue([]);
+
+  return { select, insert, execute, _insertValues: insertValues };
 }
 
 /**
- * Build a mock db where the initial SELECT throws.
+ * Build a mock db where:
+ * - db.transaction(cb) calls cb(tx) and returns its result
+ * - tx.select().from().orderBy().limit(1) → resolves to lastEntries
+ * - tx.insert().values() → resolves (no return value needed for fire-and-forget)
+ */
+function buildDb(
+  lastEntries: Array<{ logHash: string }> = [],
+  insertError?: Error,
+) {
+  const tx = buildTx(lastEntries, insertError);
+
+  const transaction = vi.fn().mockImplementation(
+    (cb: (tx: typeof tx) => Promise<void>) => cb(tx),
+  );
+
+  return {
+    transaction,
+    // Expose tx internals for assertions
+    _insertValues: tx._insertValues,
+    // Expose raw tx for advanced assertions
+    _tx: tx,
+  };
+}
+
+/**
+ * Build a mock db where the initial advisory lock SELECT throws.
  */
 function buildSelectErrorDb() {
-  const select = vi.fn().mockImplementation(() => {
+  const execute = vi.fn().mockImplementation(() => {
     throw new Error("DB down");
   });
-  return { select, insert: vi.fn() };
+  const tx = {
+    select: vi.fn(),
+    insert: vi.fn(),
+    execute,
+  };
+
+  const transaction = vi.fn().mockImplementation(
+    (cb: (tx: typeof tx) => Promise<void>) => cb(tx),
+  );
+
+  return { transaction, insert: vi.fn() };
 }
 
 // ---------------------------------------------------------------------------
@@ -118,8 +155,8 @@ describe("writeAuditLog", () => {
   // -------------------------------------------------------------------------
 
   it("returns void synchronously without awaiting DB operations", () => {
-    const { select, insert } = buildDb();
-    mockGetDb.mockReturnValue({ select, insert } as ReturnType<typeof getDb>);
+    const { transaction } = buildDb();
+    mockGetDb.mockReturnValue({ transaction } as ReturnType<typeof getDb>);
 
     const result = writeAuditLog({
       eventType: "test.event",
@@ -131,30 +168,24 @@ describe("writeAuditLog", () => {
   });
 
   it("does not block when DB is slow — returns immediately", async () => {
-    // Simulate a very slow DB
-    let resolveInsert!: () => void;
-    const slowInsertPromise = new Promise<void>((r) => {
-      resolveInsert = r;
+    // Simulate a very slow DB via a never-resolving transaction
+    let resolveTransaction!: () => void;
+    const slowTransactionPromise = new Promise<void>((r) => {
+      resolveTransaction = r;
     });
+    const transaction = vi.fn().mockReturnValue(slowTransactionPromise);
 
-    const insertValues = vi.fn().mockReturnValue(slowInsertPromise);
-    const insert = vi.fn().mockReturnValue({ values: insertValues });
-    const limit = vi.fn().mockResolvedValue([]);
-    const orderBy = vi.fn().mockReturnValue({ limit });
-    const from = vi.fn().mockReturnValue({ orderBy });
-    const select = vi.fn().mockReturnValue({ from });
-
-    mockGetDb.mockReturnValue({ select, insert } as ReturnType<typeof getDb>);
+    mockGetDb.mockReturnValue({ transaction } as ReturnType<typeof getDb>);
 
     const start = Date.now();
     writeAuditLog({ eventType: "test.event", payload: {} });
     const elapsed = Date.now() - start;
 
-    // Should return in under 5ms — definitely not waiting for slow DB
+    // Should return in under 50ms — definitely not waiting for slow DB
     expect(elapsed).toBeLessThan(50);
 
     // Resolve the slow promise to clean up
-    resolveInsert();
+    resolveTransaction();
   });
 
   // -------------------------------------------------------------------------
@@ -162,8 +193,8 @@ describe("writeAuditLog", () => {
   // -------------------------------------------------------------------------
 
   it("uses 'genesis' as previousLogHash when no prior entries exist", async () => {
-    const { select, insert, _insertValues } = buildDb([]);
-    mockGetDb.mockReturnValue({ select, insert } as ReturnType<typeof getDb>);
+    const { transaction, _insertValues } = buildDb([]);
+    mockGetDb.mockReturnValue({ transaction } as ReturnType<typeof getDb>);
 
     writeAuditLog({
       eventType: "test.event",
@@ -179,8 +210,8 @@ describe("writeAuditLog", () => {
 
   it("uses the last entry's logHash as previousLogHash for subsequent entries", async () => {
     const prevHash = "abc123def456";
-    const { select, insert, _insertValues } = buildDb([{ logHash: prevHash }]);
-    mockGetDb.mockReturnValue({ select, insert } as ReturnType<typeof getDb>);
+    const { transaction, _insertValues } = buildDb([{ logHash: prevHash }]);
+    mockGetDb.mockReturnValue({ transaction } as ReturnType<typeof getDb>);
 
     writeAuditLog({
       eventType: "test.event",
@@ -199,8 +230,8 @@ describe("writeAuditLog", () => {
   // -------------------------------------------------------------------------
 
   it("logHash is SHA-256 of previousLogHash + eventType + JSON.stringify(payload) + timestamp", async () => {
-    const { select, insert, _insertValues } = buildDb([]);
-    mockGetDb.mockReturnValue({ select, insert } as ReturnType<typeof getDb>);
+    const { transaction, _insertValues } = buildDb([]);
+    mockGetDb.mockReturnValue({ transaction } as ReturnType<typeof getDb>);
 
     const payload = { checkId: "test-001", amount: 500 };
     writeAuditLog({ eventType: "compliance.check.passed", payload });
@@ -210,37 +241,28 @@ describe("writeAuditLog", () => {
     expect(_insertValues).toHaveBeenCalledOnce();
     const insertedRow = _insertValues.mock.calls[0]![0] as Record<string, unknown>;
 
-    const computedHash = expectedHash(
-      "genesis",
-      "compliance.check.passed",
-      payload,
-      insertedRow["timestamp"] as string ?? insertedRow["createdAt"] as string,
-    );
-
-    // The timestamp used in the hash is the one inside writeAuditLog
-    // We can reconstruct it by computing hash with the stored timestamp.
-    // Since we can't intercept the exact timestamp, we verify structure only
-    // and trust that the hash is deterministic SHA-256.
+    // Since we can't intercept the exact timestamp used inside writeAuditLog,
+    // verify the hash shape only — deterministic SHA-256 hex.
     expect(insertedRow["logHash"]).toBeTypeOf("string");
-    expect((insertedRow["logHash"] as string).length).toBe(64); // sha256 hex
+    expect((insertedRow["logHash"] as string).length).toBe(64);
     expect(insertedRow["logHash"]).toMatch(/^[0-9a-f]{64}$/);
   });
 
   it("logHash changes when payload changes (non-determinism across entries)", async () => {
-    const { select: s1, insert: i1, _insertValues: iv1 } = buildDb([]);
-    const { select: s2, insert: i2, _insertValues: iv2 } = buildDb([]);
+    const db1 = buildDb([]);
+    const db2 = buildDb([]);
 
     mockGetDb
-      .mockReturnValueOnce({ select: s1, insert: i1 } as ReturnType<typeof getDb>)
-      .mockReturnValueOnce({ select: s2, insert: i2 } as ReturnType<typeof getDb>);
+      .mockReturnValueOnce({ transaction: db1.transaction } as ReturnType<typeof getDb>)
+      .mockReturnValueOnce({ transaction: db2.transaction } as ReturnType<typeof getDb>);
 
     writeAuditLog({ eventType: "test.event", payload: { amount: 100 } });
     writeAuditLog({ eventType: "test.event", payload: { amount: 200 } });
 
     await flushMicrotasks();
 
-    const hash1 = (iv1.mock.calls[0]![0] as Record<string, unknown>)["logHash"] as string;
-    const hash2 = (iv2.mock.calls[0]![0] as Record<string, unknown>)["logHash"] as string;
+    const hash1 = (db1._insertValues.mock.calls[0]![0] as Record<string, unknown>)["logHash"] as string;
+    const hash2 = (db2._insertValues.mock.calls[0]![0] as Record<string, unknown>)["logHash"] as string;
 
     // Different payloads → different hashes
     expect(hash1).not.toBe(hash2);
@@ -251,8 +273,8 @@ describe("writeAuditLog", () => {
   // -------------------------------------------------------------------------
 
   it("inserts the correct eventType", async () => {
-    const { select, insert, _insertValues } = buildDb([]);
-    mockGetDb.mockReturnValue({ select, insert } as ReturnType<typeof getDb>);
+    const { transaction, _insertValues } = buildDb([]);
+    mockGetDb.mockReturnValue({ transaction } as ReturnType<typeof getDb>);
 
     writeAuditLog({ eventType: "invoice.paid", payload: {} });
 
@@ -263,8 +285,8 @@ describe("writeAuditLog", () => {
   });
 
   it("inserts the correct payload", async () => {
-    const { select, insert, _insertValues } = buildDb([]);
-    mockGetDb.mockReturnValue({ select, insert } as ReturnType<typeof getDb>);
+    const { transaction, _insertValues } = buildDb([]);
+    mockGetDb.mockReturnValue({ transaction } as ReturnType<typeof getDb>);
 
     const payload = { foo: "bar", num: 42 };
     writeAuditLog({ eventType: "test.event", payload });
@@ -276,8 +298,8 @@ describe("writeAuditLog", () => {
   });
 
   it("sets optional fields to null when not provided", async () => {
-    const { select, insert, _insertValues } = buildDb([]);
-    mockGetDb.mockReturnValue({ select, insert } as ReturnType<typeof getDb>);
+    const { transaction, _insertValues } = buildDb([]);
+    mockGetDb.mockReturnValue({ transaction } as ReturnType<typeof getDb>);
 
     writeAuditLog({ eventType: "test.event", payload: {} });
 
@@ -291,15 +313,15 @@ describe("writeAuditLog", () => {
   });
 
   it("passes optional fields through when provided", async () => {
-    const { select, insert, _insertValues } = buildDb([]);
-    mockGetDb.mockReturnValue({ select, insert } as ReturnType<typeof getDb>);
+    const { transaction, _insertValues } = buildDb([]);
+    mockGetDb.mockReturnValue({ transaction } as ReturnType<typeof getDb>);
 
     writeAuditLog({
       eventType: "test.event",
       payload: {},
       receiptId: "receipt-001",
       invoiceId: "inv-001",
-      agentDid: "did:flowlink:agent:001",
+      agentDid: "did:prooflink:agent:001",
       apiKeyId: "key-001",
     });
 
@@ -308,7 +330,7 @@ describe("writeAuditLog", () => {
     const row = _insertValues.mock.calls[0]![0] as Record<string, unknown>;
     expect(row["receiptId"]).toBe("receipt-001");
     expect(row["invoiceId"]).toBe("inv-001");
-    expect(row["agentDid"]).toBe("did:flowlink:agent:001");
+    expect(row["agentDid"]).toBe("did:prooflink:agent:001");
     expect(row["apiKeyId"]).toBe("key-001");
   });
 
@@ -316,7 +338,7 @@ describe("writeAuditLog", () => {
   // Error resilience — never throws, logs errors instead
   // -------------------------------------------------------------------------
 
-  it("does not throw when DB select throws — swallows error silently", async () => {
+  it("does not throw when DB advisory lock throws — swallows error silently", async () => {
     const db = buildSelectErrorDb();
     mockGetDb.mockReturnValue(db as ReturnType<typeof getDb>);
 
@@ -335,8 +357,8 @@ describe("writeAuditLog", () => {
 
   it("does not throw when insert fails — swallows error silently", async () => {
     const insertError = new Error("Insert failed: constraint violation");
-    const { select, insert } = buildDb([], insertError);
-    mockGetDb.mockReturnValue({ select, insert } as ReturnType<typeof getDb>);
+    const { transaction } = buildDb([], insertError);
+    mockGetDb.mockReturnValue({ transaction } as ReturnType<typeof getDb>);
 
     expect(() => {
       writeAuditLog({ eventType: "test.event", payload: {} });
@@ -367,10 +389,15 @@ describe("writeAuditLog", () => {
   });
 
   it("converts non-Error thrown values to strings in error log", async () => {
-    const select = vi.fn().mockImplementation(() => {
-      throw "string error"; // eslint-disable-line @typescript-eslint/no-throw-literal
+    const execute = vi.fn().mockImplementation(() => {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      throw "string error";
     });
-    mockGetDb.mockReturnValue({ select, insert: vi.fn() } as ReturnType<typeof getDb>);
+    const tx = { select: vi.fn(), insert: vi.fn(), execute };
+    const transaction = vi.fn().mockImplementation(
+      (cb: (tx: typeof tx) => Promise<void>) => cb(tx),
+    );
+    mockGetDb.mockReturnValue({ transaction } as ReturnType<typeof getDb>);
 
     writeAuditLog({ eventType: "test.event", payload: {} });
     await flushMicrotasks();
@@ -386,25 +413,23 @@ describe("writeAuditLog", () => {
   // -------------------------------------------------------------------------
 
   it("each call produces an independent insert", async () => {
-    const { select: s1, insert: i1, _insertValues: iv1 } = buildDb([]);
-    const { select: s2, insert: i2, _insertValues: iv2 } = buildDb([
-      { logHash: "prevhash123" },
-    ]);
+    const db1 = buildDb([]);
+    const db2 = buildDb([{ logHash: "prevhash123" }]);
 
     mockGetDb
-      .mockReturnValueOnce({ select: s1, insert: i1 } as ReturnType<typeof getDb>)
-      .mockReturnValueOnce({ select: s2, insert: i2 } as ReturnType<typeof getDb>);
+      .mockReturnValueOnce({ transaction: db1.transaction } as ReturnType<typeof getDb>)
+      .mockReturnValueOnce({ transaction: db2.transaction } as ReturnType<typeof getDb>);
 
     writeAuditLog({ eventType: "event.one", payload: { n: 1 } });
     writeAuditLog({ eventType: "event.two", payload: { n: 2 } });
 
     await flushMicrotasks();
 
-    expect(iv1).toHaveBeenCalledOnce();
-    expect(iv2).toHaveBeenCalledOnce();
+    expect(db1._insertValues).toHaveBeenCalledOnce();
+    expect(db2._insertValues).toHaveBeenCalledOnce();
 
-    const row1 = iv1.mock.calls[0]![0] as Record<string, unknown>;
-    const row2 = iv2.mock.calls[0]![0] as Record<string, unknown>;
+    const row1 = db1._insertValues.mock.calls[0]![0] as Record<string, unknown>;
+    const row2 = db2._insertValues.mock.calls[0]![0] as Record<string, unknown>;
 
     expect(row1["eventType"]).toBe("event.one");
     expect(row2["eventType"]).toBe("event.two");

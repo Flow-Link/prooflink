@@ -169,7 +169,7 @@ describe("Compliance API", () => {
           sender: {
             address: "0x1234567890abcdef",
             chain: "eip155:8453",
-            agentDID: "did:flowlink:agent:001",
+            agentDID: "did:prooflink:agent:001",
           },
         }),
       });

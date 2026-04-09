@@ -3,7 +3,7 @@ import oraImport from "ora";
 import Table from "cli-table3";
 
 import {
-  flowlinkLog,
+  prooflinkLog,
   x402Log,
   statusCleared,
   riskScore,
@@ -90,7 +90,7 @@ export async function runMultiChainDemo(): Promise<void> {
   sectionHeader("CROSS-CHAIN COMPLIANCE DEMO");
 
   console.log(chalk.gray("  Same agent, same payment, three different chains."));
-  console.log(chalk.gray("  FlowLink enforces compliance on each chain independently,"));
+  console.log(chalk.gray("  ProofLink enforces compliance on each chain independently,"));
   console.log(chalk.gray("  with chain-specific thresholds, gas costs, and rules.\n"));
 
   console.log(`  ${chalk.gray("Agent:")}    ${chalk.white(truncateAddress(AGENT_WALLET))}`);
@@ -130,8 +130,8 @@ export async function runMultiChainDemo(): Promise<void> {
     console.log(`  ${chalk.gray("Explorer:")}   ${chalk.gray(payment.chain.explorerUrl)}`);
     console.log();
 
-    flowlinkLog(`Intercepting x402 payment on ${cc.bold(payment.chain.name)}...`);
-    flowlinkLog(`Chain-aware compliance profile loaded: ${cc(payment.chain.name)} (${payment.chain.chainId})`);
+    prooflinkLog(`Intercepting x402 payment on ${cc.bold(payment.chain.name)}...`);
+    prooflinkLog(`Chain-aware compliance profile loaded: ${cc(payment.chain.name)} (${payment.chain.chainId})`);
     await sleep(200);
 
     // Screen sender
@@ -167,7 +167,7 @@ export async function runMultiChainDemo(): Promise<void> {
 
     let travelRuleLatency = 0;
     if (travelRuleRequired) {
-      flowlinkLog(
+      prooflinkLog(
         `Chain-specific threshold: ${cc.bold(payment.chain.name)} uses $${payment.chain.travelRuleThreshold.toLocaleString()} ` +
         `${chalk.gray("(vs $3,000 on Ethereum/Base)")}`,
       );
@@ -227,7 +227,7 @@ export async function runMultiChainDemo(): Promise<void> {
       riskScore: riskVal,
       checks: [
         { checkType: "SANCTIONS_SCREENING", result: "PASSED", provider: "Chainalysis KYT", latencyMs: senderLatency + receiverLatency },
-        { checkType: "AML_MONITORING", result: "PASSED", provider: "FlowLink Engine", latencyMs: amlLatency },
+        { checkType: "AML_MONITORING", result: "PASSED", provider: "ProofLink Engine", latencyMs: amlLatency },
         {
           checkType: "TRAVEL_RULE",
           result: travelRuleRequired ? "PASSED" : "SKIPPED",
@@ -387,7 +387,7 @@ export async function runMultiChainDemo(): Promise<void> {
 
   console.log();
   console.log(chalk.white.bold("  Key insight:"));
-  console.log(chalk.gray("  FlowLink applies chain-specific compliance rules automatically."));
+  console.log(chalk.gray("  ProofLink applies chain-specific compliance rules automatically."));
   console.log(chalk.gray("  Polygon has a lower Travel Rule threshold ($1,000 vs $3,000),"));
   console.log(chalk.gray("  so the $500 payment triggered Travel Rule on Polygon but not on"));
   console.log(chalk.gray("  Ethereum or Base. Gas costs vary 600x across chains."));

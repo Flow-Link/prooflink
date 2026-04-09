@@ -403,37 +403,37 @@ Direct scraping of X/Twitter was not possible. From indirect signals:
 
 ---
 
-## 16. SPECIFIC WEAKNESSES THAT FLOWLINK CAN EXPLOIT
+## 16. SPECIFIC WEAKNESSES THAT PROOFLINK CAN EXPLOIT
 
 ### 1. The $600/Month Pricing Wall
-Request Finance abandoned the accessible 0.1%-capped-at-$2 model and jumped to $600/month minimum. This locks out **small and mid-size Web3 teams** — the fastest-growing segment. FlowLink can win on pricing by offering usage-based or startup-friendly tiers. Many teams that built on Request Network's free protocol are now priced out of Request Finance's enterprise product.
+Request Finance abandoned the accessible 0.1%-capped-at-$2 model and jumped to $600/month minimum. This locks out **small and mid-size Web3 teams** — the fastest-growing segment. ProofLink can win on pricing by offering usage-based or startup-friendly tiers. Many teams that built on Request Network's free protocol are now priced out of Request Finance's enterprise product.
 
 ### 2. No Cross-Chain Payments
-The explicit limitation that payer and payee must be on the same chain is a fundamental UX failure in 2026's multi-chain world. A team paying contractors on Polygon cannot receive from a client on Arbitrum without manual bridging. FlowLink can offer native cross-chain payment routing (via CCIP, LayerZero, or similar) as a core feature and market it directly against this gap.
+The explicit limitation that payer and payee must be on the same chain is a fundamental UX failure in 2026's multi-chain world. A team paying contractors on Polygon cannot receive from a client on Arbitrum without manual bridging. ProofLink can offer native cross-chain payment routing (via CCIP, LayerZero, or similar) as a core feature and market it directly against this gap.
 
 ### 3. No AI/Agent Payments
-Request Finance has zero AI agent payment features while Stripe, Visa, Google, and Mastercard have all shipped or announced AI agent payment protocols in 2025. FlowLink can position as the **crypto-native AI agent payment infrastructure** — handling autonomous invoice creation, approval workflows, and payment execution for AI systems. This is a blue ocean that Request Finance is ignoring.
+Request Finance has zero AI agent payment features while Stripe, Visa, Google, and Mastercard have all shipped or announced AI agent payment protocols in 2025. ProofLink can position as the **crypto-native AI agent payment infrastructure** — handling autonomous invoice creation, approval workflows, and payment execution for AI systems. This is a blue ocean that Request Finance is ignoring.
 
 ### 4. IPFS Fragility and Centralization Trade-offs
-Request Network had "critical IPFS network infrastructure issues" in 2024, and their solution (private IPFS network with disabled DHT) is a centralization trade-off. Data availability in the long term is uncertain. FlowLink can offer more resilient storage architecture (e.g., EIP-4844 blob storage, Arweave, or redundant IPFS + Filecoin) and market it as enterprise-grade data guarantees.
+Request Network had "critical IPFS network infrastructure issues" in 2024, and their solution (private IPFS network with disabled DHT) is a centralization trade-off. Data availability in the long term is uncertain. ProofLink can offer more resilient storage architecture (e.g., EIP-4844 blob storage, Arweave, or redundant IPFS + Filecoin) and market it as enterprise-grade data guarantees.
 
 ### 5. Weak REQ Token Utility
-Only 583K REQ burned out of 1B total supply — the deflationary token story is theoretical, not real. FlowLink's tokenomics (if it has a token) can demonstrate actual fee capture, governance utility, and real value accrual tied to volume. Or FlowLink can remain token-free and market simplicity as a feature vs. Request's unnecessary token dependency.
+Only 583K REQ burned out of 1B total supply — the deflationary token story is theoretical, not real. ProofLink's tokenomics (if it has a token) can demonstrate actual fee capture, governance utility, and real value accrual tied to volume. Or ProofLink can remain token-free and market simplicity as a feature vs. Request's unnecessary token dependency.
 
 ### 6. No Native US Compliance Coverage
-Request Finance's regulatory posture is entirely EU-focused (Lithuania VASP, MiCA). This leaves US-based Web3 companies underserved in terms of compliant on/off-ramp, proper KYB, and OFAC screening. FlowLink with US regulatory clarity can own the North American market that Request Finance is not serving with a licensed entity.
+Request Finance's regulatory posture is entirely EU-focused (Lithuania VASP, MiCA). This leaves US-based Web3 companies underserved in terms of compliant on/off-ramp, proper KYB, and OFAC screening. ProofLink with US regulatory clarity can own the North American market that Request Finance is not serving with a licensed entity.
 
 ### 7. Protocol/Product Fragmentation
-The split between Request Network Foundation (protocol) and Request Finance (product) creates confusion for builders. Developers building on the protocol have no guaranteed path to the commercial product's features. FlowLink can offer **a unified, single-product experience** — no separate teams, no protocol vs. product confusion, one roadmap.
+The split between Request Network Foundation (protocol) and Request Finance (product) creates confusion for builders. Developers building on the protocol have no guaranteed path to the commercial product's features. ProofLink can offer **a unified, single-product experience** — no separate teams, no protocol vs. product confusion, one roadmap.
 
 ### 8. The 104-Issue GitHub Backlog + Small Community
-387 GitHub stars and 104 open issues on the core SDK is a signal of limited developer ecosystem health. FlowLink can invest in developer experience (DX), better docs, SDKs in multiple languages, and community building to create a stronger developer pull. Enterprise buyers evaluate ecosystem health before committing to infrastructure.
+387 GitHub stars and 104 open issues on the core SDK is a signal of limited developer ecosystem health. ProofLink can invest in developer experience (DX), better docs, SDKs in multiple languages, and community building to create a stronger developer pull. Enterprise buyers evaluate ecosystem health before committing to infrastructure.
 
 ### 9. Stablecoin Card and Banking Features Are Not Differentiated
-Request Finance's business cards and USD accounts are commoditized offerings now available from many fintechs (Brex, Ramp, Relay, etc.). The crypto angle is not enough differentiation. FlowLink should avoid competing here and instead go deep on **programmable payment flows and compliance automation** — areas where Request Finance is weakest.
+Request Finance's business cards and USD accounts are commoditized offerings now available from many fintechs (Brex, Ramp, Relay, etc.). The crypto angle is not enough differentiation. ProofLink should avoid competing here and instead go deep on **programmable payment flows and compliance automation** — areas where Request Finance is weakest.
 
 ### 10. Fiat Conversion is Still Multi-Step
-Despite the Pay.so acquisition, crypto-to-fiat conversion is still not seamless in the UI. Users report friction. FlowLink can offer **one-click stablecoin-to-fiat settlement** with direct bank delivery as a core workflow, not an add-on acquisition feature.
+Despite the Pay.so acquisition, crypto-to-fiat conversion is still not seamless in the UI. Users report friction. ProofLink can offer **one-click stablecoin-to-fiat settlement** with direct bank delivery as a core workflow, not an add-on acquisition feature.
 
 ---
 

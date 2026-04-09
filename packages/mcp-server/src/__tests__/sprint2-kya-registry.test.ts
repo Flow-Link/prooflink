@@ -15,8 +15,8 @@ import {
   registerAgent,
   type RegisteredAgent,
 } from "../agent-registry.js";
-import { createFlowLinkMCPServer } from "../server.js";
-import type { FlowLinkMCPHandle } from "../server.js";
+import { createProofLinkMCPServer } from "../server.js";
+import type { ProofLinkMCPHandle } from "../server.js";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -38,7 +38,7 @@ function makeRegisteredAgent(overrides: Partial<RegisteredAgent> = {}): Register
   const now = Date.now();
   return {
     agentId: "agent_sprint2_test",
-    did: "did:flowlink:agent_sprint2_test",
+    did: "did:prooflink:agent_sprint2_test",
     name: "Sprint2TestBot",
     type: "semi-autonomous",
     walletAddress: "0xSprint2TestWallet001",
@@ -69,13 +69,13 @@ function makeRegisteredAgent(overrides: Partial<RegisteredAgent> = {}): Register
 // ---------------------------------------------------------------------------
 
 describe("Sprint 2: verify_kya — no synthetic credentials", () => {
-  let handle: FlowLinkMCPHandle;
+  let handle: ProofLinkMCPHandle;
   let client: Client;
 
   beforeEach(async () => {
     // Fresh server + registry for each test
     resetRegistry();
-    handle = await createFlowLinkMCPServer();
+    handle = await createProofLinkMCPServer();
     client = new Client({ name: "sprint2-kya-test", version: "1.0.0" });
     const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
     await handle.server.connect(serverTransport);
@@ -234,12 +234,12 @@ describe("Sprint 2: verify_kya — no synthetic credentials", () => {
 // ---------------------------------------------------------------------------
 
 describe("Sprint 2: pay_with_compliance — KYA via registry (no synthetic VC)", () => {
-  let handle: FlowLinkMCPHandle;
+  let handle: ProofLinkMCPHandle;
   let client: Client;
 
   beforeEach(async () => {
     resetRegistry();
-    handle = await createFlowLinkMCPServer();
+    handle = await createProofLinkMCPServer();
     client = new Client({ name: "sprint2-pay-test", version: "1.0.0" });
     const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
     await handle.server.connect(serverTransport);

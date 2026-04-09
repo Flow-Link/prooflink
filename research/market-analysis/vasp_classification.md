@@ -1,17 +1,17 @@
-# FlowLink: VASP/MSB Classification Risk Analysis
+# ProofLink: VASP/MSB Classification Risk Analysis
 **Research Date:** March 2026
 **Classification:** Existential Risk Assessment — Legal Strategy
-**Prepared for:** FlowLink founding team / legal counsel
+**Prepared for:** ProofLink founding team / legal counsel
 
 ---
 
 ## Executive Summary
 
-The central question: **Is FlowLink a Money Services Business (MSB) / money transmitter under US law, or a Virtual Asset Service Provider (VASP) / CASP under global standards?**
+The central question: **Is ProofLink a Money Services Business (MSB) / money transmitter under US law, or a Virtual Asset Service Provider (VASP) / CASP under global standards?**
 
-The answer is not automatically yes — but it is not automatically no either. It depends entirely on how FlowLink is architected and what it actually does in a transaction. There is a defensible path to non-classification as an MSB/VASP, but it requires deliberate structural decisions made before product launch, not retrofitted after.
+The answer is not automatically yes — but it is not automatically no either. It depends entirely on how ProofLink is architected and what it actually does in a transaction. There is a defensible path to non-classification as an MSB/VASP, but it requires deliberate structural decisions made before product launch, not retrofitted after.
 
-**Bottom line:** FlowLink should structure as a pure compliance infrastructure provider — a "software-only" layer — never taking custody of, controlling, or transmitting funds. The 31 CFR § 1010.100(ff)(5)(ii)(A) network/software provider exemption is the primary legal shield. Corroborating administrative rulings and industry precedent support this path, but the risk is real and legal counsel is non-optional.
+**Bottom line:** ProofLink should structure as a pure compliance infrastructure provider — a "software-only" layer — never taking custody of, controlling, or transmitting funds. The 31 CFR § 1010.100(ff)(5)(ii)(A) network/software provider exemption is the primary legal shield. Corroborating administrative rulings and industry precedent support this path, but the risk is real and legal counsel is non-optional.
 
 ---
 
@@ -23,7 +23,7 @@ The answer is not automatically yes — but it is not automatically no either. I
 4. [EU MiCA / CASP Classification](#4-eu-mica--casp-classification)
 5. [How Comparable Companies Avoid MSB Classification](#5-how-comparable-companies-avoid-msb-classification)
 6. [State Money Transmitter License Landscape](#6-state-money-transmitter-license-landscape)
-7. [FlowLink-Specific Risk Analysis](#7-flowlink-specific-risk-analysis)
+7. [ProofLink-Specific Risk Analysis](#7-prooflink-specific-risk-analysis)
 8. [Structural Recommendation](#8-structural-recommendation)
 9. [Required Legal Work](#9-required-legal-work)
 10. [Sources](#10-sources)
@@ -65,7 +65,7 @@ If a platform has independent control — i.e., can move funds without the custo
 
 ### Unhosted Wallets Are Not MSBs
 
-FinCEN's 2019 guidance (FIN-2019-G001) explicitly confirmed that **unhosted wallet providers are not MSBs**. The rationale: the provider supplies the delivery/communication/network access infrastructure; the user retains control of the underlying value. This is the foundational logic FlowLink should build on.
+FinCEN's 2019 guidance (FIN-2019-G001) explicitly confirmed that **unhosted wallet providers are not MSBs**. The rationale: the provider supplies the delivery/communication/network access infrastructure; the user retains control of the underlying value. This is the foundational logic ProofLink should build on.
 
 ---
 
@@ -91,11 +91,11 @@ The exemption's scope extends explicitly to **anonymizing software**, **network 
 
 ### The Critical Word: "Only"
 
-The exemption fails the moment FlowLink does anything beyond pure software provision:
+The exemption fails the moment ProofLink does anything beyond pure software provision:
 - Accepting customer funds — even temporarily — destroys the exemption
 - Having discretionary control over fund routing destroys the exemption
 - Acting as an intermediary that settles value on behalf of users destroys the exemption
-- Commingling FlowLink's operational funds with customer transaction flows destroys the exemption
+- Commingling ProofLink's operational funds with customer transaction flows destroys the exemption
 
 **The exemption is binary.** It does not permit partial participation in money transmission.
 
@@ -114,7 +114,7 @@ Based on FinCEN rulings and guidance, the following activities do NOT trigger MS
 - Providing agent identity credentials and registries
 - Building compliance orchestration middleware
 
-All of these are "delivery, communication, or network access services" used by money transmitters. The value moves between the VASP and its customers; FlowLink merely provides the software through which compliance checks run.
+All of these are "delivery, communication, or network access services" used by money transmitters. The value moves between the VASP and its customers; ProofLink merely provides the software through which compliance checks run.
 
 ---
 
@@ -128,7 +128,7 @@ All of these are "delivery, communication, or network access services" used by m
 
 **Key language:** "The production and distribution of software, in and of itself, does not constitute acceptance and transmission of value." What matters is "what the person uses the convertible virtual currency for, and for whose benefit."
 
-**Relevance to FlowLink:** Confirms that building software used in virtual currency activity is not MSB-triggering, provided FlowLink does not act on behalf of third parties in moving their funds.
+**Relevance to ProofLink:** Confirms that building software used in virtual currency activity is not MSB-triggering, provided ProofLink does not act on behalf of third parties in moving their funds.
 
 ### Merchant Payment Processor Administrative Ruling
 
@@ -138,7 +138,7 @@ All of these are "delivery, communication, or network access services" used by m
 
 **Key reasoning:** The processor "acts on behalf of merchants receiving payments rather than on behalf of customers making payments." Its role was "limited to submitting payment instructions obtained from a merchant to a bank for ACH processing" — a portal function, not a transmission function.
 
-**Relevance to FlowLink:** This "portal function" framing is directly applicable. FlowLink's ProofLink Engine routes compliance decisions, not funds. FlowLink is the compliance checkpoint, not the settlement layer.
+**Relevance to ProofLink:** This "portal function" framing is directly applicable. ProofLink's ProofLink Engine routes compliance decisions, not funds. ProofLink is the compliance checkpoint, not the settlement layer.
 
 ### Computer System Rental for Mining (FIN-2014-R001)
 
@@ -148,7 +148,7 @@ All of these are "delivery, communication, or network access services" used by m
 
 **Key reasoning:** Even renting infrastructure that third parties use to exchange virtual currency does not make the infrastructure provider a money transmitter. The provider of the tool is not the user of the tool.
 
-**Relevance to FlowLink:** Directly supports the proposition that providing compliance infrastructure to VASPs does not classify FlowLink as a VASP.
+**Relevance to ProofLink:** Directly supports the proposition that providing compliance infrastructure to VASPs does not classify ProofLink as a VASP.
 
 ### The "Payment Processing" Exemption (31 CFR § 1010.100(ff)(5)(ii)(B))
 
@@ -157,7 +157,7 @@ A separate exemption covers payment processors that:
 2. Operate through clearance/settlement systems admitting only BSA-regulated institutions
 3. Have a formal agreement with the seller/creditor
 
-This is a secondary potential shield if FlowLink's payment orchestration features ever approach closer to transmission territory.
+This is a secondary potential shield if ProofLink's payment orchestration features ever approach closer to transmission territory.
 
 ---
 
@@ -178,7 +178,7 @@ Under MiCA (fully effective December 30, 2024, with transitional provisions unti
 9. Portfolio management
 10. **Transfer services for crypto-assets**
 
-Numbers 1, 5, 7, and 10 are the highest-risk categories for FlowLink depending on product features.
+Numbers 1, 5, 7, and 10 are the highest-risk categories for ProofLink depending on product features.
 
 ### The Critical Gap: No Explicit Technology Provider Exemption in MiCA
 
@@ -191,7 +191,7 @@ Unlike FinCEN's regulations, **MiCA does not contain an explicit carve-out for t
 - UCITS management companies
 - AIFMs
 
-A standalone compliance middleware company like FlowLink does not fit any of these categories.
+A standalone compliance middleware company like ProofLink does not fit any of these categories.
 
 ### The Functional Test Is Still the Operative Question
 
@@ -207,7 +207,7 @@ FATF's original framework uses "VASP"; MiCA replaced this with "CASP" (Crypto As
 
 ### Risk Level: EU vs. US
 
-The EU presents **higher regulatory ambiguity** for FlowLink than the US. The FinCEN software provider exemption is explicit statutory text with administrative ruling support. MiCA has no equivalent explicit carve-out. The EU risk requires more active legal mitigation — either a formal regulatory opinion in a favorable jurisdiction (e.g., Netherlands, Luxembourg, Ireland) or a structural arrangement where FlowLink operates solely as a B2B software vendor with no direct client-facing function.
+The EU presents **higher regulatory ambiguity** for ProofLink than the US. The FinCEN software provider exemption is explicit statutory text with administrative ruling support. MiCA has no equivalent explicit carve-out. The EU risk requires more active legal mitigation — either a formal regulatory opinion in a favorable jurisdiction (e.g., Netherlands, Luxembourg, Ireland) or a structural arrangement where ProofLink operates solely as a B2B software vendor with no direct client-facing function.
 
 ---
 
@@ -266,7 +266,7 @@ All of these companies share one structural characteristic: **the money never to
 
 ### The Scale of the Problem (If MTL Is Required)
 
-If FlowLink were classified as a money transmitter, the compliance burden would be existential at seed stage:
+If ProofLink were classified as a money transmitter, the compliance burden would be existential at seed stage:
 
 | Cost Category | Year 1 | Annual Ongoing |
 |---|---|---|
@@ -309,7 +309,7 @@ Most expensive individual states:
 
 ---
 
-## 7. FlowLink-Specific Risk Analysis
+## 7. ProofLink-Specific Risk Analysis
 
 ### Features That Are Clearly Safe (Non-MSB)
 
@@ -330,10 +330,10 @@ Most expensive individual states:
 
 | Feature | Risk Level | Risk Factor |
 |---|---|---|
-| Payment initiation/routing | MEDIUM-HIGH | If FlowLink "initiates" the payment (vs. the customer/VASP), distinction blurs |
-| Smart contract execution | MEDIUM | If FlowLink controls execution logic and funds flow through FlowLink contracts |
+| Payment initiation/routing | MEDIUM-HIGH | If ProofLink "initiates" the payment (vs. the customer/VASP), distinction blurs |
+| Smart contract execution | MEDIUM | If ProofLink controls execution logic and funds flow through ProofLink contracts |
 | Escrow/hold for compliance review | HIGH | Holding funds — even briefly — triggers MSB classification |
-| Multi-sig co-signing | MEDIUM | If FlowLink holds a key required to move funds, this approaches custodial control |
+| Multi-sig co-signing | MEDIUM | If ProofLink holds a key required to move funds, this approaches custodial control |
 | Compliance gateway that blocks/releases funds | MEDIUM | "Blocking" a payment vs. providing a risk decision for the VASP to act on |
 | Fee collection in crypto | LOW-MEDIUM | Collecting service fees in stablecoin is generally fine; structuring matters |
 
@@ -341,42 +341,42 @@ Most expensive individual states:
 
 The difference between being a compliance middleware provider (non-MSB) and being a money transmitter comes down to **one question at every product decision:**
 
-> **Does the money flow through FlowLink, or does FlowLink's data flow alongside the money?**
+> **Does the money flow through ProofLink, or does ProofLink's data flow alongside the money?**
 
-- Money flows through FlowLink → MSB territory
-- FlowLink's data flows alongside money that moves between counterparties → Safe territory
+- Money flows through ProofLink → MSB territory
+- ProofLink's data flows alongside money that moves between counterparties → Safe territory
 
 This must be a design constraint embedded in every engineering decision, not an afterthought.
 
-### Specific FlowLink Product Architecture Decisions
+### Specific ProofLink Product Architecture Decisions
 
 **CORRECT architecture:**
 ```
 User/Agent → initiates payment on VASP/protocol
-           → VASP calls FlowLink API (sanctions check, KYC verify, travel rule)
-           → FlowLink returns: PASS/FAIL + signed compliance receipt
+           → VASP calls ProofLink API (sanctions check, KYC verify, travel rule)
+           → ProofLink returns: PASS/FAIL + signed compliance receipt
            → VASP executes (or blocks) the payment
            → Payment settles between counterparties on blockchain
-           → FlowLink never touches the funds
+           → ProofLink never touches the funds
 ```
 
 **DANGEROUS architecture:**
 ```
-User/Agent → sends funds to FlowLink smart contract
-           → FlowLink performs compliance check
-           → FlowLink routes funds to destination
+User/Agent → sends funds to ProofLink smart contract
+           → ProofLink performs compliance check
+           → ProofLink routes funds to destination
            → This is money transmission — MSB classification likely
 ```
 
-**The ProofLink Engine should be a decision service, not a settlement service.** The VASP or protocol executes; FlowLink certifies.
+**The ProofLink Engine should be a decision service, not a settlement service.** The VASP or protocol executes; ProofLink certifies.
 
 ### The "Compliance Gateway" Gray Zone
 
-One specific FlowLink feature concept requires careful legal analysis: a compliance gateway that **prevents** non-compliant transactions from executing. There are two implementations:
+One specific ProofLink feature concept requires careful legal analysis: a compliance gateway that **prevents** non-compliant transactions from executing. There are two implementations:
 
-**Safe implementation:** FlowLink API returns a risk decision (PASS/FAIL/REVIEW). The VASP or smart contract that holds the funds acts on this decision. FlowLink has no control over the funds themselves — it issues opinions, the VASP executes.
+**Safe implementation:** ProofLink API returns a risk decision (PASS/FAIL/REVIEW). The VASP or smart contract that holds the funds acts on this decision. ProofLink has no control over the funds themselves — it issues opinions, the VASP executes.
 
-**Risky implementation:** FlowLink holds a cryptographic key or smart contract control that must be used to execute the transaction. If without FlowLink's involvement the transaction cannot proceed, FlowLink may be deemed to have "control" over value movement.
+**Risky implementation:** ProofLink holds a cryptographic key or smart contract control that must be used to execute the transaction. If without ProofLink's involvement the transaction cannot proceed, ProofLink may be deemed to have "control" over value movement.
 
 The line between "providing the compliance decision" and "controlling fund movement" is legally contested. Multiple law firms would give different opinions on this. Structural decisions must be made conservatively.
 
@@ -386,24 +386,24 @@ The line between "providing the compliance decision" and "controlling fund movem
 
 ### Primary Structure: Pure B2B Software Provider
 
-FlowLink should incorporate and operate as a **pure B2B software and data services company** with the following structural commitments:
+ProofLink should incorporate and operate as a **pure B2B software and data services company** with the following structural commitments:
 
 **1. Never touch customer funds**
-FlowLink's bank accounts, wallets, and smart contracts must never hold, transmit, or co-mingle customer funds. FlowLink charges customers for API calls and subscriptions — it does not participate in the value flow.
+ProofLink's bank accounts, wallets, and smart contracts must never hold, transmit, or co-mingle customer funds. ProofLink charges customers for API calls and subscriptions — it does not participate in the value flow.
 
 **2. All payment execution occurs at the VASP/protocol layer**
-The FlowLink API returns compliance decisions. The VASP, exchange, or DeFi protocol that calls FlowLink executes (or does not execute) the actual payment. This is the Notabene model applied to the full compliance stack.
+The ProofLink API returns compliance decisions. The VASP, exchange, or DeFi protocol that calls ProofLink executes (or does not execute) the actual payment. This is the Notabene model applied to the full compliance stack.
 
 **3. Never be a co-signer or co-controller of customer wallets**
-If FlowLink issues agent identity credentials (KYA), these should be attestations, not keys. FlowLink cannot be a required co-signer on any wallet that holds customer funds.
+If ProofLink issues agent identity credentials (KYA), these should be attestations, not keys. ProofLink cannot be a required co-signer on any wallet that holds customer funds.
 
 **4. Contractually define the relationship**
 Every customer agreement should explicitly state:
 - Customer (the VASP/protocol) is the money transmitter / MSB / CASP
-- FlowLink is a technology services vendor
-- FlowLink does not hold, transmit, or control customer funds
+- ProofLink is a technology services vendor
+- ProofLink does not hold, transmit, or control customer funds
 - Customer is responsible for all regulatory compliance obligations
-- FlowLink provides tools; customer applies them
+- ProofLink provides tools; customer applies them
 
 **5. Bill for software, not for transactions**
 Charging per-API-call or per-subscription is safe. Charging a percentage of transaction value processed could be re-characterized as participating in money transmission. If transaction-based pricing is used, it should be priced on API calls (which happen to correlate with transactions) not on transaction value.
@@ -419,16 +419,16 @@ Before processing any live transactions, commission a written opinion from a law
 Given MiCA's lack of an explicit technology provider exemption:
 
 **1. Engage a European regulatory counsel in Netherlands or Ireland**
-Obtain an informal regulatory opinion from the Dutch AFM or Irish CBI — both are known for pragmatic, business-friendly MiCA interpretation — confirming FlowLink's B2B SaaS model does not require CASP authorization.
+Obtain an informal regulatory opinion from the Dutch AFM or Irish CBI — both are known for pragmatic, business-friendly MiCA interpretation — confirming ProofLink's B2B SaaS model does not require CASP authorization.
 
 **2. Operate through a "technology services" entity in the EU**
 A separate EU entity (Dutch BV or Irish Ltd) that only sells software licenses/API access to licensed CASPs — no direct end-user relationships.
 
 **3. No direct relationships with retail users in the EU**
-All EU-based retail user interactions must go through a licensed CASP customer. FlowLink's EU entity has no relationship with end users.
+All EU-based retail user interactions must go through a licensed CASP customer. ProofLink's EU entity has no relationship with end users.
 
 **4. Document the CASP-as-customer relationship clearly**
-Every EU customer agreement should identify the customer as the licensed CASP bearing all MiCA obligations. FlowLink's liability is software SLA, not regulatory compliance.
+Every EU customer agreement should identify the customer as the licensed CASP bearing all MiCA obligations. ProofLink's liability is software SLA, not regulatory compliance.
 
 ### The Non-Starter Alternative: Becoming a VASP/MSB
 
@@ -464,13 +464,13 @@ Budget: $50K–$150K for initial opinion and ongoing monthly retainer.
 **Priority 2 — Obtain Written Non-MSB Legal Opinion**
 
 Commission a formal written legal opinion covering:
-- FlowLink's product architecture as non-custodial compliance middleware
-- Applicability of 31 CFR § 1010.100(ff)(5)(ii)(A) to FlowLink's specific features
+- ProofLink's product architecture as non-custodial compliance middleware
+- Applicability of 31 CFR § 1010.100(ff)(5)(ii)(A) to ProofLink's specific features
 - Analysis of any features in the "gray zone" (compliance gateway, smart contract execution, fee collection)
 - State-by-state MTL exemption analysis for top 10 states
 - Specific guidance on what product features would and would not trigger MSB status
 
-This opinion must be updated any time FlowLink adds significant new features.
+This opinion must be updated any time ProofLink adds significant new features.
 
 **Priority 3 — Embed Regulatory Review in Product Development**
 
@@ -482,15 +482,15 @@ Establish a "regulatory gate" in the product development process:
 **Priority 4 — Customer Agreement Language**
 
 Draft customer agreements that:
-- Clearly define FlowLink as technology vendor, customer as regulated entity
+- Clearly define ProofLink as technology vendor, customer as regulated entity
 - Require customers to represent that they hold all required licenses
-- Disclaim FlowLink's participation in money transmission
+- Disclaim ProofLink's participation in money transmission
 - Allocate regulatory compliance responsibility to the customer
 - Include indemnification from customers for their regulatory violations
 
 **Priority 5 — FinCEN Administrative Ruling (Optional but Valuable)**
 
-Consider submitting a request for an administrative ruling from FinCEN on FlowLink's specific business model. This is a formal process where FinCEN issues a written determination on how its regulations apply to the described facts. A favorable ruling would be:
+Consider submitting a request for an administrative ruling from FinCEN on ProofLink's specific business model. This is a formal process where FinCEN issues a written determination on how its regulations apply to the described facts. A favorable ruling would be:
 - Definitive legal protection against FinCEN enforcement
 - Highly credible due diligence artifact for institutional investors
 - Public precedent benefiting the broader compliance infrastructure sector
@@ -500,25 +500,25 @@ This takes 6–18 months and costs $50K–$150K in legal fees. Worth pursuing on
 ### Near-Term (First 12 Months)
 
 **EU Regulatory Opinion**
-Engage EU counsel (Netherlands or Ireland) for an informal regulatory opinion on MiCA non-applicability to FlowLink's EU operations. Budget: €30K–€80K.
+Engage EU counsel (Netherlands or Ireland) for an informal regulatory opinion on MiCA non-applicability to ProofLink's EU operations. Budget: €30K–€80K.
 
 **State-by-State MTL Exemption Analysis**
 For the top 15 states by customer concentration, obtain a written analysis of MTL exemption applicability. Wyoming, Texas, Montana are likely fully safe; New York and California require specific analysis.
 
 **Ongoing Regulatory Monitoring**
-FinCEN and FATF are actively developing guidance on agentic payments. FlowLink's KYA (Know Your Agent) product is in entirely uncharted regulatory territory — the first-mover advantage is real, but the first-mover regulatory risk is also real. Subscribe to FinCEN guidance updates and FATF working group publications.
+FinCEN and FATF are actively developing guidance on agentic payments. ProofLink's KYA (Know Your Agent) product is in entirely uncharted regulatory territory — the first-mover advantage is real, but the first-mover regulatory risk is also real. Subscribe to FinCEN guidance updates and FATF working group publications.
 
 ### Red Flags That Would Require Immediate Legal Escalation
 
 The following product or business model changes would require immediate re-analysis before implementation:
 
-1. FlowLink smart contracts holding customer funds at any point
-2. FlowLink requiring co-signature authority over customer wallets
-3. FlowLink acting as the settlement layer for any transaction
-4. FlowLink earning a percentage of transaction value (vs. flat API pricing)
-5. FlowLink offering fiat on/off ramps
-6. FlowLink operating its own exchange or swap functionality
-7. FlowLink offering custodial wallet services to end users
+1. ProofLink smart contracts holding customer funds at any point
+2. ProofLink requiring co-signature authority over customer wallets
+3. ProofLink acting as the settlement layer for any transaction
+4. ProofLink earning a percentage of transaction value (vs. flat API pricing)
+5. ProofLink offering fiat on/off ramps
+6. ProofLink operating its own exchange or swap functionality
+7. ProofLink offering custodial wallet services to end users
 8. EU-facing direct retail product (vs. B2B only)
 
 ---

@@ -1,7 +1,7 @@
-# FlowLink Agent Team
+# ProofLink Agent Team
 
 ## Overview
-10 expert AI agent personas designed to build FlowLink — the trust/compliance layer for the agent economy. Each persona has deep domain expertise, specific tools, and owns specific gaps from the MASTER_GAP_LIST.md.
+10 expert AI agent personas designed to build ProofLink — the trust/compliance layer for the agent economy. Each persona has deep domain expertise, specific tools, and owns specific gaps from the MASTER_GAP_LIST.md.
 
 ## Team Structure
 

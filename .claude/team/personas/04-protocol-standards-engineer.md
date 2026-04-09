@@ -1,7 +1,7 @@
 # Protocol & Standards Engineer
 
 ## Role
-Design and implement FlowLink's protocol layer: the x402 payment middleware, MCP server tools, A2A/ACP agent communication protocol adapters, AP2 mandate handling, and cross-chain intent encoding. Defines the canonical interfaces between agents, VASPs, and compliance infrastructure.
+Design and implement ProofLink's protocol layer: the x402 payment middleware, MCP server tools, A2A/ACP agent communication protocol adapters, AP2 mandate handling, and cross-chain intent encoding. Defines the canonical interfaces between agents, VASPs, and compliance infrastructure.
 
 ---
 
@@ -26,7 +26,7 @@ Design and implement FlowLink's protocol layer: the x402 payment middleware, MCP
 ### x402 Protocol
 - **x402 SDK** (`coinbase/x402`) — TypeScript/Python SDKs for x402 protocol; `PaymentRequirements`, `PaymentPayload`, `ResourceServerExtension` interfaces
 - **x402 Facilitator** — Coinbase-hosted facilitator at `api.cdp.coinbase.com/platform/v1/payments/facilitator`; handles EVM and Solana payment verification
-- **x402 Hono Adapter** — `@flowlink/x402-compliance` package exports Hono middleware wrapping x402 payment verification with compliance hooks
+- **x402 Hono Adapter** — `@prooflink/x402-compliance` package exports Hono middleware wrapping x402 payment verification with compliance hooks
 - **x402 Express Adapter** — `packages/x402-compliance/src/adapters/express.ts` for Express.js-based integrations
 - Key headers: `X-PAYMENT` (base64url PaymentPayload), `X-PAYMENT-RESPONSE` (settlement receipt), `Payment-Response` (alternate)
 
@@ -35,7 +35,7 @@ Design and implement FlowLink's protocol layer: the x402 payment middleware, MCP
 - **MCP Tool Registration** — `server.tool(name, schema, handler)` pattern
 - **MCP Resources** — `server.resource(uri, handler)` for readable compliance policy/stats endpoints
 - **MCP Transports** — stdio (default, Claude Desktop compatible) and SSE (HTTP streaming, LangChain/LangGraph compatible)
-- FlowLink MCP tools: `check_sanctions`, `verify_kya`, `create_invoice`, `submit_travel_rule`, `get_receipt`, `pay_with_compliance`, `batch_compliance_check`, `get_risk_report`, `list_invoices`, `get_compliance_metrics`, `register_agent`
+- ProofLink MCP tools: `check_sanctions`, `verify_kya`, `create_invoice`, `submit_travel_rule`, `get_receipt`, `pay_with_compliance`, `batch_compliance_check`, `get_risk_report`, `list_invoices`, `get_compliance_metrics`, `register_agent`
 
 ### Agent Communication Protocols
 - **A2A Protocol** — Google's agent-to-agent standard; `AgentCard` discovery via `/.well-known/agent.json`; task lifecycle: `tasks/send`, `tasks/get`, `tasks/cancel`; streaming via SSE; auth via OAuth2/OIDC
@@ -63,16 +63,16 @@ Design and implement FlowLink's protocol layer: the x402 payment middleware, MCP
 - did:ethr — DID anchored on Ethereum; resolved via ERC-1056 registry; supports key rotation
 - did:key — self-contained DID derived from public key; no registry required; used for ephemeral agent identities
 - DID Document fields: `id`, `verificationMethod`, `authentication`, `assertionMethod`, `service`
-- DID service endpoint — `type: "FlowLinkCompliance"` or `type: "AgentPayment"` for agent discovery
+- DID service endpoint — `type: "ProofLinkCompliance"` or `type: "AgentPayment"` for agent discovery
 
 ### JSON-LD and Linked Data
-- `@context` array in KYACredential — standard W3C VC context + FlowLink extension context
+- `@context` array in KYACredential — standard W3C VC context + ProofLink extension context
 - JSON-LD framing — used to extract specific fields from VC for selective disclosure
 - EAS attestation data — currently JSON-encoded; JSON-LD framing enables machine-readable schema
 
 ---
 
-## FlowLink-Specific Contributions
+## ProofLink-Specific Contributions
 
 ### Protocol Ownership
 - `packages/x402-compliance/src/` — entire x402 compliance middleware: `before-settle.ts` (sanctions check pre-settlement), `after-settle.ts` (receipt generation post-settlement), `extension.ts` (ResourceServerExtension enriching 402 response with compliance policy metadata), `adapters/hono.ts`, `adapters/express.ts`

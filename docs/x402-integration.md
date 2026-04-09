@@ -6,22 +6,22 @@ Add automated compliance checks to any x402 payment server. Every payment is scr
 
 [x402](https://www.x402.org/) is Coinbase's HTTP 402 payment protocol that enables native web payments using stablecoins. When a client requests a paid resource, the server responds with `402 Payment Required` and payment instructions. The client signs a payment authorization, resubmits the request, and the server verifies and settles the payment.
 
-FlowLink's `@flowlink/x402-compliance` package intercepts this flow at three points to enforce compliance without modifying your application logic.
+ProofLink's `@prooflink/x402-compliance` package intercepts this flow at three points to enforce compliance without modifying your application logic.
 
 ## Install
 
 ```bash
-npm install @flowlink/x402-compliance
+npm install @prooflink/x402-compliance
 # or
-pnpm add @flowlink/x402-compliance
+pnpm add @prooflink/x402-compliance
 ```
 
 ## Quick Setup (3 Lines)
 
 ```ts
-import { createFlowLinkCompliance } from "@flowlink/x402-compliance";
+import { createProofLinkCompliance } from "@prooflink/x402-compliance";
 
-const compliance = createFlowLinkCompliance({
+const compliance = createProofLinkCompliance({
   chainalysisApiKey: process.env.CHAINALYSIS_API_KEY!,
   policy: {
     sanctionsLists: ["OFAC_SDN", "EU_CONSOLIDATED", "UN_CONSOLIDATED"],
@@ -44,9 +44,9 @@ Every x402 payment through `server` now has compliance enforced at three hook po
 ## Full Configuration
 
 ```ts
-import { createFlowLinkCompliance } from "@flowlink/x402-compliance";
+import { createProofLinkCompliance } from "@prooflink/x402-compliance";
 
-const compliance = createFlowLinkCompliance({
+const compliance = createProofLinkCompliance({
   // Required: Chainalysis API key for sanctions screening
   chainalysisApiKey: process.env.CHAINALYSIS_API_KEY!,
 
@@ -95,7 +95,7 @@ const compliance = createFlowLinkCompliance({
   logger: console,
 
   // Optional: Prometheus metrics prefix
-  metricsPrefix: "flowlink_x402",
+  metricsPrefix: "prooflink_x402",
 });
 ```
 
@@ -127,7 +127,7 @@ const compliance = createFlowLinkCompliance({
 If you need finer control, attach hooks individually instead of using `register()`:
 
 ```ts
-const compliance = createFlowLinkCompliance(config);
+const compliance = createProofLinkCompliance(config);
 
 // Attach individually
 server.onBeforeVerify(compliance.onBeforeVerify);
@@ -141,13 +141,13 @@ Override default screening, AML, or proof services with your own implementations
 
 ```ts
 import {
-  createFlowLinkCompliance,
+  createProofLinkCompliance,
   type SanctionsScreener,
   type AmlScorer,
   type TravelRuleService,
   type ProofLinkService,
   type KYAVerifier,
-} from "@flowlink/x402-compliance";
+} from "@prooflink/x402-compliance";
 
 const customScreener: SanctionsScreener = {
   async screen(address: string, network: string) {
@@ -156,7 +156,7 @@ const customScreener: SanctionsScreener = {
   },
 };
 
-const compliance = createFlowLinkCompliance(config, {
+const compliance = createProofLinkCompliance(config, {
   screener: customScreener,
   amlScorer: customAmlScorer,
   travelRuleService: customTravelRule,
@@ -224,7 +224,7 @@ interface ProofLinkService {
 
 ## ProofLink Receipt Handling
 
-After every successful settlement, FlowLink generates a ProofLink receipt -- a cryptographically signed compliance proof that serves as an audit trail.
+After every successful settlement, ProofLink generates a ProofLink receipt -- a cryptographically signed compliance proof that serves as an audit trail.
 
 The receipt contains:
 
@@ -299,14 +299,14 @@ unsubscribe();
 
 ---
 
-## Example: Express Server with x402 + FlowLink
+## Example: Express Server with x402 + ProofLink
 
-Complete example of an Express server using x402 for payments with FlowLink compliance:
+Complete example of an Express server using x402 for payments with ProofLink compliance:
 
 ```ts
 import express from "express";
 import { createResourceServer } from "@x402/server";
-import { createFlowLinkCompliance } from "@flowlink/x402-compliance";
+import { createProofLinkCompliance } from "@prooflink/x402-compliance";
 
 const app = express();
 
@@ -317,8 +317,8 @@ const server = createResourceServer({
   facilitator: "https://facilitator.x402.org",
 });
 
-// 2. Add FlowLink compliance
-const compliance = createFlowLinkCompliance({
+// 2. Add ProofLink compliance
+const compliance = createProofLinkCompliance({
   chainalysisApiKey: process.env.CHAINALYSIS_API_KEY!,
   policy: {
     sanctionsLists: ["OFAC_SDN", "EU_CONSOLIDATED", "UN_CONSOLIDATED"],
@@ -369,7 +369,7 @@ app.listen(3000, () => console.log("Server running on :3000"));
 ## Testing with Testnet
 
 ```ts
-const compliance = createFlowLinkCompliance({
+const compliance = createProofLinkCompliance({
   chainalysisApiKey: "test_key",
   notabene: {
     apiKey: process.env.NOTABENE_API_KEY!,

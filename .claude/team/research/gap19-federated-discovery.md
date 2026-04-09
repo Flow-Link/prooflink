@@ -1,6 +1,6 @@
 # GAP-19: Federated Agent Discovery — Technical Research Brief
-**FlowLink Team Research | March 2026**
-**Scope:** Eight protocols/standards analyzed; implementation recommendations for FlowLink agent discovery service
+**ProofLink Team Research | March 2026**
+**Scope:** Eight protocols/standards analyzed; implementation recommendations for ProofLink agent discovery service
 
 ---
 
@@ -8,16 +8,16 @@
 
 As of March 2026, eight competing systems claim to solve agent discovery — Google A2A Agent Cards, the IETF ANS draft, MIT NANDA, Fetch.ai Agentverse, MCP Server Cards, ERC-8004, ENSIP-25, and a handful of cross-protocol federation attempts. None is interoperable with any other by default. Every system has a different registration format, query mechanism, capability advertisement schema, and trust model. Pricing metadata is absent from all but one (Fetch.ai, loosely). Cross-chain identity portability is absent from all.
 
-This is the exact problem identified as Gap E1 ("No Universal, Interoperable Agent Discovery Layer") and Gap B8 ("Agent Naming System Fragmentation") in the MASTER_GAP_LIST. FlowLink's agent registry — currently a centralized Postgres-backed identity store exposed via `/v1/identity/` — is positioned to become the compliance-aware bridge between all of these systems, but requires specific architecture extensions to do so.
+This is the exact problem identified as Gap E1 ("No Universal, Interoperable Agent Discovery Layer") and Gap B8 ("Agent Naming System Fragmentation") in the MASTER_GAP_LIST. ProofLink's agent registry — currently a centralized Postgres-backed identity store exposed via `/v1/identity/` — is positioned to become the compliance-aware bridge between all of these systems, but requires specific architecture extensions to do so.
 
 **Key findings:**
 - A2A Agent Cards are the de facto standard for capability advertisement but lack pricing, compliance, and cross-protocol fields
 - ANS (IETF) is architecturally sound but has no governance body, no pricing fields, and is pre-RFC
 - NANDA Registry Quilt is the most ambitious federation design (CRDTs + gossip + cross-signing) but is still academic
-- ERC-8004 went live on Ethereum mainnet January 29, 2026; FlowLink already references it via `erc8004Id`/`erc8004Registry` fields — the linkage is incomplete
-- ENSIP-25 (March 4, 2026) provides human-readable ENS linkage to ERC-8004 agent IDs; FlowLink can implement this with zero contract changes
-- MCP Server Cards (SEP-1649, SEP-1960) are pending merge into MCP spec; FlowLink's MCP server should expose `/.well-known/mcp/server-card.json`
-- No existing system carries KYA credential references, delegation scope metadata, or compliance scores — FlowLink's differentiated position
+- ERC-8004 went live on Ethereum mainnet January 29, 2026; ProofLink already references it via `erc8004Id`/`erc8004Registry` fields — the linkage is incomplete
+- ENSIP-25 (March 4, 2026) provides human-readable ENS linkage to ERC-8004 agent IDs; ProofLink can implement this with zero contract changes
+- MCP Server Cards (SEP-1649, SEP-1960) are pending merge into MCP spec; ProofLink's MCP server should expose `/.well-known/mcp/server-card.json`
+- No existing system carries KYA credential references, delegation scope metadata, or compliance scores — ProofLink's differentiated position
 
 ---
 
@@ -122,7 +122,7 @@ Protocol://AgentID.agentCapability.Provider.vVersion[.Extension]
 Example:
 ```
 a2a://textProcessor.DocumentTranslation.AcmeCorp.v2.1.hipaa
-mcp://paymentBot.InvoiceProcessing.FlowLink.v1.0.pci
+mcp://paymentBot.InvoiceProcessing.ProofLink.v1.0.pci
 ```
 
 Components SHOULD be registered with a governance authority to prevent collisions — but no governance authority is defined.
@@ -134,17 +134,17 @@ Components SHOULD be registered with a governance authority to prevent collision
   "protocol": "a2a",
   "agentID": "paymentBot",
   "agentCapability": "InvoiceProcessing",
-  "provider": "FlowLink",
+  "provider": "ProofLink",
   "version": "1.0.0",
   "certificate": {
-    "subject": "CN=paymentBot,O=FlowLink,C=US",
-    "issuer": "CN=FlowLink Root CA",
+    "subject": "CN=paymentBot,O=ProofLink,C=US",
+    "issuer": "CN=ProofLink Root CA",
     "pem": "-----BEGIN CERTIFICATE-----..."
   },
   "protocolExtensions": {
-    "mcpEndpoint": "https://mcp.flowlink.io",
+    "mcpEndpoint": "https://mcp.prooflink.io",
     "toolName": "process_invoice",
-    "inputSchema": { "$ref": "https://flowlink.io/schemas/invoice.json" }
+    "inputSchema": { "$ref": "https://prooflink.io/schemas/invoice.json" }
   }
 }
 ```
@@ -355,16 +355,16 @@ Capabilities are defined via protocol manifests — structured documents linked 
   "version": "1.0",
   "protocolVersion": "2025-11-05",
   "serverInfo": {
-    "name": "flowlink-mcp",
-    "title": "FlowLink MCP Server",
+    "name": "prooflink-mcp",
+    "title": "ProofLink MCP Server",
     "version": "1.0.0"
   },
   "description": "Compliance-aware agent payments and KYA verification",
-  "iconUrl": "https://flowlink.io/icon.png",
-  "documentationUrl": "https://docs.flowlink.io/mcp",
+  "iconUrl": "https://prooflink.io/icon.png",
+  "documentationUrl": "https://docs.prooflink.io/mcp",
   "transport": {
     "type": "http",
-    "endpoint": "https://mcp.flowlink.io/mcp"
+    "endpoint": "https://mcp.prooflink.io/mcp"
   },
   "capabilities": {
     "tools": { "listChanged": true },
@@ -486,13 +486,13 @@ interface IAgentValidationRegistry {
 ```json
 {
   "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
-  "name": "FlowLink PaymentBot",
+  "name": "ProofLink PaymentBot",
   "description": "Compliance-verified agent for autonomous invoice payments",
-  "image": "https://flowlink.io/agents/paymentbot/icon.png",
+  "image": "https://prooflink.io/agents/paymentbot/icon.png",
   "services": [
-    { "name": "a2a", "endpoint": "https://agent.flowlink.io/a2a" },
-    { "name": "mcp", "endpoint": "https://mcp.flowlink.io/mcp" },
-    { "name": "web", "endpoint": "https://flowlink.io/agents/paymentbot" }
+    { "name": "a2a", "endpoint": "https://agent.prooflink.io/a2a" },
+    { "name": "mcp", "endpoint": "https://mcp.prooflink.io/mcp" },
+    { "name": "web", "endpoint": "https://prooflink.io/agents/paymentbot" }
   ],
   "x402Support": true,
   "active": true,
@@ -632,7 +632,7 @@ Sybil-resistant service discovery using x402 payment flows as reputation signals
 score(agent, query) = cos(query_embedding, agent_capability_embedding) × TraceRank(agent_wallet)
 ```
 
-TraceRank propagates reputation through the payment graph; bot wallets contribute zero propagated reputation regardless of count. This directly addresses Gap B7 (Sybil resistance) and Gap B6 (on-chain reputation) — directly relevant to FlowLink's payment-linked reputation.
+TraceRank propagates reputation through the payment graph; bot wallets contribute zero propagated reputation regardless of count. This directly addresses Gap B7 (Sybil resistance) and Gap B6 (on-chain reputation) — directly relevant to ProofLink's payment-linked reputation.
 
 ### Protocol Interoperability Status (March 2026)
 
@@ -680,34 +680,34 @@ Every system surveyed is missing all of the following:
 6. **Allowed protocols/chains** — no declaration of which payment rails the agent accepts
 7. **Expiry of authorization** — no field for when an agent's authorization expires
 
-These are exactly the fields in FlowLink's current `KYACredentialSubjectSchema` and the `delegationScope` in `RegisterAgentRequest`.
+These are exactly the fields in ProofLink's current `KYACredentialSubjectSchema` and the `delegationScope` in `RegisterAgentRequest`.
 
 ---
 
-## 10. FlowLink Implementation Recommendations
+## 10. ProofLink Implementation Recommendations
 
-### 10.1 Expose FlowLink Agent Card at `.well-known/agent.json`
+### 10.1 Expose ProofLink Agent Card at `.well-known/agent.json`
 
 **Priority: High | Effort: Low**
 
-Every agent registered in FlowLink's database should be discoverable via A2A Agent Card format. Add a route to the API:
+Every agent registered in ProofLink's database should be discoverable via A2A Agent Card format. Add a route to the API:
 
 ```
-GET https://api.flowlink.io/.well-known/agent.json?agent_did=did:flowlink:agent_001
+GET https://api.prooflink.io/.well-known/agent.json?agent_did=did:prooflink:agent_001
 ```
 
 Or per-agent subdomains:
 ```
-GET https://agent-001.agents.flowlink.io/.well-known/agent.json
+GET https://agent-001.agents.prooflink.io/.well-known/agent.json
 ```
 
-The card should include FlowLink-specific extension fields beyond the A2A spec minimum:
+The card should include ProofLink-specific extension fields beyond the A2A spec minimum:
 
 ```json
 {
   "name": "PaymentBot-v2",
   "description": "Acme Corp autonomous payment agent",
-  "url": "https://agent.flowlink.io/a2a",
+  "url": "https://agent.prooflink.io/a2a",
   "provider": { "organization": "Acme Corp", "url": "https://acme.com" },
   "version": "1.0.0",
   "capabilities": { "streaming": false, "pushNotifications": true },
@@ -723,12 +723,12 @@ The card should include FlowLink-specific extension fields beyond the A2A spec m
       "outputModes": ["application/json"]
     }
   ],
-  "x-flowlink": {
-    "agentDid": "did:flowlink:agent_001",
+  "x-prooflink": {
+    "agentDid": "did:prooflink:agent_001",
     "erc8004AgentId": "42",
     "erc8004Registry": "eip155:8453:0x8004A169...",
-    "kyaCredentialIssuer": "did:flowlink:issuer",
-    "kyaVerificationEndpoint": "https://api.flowlink.io/v1/identity/verify",
+    "kyaCredentialIssuer": "did:prooflink:issuer",
+    "kyaVerificationEndpoint": "https://api.prooflink.io/v1/identity/verify",
     "complianceScore": 87,
     "x402Support": true,
     "allowedChains": ["base", "ethereum"],
@@ -743,18 +743,18 @@ The card should include FlowLink-specific extension fields beyond the A2A spec m
 }
 ```
 
-The `x-flowlink` namespace extends A2A without breaking compliant parsers (they ignore unknown fields). This directly surfaces what no other discovery system provides: KYA verification endpoint, compliance score, and delegation bounds.
+The `x-prooflink` namespace extends A2A without breaking compliant parsers (they ignore unknown fields). This directly surfaces what no other discovery system provides: KYA verification endpoint, compliance score, and delegation bounds.
 
 ### 10.2 Expose MCP Server Card at `.well-known/mcp/server-card.json`
 
 **Priority: High | Effort: Low**
 
-The FlowLink MCP server (`packages/mcp-server/`) needs a discoverable server card per SEP-1649. This is near-final in the MCP spec and Replicate already deployed it in production.
+The ProofLink MCP server (`packages/mcp-server/`) needs a discoverable server card per SEP-1649. This is near-final in the MCP spec and Replicate already deployed it in production.
 
 Add to the MCP server's HTTP host:
 
 ```
-GET https://mcp.flowlink.io/.well-known/mcp/server-card.json
+GET https://mcp.prooflink.io/.well-known/mcp/server-card.json
 ```
 
 Static JSON served from the MCP server's HTTP layer. Update `packages/mcp-server/src/index.ts` to serve this endpoint alongside the `/mcp` endpoint.
@@ -765,28 +765,28 @@ The card should list all tools statically: `register_agent`, `verify_kya`, `pay_
 
 **Priority: Medium | Effort: Medium**
 
-FlowLink's database already tracks `erc8004Id` and `erc8004Registry` per agent (both in `apps/api/src/routes/identity.ts` and `packages/mcp-server/src/tools/register-agent.ts`). The production path missing is:
+ProofLink's database already tracks `erc8004Id` and `erc8004Registry` per agent (both in `apps/api/src/routes/identity.ts` and `packages/mcp-server/src/tools/register-agent.ts`). The production path missing is:
 
 1. When an agent is registered, call `IAgentIdentityRegistry.register()` on Base (chainId 8453)
 2. Store returned token ID as `erc8004Id`
 3. Publish registration file to IPFS/Arweave with the agent card content
 4. Optionally guide operators to set ENSIP-25 text record: `agent-registration[<registry>][<agentId>] = "1"` on their ENS name
 
-The registration file should include the FlowLink KYA credential hash:
+The registration file should include the ProofLink KYA credential hash:
 
 ```json
 {
   "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
   "name": "PaymentBot-v2",
   "services": [
-    { "name": "a2a", "endpoint": "https://agent.flowlink.io/a2a" },
-    { "name": "mcp", "endpoint": "https://mcp.flowlink.io/mcp" }
+    { "name": "a2a", "endpoint": "https://agent.prooflink.io/a2a" },
+    { "name": "mcp", "endpoint": "https://mcp.prooflink.io/mcp" }
   ],
   "x402Support": true,
   "active": true,
-  "x-flowlink-kyaCredentialHash": "0xabc123...",
-  "x-flowlink-kyaIssuer": "did:flowlink:issuer",
-  "x-flowlink-complianceScore": 87,
+  "x-prooflink-kyaCredentialHash": "0xabc123...",
+  "x-prooflink-kyaIssuer": "did:prooflink:issuer",
+  "x-prooflink-complianceScore": 87,
   "supportedTrust": ["reputation", "tee-attestation"]
 }
 ```
@@ -795,17 +795,17 @@ The registration file should include the FlowLink KYA credential hash:
 
 **Priority: Medium | Effort: Medium**
 
-FlowLink agents should be addressable via ANS names even before the draft achieves RFC status. The naming convention:
+ProofLink agents should be addressable via ANS names even before the draft achieves RFC status. The naming convention:
 
 ```
-flowlink://paymentBot-v2.InvoiceProcessing.AcmeCorp.v1.0.kyaVerified
+prooflink://paymentBot-v2.InvoiceProcessing.AcmeCorp.v1.0.kyaVerified
 ```
 
-Register as: `protocol=flowlink` (or `a2a`/`mcp`), resolve to FlowLink's identity API endpoint. Publish the ANS registration file to GoDaddy's open `ans-registry` implementation.
+Register as: `protocol=prooflink` (or `a2a`/`mcp`), resolve to ProofLink's identity API endpoint. Publish the ANS registration file to GoDaddy's open `ans-registry` implementation.
 
 This is low-cost now, high-value when/if ANS gains traction.
 
-### 10.5 Build a FlowLink Discovery Index API
+### 10.5 Build a ProofLink Discovery Index API
 
 **Priority: Critical | Effort: High**
 
@@ -817,7 +817,7 @@ Neither A2A, ANS, MCP Cards, ERC-8004, nor Agentverse provides a query API that 
 - Controlling entity LEI
 - Agent type (autonomous/semi-autonomous/human-supervised)
 
-FlowLink's existing `GET /v1/identity/agents` endpoint already supports `agentType` and `isActive` filters. Extend it to become a full discovery index:
+ProofLink's existing `GET /v1/identity/agents` endpoint already supports `agentType` and `isActive` filters. Extend it to become a full discovery index:
 
 ```
 GET /v1/discovery/agents
@@ -831,13 +831,13 @@ GET /v1/discovery/agents
   &controllingEntityLei=XKZZ2JZF41MRHTR1V493
 ```
 
-This endpoint can be wrapped in an A2A Agent Card skill (FlowLink itself becomes a discoverable "agent registry agent"), an MCP tool, and an ANS-compatible endpoint. This is the moat: the only agent discovery service that filters on compliance and delegation scope.
+This endpoint can be wrapped in an A2A Agent Card skill (ProofLink itself becomes a discoverable "agent registry agent"), an MCP tool, and an ANS-compatible endpoint. This is the moat: the only agent discovery service that filters on compliance and delegation scope.
 
 ### 10.6 Implement TraceRank-Style Reputation from Payment Flows
 
 **Priority: Medium | Effort: High**
 
-FlowLink processes x402 payments. These payment flows are reputation signals. Following the TraceRank design (ArXiv 2510.27554):
+ProofLink processes x402 payments. These payment flows are reputation signals. Following the TraceRank design (ArXiv 2510.27554):
 
 1. Seed reputation from KYA credential validity and initial compliance score (already stored as `complianceScore`)
 2. When agent A pays agent B for a service: propagate a fraction of A's reputation to B, weighted by:
@@ -847,41 +847,41 @@ FlowLink processes x402 payments. These payment flows are reputation signals. Fo
 3. Update `complianceScore` (or add a separate `reputationScore` field) based on incoming payment graph
 4. Surface via the discovery index: `?minReputationScore=60`
 
-This directly addresses Gaps B6 and B7 using data FlowLink already generates.
+This directly addresses Gaps B6 and B7 using data ProofLink already generates.
 
-### 10.7 Publish FlowLink-Specific Capability Schema Extension
+### 10.7 Publish ProofLink-Specific Capability Schema Extension
 
 **Priority: Low | Effort: Low**
 
-Define a JSON Schema for FlowLink-specific agent capabilities at:
+Define a JSON Schema for ProofLink-specific agent capabilities at:
 ```
-https://flowlink.io/schemas/capability/v1/invoice-processing.json
-https://flowlink.io/schemas/capability/v1/sanctions-screening.json
-https://flowlink.io/schemas/capability/v1/kya-verification.json
+https://prooflink.io/schemas/capability/v1/invoice-processing.json
+https://prooflink.io/schemas/capability/v1/sanctions-screening.json
+https://prooflink.io/schemas/capability/v1/kya-verification.json
 ```
 
-Reference these in A2A Agent Card skills and ANS `protocolExtensions`. This is what Gap E2 is missing in the broader ecosystem — FlowLink can lead by example.
+Reference these in A2A Agent Card skills and ANS `protocolExtensions`. This is what Gap E2 is missing in the broader ecosystem — ProofLink can lead by example.
 
 ### 10.8 Federate with NANDA Registry Quilt
 
 **Priority: Low | Effort: High**
 
-When NANDA moves toward production, FlowLink should be the first compliant registry to cross-sign with it. Steps:
-1. Implement NANDA's gossip protocol to publish FlowLink agent records as AgentFacts
-2. Add `verifiedBy: ["did:nanda:registry:flowlink"]` to all FlowLink agents' AgentFacts
+When NANDA moves toward production, ProofLink should be the first compliant registry to cross-sign with it. Steps:
+1. Implement NANDA's gossip protocol to publish ProofLink agent records as AgentFacts
+2. Add `verifiedBy: ["did:nanda:registry:prooflink"]` to all ProofLink agents' AgentFacts
 3. Request cross-signing from NANDA's anchor registries
 
-This makes FlowLink's agents globally discoverable through NANDA while maintaining FlowLink as the authoritative compliance and KYA source.
+This makes ProofLink's agents globally discoverable through NANDA while maintaining ProofLink as the authoritative compliance and KYA source.
 
 ---
 
 ## 11. Architecture Diagram
 
 ```
-External Discovery Protocols          FlowLink Registry Core
+External Discovery Protocols          ProofLink Registry Core
 ┌─────────────────────┐              ┌──────────────────────────────┐
 │ A2A Ecosystem       │◄─── card ────│ /.well-known/agent.json      │
-│ (AAIF)              │              │   (per-agent, x-flowlink ext) │
+│ (AAIF)              │              │   (per-agent, x-prooflink ext) │
 └─────────────────────┘              └──────────────────────────────┘
                                                    │
 ┌─────────────────────┐              ┌──────────────────────────────┐
@@ -891,13 +891,13 @@ External Discovery Protocols          FlowLink Registry Core
                                                    │
 ┌─────────────────────┐              ┌──────────────────────────────┐
 │ ANS Registry        │◄─ register ──│ ANS name publication         │
-│ (GoDaddy impl.)     │              │   flowlink://agent.cap.org.v1 │
+│ (GoDaddy impl.)     │              │   prooflink://agent.cap.org.v1 │
 └─────────────────────┘              └──────────────────────────────┘
                                                    │
 ┌─────────────────────┐              ┌──────────────────────────────┐
 │ ERC-8004            │◄─ register ──│ On-chain NFT mint on Base    │
 │ (Ethereum mainnet,  │              │   + IPFS registration file    │
-│  Base)              │              │   + x-flowlink-kyaHash        │
+│  Base)              │              │   + x-prooflink-kyaHash        │
 └─────────────────────┘              └──────────────────────────────┘
                                                    │
 ┌─────────────────────┐              ┌──────────────────────────────┐
@@ -906,7 +906,7 @@ External Discovery Protocols          FlowLink Registry Core
 └─────────────────────┘              └──────────────────────────────┘
                                                    │
                               ┌────────────────────▼─────────────────┐
-                              │      FlowLink Discovery Index API     │
+                              │      ProofLink Discovery Index API     │
                               │   GET /v1/discovery/agents            │
                               │     ?capability=invoice-processing    │
                               │     &kyaValid=true                    │
@@ -930,13 +930,13 @@ External Discovery Protocols          FlowLink Registry Core
 | Master Gap List ID | Gap Name | This Brief's Recommendation |
 |-------------------|----------|-----------------------------|
 | E1 | No Universal Agent Discovery Layer | §10.1 A2A card + §10.5 Discovery Index + §10.4 ANS + §10.3 ERC-8004 |
-| E2 | Agent Card Capability Schema Has No Typed I/O | §10.7 Publish FlowLink capability schemas |
-| E3 | No Standard Mechanism for Agents to Advertise Pricing | §10.1 `x-flowlink` extension: pricing fields |
+| E2 | Agent Card Capability Schema Has No Typed I/O | §10.7 Publish ProofLink capability schemas |
+| E3 | No Standard Mechanism for Agents to Advertise Pricing | §10.1 `x-prooflink` extension: pricing fields |
 | B3 | ERC-8004 Is EVM-Specific | §10.3 Base deployment; NANDA federation handles multichain |
 | B6 | No On-Chain Trust/Reputation Scoring | §10.6 TraceRank from payment flows |
 | B7 | Trust Graph Sybil Resistance Absent | §10.6 TraceRank: bot payments carry zero reputation |
 | B8 | Agent Naming System Fragmentation | §10.4 ANS names; §10.3 ENS/ENSIP-25; §10.1 A2A cards |
-| B9 | KYA Standard Undefined | FlowLink KYA schema is the reference; surface in all cards |
+| B9 | KYA Standard Undefined | ProofLink KYA schema is the reference; surface in all cards |
 | E10 | Vendor Lock-In / No Neutral Clearinghouse | §10.5 Discovery Index as protocol-agnostic clearinghouse |
 
 ---

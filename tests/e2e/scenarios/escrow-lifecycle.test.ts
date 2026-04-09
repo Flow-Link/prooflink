@@ -96,8 +96,8 @@ function makeEscrowRow(overrides: Record<string, unknown> = {}) {
     id: TEST_ESCROW_ID,
     escrowType: "SERVICE",
     state: "CREATED",
-    payerAgentDid: "did:flowlink:agent:payer-001",
-    payeeAgentDid: "did:flowlink:agent:payee-001",
+    payerAgentDid: "did:prooflink:agent:payer-001",
+    payeeAgentDid: "did:prooflink:agent:payee-001",
     payerWallet: TEST_BUYER_ADDRESS,
     payeeWallet: TEST_SELLER_ADDRESS,
     amount: "500.00",
@@ -119,8 +119,8 @@ function makeEscrowRow(overrides: Record<string, unknown> = {}) {
 
 const BASE_CREATE_ESCROW = {
   escrowType: "SERVICE",
-  payerAgentDid: "did:flowlink:agent:payer-001",
-  payeeAgentDid: "did:flowlink:agent:payee-001",
+  payerAgentDid: "did:prooflink:agent:payer-001",
+  payeeAgentDid: "did:prooflink:agent:payee-001",
   payerWallet: TEST_BUYER_ADDRESS,
   payeeWallet: TEST_SELLER_ADDRESS,
   amount: "500.00",

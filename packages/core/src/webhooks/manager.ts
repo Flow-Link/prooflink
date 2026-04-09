@@ -191,9 +191,9 @@ export class WebhookManager {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-FlowLink-Signature": signature,
-          "X-FlowLink-Event": event.type,
-          "X-FlowLink-Delivery": event.id,
+          "X-ProofLink-Signature": signature,
+          "X-ProofLink-Event": event.type,
+          "X-ProofLink-Delivery": event.id,
         },
         body: payload,
         signal: controller.signal,

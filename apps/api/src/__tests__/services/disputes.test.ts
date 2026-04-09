@@ -117,8 +117,8 @@ function makeDispute(overrides: Partial<Dispute> = {}): Dispute {
     escrowId: null,
     invoiceId: null,
     state: "OPEN",
-    initiatorDid: "did:web:initiator.flowlink.io",
-    respondentDid: "did:web:respondent.flowlink.io",
+    initiatorDid: "did:web:initiator.prooflink.io",
+    respondentDid: "did:web:respondent.prooflink.io",
     reason: "Service was not delivered",
     category: "NON_DELIVERY",
     evidence: [],
@@ -135,8 +135,8 @@ function makeDispute(overrides: Partial<Dispute> = {}): Dispute {
 
 function makeOpenParams(overrides: Partial<OpenDisputeParams> = {}): OpenDisputeParams {
   return {
-    initiatorDid: "did:web:initiator.flowlink.io",
-    respondentDid: "did:web:respondent.flowlink.io",
+    initiatorDid: "did:web:initiator.prooflink.io",
+    respondentDid: "did:web:respondent.prooflink.io",
     reason: "Service was not delivered",
     category: "NON_DELIVERY",
     ...overrides,

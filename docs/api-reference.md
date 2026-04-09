@@ -1,6 +1,6 @@
-# FlowLink API Reference
+# ProofLink API Reference
 
-Base URL: `https://api.flowlink.io/v1`
+Base URL: `https://api.prooflink.io/v1`
 
 ## Authentication
 
@@ -118,7 +118,7 @@ POST /compliance/check
   "sender": {
     "address": "0xAlice",
     "chain": "base",
-    "agentDID": "did:flowlink:agent:alice-bot"
+    "agentDID": "did:prooflink:agent:alice-bot"
   },
   "receiver": {
     "address": "0xBob",
@@ -161,7 +161,7 @@ POST /compliance/check
         "checkType": "KYA_VERIFICATION",
         "target": "sender",
         "result": "PASSED",
-        "provider": "flowlink",
+        "provider": "prooflink",
         "performedAt": "2026-03-21T12:00:00.000Z",
         "durationMs": 30
       },
@@ -169,7 +169,7 @@ POST /compliance/check
         "checkType": "AML_MONITORING",
         "target": "transaction",
         "result": "PASSED",
-        "provider": "flowlink",
+        "provider": "prooflink",
         "performedAt": "2026-03-21T12:00:00.000Z",
         "durationMs": 20
       },
@@ -185,7 +185,7 @@ POST /compliance/check
         "checkType": "JURISDICTIONAL_RULES",
         "target": "transaction",
         "result": "PASSED",
-        "provider": "flowlink",
+        "provider": "prooflink",
         "performedAt": "2026-03-21T12:00:00.000Z",
         "durationMs": 3
       }
@@ -343,7 +343,7 @@ GET /compliance/history
         "id": "...",
         "senderAddress": "0xAlice",
         "receiverAddress": "0xBob",
-        "senderAgentDid": "did:flowlink:agent:alice-bot",
+        "senderAgentDid": "did:prooflink:agent:alice-bot",
         "amount": "5000",
         "asset": "USDC",
         "chain": "base",
@@ -410,7 +410,7 @@ POST /invoices
 {
   "seller": {
     "walletAddress": "0xAlice",
-    "agentId": "did:flowlink:agent:data-processor",
+    "agentId": "did:prooflink:agent:data-processor",
     "legalName": "DataCo AI"
   },
   "buyer": {
@@ -449,7 +449,7 @@ POST /invoices
   "success": true,
   "data": {
     "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    "issuerAgentDid": "did:flowlink:agent:data-processor",
+    "issuerAgentDid": "did:prooflink:agent:data-processor",
     "recipientAgentDid": "0xBob",
     "sellerWalletAddress": "0xAlice",
     "buyerWalletAddress": "0xBob",
@@ -578,7 +578,7 @@ POST /identity/verify
 
 ```json
 {
-  "agentId": "did:flowlink:agent:data-processor",
+  "agentId": "did:prooflink:agent:data-processor",
   "chain": "eip155:8453"
 }
 ```
@@ -623,7 +623,7 @@ POST /identity/verify
     "verified": false,
     "trustScore": 0,
     "agentMetadata": null,
-    "message": "Agent did:flowlink:agent:unknown not found in registry."
+    "message": "Agent did:prooflink:agent:unknown not found in registry."
   }
 }
 ```
@@ -649,7 +649,7 @@ GET /identity/:agentId
   "success": true,
   "data": {
     "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    "agentDid": "did:flowlink:agent:data-processor",
+    "agentDid": "did:prooflink:agent:data-processor",
     "name": "DataProcessor",
     "agentType": "autonomous",
     "walletAddress": "0xAlice",
@@ -705,7 +705,7 @@ POST /identity/kya/issue
 
 ```json
 {
-  "agentDid": "did:flowlink:agent:data-processor",
+  "agentDid": "did:prooflink:agent:data-processor",
   "agentType": "autonomous",
   "controllingEntity": {
     "name": "DataCo Inc",
@@ -733,7 +733,7 @@ POST /identity/kya/issue
   "data": {
     "agent": {
       "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-      "agentDid": "did:flowlink:agent:data-processor",
+      "agentDid": "did:prooflink:agent:data-processor",
       "agentType": "autonomous",
       "walletAddress": "0xAlice",
       "complianceScore": 80,
@@ -742,18 +742,18 @@ POST /identity/kya/issue
     "credential": {
       "@context": [
         "https://www.w3.org/2018/credentials/v1",
-        "https://flowlink.io/credentials/kya/v1"
+        "https://prooflink.io/credentials/kya/v1"
       ],
       "type": ["VerifiableCredential", "KYACredential"],
       "id": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890",
       "issuer": {
-        "id": "did:flowlink:issuer",
-        "name": "FlowLink"
+        "id": "did:prooflink:issuer",
+        "name": "ProofLink"
       },
       "issuanceDate": "2026-03-21T12:00:00.000Z",
       "expirationDate": "2027-03-21T00:00:00.000Z",
       "credentialSubject": {
-        "id": "did:flowlink:agent:data-processor",
+        "id": "did:prooflink:agent:data-processor",
         "agentType": "autonomous",
         "controllingEntity": { ... },
         "delegationScope": { ... },
@@ -762,7 +762,7 @@ POST /identity/kya/issue
       "proof": {
         "type": "EcdsaSecp256k1Signature2019",
         "created": "2026-03-21T12:00:00.000Z",
-        "verificationMethod": "did:flowlink:issuer#key-1",
+        "verificationMethod": "did:prooflink:issuer#key-1",
         "proofPurpose": "assertionMethod",
         "jws": "..."
       }
@@ -813,7 +813,7 @@ POST /webhooks
 
 ```json
 {
-  "url": "https://your-app.com/webhooks/flowlink",
+  "url": "https://your-app.com/webhooks/prooflink",
   "secret": "whsec_a1b2c3d4e5f6g7h8",
   "events": ["compliance.check.completed", "payment.completed"]
 }
@@ -826,7 +826,7 @@ POST /webhooks
   "success": true,
   "data": {
     "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    "url": "https://your-app.com/webhooks/flowlink",
+    "url": "https://your-app.com/webhooks/prooflink",
     "events": ["compliance.check.completed", "payment.completed"],
     "active": true,
     "createdAt": "2026-03-21T12:00:00.000Z"
@@ -883,9 +883,9 @@ POST /webhooks/:id/test
 Webhook deliveries are `POST` requests with:
 
 - `Content-Type: application/json`
-- `X-FlowLink-Signature`: HMAC-SHA256 of the body using your webhook secret
-- `X-FlowLink-Event`: Event type string
-- `X-FlowLink-Delivery-Id`: Unique delivery ID for deduplication
+- `X-ProofLink-Signature`: HMAC-SHA256 of the body using your webhook secret
+- `X-ProofLink-Event`: Event type string
+- `X-ProofLink-Delivery-Id`: Unique delivery ID for deduplication
 
 ```json
 {

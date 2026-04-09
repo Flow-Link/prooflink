@@ -84,11 +84,11 @@ function setSanctionedFetchForSender(): void {
 const validInvoiceBody = {
   seller: {
     walletAddress: "0xSELLER000000000000000000000000000000000",
-    agentId: "did:flowlink:agent:seller",
+    agentId: "did:prooflink:agent:seller",
   },
   buyer: {
     walletAddress: CLEAN_SENDER, // payer is the buyer
-    agentId: "did:flowlink:agent:buyer",
+    agentId: "did:prooflink:agent:buyer",
   },
   lineItems: [
     { description: "GPU compute", quantity: 100, unit: "hour", unitPrice: 2.5, total: 250 },

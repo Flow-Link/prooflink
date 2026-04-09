@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { TRAVEL_RULE_THRESHOLDS } from "@flowlink/shared";
+import { TRAVEL_RULE_THRESHOLDS } from "@prooflink/shared";
 import { formatMcpError } from "../errors.js";
 
 const TRAVEL_RULE_THRESHOLD_USD = TRAVEL_RULE_THRESHOLDS.US;

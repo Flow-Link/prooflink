@@ -1,4 +1,4 @@
-# FlowLink — Funding Strategy
+# ProofLink — Funding Strategy
 **Research Date:** March 20, 2026
 **Status:** Actionable — ready to execute
 
@@ -12,7 +12,7 @@
 4. [Case Study: Request Network (ICO + VC)](#4-case-study-request-network-ico--vc)
 5. [VC Thesis Alignment](#5-vc-thesis-alignment)
 6. [Grant Programs — Immediate Opportunities](#6-grant-programs--immediate-opportunities)
-7. [TAM/SAM/SOM Framework for FlowLink](#7-tamsamsom-framework-for-flowlink)
+7. [TAM/SAM/SOM Framework for ProofLink](#7-tamsamsom-framework-for-prooflink)
 8. [The Compliance Moat Narrative](#8-the-compliance-moat-narrative)
 9. [Fundraising Roadmap](#9-fundraising-roadmap-grants--pre-seed--seed--series-a)
 
@@ -40,7 +40,7 @@ Crypto investors carry high baseline skepticism. The narrative that beats it: ea
 - Protocol complexity as the pitch — the pitch is the compliance gap, not the smart contract design
 - Positioning against Chainalysis or TRM Labs (they are monitoring; you are infrastructure middleware)
 
-### The Winning Narrative Structure for FlowLink
+### The Winning Narrative Structure for ProofLink
 
 ```
 [Hook]      → "AI agents are spending money today. None of it is compliant."
@@ -48,7 +48,7 @@ Crypto investors carry high baseline skepticism. The narrative that beats it: ea
                jurisdictions haven't fined anyone yet — they're about to."
 [Analogy]   → "BVNK built compliance for human stablecoin payments. Got acquired
                for $1.8B. Bridge built the API layer. Got acquired for $1.1B.
-               FlowLink builds the compliance layer for agent-to-agent payments —
+               ProofLink builds the compliance layer for agent-to-agent payments —
                the market that didn't exist when they started."
 [Wedge]     → "We start as a compliance-enriched x402 facilitator — drop-in
                replacement for Coinbase CDP. Enterprises plug in one endpoint and
@@ -97,7 +97,7 @@ BVNK's core pitch: **"Stablecoins are an infrastructure upgrade for payments, re
 
 Mastercard's stated rationale: "Getting the right tools to move after new addressable markets" — specifically remittances and cross-border payments. The GENIUS Act (July 2025) and MiCA (December 2025) gave institutional buyers the regulatory clarity to acquire.
 
-### Lessons for FlowLink
+### Lessons for ProofLink
 
 1. Compliance licensing (MiCA, MSB) is not a cost center — it's the acquisition signal
 2. A $40M Series A at $340M valuation is achievable with traction + regulatory narrative
@@ -147,7 +147,7 @@ Bridge's differentiation was compliance-as-product rather than compliance-as-che
 
 Patrick Collison (Stripe CEO) on the acquisition: stablecoins are "room-temperature superconductors for financial services." Bridge was the conductive layer.
 
-### Lessons for FlowLink
+### Lessons for ProofLink
 
 1. Developer-first + enterprise abstraction is the right wedge
 2. $58M total raised to $1.1B exit — infrastructure economics compress timelines
@@ -177,11 +177,11 @@ Request Network raised $33.6M in an ICO in October 2017 — one of the largest I
 
 Current state: ~$1.3B in cumulative invoice volume on Request Finance, but no compliance, no AI agent support, and pricing at $600/mo+ for enterprise — well below venture scale.
 
-### Lessons for FlowLink
+### Lessons for ProofLink
 
 1. ICO funding creates token dependency and reputational risk — avoid tokens at this stage
 2. The pivot from protocol to SaaS saved the company but capped the ceiling
-3. Request has $1.3B in volume with zero compliance — the gap FlowLink fills is real and proven
+3. Request has $1.3B in volume with zero compliance — the gap ProofLink fills is real and proven
 4. YC is still the most credible accelerator signal for this category
 5. Balderton + Animoca = good Series A investors for European/Web3 crossover — relevant target
 
@@ -191,12 +191,12 @@ Current state: ~$1.3B in cumulative invoice volume on Request Finance, but no co
 
 ### a16z Crypto (Fund V, ~$2B, raising H1 2026)
 
-**Thesis alignment for FlowLink:** STRONG
+**Thesis alignment for ProofLink:** STRONG
 
 a16z has identified 17 focus areas for 2026. The directly relevant ones:
 - **Efficient stablecoin on/off-ramps** — cryptographic proofs, regional payment networks, interoperable wallets
 - **Banking infrastructure upgrades** — stablecoins enabling banks to innovate without rewrites
-- **KYC to KYA transition** — "Know Your Agent" systems for AI agent identification (FlowLink's exact thesis)
+- **KYC to KYA transition** — "Know Your Agent" systems for AI agent identification (ProofLink's exact thesis)
 - **Stablecoins as internet settlement layer** — "will fundamentally shift from niche to foundational"
 
 a16z stated stablecoin transaction volume hit $46 trillion in 2025, approaching Visa's volume. They want the compliance and on-ramp infrastructure layer.
@@ -209,29 +209,29 @@ a16z stated stablecoin transaction volume hit $46 trillion in 2025, approaching 
 
 ### Paradigm ($12.7B AUM, 147+ portfolio companies)
 
-**Thesis alignment for FlowLink:** STRONG
+**Thesis alignment for ProofLink:** STRONG
 
 Paradigm co-launched Tempo (payments-focused blockchain) with Stripe in September 2025 — a direct validation that stablecoin payment infrastructure is their active focus area. Known for:
 - Conviction-driven early-stage (pre-seed to seed)
 - Technical depth preferred
 - Developer-focused infrastructure
 
-The Tempo + Stripe collaboration means Paradigm is operationally involved in the payments protocol layer. FlowLink's compliance middleware would be natural infrastructure for Tempo.
+The Tempo + Stripe collaboration means Paradigm is operationally involved in the payments protocol layer. ProofLink's compliance middleware would be natural infrastructure for Tempo.
 
 **Check size:** $3M–$15M seed; larger for Series A.
 
-**How to approach:** Paradigm looks for protocol-level technical understanding. Lead with the ProofLink Engine architecture and the FATF compliance gap. Reference Tempo as the protocol FlowLink would serve.
+**How to approach:** Paradigm looks for protocol-level technical understanding. Lead with the ProofLink Engine architecture and the FATF compliance gap. Reference Tempo as the protocol ProofLink would serve.
 
 ### Dragonfly Capital ($650M Fund IV, closed February 2026)
 
-**Thesis alignment for FlowLink:** STRONG
+**Thesis alignment for ProofLink:** STRONG
 
 Dragonfly explicitly concentrates on financial use cases: stablecoins, DeFi, on-chain payments, prediction markets. Recent investments:
 - Rain (stablecoin payments, $250M Series C at $1.95B — their own portfolio)
 - Mesh Network ($75M Series C, $1B valuation — crypto payment network)
 - Inversion Labs ($26.5M Seed — blockchain infrastructure)
 
-Dragonfly's "rotation prioritizing blockchain-based financial services over speculative Web3 applications" is the exact market FlowLink operates in.
+Dragonfly's "rotation prioritizing blockchain-based financial services over speculative Web3 applications" is the exact market ProofLink operates in.
 
 **Check size:** $5M–$20M seed.
 
@@ -239,7 +239,7 @@ Dragonfly's "rotation prioritizing blockchain-based financial services over spec
 
 ### Pantera Capital
 
-**Thesis alignment for FlowLink:** MODERATE-STRONG
+**Thesis alignment for ProofLink:** MODERATE-STRONG
 
 Pantera's 2026 thesis: "crypto as a service" — blockchain solving real-world problems while abstracting technology from users. Specifically recommends B2B stablecoin cross-border payments for fragmented markets.
 
@@ -249,21 +249,21 @@ Pantera's 2026 thesis: "crypto as a service" — blockchain solving real-world p
 
 ### Haun Ventures ($1.5B AUM: $500M early stage + $1B acceleration)
 
-**Thesis alignment for FlowLink:** STRONG
+**Thesis alignment for ProofLink:** STRONG
 
-Kate Haun's fund led BVNK's Series B — the most directly comparable company to FlowLink. Also backed Bridge via Sequoia co-investment. Haun has explicitly bet on compliance-native stablecoin infrastructure twice and won both (BVNK: $1.8B exit; Bridge: $1.1B exit).
+Kate Haun's fund led BVNK's Series B — the most directly comparable company to ProofLink. Also backed Bridge via Sequoia co-investment. Haun has explicitly bet on compliance-native stablecoin infrastructure twice and won both (BVNK: $1.8B exit; Bridge: $1.1B exit).
 
-This is the highest-conviction target VC for FlowLink.
+This is the highest-conviction target VC for ProofLink.
 
 **Check size:** $3M–$15M seed (Haun makes 13 seed investments avg $11M check).
 
-**How to approach:** Reference BVNK and Bridge explicitly. The pitch is: "You've backed compliance-native stablecoin infra twice and exited both. FlowLink is the next layer — the same thesis for the agentic economy."
+**How to approach:** Reference BVNK and Bridge explicitly. The pitch is: "You've backed compliance-native stablecoin infra twice and exited both. ProofLink is the next layer — the same thesis for the agentic economy."
 
 ### Coinbase Ventures
 
-**Thesis alignment for FlowLink:** STRONG
+**Thesis alignment for ProofLink:** STRONG
 
-Coinbase Ventures backed BVNK Series B, attempted to acquire BVNK, and built the x402 protocol that FlowLink plugs into. AgentKit + Agentic Wallets are Coinbase's current focus. FlowLink as a compliance facilitator for x402 is a strategic fit.
+Coinbase Ventures backed BVNK Series B, attempted to acquire BVNK, and built the x402 protocol that ProofLink plugs into. AgentKit + Agentic Wallets are Coinbase's current focus. ProofLink as a compliance facilitator for x402 is a strategic fit.
 
 **Note:** Coinbase Ventures is strategic money — valuable for ecosystem positioning, less so for valuation leadership. Take alongside a lead VC, not as lead.
 
@@ -271,7 +271,7 @@ Coinbase Ventures backed BVNK Series B, attempted to acquire BVNK, and built the
 
 ### Ribbit Capital
 
-**Thesis alignment for FlowLink:** MODERATE-STRONG
+**Thesis alignment for ProofLink:** MODERATE-STRONG
 
 Ribbit led Bridge's Series A with Sequoia. Pure fintech focus — 52 Series A investments averaging $31.4M, 35 unicorns in portfolio. They understand payment infrastructure deeply.
 
@@ -283,7 +283,7 @@ Ribbit led Bridge's Series A with Sequoia. Pure fintech focus — 52 Series A in
 
 YC now offers $500K in USDC starting Spring 2026. 75 crypto/Web3 companies in portfolio. YC has backed payment infrastructure (Unifold — multi-chain deposit/payment infra). YC gives the best signal-to-noise for downstream VCs.
 
-**What FlowLink needs to apply:** Working product, some traction, clear problem articulation.
+**What ProofLink needs to apply:** Working product, some traction, clear problem articulation.
 
 **Application deadline:** Research Fall 2026 batch timeline (typically opens March-April for fall batches).
 
@@ -305,7 +305,7 @@ Execute these in parallel. Total available: $150K–$700K in non-dilutive capita
 | Eligibility | Pre-seed teams, raised <$250K |
 | Application Deadline | March 9, 2026 (current cycle may have closed — check basebatches.xyz) |
 | Program Duration | 8 weeks virtual, Demo Day in San Francisco |
-| Focus | Onchain applications — FlowLink's x402 compliance facilitator qualifies |
+| Focus | Onchain applications — ProofLink's x402 compliance facilitator qualifies |
 | URL | basebatches.xyz |
 
 **Action:** Apply immediately if current cycle still open. If missed, monitor for next cycle. The $50K investment from Base Ecosystem Fund + Demo Day access to Coinbase Ventures is the real prize.
@@ -316,7 +316,7 @@ Execute these in parallel. Total available: $150K–$700K in non-dilutive capita
 |------|--------|
 | Amount | $3,000–$10,000 (Summer 2025 cycle; check for 2026 cycles) |
 | Focus | Projects using CDP Wallets, Onramp, Swap API |
-| Relevance | FlowLink's x402 facilitator uses CDP infrastructure |
+| Relevance | ProofLink's x402 facilitator uses CDP infrastructure |
 | URL | coinbase.com/developer-platform |
 
 **Action:** Monitor for 2026 cycles. The compliance-enriched x402 facilitator directly qualifies.
@@ -355,7 +355,7 @@ Execute these in parallel. Total available: $150K–$700K in non-dilutive capita
 | Bonus | Circle Ventures referral, technical support, compliance consultants |
 | URL | circle.com/grant |
 
-**Action:** Monitor for reopening (expected Q1-Q2 2026). FlowLink's USDC compliance infrastructure is a direct fit. The compliance expertise and compliance consultant access is as valuable as the grant money.
+**Action:** Monitor for reopening (expected Q1-Q2 2026). ProofLink's USDC compliance infrastructure is a direct fit. The compliance expertise and compliance consultant access is as valuable as the grant money.
 
 #### F. Ethereum Foundation ESP
 
@@ -369,7 +369,7 @@ Execute these in parallel. Total available: $150K–$700K in non-dilutive capita
 
 **Strategy:** Open-source the KYA standard and Agent Invoice Standard as public goods. Apply for EF ESP grant to fund the open standard development. Keep the ProofLink Engine (the compliance execution layer) proprietary — the standard is open, the enforcement is paid.
 
-This doubles as a positioning move: owning the open standard makes FlowLink the reference implementation.
+This doubles as a positioning move: owning the open standard makes ProofLink the reference implementation.
 
 ### Tier 3: Target Q3 2026
 
@@ -388,7 +388,7 @@ This doubles as a positioning move: owning the open standard makes FlowLink the 
 #### H. Uniswap Foundation Grants
 
 - Focus on DeFi infrastructure
-- Relevant if FlowLink adds DeFi compliance features
+- Relevant if ProofLink adds DeFi compliance features
 - Monitor for payment-adjacent grants
 
 ### Grant Funding Summary
@@ -406,7 +406,7 @@ This doubles as a positioning move: owning the open standard makes FlowLink the 
 
 ---
 
-## 7. TAM/SAM/SOM Framework for FlowLink
+## 7. TAM/SAM/SOM Framework for ProofLink
 
 Use bottom-up for credibility (SOM), top-down for ambition (TAM). Combine both in the same slide. Never present only one.
 
@@ -443,7 +443,7 @@ Segment: Businesses that (a) use stablecoins for payments, (b) are subject to FA
 
 Bottom-up model for Year 1:
 - Target: x402 ecosystem (500K tx/week = 26M tx/year on current trajectory)
-- If FlowLink processes 5% of x402 volume in 12 months = 1.3M transactions
+- If ProofLink processes 5% of x402 volume in 12 months = 1.3M transactions
 - At $0.01/transaction (Developer tier) = $13K/month = $156K ARR
 - Plus 20 Business tier customers at $299/month = $6K/month = $71.8K ARR
 - Plus 2 Enterprise customers at $5K/month = $10K/month = $120K ARR
@@ -473,7 +473,7 @@ Regulatory frameworks that arrived in 2025-2026 transformed compliance from "bar
 ### How to Present the Moat in the Pitch
 
 **Frame 1: Data Network Effect**
-"Every transaction FlowLink processes enriches our AML models. Our sanctions screening accuracy improves with volume. After 10M transactions, the model is harder to replicate than the software."
+"Every transaction ProofLink processes enriches our AML models. Our sanctions screening accuracy improves with volume. After 10M transactions, the model is harder to replicate than the software."
 
 **Frame 2: Regulatory Licensing as Barrier**
 "Getting MiCA registration, UK FCA authorization, or US MSB licensing takes 6–18 months. We do it once, amortize across customers. A competitor starting today cannot serve EU customers for at least 12 months after they decide to try."
@@ -482,16 +482,16 @@ Regulatory frameworks that arrived in 2025-2026 transformed compliance from "bar
 "Bridge won because Coinbase and SpaceX trusted them. Trust is not portable. Our compliance history — audits, zero enforcement actions, clean SAR record — is a moat that compounds. You can copy the API; you cannot copy the clean record."
 
 **Frame 4: Open Standard Ownership**
-"We're proposing the KYA (Know Your Agent) standard as an open W3C spec. If the industry adopts it, FlowLink is the reference implementation. Network effects route through us. This is how SWIFT built a moat that lasted 50 years."
+"We're proposing the KYA (Know Your Agent) standard as an open W3C spec. If the industry adopts it, ProofLink is the reference implementation. Network effects route through us. This is how SWIFT built a moat that lasted 50 years."
 
 **Frame 5: The Enforcement Timing Arbitrage**
-"59% of jurisdictions with Travel Rule laws have not yet issued enforcement actions. Enforcement typically follows major incidents — one high-profile AI agent fraud case will trigger the wave. FlowLink is building the infrastructure now. When enforcement hits, our customers are protected. Their competitors scramble."
+"59% of jurisdictions with Travel Rule laws have not yet issued enforcement actions. Enforcement typically follows major incidents — one high-profile AI agent fraud case will trigger the wave. ProofLink is building the infrastructure now. When enforcement hits, our customers are protected. Their competitors scramble."
 
 ### How NOT to Present the Moat
 
 - Do not lead with the compliance angle in investor cold outreach — lead with the market size and comparable exits
 - Do not frame regulation as "we solve compliance" — frame it as "compliance is the product, and compliance data compounds"
-- Do not compare to Chainalysis or TRM Labs — they are monitoring; FlowLink is middleware
+- Do not compare to Chainalysis or TRM Labs — they are monitoring; ProofLink is middleware
 
 ---
 
@@ -509,7 +509,7 @@ Regulatory frameworks that arrived in 2025-2026 transformed compliance from "bar
 | x402 facilitator live, processing tx | April 2026 | Apply for Base Batches (if cycle open) |
 | Weekly public demos on social | April–June 2026 | Earn Base weekly rewards (2 ETH/week) |
 | KYA standard draft published | May 2026 | Apply for Ethereum Foundation ESP grant |
-| Circle grants reopen | Q2 2026 | Apply — FlowLink is a top-tier fit |
+| Circle grants reopen | Q2 2026 | Apply — ProofLink is a top-tier fit |
 | 100+ transactions processed | Q2 2026 | Apply for CDP Builder Grants |
 | Open-source KYA standard with adoption | Q3 2026 | Submit for Optimism RetroPGF |
 
@@ -599,7 +599,7 @@ Regulatory frameworks that arrived in 2025-2026 transformed compliance from "bar
 - 20+ enterprise customers, some Fortune 500 AI agent deployments
 - KYA standard = industry standard (adopted by 3+ major protocols)
 - Regulatory licenses: UK FCA, EU MiCA CASP registration, US MSB
-- Volume: $1B+ annualized transactions through FlowLink
+- Volume: $1B+ annualized transactions through ProofLink
 - Team: 20–30 people
 - Net revenue retention > 120% (compliance is sticky — customers don't churn)
 
@@ -613,7 +613,7 @@ Regulatory frameworks that arrived in 2025-2026 transformed compliance from "bar
 | **ICONIQ Growth** | Growth | Led Rain Series C ($250M at $1.95B) | $10M–$25M |
 | **Sequoia** | Lead | Backed Bridge, clear stablecoin infra thesis | $10M–$20M |
 
-**Series A pitch focus:** Scale narrative + market position. By this point, FlowLink should be positioned as the dominant compliance middleware for agentic payments — the standard, not a solution. Show the network effect data: volume growth, protocol adoption, enterprise NPS, compliance incident rate.
+**Series A pitch focus:** Scale narrative + market position. By this point, ProofLink should be positioned as the dominant compliance middleware for agentic payments — the standard, not a solution. Show the network effect data: volume growth, protocol adoption, enterprise NPS, compliance incident rate.
 
 ---
 
@@ -627,7 +627,7 @@ Run the company as if you will never be acquired, but structure it to be acquira
 |----------|----------------|------------|--------------|
 | **Mastercard** | BVNK paid $1.8B — they're actively acquiring stablecoin infra | BVNK | $500M–$2B |
 | **Visa** | Invested in BVNK, active in TAP (Visa Agent Pay), need compliance layer | BVNK Series B | $500M–$2B |
-| **Stripe** | Acquired Bridge, building Tempo — FlowLink is compliance for Tempo | Bridge | $500M–$1.5B |
+| **Stripe** | Acquired Bridge, building Tempo — ProofLink is compliance for Tempo | Bridge | $500M–$1.5B |
 | **Coinbase** | Tried to acquire BVNK, built x402, needs compliance | BVNK | $300M–$1B |
 | **JPMorgan/BofA** | Tokenization ambitions, need compliant stablecoin infra | — | $1B–$3B |
 
@@ -643,7 +643,7 @@ Run the company as if you will never be acquired, but structure it to be acquira
 
 Use this for cold outreach emails and opening 60 seconds of any pitch:
 
-> "In March 2026, Mastercard paid $1.8 billion for BVNK — a company that built compliance infrastructure for human stablecoin payments. Stripe paid $1.1 billion for Bridge in 2025. Both bets were on the same thesis: compliance-native infrastructure is worth more than the payment rails it runs on. FlowLink is the next layer — compliance infrastructure for agent-to-agent payments. AI agents are already executing $600 million in annualized x402 transactions. None of it is compliant. No KYC for agents, no FATF Travel Rule transmission, no invoices for CFOs, no audit trail. 85 jurisdictions are enforcing Travel Rule. MiCA is live. The GENIUS Act passed. The enforcement wave is coming — and when it hits, every company running agentic payments without a compliance layer will need FlowLink retroactively. We'd rather be their infrastructure proactively. We're raising $[X] to become the default compliance middleware for the agentic economy."
+> "In March 2026, Mastercard paid $1.8 billion for BVNK — a company that built compliance infrastructure for human stablecoin payments. Stripe paid $1.1 billion for Bridge in 2025. Both bets were on the same thesis: compliance-native infrastructure is worth more than the payment rails it runs on. ProofLink is the next layer — compliance infrastructure for agent-to-agent payments. AI agents are already executing $600 million in annualized x402 transactions. None of it is compliant. No KYC for agents, no FATF Travel Rule transmission, no invoices for CFOs, no audit trail. 85 jurisdictions are enforcing Travel Rule. MiCA is live. The GENIUS Act passed. The enforcement wave is coming — and when it hits, every company running agentic payments without a compliance layer will need ProofLink retroactively. We'd rather be their infrastructure proactively. We're raising $[X] to become the default compliance middleware for the agentic economy."
 
 ---
 
@@ -651,12 +651,12 @@ Use this for cold outreach emails and opening 60 seconds of any pitch:
 
 | Risk | Severity | Mitigation |
 |------|----------|------------|
-| x402 loses to ACP (OpenAI+Stripe) or AP2 (Google) | High | FlowLink is protocol-agnostic — compliance middleware for any agentic payment protocol |
+| x402 loses to ACP (OpenAI+Stripe) or AP2 (Google) | High | ProofLink is protocol-agnostic — compliance middleware for any agentic payment protocol |
 | Chainalysis/TRM builds compliance middleware | Medium | Head start + data moat + open standard ownership; they are monitoring, not middleware |
 | Regulatory change reverses compliance requirements | Low | EU MiCA + GENIUS Act are 2025 legislative — reversal would take years; enforcement is accelerating |
 | Enterprise sales cycles too long for startup runway | Medium | Start with crypto-native SMBs (shorter cycles), use to fund enterprise sales team |
 | Token competitors undercut pricing | Low | "No tokens" is a feature for enterprise/regulated customers; token-based compliance is not enterprise-grade |
-| Coinbase or Circle builds a competing product | High | Build the open KYA standard now — if they adopt it, FlowLink is the reference; if they build competing, FlowLink's data moat is already compounding |
+| Coinbase or Circle builds a competing product | High | Build the open KYA standard now — if they adopt it, ProofLink is the reference; if they build competing, ProofLink's data moat is already compounding |
 
 ---
 

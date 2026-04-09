@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// Risk Assessment Module — @flowlink/core
+// Risk Assessment Module — @prooflink/core
 // ---------------------------------------------------------------------------
 
 // Risk Factors Registry

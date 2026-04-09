@@ -218,7 +218,7 @@ Launched October 2025 as the "easiest way for agents to get onchain via x402."
 - Supports native ETH and all ERC-20 tokens
 - Does NOT route through ERC-4337 EntryPoint (prevents paymaster fee manipulation)
 
-**Use case relevance for FlowLink:** This is the subscription primitive on Base. Agents can be granted spend permissions to autonomously charge for services on a recurring basis without per-transaction approval.
+**Use case relevance for ProofLink:** This is the subscription primitive on Base. Agents can be granted spend permissions to autonomously charge for services on a recurring basis without per-transaction approval.
 
 ---
 
@@ -533,11 +533,11 @@ Base is x402's primary home:
 
 ---
 
-## 7. FlowLink Implications
+## 7. ProofLink Implications
 
 ### What Coinbase Has Built That Matters
 
-| Component | FlowLink Relevance |
+| Component | ProofLink Relevance |
 |---|---|
 | x402 protocol | Core primitive — HTTP-native payments for any API |
 | AgentKit | Reference for how agents interact with wallets and DeFi |
@@ -557,7 +557,7 @@ Base is x402's primary home:
 
 ### Strategic Observation
 
-Coinbase is building the **settlement layer** (Base + USDC + x402) but not the **billing abstraction layer**. FlowLink's opportunity is in the gap between raw x402 transactions and what a developer actually needs to run a metered API business: plans, usage tracking, invoicing, analytics, upgrade flows, and multi-rail fallback.
+Coinbase is building the **settlement layer** (Base + USDC + x402) but not the **billing abstraction layer**. ProofLink's opportunity is in the gap between raw x402 transactions and what a developer actually needs to run a metered API business: plans, usage tracking, invoicing, analytics, upgrade flows, and multi-rail fallback.
 
 ---
 

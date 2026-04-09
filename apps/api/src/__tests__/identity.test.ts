@@ -49,7 +49,7 @@ vi.mock("../middleware/auth.js", () => ({
 // ---------------------------------------------------------------------------
 
 const AGENT_UUID = "550e8400-e29b-41d4-a716-446655440020";
-const AGENT_DID = "did:flowlink:agent:testAgent001";
+const AGENT_DID = "did:prooflink:agent:testAgent001";
 
 const sampleAgent = {
   id: AGENT_UUID,
@@ -152,7 +152,7 @@ describe("Identity API", () => {
         }),
       });
 
-      const res = await app.request("/v1/identity/did:flowlink:nonexistent");
+      const res = await app.request("/v1/identity/did:prooflink:nonexistent");
 
       expect(res.status).toBe(404);
       const json = await res.json();
@@ -253,7 +253,7 @@ describe("Identity API", () => {
       const res = await app.request("/v1/identity/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ agentId: "did:flowlink:unknown" }),
+        body: JSON.stringify({ agentId: "did:prooflink:unknown" }),
       });
 
       expect(res.status).toBe(200);
@@ -320,7 +320,7 @@ describe("Identity API", () => {
       expect(json.data.credential).toBeDefined();
       expect(json.data.credential.type).toContain("KYACredential");
       expect(json.data.credential.type).toContain("VerifiableCredential");
-      expect(json.data.credential.issuer.id).toBe("did:flowlink:issuer");
+      expect(json.data.credential.issuer.id).toBe("did:prooflink:issuer");
       expect(json.data.credential.credentialSubject.id).toBe(AGENT_DID);
       expect(json.data.credential.proof).toBeDefined();
     });

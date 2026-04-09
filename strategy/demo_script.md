@@ -1,4 +1,4 @@
-# FlowLink Demo Scripts
+# ProofLink Demo Scripts
 
 **Version:** 1.0
 **Date:** March 20, 2026
@@ -16,7 +16,7 @@
 ### Pre-Demo Setup (do this 30 minutes before)
 
 1. Pre-fund two wallets on Base Sepolia with test USDC via CDP Paymaster (gasless)
-2. Load the FlowLink dashboard at `v0-flowlink.vercel.app` in Chrome
+2. Load the ProofLink dashboard at `v0-prooflink.vercel.app` in Chrome
 3. Open a terminal with the x402 agent script ready to execute
 4. Pre-warm the Chainalysis API cache by screening a clean address once
 5. Have a known OFAC SDN address ready: use Tornado Cash deployer `0x905b63Fff465B9fFBF41DeA908CEb12df9d1c960` or equivalent published SDN wallet
@@ -29,7 +29,7 @@
 +-----------------------------------------------+
 |  LEFT (60%)           |  RIGHT (40%)           |
 |                       |                        |
-|  FlowLink Dashboard   |  Terminal              |
+|  ProofLink Dashboard   |  Terminal              |
 |  - Live transaction   |  - Agent script        |
 |    feed               |  - x402 payment calls  |
 |  - Compliance status  |  - Real-time output    |
@@ -50,7 +50,7 @@
 
 **[0:18 - 0:30] INTRODUCE THE SOLUTION**
 
-> "FlowLink is the compliance layer that x402 is missing. It intercepts every payment, screens every address against OFAC, EU, and UN sanctions lists in under 200 milliseconds, and generates a cryptographic compliance receipt -- what we call a ProofLink -- for every transaction."
+> "ProofLink is the compliance layer that x402 is missing. It intercepts every payment, screens every address against OFAC, EU, and UN sanctions lists in under 200 milliseconds, and generates a cryptographic compliance receipt -- what we call a ProofLink -- for every transaction."
 
 *[Action: Gesture toward the screen. Still do not touch the keyboard.]*
 
@@ -72,12 +72,12 @@ node agent-pay.js --to 0x905b63Fff465B9fFBF41DeA908CEb12df9d1c960 --amount 50 --
 *[Terminal output appears within 1-2 seconds:]*
 
 ```
-[FlowLink] Intercepting x402 payment...
-[FlowLink] Screening sender:   0xA1b2...C3d4  -> CLEARED (62ms)
-[FlowLink] Screening receiver: 0x905b...1c960 -> BLOCKED (89ms)
-[FlowLink] Match: OFAC_SDN | Tornado Cash Deployer | Confidence: 0.99
-[FlowLink] Payment REJECTED. Compliance code: SANCTIONS_HIT
-[FlowLink] ProofLink receipt: pl_01HW4K9X7MNPQ3R5T6V8Y
+[ProofLink] Intercepting x402 payment...
+[ProofLink] Screening sender:   0xA1b2...C3d4  -> CLEARED (62ms)
+[ProofLink] Screening receiver: 0x905b...1c960 -> BLOCKED (89ms)
+[ProofLink] Match: OFAC_SDN | Tornado Cash Deployer | Confidence: 0.99
+[ProofLink] Payment REJECTED. Compliance code: SANCTIONS_HIT
+[ProofLink] ProofLink receipt: pl_01HW4K9X7MNPQ3R5T6V8Y
 [Agent]    Received 402 rejection with compliance reason. Selecting alternate payee...
 ```
 
@@ -100,14 +100,14 @@ node agent-pay.js --to 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 --amount 50 --
 *[Terminal output:]*
 
 ```
-[FlowLink] Intercepting x402 payment...
-[FlowLink] Screening sender:   0xA1b2...C3d4  -> CLEARED (3ms, cached)
-[FlowLink] Screening receiver: 0xd8dA...6045  -> CLEARED (71ms)
-[FlowLink] AML risk score: 8/100 (below threshold 80)
-[FlowLink] Payment APPROVED. Settling via x402...
+[ProofLink] Intercepting x402 payment...
+[ProofLink] Screening sender:   0xA1b2...C3d4  -> CLEARED (3ms, cached)
+[ProofLink] Screening receiver: 0xd8dA...6045  -> CLEARED (71ms)
+[ProofLink] AML risk score: 8/100 (below threshold 80)
+[ProofLink] Payment APPROVED. Settling via x402...
 [x402]     Transaction: 0x7f3e...8a2b (Base Sepolia)
-[FlowLink] ProofLink receipt: pl_01HW4K9X7MNPQ3R5T7W9A
-[FlowLink] Invoice generated: INV-2026-0042 (JSON + PDF)
+[ProofLink] ProofLink receipt: pl_01HW4K9X7MNPQ3R5T7W9A
+[ProofLink] Invoice generated: INV-2026-0042 (JSON + PDF)
 ```
 
 > "Clean address. Approved in 71 milliseconds. On-chain settlement. And -- this is what nobody else does -- an auto-generated invoice with line items, tax placeholders, and an ERP-compatible JSON export."
@@ -116,7 +116,7 @@ node agent-pay.js --to 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 --amount 50 --
 
 **[1:20 - 1:50] TECHNICAL DEPTH**
 
-> "How does it work? FlowLink registers hooks into the x402 ResourceServer lifecycle. Before verify: sanctions screen, AML risk score. Before settle: FATF Travel Rule transmission for transactions above $3,000. After settle: ProofLink receipt generation with optional on-chain attestation via EAS."
+> "How does it work? ProofLink registers hooks into the x402 ResourceServer lifecycle. Before verify: sanctions screen, AML risk score. Before settle: FATF Travel Rule transmission for transactions above $3,000. After settle: ProofLink receipt generation with optional on-chain attestation via EAS."
 >
 > "One line of code to add to any x402 server."
 
@@ -130,7 +130,7 @@ compliance.register(server); // That's it.
 
 **[1:50 - 2:20] TRACTION AND MARKET**
 
-> "FlowLink is live at v0-flowlink.vercel.app. We have screened [X] transactions in the past [Y] weeks."
+> "ProofLink is live at v0-prooflink.vercel.app. We have screened [X] transactions in the past [Y] weeks."
 >
 > "The agentic economy is projected to reach $3-5 trillion by 2030. Six payment protocols shipped in the last twelve months. Zero of them have compliance infrastructure. Mastercard just paid $1.8 billion for BVNK -- a stablecoin infrastructure company. Stripe paid $1.1 billion for Bridge. The compliance layer for this market does not exist yet. We are building it."
 
@@ -142,28 +142,28 @@ compliance.register(server); // That's it.
 
 *[For Agentic Commerce Berlin -- Algorand track:]*
 
-> "Every Algorand x402 payment flows through FlowLink before it settles. OFAC screening happens in the HTTP layer -- no smart contract changes required. The payment either gets a 200 or a 402 with a compliance reason."
+> "Every Algorand x402 payment flows through ProofLink before it settles. OFAC screening happens in the HTTP layer -- no smart contract changes required. The payment either gets a 200 or a 402 with a compliance reason."
 
 *[For Chainlink Convergence -- Risk & Compliance track:]*
 
-> "We integrate Chainlink's CRE to trigger compliance checks via the oracle network. Real-time risk detection, automated controls, reserve verification -- that is the track description. That is FlowLink."
+> "We integrate Chainlink's CRE to trigger compliance checks via the oracle network. Real-time risk detection, automated controls, reserve verification -- that is the track description. That is ProofLink."
 
 **[2:50 - 3:00] CLOSE**
 
-> "x402 delivers payments. FlowLink makes them legal. We are the trust layer the agentic economy does not know it needs yet -- but will."
+> "x402 delivers payments. ProofLink makes them legal. We are the trust layer the agentic economy does not know it needs yet -- but will."
 
 *[Pause. Do not keep talking. Let the judges ask questions.]*
 
 ### Killer Closing Line
 
-> "Every x402 payment that moves without FlowLink is a compliance liability waiting to become a headline."
+> "Every x402 payment that moves without ProofLink is a compliance liability waiting to become a headline."
 
 ### Backup Plan
 
 | Failure Mode | Recovery |
 |---|---|
 | Chainalysis API down | Switch to offline OFAC SDN list fallback. The demo still shows BLOCKED/APPROVED -- just note "running on offline SDN list, production uses Chainalysis real-time" |
-| x402 testnet congestion (settlement slow) | Pre-record the settlement step. Show the compliance screening live (that is the FlowLink part), then say "settlement is pending on Base Sepolia -- here is the pre-recorded version at full speed" and switch to video |
+| x402 testnet congestion (settlement slow) | Pre-record the settlement step. Show the compliance screening live (that is the ProofLink part), then say "settlement is pending on Base Sepolia -- here is the pre-recorded version at full speed" and switch to video |
 | Dashboard fails to load | Run the entire demo in terminal only. The terminal output is compelling on its own. Skip the dashboard visuals |
 | Total internet failure | Play the 90-second pre-recorded backup video. Say: "Let me show you the recording from our test run this morning -- same flow, same data." Never apologize for the failure. |
 
@@ -188,7 +188,7 @@ compliance.register(server); // That's it.
 ### Pre-Demo Setup
 
 1. All hackathon setup steps, plus:
-2. Prepare a second browser with the FlowLink dashboard showing a pre-populated transaction history (3-5 transactions with mixed APPROVED/BLOCKED status)
+2. Prepare a second browser with the ProofLink dashboard showing a pre-populated transaction history (3-5 transactions with mixed APPROVED/BLOCKED status)
 3. Have a "client wallet" and a "CFO dashboard" tab ready
 4. Have a slide with the market numbers ready (TAM/exit comps) -- do not use a full deck, just one slide
 5. Print a physical copy of a ProofLink receipt PDF. Hand it to the partner during the demo.
@@ -196,7 +196,7 @@ compliance.register(server); // That's it.
 ### Screen Layout
 
 ```
-Tab 1: FlowLink Dashboard (transaction feed, compliance status)
+Tab 1: ProofLink Dashboard (transaction feed, compliance status)
 Tab 2: Terminal (agent script)
 Tab 3: Invoice / ProofLink receipt viewer
 Tab 4: One-slide market summary (backup, only show if asked)
@@ -212,19 +212,19 @@ Tab 4: One-slide market summary (backup, only show if asked)
 >
 > "Second: six AI agent payment protocols shipped in the past twelve months. x402 from Coinbase, ACP from OpenAI, AP2 from Google, MPP from Stripe, plus Visa and Mastercard agent payment standards. None of them have compliance built in. Every new protocol creates a new compliance surface area."
 >
-> "FlowLink is the compliance-as-infrastructure layer that sits between these payment protocols and settlement. We screen every payment in real time, issue cryptographic compliance receipts, and generate the invoices and audit trails that make stablecoin payments viable for enterprise finance teams."
+> "ProofLink is the compliance-as-infrastructure layer that sits between these payment protocols and settlement. We screen every payment in real time, issue cryptographic compliance receipts, and generate the invoices and audit trails that make stablecoin payments viable for enterprise finance teams."
 
 **[1:30 - 4:00] LIVE DEMO -- H2H FLOW**
 
 > "Let me show you the human-to-human flow first. This is our Phase 1 product -- live now."
 
-*[Action: Open FlowLink dashboard.]*
+*[Action: Open ProofLink dashboard.]*
 
 > "A business needs to pay a supplier $5,000 in USDC for API services. Step one: create the invoice."
 
 *[Action: In the dashboard, create an invoice. Fill in: seller name, buyer name, line item "API inference calls - 15,000 units at $0.003", total $45 USDC, currency USDC, chain Base.]*
 
-> "This invoice is a JSON-LD document. Machine-readable. It includes seller identity, buyer identity, line items, tax placeholders, payment instructions, and a FlowLink compliance stamp. No other crypto invoicing product produces this."
+> "This invoice is a JSON-LD document. Machine-readable. It includes seller identity, buyer identity, line items, tax placeholders, payment instructions, and a ProofLink compliance stamp. No other crypto invoicing product produces this."
 
 *[Action: Click "Send to Client." Show the invoice URL generated.]*
 
@@ -233,17 +233,17 @@ Tab 4: One-slide market summary (backup, only show if asked)
 *[Action: Switch to terminal. Execute a payment script simulating the client paying the invoice.]*
 
 ```
-[FlowLink] Invoice INV-2026-0042 payment initiated
-[FlowLink] Screening sender:   0xBuyer...  -> CLEARED (58ms)
-[FlowLink] Screening receiver: 0xSeller... -> CLEARED (62ms)
-[FlowLink] AML risk score: 4/100
-[FlowLink] Amount $45.00 below Travel Rule threshold ($3,000)
-[FlowLink] Travel Rule: SKIPPED
-[FlowLink] Payment APPROVED. Settling via USDC on Base...
+[ProofLink] Invoice INV-2026-0042 payment initiated
+[ProofLink] Screening sender:   0xBuyer...  -> CLEARED (58ms)
+[ProofLink] Screening receiver: 0xSeller... -> CLEARED (62ms)
+[ProofLink] AML risk score: 4/100
+[ProofLink] Amount $45.00 below Travel Rule threshold ($3,000)
+[ProofLink] Travel Rule: SKIPPED
+[ProofLink] Payment APPROVED. Settling via USDC on Base...
 [x402]     Transaction: 0xabc...def (Base)
-[FlowLink] ProofLink receipt: pl_01HW4K9X7MNPQ3R5T7W9B
-[FlowLink] Invoice INV-2026-0042 marked PAID
-[FlowLink] ERP webhook fired: quickbooks.acme.com/webhooks/invoices
+[ProofLink] ProofLink receipt: pl_01HW4K9X7MNPQ3R5T7W9B
+[ProofLink] Invoice INV-2026-0042 marked PAID
+[ProofLink] ERP webhook fired: quickbooks.acme.com/webhooks/invoices
 ```
 
 > "3.2 seconds. Invoice paid. Compliance checked. Receipt generated. ERP notified. Compare that to a wire transfer: 3-5 business days, $25-$50 in fees, no compliance proof."
@@ -273,27 +273,27 @@ node agent-pay.js --agent-id "erc8004:8453:0xReg:42" --to 0xComputeProvider --am
 *[Terminal output:]*
 
 ```
-[FlowLink] Agent payment initiated
-[FlowLink] KYA verification: erc8004:8453:0xReg:42
-[FlowLink]   Agent name: inference-agent-v3
-[FlowLink]   Type: semi-autonomous
-[FlowLink]   Operator: Acme Corp (LEI verified)
-[FlowLink]   Trust score: 87/100
-[FlowLink]   Spending limit: $10,000/tx, $50,000/day
-[FlowLink]   KYA status: VERIFIED
-[FlowLink] Screening sender (agent wallet): 0xA1b2... -> CLEARED (4ms, cached)
-[FlowLink] Screening receiver: 0xComputeProvider     -> CLEARED (67ms)
-[FlowLink] AML risk score: 12/100
-[FlowLink] Amount $150.00 below Travel Rule threshold
-[FlowLink] Payment APPROVED. Settling via x402...
+[ProofLink] Agent payment initiated
+[ProofLink] KYA verification: erc8004:8453:0xReg:42
+[ProofLink]   Agent name: inference-agent-v3
+[ProofLink]   Type: semi-autonomous
+[ProofLink]   Operator: Acme Corp (LEI verified)
+[ProofLink]   Trust score: 87/100
+[ProofLink]   Spending limit: $10,000/tx, $50,000/day
+[ProofLink]   KYA status: VERIFIED
+[ProofLink] Screening sender (agent wallet): 0xA1b2... -> CLEARED (4ms, cached)
+[ProofLink] Screening receiver: 0xComputeProvider     -> CLEARED (67ms)
+[ProofLink] AML risk score: 12/100
+[ProofLink] Amount $150.00 below Travel Rule threshold
+[ProofLink] Payment APPROVED. Settling via x402...
 [x402]     Transaction: 0x9e2f...4c7d (Base)
-[FlowLink] ProofLink receipt: pl_01HW4K9X7MNPQ3R5T8X0C
-[FlowLink] Invoice generated: INV-2026-0043
+[ProofLink] ProofLink receipt: pl_01HW4K9X7MNPQ3R5T8X0C
+[ProofLink] Invoice generated: INV-2026-0043
 ```
 
 > "Notice what happened that did not happen in the first demo. KYA verification. We resolved the agent's on-chain identity from the ERC-8004 registry. We verified the operator -- Acme Corp, LEI confirmed. We checked spending limits -- $150 is within the $10,000 per-transaction authorization."
 >
-> "This is the missing layer. Nobody is doing this. Coinbase's Payments MCP handles the 'how do I pay' question. FlowLink handles the 'is this legal' question."
+> "This is the missing layer. Nobody is doing this. Coinbase's Payments MCP handles the 'how do I pay' question. ProofLink handles the 'is this legal' question."
 
 **[6:30 - 7:00] THE BLOCK MOMENT**
 
@@ -302,11 +302,11 @@ node agent-pay.js --agent-id "erc8004:8453:0xReg:42" --to 0xComputeProvider --am
 *[Action: Execute the same script targeting the sanctioned address.]*
 
 ```
-[FlowLink] Agent payment initiated
-[FlowLink] KYA verification: erc8004:8453:0xReg:42 -> VERIFIED
-[FlowLink] Screening receiver: 0x905b...1c960 -> BLOCKED (91ms)
-[FlowLink] Match: OFAC_SDN | Tornado Cash Deployer | Confidence: 0.99
-[FlowLink] Payment REJECTED. Compliance code: SANCTIONS_HIT
+[ProofLink] Agent payment initiated
+[ProofLink] KYA verification: erc8004:8453:0xReg:42 -> VERIFIED
+[ProofLink] Screening receiver: 0x905b...1c960 -> BLOCKED (91ms)
+[ProofLink] Match: OFAC_SDN | Tornado Cash Deployer | Confidence: 0.99
+[ProofLink] Payment REJECTED. Compliance code: SANCTIONS_HIT
 [Agent]    Received structured 402 rejection. Reason: SANCTIONS_HIT
 [Agent]    Escalating to human operator for review...
 ```
@@ -321,7 +321,7 @@ node agent-pay.js --agent-id "erc8004:8453:0xReg:42" --to 0xComputeProvider --am
 >
 > "Exit comparables: Mastercard acquired BVNK for $1.8 billion on March 17th -- three days ago. Stripe acquired Bridge for $1.1 billion. Rain raised at $1.95 billion. Every major card network is buying stablecoin infrastructure at billion-dollar valuations."
 >
-> "FlowLink's revenue model: transaction fees at 5-30 basis points depending on volume tier. Subscription tiers for compliance-as-a-service starting at $99 per month. KYA credential fees at $0.10 per agent verification. Year 3 target: $23 million ARR on $15 billion cumulative volume."
+> "ProofLink's revenue model: transaction fees at 5-30 basis points depending on volume tier. Subscription tiers for compliance-as-a-service starting at $99 per month. KYA credential fees at $0.10 per agent verification. Year 3 target: $23 million ARR on $15 billion cumulative volume."
 >
 > "Our moat deepens with every transaction. Every address screened builds our behavioral dataset. Every compliance attestation builds the reputation network. Every agent KYA credential adds to a dataset that does not exist anywhere else."
 
@@ -329,7 +329,7 @@ node agent-pay.js --agent-id "erc8004:8453:0xReg:42" --to 0xComputeProvider --am
 
 > "Request Finance does crypto invoicing but has zero compliance layer. In a post-GENIUS Act world, that is disqualifying for enterprise. Skyfire handles x402 agent payments but only for one protocol. Chainalysis does post-hoc monitoring at $150K per year -- we do pre-payment enforcement at developer-accessible pricing."
 >
-> "FlowLink is the neutral compliance layer. Coinbase's compliance serves Coinbase. Stripe's serves Stripe. We serve everyone. More protocol fragmentation -- more agent payment standards -- makes our position more valuable, not less."
+> "ProofLink is the neutral compliance layer. Coinbase's compliance serves Coinbase. Stripe's serves Stripe. We serve everyone. More protocol fragmentation -- more agent payment standards -- makes our position more valuable, not less."
 
 **[9:30 - 10:00] ASK AND CLOSE**
 
@@ -347,7 +347,7 @@ node agent-pay.js --agent-id "erc8004:8453:0xReg:42" --to 0xComputeProvider --am
 
 | Question | Answer |
 |---|---|
-| "What is your current traction?" | "Live at v0-flowlink.vercel.app. [X] screened transactions. We are in design partner conversations with [Y]. Our first hackathon entry is ETHGlobal Cannes in two weeks." |
+| "What is your current traction?" | "Live at v0-prooflink.vercel.app. [X] screened transactions. We are in design partner conversations with [Y]. Our first hackathon entry is ETHGlobal Cannes in two weeks." |
 | "Why can Coinbase not just build this?" | "They could build it for their own ecosystem. But x402 is one of six agent payment protocols. A CFO using agents that pay via x402, ACP, and MPP needs one compliance layer, not three. Coinbase has no incentive to support OpenAI's protocol. We do." |
 | "What if compliance requirements change?" | "That is our advantage, not our risk. Every new regulation -- MiCA enforcement in July, GENIUS Act implementation, FATF agent guidance -- creates demand for a compliance layer. We are building the product regulators will reference." |
 | "How do you get to $23M ARR?" | "Transaction fees at 5-30 basis points on $15B cumulative volume plus subscription revenue. BVNK reached $30B annualized volume in 3 years. We need 0.05% of stablecoin volume." |
@@ -369,14 +369,14 @@ node agent-pay.js --agent-id "erc8004:8453:0xReg:42" --to 0xComputeProvider --am
 ## Demo 3: "MCP Live Demo"
 
 **Audience:** Developers and technical partners. AI agent builders. People who have used MCP tools in Claude Desktop or built with LangChain/Vercel AI SDK.
-**Goal:** Get developers to install `@flowlink/mcp-server` and start building.
+**Goal:** Get developers to install `@prooflink/mcp-server` and start building.
 **Setting:** Terminal-first. No slides. No dashboard. Pure tool-calling in a terminal or Claude Desktop.
 
 ### Pre-Demo Setup
 
-1. Install the FlowLink MCP server locally: `npx @flowlink/mcp-server`
-2. Set `FLOWLINK_API_KEY` in environment
-3. Have Claude Desktop configured with the FlowLink MCP server (show `claude_desktop_config.json`)
+1. Install the ProofLink MCP server locally: `npx @prooflink/mcp-server`
+2. Set `PROOFLINK_API_KEY` in environment
+3. Have Claude Desktop configured with the ProofLink MCP server (show `claude_desktop_config.json`)
 4. Have a Python script ready with `langchain-mcp-adapters` as an alternative
 5. Pre-screen a clean address to warm the cache
 6. Have the sanctioned address ready
@@ -389,7 +389,7 @@ node agent-pay.js --agent-id "erc8004:8453:0xReg:42" --to 0xComputeProvider --am
 |  FULL SCREEN TERMINAL                          |
 |                                                |
 |  Claude Desktop or Python LangChain agent      |
-|  calling FlowLink MCP tools                    |
+|  calling ProofLink MCP tools                    |
 |                                                |
 +-----------------------------------------------+
 ```
@@ -398,18 +398,18 @@ node agent-pay.js --agent-id "erc8004:8453:0xReg:42" --to 0xComputeProvider --am
 
 **[0:00 - 0:30] SETUP CONTEXT**
 
-> "FlowLink exposes compliance as an MCP server. Six tools. Any AI agent framework -- Claude, ChatGPT, LangChain, Vercel AI SDK -- can call them natively. Let me show you in Claude Desktop."
+> "ProofLink exposes compliance as an MCP server. Six tools. Any AI agent framework -- Claude, ChatGPT, LangChain, Vercel AI SDK -- can call them natively. Let me show you in Claude Desktop."
 
 *[Action: Show the claude_desktop_config.json.]*
 
 ```json
 {
   "mcpServers": {
-    "flowlink-compliance": {
+    "prooflink-compliance": {
       "command": "npx",
-      "args": ["@flowlink/mcp-server"],
+      "args": ["@prooflink/mcp-server"],
       "env": {
-        "FLOWLINK_API_KEY": "fl_live_xxxxx"
+        "PROOFLINK_API_KEY": "fl_live_xxxxx"
       }
     }
   }
@@ -478,7 +478,7 @@ Agent Verified.
 - Receipt ID: kya_01HW4K9X7MNPQ3R5T7W9A
 ```
 
-> "Know Your Agent. We resolved the on-chain ERC-8004 registry. The agent has a verified operator, spending limits, and a trust score. No other MCP server provides this. Coinbase's Payments MCP tells you how to pay. FlowLink tells you whether you should."
+> "Know Your Agent. We resolved the on-chain ERC-8004 registry. The agent has a verified operator, spending limits, and a trust score. No other MCP server provides this. Coinbase's Payments MCP tells you how to pay. ProofLink tells you whether you should."
 
 **[3:30 - 5:00] TOOL 3: create_compliant_invoice**
 
@@ -500,11 +500,11 @@ Invoice Created.
 - Receipt ID: inv_01HW4K9X7MNPQ3R5T8X0C
 
 Payment instructions:
-- x402 endpoint: https://api.flowlink.io/x402/pay/INV-2026-0044
+- x402 endpoint: https://api.prooflink.io/x402/pay/INV-2026-0044
 - Wallet: 0xSeller
 ```
 
-> "A machine-readable, compliance-stamped invoice. Both parties screened. Anchored on-chain via EAS. Stored on IPFS. The agent can now send this invoice to the buyer agent, which can verify the compliance stamp independently without trusting FlowLink."
+> "A machine-readable, compliance-stamped invoice. Both parties screened. Anchored on-chain via EAS. Stored on IPFS. The agent can now send this invoice to the buyer agent, which can verify the compliance stamp independently without trusting ProofLink."
 
 **[5:00 - 7:00] TOOL 4: pay_with_compliance**
 
@@ -527,7 +527,7 @@ Payment Completed.
 - Verify at: https://base.easscan.org/attestation/0x9e2f...4c7d
 ```
 
-> "End-to-end compliant payment. One tool call. Internally, FlowLink ran sanctions screening, KYA verification, threshold checks, x402 settlement, receipt generation, and on-chain attestation. The agent called one function. The compliance pipeline did the rest."
+> "End-to-end compliant payment. One tool call. Internally, ProofLink ran sanctions screening, KYA verification, threshold checks, x402 settlement, receipt generation, and on-chain attestation. The agent called one function. The compliance pipeline did the rest."
 
 **[7:00 - 8:00] TOOL 5: get_compliance_receipt**
 
@@ -567,9 +567,9 @@ This receipt is cryptographically signed and independently verifiable.
 
 ```python
 async with MultiServerMCPClient({
-    "flowlink": {
+    "prooflink": {
         "transport": "http",
-        "url": "https://mcp.flowlink.io/v1",
+        "url": "https://mcp.prooflink.io/v1",
         "headers": {"Authorization": "Bearer fl_live_xxxxx"}
     },
     "coinbase-payments": {
@@ -579,16 +579,16 @@ async with MultiServerMCPClient({
     }
 }) as client:
     tools = await client.get_tools()
-    # FlowLink handles compliance. Coinbase handles execution.
+    # ProofLink handles compliance. Coinbase handles execution.
 ```
 
-> "FlowLink MCP plus Coinbase Payments MCP. Compliance plus execution. The complete agentic payment stack."
+> "ProofLink MCP plus Coinbase Payments MCP. Compliance plus execution. The complete agentic payment stack."
 
 **[9:00 - 9:30] DEVELOPER ONBOARDING**
 
 > "Three ways to start:"
 >
-> "One: `npx @flowlink/mcp-server` for Claude Desktop. Two: `pip install flowlink-mcp` for LangChain. Three: `npm install @flowlink/x402-compliance` for direct x402 integration."
+> "One: `npx @prooflink/mcp-server` for Claude Desktop. Two: `pip install prooflink-mcp` for LangChain. Three: `npm install @prooflink/x402-compliance` for direct x402 integration."
 >
 > "Free tier: 100 sanctions screenings per month. No credit card. Start building today."
 
@@ -600,7 +600,7 @@ async with MultiServerMCPClient({
 
 ### Killer Closing Line
 
-> "Your agent can pay for anything. FlowLink makes sure it does not pay the wrong person."
+> "Your agent can pay for anything. ProofLink makes sure it does not pay the wrong person."
 
 ### Option B: Terminal-Only Python Demo (if Claude Desktop unavailable)
 
@@ -615,10 +615,10 @@ from langchain_anthropic import ChatAnthropic
 
 async def demo():
     async with MultiServerMCPClient({
-        "flowlink": {
+        "prooflink": {
             "transport": "http",
-            "url": "https://mcp.flowlink.io/v1",
-            "headers": {"Authorization": f"Bearer {os.environ['FLOWLINK_API_KEY']}"}
+            "url": "https://mcp.prooflink.io/v1",
+            "headers": {"Authorization": f"Bearer {os.environ['PROOFLINK_API_KEY']}"}
         }
     }) as client:
         tools = await client.get_tools()
@@ -642,7 +642,7 @@ Run the script with different prompts for each tool. The terminal output shows t
 |---|---|
 | MCP server fails to connect | Switch to direct REST API calls via `curl`. Same endpoints, same data. "The MCP server wraps our REST API -- let me show you the raw API while we debug the MCP transport." |
 | Claude Desktop unresponsive | Switch to Option B (Python LangChain script). "Same tools, different framework." |
-| Screening API returns unexpected results | Have a mock mode: `FLOWLINK_MOCK=true npx @flowlink/mcp-server`. Returns deterministic responses for demo addresses. Say: "Running in demo mode with pre-computed responses." |
+| Screening API returns unexpected results | Have a mock mode: `PROOFLINK_MOCK=true npx @prooflink/mcp-server`. Returns deterministic responses for demo addresses. Say: "Running in demo mode with pre-computed responses." |
 | Audience asks to see a tool not in the demo | All six tools work. Call it live. The MCP server exposes all tools simultaneously. |
 
 ---
@@ -653,15 +653,15 @@ Build once, use in all three demos:
 
 **90-second screen recording** showing:
 - 0:00-0:05 -- Terminal: agent sends x402 payment to sanctioned address
-- 0:05-0:15 -- FlowLink intercepts, screens, BLOCKED in 89ms with SDN match details
+- 0:05-0:15 -- ProofLink intercepts, screens, BLOCKED in 89ms with SDN match details
 - 0:15-0:25 -- Dashboard: ProofLink receipt appears with full compliance breakdown
 - 0:25-0:35 -- Terminal: agent sends payment to clean address
-- 0:35-0:50 -- FlowLink screens, APPROVED, settlement confirmed, invoice generated
+- 0:35-0:50 -- ProofLink screens, APPROVED, settlement confirmed, invoice generated
 - 0:50-1:05 -- Dashboard: invoice with line items, compliance stamp, PDF export
 - 1:05-1:20 -- ProofLink receipt: checks performed, EAS attestation UID, IPFS CID
 - 1:20-1:30 -- Terminal: `compliance.register(server)` -- one line of code
 
-Record this at 1080p. No narration. Captions overlay showing timing ("89ms", "BLOCKED", "APPROVED"). Upload to the FlowLink website, embed in hackathon submissions, attach to investor emails.
+Record this at 1080p. No narration. Captions overlay showing timing ("89ms", "BLOCKED", "APPROVED"). Upload to the ProofLink website, embed in hackathon submissions, attach to investor emails.
 
 ---
 

@@ -12,7 +12,7 @@ export function registerVerifyKya(server: McpServer): void {
   server.tool(
     "verify_kya",
     [
-      "Verify an AI agent's identity, authorization, and compliance standing via the FlowLink registry.",
+      "Verify an AI agent's identity, authorization, and compliance standing via the ProofLink registry.",
       "Checks whether the agent exists in the registry with a valid KYA credential,",
       "is not expired, and has an active compliance standing.",
       "",
@@ -52,7 +52,7 @@ export function registerVerifyKya(server: McpServer): void {
         const receiptId = generateReceiptId();
         const start = Date.now();
 
-        // Look up agent in the FlowLink registry instead of fabricating a credential
+        // Look up agent in the ProofLink registry instead of fabricating a credential
         const lookup = lookupAgent(params.agent_id);
 
         if (!lookup.found || !lookup.agent) {

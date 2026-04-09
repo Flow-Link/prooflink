@@ -1,5 +1,5 @@
 /**
- * Seed script — populates the FlowLink database with demo data.
+ * Seed script — populates the ProofLink database with demo data.
  *
  * Usage: DATABASE_URL=... npx tsx src/db/seed.ts
  */
@@ -52,11 +52,11 @@ async function seed() {
 
 	// 2. Create agents
 	const agentData = [
-		{ did: "did:web:paybot.flowlink.io", name: "PayBot Prime", type: "autonomous", wallet: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" },
-		{ did: "did:web:complianceguard.flowlink.io", name: "ComplianceGuard", type: "semi-autonomous", wallet: "0x1234567890abcdef1234567890abcdef12345678" },
-		{ did: "did:web:swiftsettle.flowlink.io", name: "SwiftSettle", type: "autonomous", wallet: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" },
-		{ did: "did:web:risklens.flowlink.io", name: "RiskLens AI", type: "human-supervised", wallet: "0x9876543210fedcba9876543210fedcba98765432" },
-		{ did: "did:web:autopay.flowlink.io", name: "AutoPay Agent", type: "autonomous", wallet: "0xfedcba9876543210fedcba9876543210fedcba98" },
+		{ did: "did:web:paybot.prooflink.io", name: "PayBot Prime", type: "autonomous", wallet: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" },
+		{ did: "did:web:complianceguard.prooflink.io", name: "ComplianceGuard", type: "semi-autonomous", wallet: "0x1234567890abcdef1234567890abcdef12345678" },
+		{ did: "did:web:swiftsettle.prooflink.io", name: "SwiftSettle", type: "autonomous", wallet: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" },
+		{ did: "did:web:risklens.prooflink.io", name: "RiskLens AI", type: "human-supervised", wallet: "0x9876543210fedcba9876543210fedcba98765432" },
+		{ did: "did:web:autopay.prooflink.io", name: "AutoPay Agent", type: "autonomous", wallet: "0xfedcba9876543210fedcba9876543210fedcba98" },
 	];
 
 	const createdAgents = [];
@@ -70,7 +70,7 @@ async function seed() {
 			name: a.name,
 			agentType: a.type,
 			walletAddress: a.wallet,
-			controllingEntityName: "FlowLink Inc",
+			controllingEntityName: "ProofLink Inc",
 			controllingEntityLei: "549300EXAMPLE",
 			complianceScore: 70 + Math.floor(Math.random() * 30),
 			delegationScope: {
@@ -104,7 +104,7 @@ async function seed() {
 		const checksPerformed = [
 			{ checkType: "SANCTIONS_SCREENING", target: "sender", result: status === "REJECTED" ? "FAILED" : "PASSED", provider: "ofac_sdn_offline", performedAt: new Date().toISOString(), durationMs: 2 },
 			{ checkType: "SANCTIONS_SCREENING", target: "receiver", result: "PASSED", provider: "ofac_sdn_offline", performedAt: new Date().toISOString(), durationMs: 2 },
-			{ checkType: "AML_MONITORING", target: "transaction", result: "PASSED", provider: "flowlink", performedAt: new Date().toISOString(), durationMs: 15 },
+			{ checkType: "AML_MONITORING", target: "transaction", result: "PASSED", provider: "prooflink", performedAt: new Date().toISOString(), durationMs: 15 },
 			{ checkType: "TRAVEL_RULE", target: "transaction", result: Number(amount) > 3000 ? "PASSED" : "SKIPPED", provider: "notabene", performedAt: new Date().toISOString(), durationMs: 5 },
 		];
 

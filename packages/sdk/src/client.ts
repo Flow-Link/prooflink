@@ -7,18 +7,18 @@ import type {
   KYAVerificationResult,
   SanctionsCheckResult,
   TravelRuleData,
-} from "@flowlink/shared/types";
-import type { AgentInvoice, InvoiceState } from "@flowlink/shared/types";
-import type { CheckPerformed } from "@flowlink/shared/types";
+} from "@prooflink/shared/types";
+import type { AgentInvoice, InvoiceState } from "@prooflink/shared/types";
+import type { CheckPerformed } from "@prooflink/shared/types";
 
-import { FlowLinkValidationError } from "./errors.js";
+import { ProofLinkValidationError } from "./errors.js";
 import { HttpClient } from "./http.js";
 import type {
   AgentRegistration,
   ComplianceCheckParams,
   ComplianceHistoryParams,
   CreateInvoiceParams,
-  FlowLinkClientConfig,
+  ProofLinkClientConfig,
   IssueKYAParams,
   ListInvoicesParams,
   PaginatedResponse,
@@ -27,22 +27,22 @@ import type {
   TravelRuleResult,
 } from "./types.js";
 
-const DEFAULT_BASE_URL = "https://api.flowlink.io/v1";
+const DEFAULT_BASE_URL = "https://api.prooflink.io/v1";
 const DEFAULT_TIMEOUT_MS = 30_000;
 const DEFAULT_MAX_RETRIES = 3;
 
 /**
- * FlowLink client SDK.
+ * ProofLink client SDK.
  *
- * Provides typed methods for every FlowLink API endpoint: compliance checks,
+ * Provides typed methods for every ProofLink API endpoint: compliance checks,
  * sanctions screening, AML risk scoring, travel-rule transmission,
  * invoice management, and agent identity / KYA operations.
  *
  * @example
  * ```ts
- * import { FlowLinkClient } from "@flowlink/sdk";
+ * import { ProofLinkClient } from "@prooflink/sdk";
  *
- * const client = new FlowLinkClient({ apiKey: "fl_live_..." });
+ * const client = new ProofLinkClient({ apiKey: "fl_live_..." });
  *
  * const decision = await client.checkCompliance({
  *   sender: { address: "0xAlice", chain: "base" },
@@ -52,12 +52,12 @@ const DEFAULT_MAX_RETRIES = 3;
  * });
  * ```
  */
-export class FlowLinkClient {
+export class ProofLinkClient {
   private readonly http: HttpClient;
 
-  constructor(config: FlowLinkClientConfig) {
+  constructor(config: ProofLinkClientConfig) {
     if (!config.apiKey) {
-      throw new FlowLinkValidationError("apiKey is required", "apiKey");
+      throw new ProofLinkValidationError("apiKey is required", "apiKey");
     }
 
     this.http = new HttpClient({
@@ -92,13 +92,13 @@ export class FlowLinkClient {
     chain: string,
   ): Promise<SanctionsCheckResult> {
     if (!address) {
-      throw new FlowLinkValidationError(
+      throw new ProofLinkValidationError(
         "address is required",
         "address",
       );
     }
     if (!chain) {
-      throw new FlowLinkValidationError("chain is required", "chain");
+      throw new ProofLinkValidationError("chain is required", "chain");
     }
     return this.http.post<SanctionsCheckResult>("/compliance/screen", {
       address,
@@ -133,7 +133,7 @@ export class FlowLinkClient {
    */
   async getComplianceReceipt(receiptId: string): Promise<ComplianceReceipt> {
     if (!receiptId) {
-      throw new FlowLinkValidationError(
+      throw new ProofLinkValidationError(
         "receiptId is required",
         "receiptId",
       );
@@ -179,7 +179,7 @@ export class FlowLinkClient {
    */
   async getInvoice(id: string): Promise<AgentInvoice> {
     if (!id) {
-      throw new FlowLinkValidationError("id is required", "id");
+      throw new ProofLinkValidationError("id is required", "id");
     }
     return this.http.get<AgentInvoice>(
       `/invoices/${encodeURIComponent(id)}`,
@@ -216,7 +216,7 @@ export class FlowLinkClient {
     reason?: string,
   ): Promise<AgentInvoice> {
     if (!invoiceId) {
-      throw new FlowLinkValidationError(
+      throw new ProofLinkValidationError(
         "invoiceId is required",
         "invoiceId",
       );
@@ -236,7 +236,7 @@ export class FlowLinkClient {
    */
   async verifyAgent(agentId: string): Promise<KYAVerificationResult> {
     if (!agentId) {
-      throw new FlowLinkValidationError(
+      throw new ProofLinkValidationError(
         "agentId is required",
         "agentId",
       );
@@ -263,7 +263,7 @@ export class FlowLinkClient {
    */
   async getAgentIdentity(agentId: string): Promise<AgentIdentity> {
     if (!agentId) {
-      throw new FlowLinkValidationError(
+      throw new ProofLinkValidationError(
         "agentId is required",
         "agentId",
       );

@@ -306,7 +306,7 @@ describe("E2E: Compliance check", () => {
     seedComplianceInserts();
 
     // Seed agent lookup so resolveAgentOriginator finds an active agent
-    const agentRow = makeAgentRow({ agentDid: "did:flowlink:agent:test-001" });
+    const agentRow = makeAgentRow({ agentDid: "did:prooflink:agent:test-001" });
     mockSelectFrom.mockImplementation(() => ({
       where: () => ({
         limit: () => Promise.resolve([agentRow]),
@@ -322,7 +322,7 @@ describe("E2E: Compliance check", () => {
         ...BASE_COMPLIANCE_CHECK_PAYLOAD,
         sender: {
           ...BASE_COMPLIANCE_CHECK_PAYLOAD.sender,
-          agentDID: "did:flowlink:agent:test-001",
+          agentDID: "did:prooflink:agent:test-001",
         },
       }),
     });
@@ -666,7 +666,7 @@ describe("E2E: Agent lifecycle", () => {
   beforeEach(() => vi.clearAllMocks());
 
   const agentPayload = {
-    agentDid: "did:flowlink:agent:e2e-test-001",
+    agentDid: "did:prooflink:agent:e2e-test-001",
     agentType: "semi-autonomous",
     controllingEntity: {
       name: "E2E Test Corp",
@@ -755,7 +755,7 @@ describe("E2E: Agent lifecycle", () => {
     });
 
     // Act
-    const res = await app.request("/v1/identity/did:flowlink:agent:unknown-xyz");
+    const res = await app.request("/v1/identity/did:prooflink:agent:unknown-xyz");
 
     // Assert
     expect(res.status).toBe(404);
@@ -822,7 +822,7 @@ describe("E2E: Agent lifecycle", () => {
     const res = await app.request("/v1/identity/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ agentId: "did:flowlink:agent:totally-unknown" }),
+      body: JSON.stringify({ agentId: "did:prooflink:agent:totally-unknown" }),
     });
 
     // Assert — returns 200 with verified: false (soft miss, not 404)

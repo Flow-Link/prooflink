@@ -2,9 +2,27 @@ import { eq } from "drizzle-orm";
 import type { Context, MiddlewareHandler } from "hono";
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 
+import { LRUCache } from "@prooflink/core";
 import { getDb } from "../db/index.js";
-import { apiKeys } from "../db/schema.js";
+import { apiKeys, type ApiKey } from "../db/schema.js";
 import { logger } from "../utils/logger.js";
+
+// ---------------------------------------------------------------------------
+// API key lookup cache (ARCH-3)
+// ---------------------------------------------------------------------------
+
+const API_KEY_CACHE_TTL_MS = Number(process.env["API_KEY_CACHE_TTL_MS"] ?? 60_000);
+const API_KEY_CACHE_MAX = 1_000;
+
+const apiKeyCache = new LRUCache<ApiKey>(API_KEY_CACHE_MAX, API_KEY_CACHE_TTL_MS);
+
+/**
+ * Invalidate a cached API key entry. Call this on key rotation/revocation
+ * to ensure the next auth check hits the database.
+ */
+export function invalidateApiKeyCache(keyHash: string): void {
+  apiKeyCache.delete(keyHash);
+}
 
 // ---------------------------------------------------------------------------
 // Auth context attached to every authenticated request
@@ -100,6 +118,8 @@ interface JwtPayload {
   rateLimitPerMinute?: number;
   exp?: number;
   iat?: number;
+  iss?: string;
+  aud?: string;
 }
 
 function base64UrlDecode(str: string): Buffer {
@@ -138,6 +158,18 @@ function verifyJwt(token: string): JwtPayload | null {
 
   // Check expiration
   if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
+    return null;
+  }
+
+  // Validate issuer claim
+  const expectedIssuer = process.env["JWT_ISSUER"] ?? "prooflink";
+  if (payload.iss && payload.iss !== expectedIssuer) {
+    return null;
+  }
+
+  // Validate audience claim
+  const expectedAudience = process.env["JWT_AUDIENCE"] ?? "prooflink-api";
+  if (payload.aud && payload.aud !== expectedAudience) {
     return null;
   }
 
@@ -307,21 +339,31 @@ export function authMiddleware(): MiddlewareHandler {
     const keyHash = hashApiKey(credential.value);
 
     try {
-      const db = getDb();
-      const [keyRecord] = await db
-        .select()
-        .from(apiKeys)
-        .where(eq(apiKeys.keyHash, keyHash))
-        .limit(1);
+      // Check LRU cache first (ARCH-3)
+      let keyRecord = apiKeyCache.get(keyHash);
 
       if (!keyRecord) {
-        return c.json(
-          {
-            success: false,
-            error: { code: "UNAUTHORIZED", message: "Invalid API key." },
-          },
-          401,
-        );
+        const db = getDb();
+        const [dbRecord] = await db
+          .select()
+          .from(apiKeys)
+          .where(eq(apiKeys.keyHash, keyHash))
+          .limit(1);
+
+        if (!dbRecord) {
+          // Do NOT cache negative lookups — dangerous for key rotation
+          return c.json(
+            {
+              success: false,
+              error: { code: "UNAUTHORIZED", message: "Invalid API key." },
+            },
+            401,
+          );
+        }
+
+        keyRecord = dbRecord;
+        // Cache on successful lookup
+        apiKeyCache.set(keyHash, keyRecord);
       }
 
       if (!keyRecord.isActive) {
@@ -355,6 +397,7 @@ export function authMiddleware(): MiddlewareHandler {
       c.set("auth", auth);
 
       // Fire-and-forget: update lastUsedAt
+      const db = getDb();
       db.update(apiKeys)
         .set({ lastUsedAt: new Date() })
         .where(eq(apiKeys.id, keyRecord.id))

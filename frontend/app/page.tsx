@@ -149,7 +149,7 @@ export default function Home() {
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500 backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-blue-600">
             <span className="font-sans text-xl font-bold text-white">⚡</span>
           </div>
-          <span className="font-sans text-xl font-semibold tracking-tight text-foreground">FlowLink</span>
+          <span className="font-sans text-xl font-semibold tracking-tight text-foreground">ProofLink</span>
         </button>
 
         <div className="hidden items-center gap-8 md:flex">
@@ -199,7 +199,7 @@ export default function Home() {
             </h1>
             <p className="mb-8 max-w-xl animate-in fade-in slide-in-from-bottom-4 text-lg leading-relaxed text-foreground/90 duration-1000 delay-200 md:text-xl">
               <span className="text-pretty">
-                FlowLink is the regulatory-grade trust layer that makes stablecoin payments safe for CFOs today and AI agents tomorrow.
+                ProofLink is the regulatory-grade trust layer that makes stablecoin payments safe for CFOs today and AI agents tomorrow.
               </span>
             </p>
             <div className="flex animate-in fade-in slide-in-from-bottom-4 flex-col gap-4 duration-1000 delay-300 sm:flex-row sm:items-center">

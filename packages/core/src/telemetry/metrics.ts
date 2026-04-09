@@ -2,9 +2,9 @@
 // Compliance Metrics / Telemetry
 // ---------------------------------------------------------------------------
 
-import type { ComplianceDecisionStatus } from "@flowlink/shared";
+import type { ComplianceDecisionStatus } from "@prooflink/shared";
 import type { TypedEventEmitter } from "../events/emitter.js";
-import type { FlowLinkEvents } from "../events/emitter.js";
+import type { ProofLinkEvents } from "../events/emitter.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -125,7 +125,7 @@ export class ComplianceMetrics {
    * - sanctions:match      -> increment sanctionsMatches
    * - error                -> increment apiErrors
    */
-  connectToEvents(emitter: TypedEventEmitter<FlowLinkEvents>): void {
+  connectToEvents(emitter: TypedEventEmitter<ProofLinkEvents>): void {
     emitter.on("compliance:approved", () => {
       // Decision already recorded via recordDecision in postDecision
     });
@@ -148,8 +148,8 @@ export class ComplianceMetrics {
     this.sortedLatencies = null; // invalidate cache
 
     for (const r of this.reporters) {
-      r.increment("flowlink.decisions", 1, { status });
-      r.timing("flowlink.decision_latency", latencyMs, { status });
+      r.increment("prooflink.decisions", 1, { status });
+      r.timing("prooflink.decision_latency", latencyMs, { status });
     }
   }
 
@@ -160,7 +160,7 @@ export class ComplianceMetrics {
     this.sanctionsMatches++;
 
     for (const r of this.reporters) {
-      r.increment("flowlink.sanctions_matches", 1);
+      r.increment("prooflink.sanctions_matches", 1);
     }
   }
 
@@ -172,7 +172,7 @@ export class ComplianceMetrics {
     if (hit) this.cacheHits++;
 
     for (const r of this.reporters) {
-      r.increment("flowlink.cache_lookups", 1, { hit: String(hit) });
+      r.increment("prooflink.cache_lookups", 1, { hit: String(hit) });
     }
   }
 
@@ -184,7 +184,7 @@ export class ComplianceMetrics {
     if (!success) this.apiErrors++;
 
     for (const r of this.reporters) {
-      r.increment("flowlink.api_calls", 1, { success: String(success) });
+      r.increment("prooflink.api_calls", 1, { success: String(success) });
     }
   }
 
@@ -234,13 +234,13 @@ export class ComplianceMetrics {
 
     // Report gauges to external reporters
     for (const r of this.reporters) {
-      r.gauge("flowlink.total_decisions", totalDecisions);
-      r.gauge("flowlink.avg_latency_ms", snapshot.averageLatencyMs);
-      r.gauge("flowlink.p95_latency_ms", snapshot.p95LatencyMs);
-      r.gauge("flowlink.p99_latency_ms", snapshot.p99LatencyMs);
-      r.gauge("flowlink.cache_hit_rate", snapshot.cacheHitRate);
-      r.gauge("flowlink.api_error_rate", snapshot.apiErrorRate);
-      r.gauge("flowlink.sanctions_matches", snapshot.sanctionsMatches);
+      r.gauge("prooflink.total_decisions", totalDecisions);
+      r.gauge("prooflink.avg_latency_ms", snapshot.averageLatencyMs);
+      r.gauge("prooflink.p95_latency_ms", snapshot.p95LatencyMs);
+      r.gauge("prooflink.p99_latency_ms", snapshot.p99LatencyMs);
+      r.gauge("prooflink.cache_hit_rate", snapshot.cacheHitRate);
+      r.gauge("prooflink.api_error_rate", snapshot.apiErrorRate);
+      r.gauge("prooflink.sanctions_matches", snapshot.sanctionsMatches);
     }
 
     return snapshot;

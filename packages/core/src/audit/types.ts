@@ -2,7 +2,7 @@
 // Audit Trail Types
 // ---------------------------------------------------------------------------
 
-/** Categories of auditable events in the FlowLink compliance pipeline. */
+/** Categories of auditable events in the ProofLink compliance pipeline. */
 export type AuditEventType =
   | "compliance_check"
   | "sanctions_match"

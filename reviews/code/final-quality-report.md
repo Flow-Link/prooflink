@@ -1,4 +1,4 @@
-# FlowLink Final Quality Report
+# ProofLink Final Quality Report
 
 **Reviewer:** Claude Sonnet 4.6
 **Date:** 2026-03-21
@@ -18,7 +18,7 @@ The codebase is well-structured and demonstrates production-level thinking in ke
 
 **CRITICAL: `POST /v1/compliance/check` runs a hardcoded simulation, not the `ProofLinkEngine`**
 File: `apps/api/src/routes/compliance.ts` lines 65–116
-`checksPerformed` is a static array with hardcoded `"PASSED"` results and `riskScore` is fixed at `12`. The `ProofLinkEngine` from `@flowlink/core` is never imported or called. Any real sanctioned address submitted to this endpoint returns APPROVED. This is the single most important issue for hackathon credibility and for any live demo.
+`checksPerformed` is a static array with hardcoded `"PASSED"` results and `riskScore` is fixed at `12`. The `ProofLinkEngine` from `@prooflink/core` is never imported or called. Any real sanctioned address submitted to this endpoint returns APPROVED. This is the single most important issue for hackathon credibility and for any live demo.
 Fix: Replace the static block with a call to `ProofLinkEngine.checkCompliance()`. Map `ComplianceCheckRequest` to `ComplianceRequest`, call the engine, and persist the real decision. If a live Chainalysis key is unavailable, instantiate `ProofLinkEngine` with `failOpen: true` and the offline OFAC fallback will still fire on known addresses.
 
 ---
@@ -33,14 +33,14 @@ Fix: Either (a) drop the request-signing feature and document it as not yet impl
 
 ---
 
-**CRITICAL: `KYAVerificationResult` type divergence between `@flowlink/core` and `@flowlink/shared`**
+**CRITICAL: `KYAVerificationResult` type divergence between `@prooflink/core` and `@prooflink/shared`**
 Files:
 - `packages/core/src/identity/kya-verifier.ts` line 49 — defines a local interface with `{ verified, agentDid, controllingEntity, delegationScope, erc8004Registered, credentialExpired, delegationValid, errors, latencyMs }`
 - `packages/shared/src/types/identity.ts` line 116 — defines a Zod schema/type with `{ verified, trustScore, agentMetadata, operatorStatus, spendingLimits, validationEvidence, receiptId }`
-- `packages/sdk/src/client.ts` line 8 — imports `KYAVerificationResult` from `@flowlink/shared/types`
+- `packages/sdk/src/client.ts` line 8 — imports `KYAVerificationResult` from `@prooflink/shared/types`
 
-The SDK's `verifyAgent()` promises to return `KYAVerificationResult` from `@flowlink/shared`, but the core engine produces the local interface from `kya-verifier.ts`. These are structurally incompatible (e.g., `errors[]` vs. no `errors` field; `agentDid` vs. `agentMetadata.name`). Any consumer that calls `verifyAgent()` through the SDK and then passes the result into a core engine method will hit a runtime shape mismatch.
-Fix: Consolidate to a single canonical type. The shared Zod schema is the right source of truth. Update `kya-verifier.ts` to import and return `KYAVerificationResult` from `@flowlink/shared`, and remove the local interface.
+The SDK's `verifyAgent()` promises to return `KYAVerificationResult` from `@prooflink/shared`, but the core engine produces the local interface from `kya-verifier.ts`. These are structurally incompatible (e.g., `errors[]` vs. no `errors` field; `agentDid` vs. `agentMetadata.name`). Any consumer that calls `verifyAgent()` through the SDK and then passes the result into a core engine method will hit a runtime shape mismatch.
+Fix: Consolidate to a single canonical type. The shared Zod schema is the right source of truth. Update `kya-verifier.ts` to import and return `KYAVerificationResult` from `@prooflink/shared`, and remove the local interface.
 
 ---
 
@@ -126,13 +126,13 @@ The list includes 20 EU member states but omits RO (Romania), BG (Bulgaria), PL 
 
 ## Export Consistency Assessment
 
-`@flowlink/core/src/index.ts` is comprehensive. All engine classes, providers, verifiers, and utilities are exported. No missing exports detected.
+`@prooflink/core/src/index.ts` is comprehensive. All engine classes, providers, verifiers, and utilities are exported. No missing exports detected.
 
-`@flowlink/shared/src/index.ts` re-exports all type modules via barrel. No gaps.
+`@prooflink/shared/src/index.ts` re-exports all type modules via barrel. No gaps.
 
-`@flowlink/sdk/src/types.ts` re-exports all relevant shared types and defines client-local param types. The `ComplianceRequest` re-export shadows the core engine's `ComplianceRequest` (which has a different shape — `sender: string` vs `sender: { address, chain }`). This is a name collision that is confusing but not a compile error due to separate import paths.
+`@prooflink/sdk/src/types.ts` re-exports all relevant shared types and defines client-local param types. The `ComplianceRequest` re-export shadows the core engine's `ComplianceRequest` (which has a different shape — `sender: string` vs `sender: { address, chain }`). This is a name collision that is confusing but not a compile error due to separate import paths.
 
-`@flowlink/mcp-server/src/server.ts` does not re-export tool or resource types — acceptable for an MCP server.
+`@prooflink/mcp-server/src/server.ts` does not re-export tool or resource types — acceptable for an MCP server.
 
 ---
 
@@ -140,11 +140,11 @@ The list includes 20 EU member states but omits RO (Romania), BG (Bulgaria), PL 
 
 No circular dependencies detected across the reviewed files. The dependency graph is:
 ```
-@flowlink/shared  (no deps)
-  <- @flowlink/core
-  <- @flowlink/sdk
-  <- @flowlink/x402-compliance
-  <- @flowlink/mcp-server
+@prooflink/shared  (no deps)
+  <- @prooflink/core
+  <- @prooflink/sdk
+  <- @prooflink/x402-compliance
+  <- @prooflink/mcp-server
   <- apps/api
 ```
 Clean layering maintained.
@@ -157,13 +157,13 @@ Clean layering maintained.
 
 2. **ProofLink engine pipeline is well-architected.** The allowlist fast-path, parallel sanctions screening, fail-open/fail-closed config, typed event emitter, plugin lifecycle hooks, and telemetry integration are all coherent and production-ready. The batch concurrency control with pre-warming is a genuine performance optimization.
 
-3. **Zod schemas in `@flowlink/shared` are thorough.** Branded types, datetime validation, min/max bounds, enum exhaustiveness, and `.default()` on non-required fields are all correctly applied. The schemas would parse real API payloads without modification.
+3. **Zod schemas in `@prooflink/shared` are thorough.** Branded types, datetime validation, min/max bounds, enum exhaustiveness, and `.default()` on non-required fields are all correctly applied. The schemas would parse real API payloads without modification.
 
 4. **Provider health tracking with automatic degradation** in `SanctionsScreener` is a strong reliability pattern. The offline OFAC SDN fallback means the system degrades gracefully rather than hard-failing.
 
 5. **Multi-tenant data isolation** is intentionally implemented in the history endpoint (even though the guard has the conditional bug noted above). The awareness of cross-tenant leakage at the query level is correct.
 
-6. **`FlowLinkX402Compliance.destroy()`** correctly unrefs the cleanup interval and provides explicit lifecycle management — a detail often missed that prevents test process hang.
+6. **`ProofLinkX402Compliance.destroy()`** correctly unrefs the cleanup interval and provides explicit lifecycle management — a detail often missed that prevents test process hang.
 
 ---
 

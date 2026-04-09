@@ -1,7 +1,10 @@
 import { Hono } from "hono";
+import { bodyLimit } from "hono/body-limit";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
 import { timing } from "hono/timing";
+
+import { timeout } from "./middleware/timeout.js";
 
 // Augment Hono's ContextVariableMap with our custom variables
 import "./types/hono.js";
@@ -76,7 +79,7 @@ export function createApp(): Hono {
         // Check if the origin is in the allowed list
         if (allowedOrigins.includes(origin)) return origin;
 
-        // Check wildcard patterns (e.g., "*.flowlink.io")
+        // Check wildcard patterns (e.g., "*.prooflink.io")
         for (const allowed of allowedOrigins) {
           if (allowed.startsWith("*.")) {
             const domain = allowed.slice(2);
@@ -104,6 +107,23 @@ export function createApp(): Hono {
       ],
       maxAge: 86400,
       credentials: true,
+    }),
+  );
+
+  // Request timeout — abort if a request takes longer than 30s
+  app.use("*", timeout());
+
+  // Body size limit — reject payloads larger than 1 MB
+  app.use(
+    "*",
+    bodyLimit({
+      maxSize: 1024 * 1024,
+      onError: (c) => {
+        return c.json(
+          { error: "PAYLOAD_TOO_LARGE", message: "Request body exceeds 1MB limit" },
+          413,
+        );
+      },
     }),
   );
 

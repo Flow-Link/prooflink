@@ -1,28 +1,28 @@
-# FlowLink -- Complete Feature Guide
+# ProofLink -- Complete Feature Guide
 
-## What is FlowLink
+## What is ProofLink
 
-FlowLink is the compliance layer for stablecoin and AI agent payments. It sits between payment protocols (x402, MPP, AP2, ACP) and settlement rails (USDC on Base/Ethereum), providing real-time sanctions screening, FATF Travel Rule compliance, AML risk scoring, and the industry's first Know Your Agent (KYA) standard for autonomous AI transactions. Every payment through FlowLink generates a cryptographically signed, on-chain compliance receipt -- the document a CFO hands to an auditor.
+ProofLink is the compliance layer for stablecoin and AI agent payments. It sits between payment protocols (x402, MPP, AP2, ACP) and settlement rails (USDC on Base/Ethereum), providing real-time sanctions screening, FATF Travel Rule compliance, AML risk scoring, and the industry's first Know Your Agent (KYA) standard for autonomous AI transactions. Every payment through ProofLink generates a cryptographically signed, on-chain compliance receipt -- the document a CFO hands to an auditor.
 
 ### The Problem
 
-Stablecoin transaction volume hit $33T in 2025 (up 72% YoY). Six competing agent payment protocols shipped between April 2025 and March 2026. None have built-in compliance. The GENIUS Act and MiCA make compliance legally mandatory for every stablecoin transaction above threshold. There is no neutral, cross-protocol compliance layer -- until FlowLink.
+Stablecoin transaction volume hit $33T in 2025 (up 72% YoY). Six competing agent payment protocols shipped between April 2025 and March 2026. None have built-in compliance. The GENIUS Act and MiCA make compliance legally mandatory for every stablecoin transaction above threshold. There is no neutral, cross-protocol compliance layer -- until ProofLink.
 
-### How FlowLink Is Different
+### How ProofLink Is Different
 
-| Competitor | What They Do | What FlowLink Does Differently |
+| Competitor | What They Do | What ProofLink Does Differently |
 |------------|-------------|-------------------------------|
-| **Request Network** | Invoice protocol for crypto payments | FlowLink adds sanctions screening, AML scoring, Travel Rule, and KYA on top of invoicing. Request has no compliance engine. |
-| **Coinbase x402** | HTTP-native micropayment protocol | x402 has zero built-in compliance. FlowLink is the compliance middleware that plugs into x402 via three hooks (before-verify, before-settle, after-settle). |
-| **Chainalysis / TRM Labs** | Blockchain analytics and screening APIs | These are data providers. FlowLink orchestrates them into a unified compliance pipeline with receipts, Travel Rule, and agent identity -- not just raw screening. |
-| **Notabene** | Travel Rule transmission | Notabene handles one piece (IVMS101 data exchange). FlowLink integrates Notabene as a provider within a full compliance stack that also includes sanctions, AML, KYA, and receipts. |
+| **Request Network** | Invoice protocol for crypto payments | ProofLink adds sanctions screening, AML scoring, Travel Rule, and KYA on top of invoicing. Request has no compliance engine. |
+| **Coinbase x402** | HTTP-native micropayment protocol | x402 has zero built-in compliance. ProofLink is the compliance middleware that plugs into x402 via three hooks (before-verify, before-settle, after-settle). |
+| **Chainalysis / TRM Labs** | Blockchain analytics and screening APIs | These are data providers. ProofLink orchestrates them into a unified compliance pipeline with receipts, Travel Rule, and agent identity -- not just raw screening. |
+| **Notabene** | Travel Rule transmission | Notabene handles one piece (IVMS101 data exchange). ProofLink integrates Notabene as a provider within a full compliance stack that also includes sanctions, AML, KYA, and receipts. |
 
 ---
 
 ## Architecture Overview
 
 ```
-                                    FlowLink Architecture
+                                    ProofLink Architecture
 
     +-----------------+      +------------------+      +------------------+
     |   Dashboard     |----->|   API Server     |----->|   PostgreSQL     |
@@ -31,7 +31,7 @@ Stablecoin transaction volume hit $33T in 2025 (up 72% YoY). Six competing agent
     +-----------------+      +--------+---------+
                                       |
     +-----------------+      +--------+---------+      +------------------+
-    |   MCP Server    |----->|   @flowlink/core |      |   Redis          |
+    |   MCP Server    |----->|   @prooflink/core |      |   Redis          |
     |   (Claude, etc) |      |   Compliance     |      |   :6379          |
     +-----------------+      |   Engine         |      +------------------+
                              +------------------+
@@ -58,7 +58,7 @@ Stablecoin transaction volume hit $33T in 2025 (up 72% YoY). Six competing agent
 | **x402 Middleware** | `packages/x402-compliance` | Three-hook compliance middleware for x402 payment flows |
 | **Smart Contracts** | `packages/contracts` | Solidity contracts for on-chain settlement, receipts, KYA, invoices |
 | **Shared Types** | `packages/shared` | Zod schemas, TypeScript types, validation utilities |
-| **SDK** | `packages/sdk` | TypeScript client SDK for FlowLink API |
+| **SDK** | `packages/sdk` | TypeScript client SDK for ProofLink API |
 | **Frontend** | `frontend/` | Marketing landing page (standalone, no API needed) |
 | **Demo CLI** | `apps/demo` | Terminal demo for hackathon showcases |
 
@@ -104,11 +104,11 @@ Stablecoin transaction volume hit $33T in 2025 (up 72% YoY). Six competing agent
 
 ### 1. OFAC Sanctions Screening
 
-FlowLink screens every address involved in a payment against global sanctions lists before allowing settlement.
+ProofLink screens every address involved in a payment against global sanctions lists before allowing settlement.
 
 #### How It Works
 
-The `SanctionsScreener` class in `@flowlink/core` implements a multi-provider architecture with priority ordering, health tracking, and automatic fallback:
+The `SanctionsScreener` class in `@prooflink/core` implements a multi-provider architecture with priority ordering, health tracking, and automatic fallback:
 
 1. **Priority mode** (default): Query providers in order. First healthy provider that returns a result wins.
 2. **Aggregate mode**: Query all providers in parallel and merge results. Matched if ANY provider matched.
@@ -202,7 +202,7 @@ Navigate to the **Screen** page (`/screen`) in the dashboard. Enter any wallet a
 
 ### 2. AML Risk Scoring
 
-FlowLink uses a deterministic, rule-based AML risk scoring engine that evaluates 10 behavioral factors and produces a composite score from 0 (no risk) to 100 (maximum risk). Designed for sub-50ms execution.
+ProofLink uses a deterministic, rule-based AML risk scoring engine that evaluates 10 behavioral factors and produces a composite score from 0 (no risk) to 100 (maximum risk). Designed for sub-50ms execution.
 
 #### The 10 Risk Factors
 
@@ -241,14 +241,14 @@ finalScore = round(clamp(rawScore, 0, 100))
 | 50-79 | **ESCALATED** | Payment held for manual review. Compliance officer notified. |
 | 80-100 | **REJECTED** | Payment blocked. Sanctioned or high-risk address. |
 
-The threshold is configurable via `ProofLinkConfig.maxRiskScore` (API) or `FlowLinkFacilitator.setRiskThreshold()` (on-chain).
+The threshold is configurable via `ProofLinkConfig.maxRiskScore` (API) or `ProofLinkFacilitator.setRiskThreshold()` (on-chain).
 
 #### Pluggable Rules
 
 Custom rules can be added at runtime:
 
 ```typescript
-import { AMLScorer } from "@flowlink/core";
+import { AMLScorer } from "@prooflink/core";
 
 const scorer = new AMLScorer(config);
 
@@ -311,14 +311,14 @@ curl -X POST http://localhost:3001/v1/compliance/check \
         "checkType": "KYA_VERIFICATION",
         "target": "sender",
         "result": "SKIPPED",
-        "provider": "flowlink",
+        "provider": "prooflink",
         "durationMs": 30
       },
       {
         "checkType": "AML_MONITORING",
         "target": "transaction",
         "result": "PASSED",
-        "provider": "flowlink",
+        "provider": "prooflink",
         "durationMs": 20
       },
       {
@@ -332,7 +332,7 @@ curl -X POST http://localhost:3001/v1/compliance/check \
         "checkType": "JURISDICTIONAL_RULES",
         "target": "transaction",
         "result": "PASSED",
-        "provider": "flowlink",
+        "provider": "prooflink",
         "durationMs": 3
       }
     ],
@@ -347,31 +347,31 @@ curl -X POST http://localhost:3001/v1/compliance/check \
 
 ### 3. Know Your Agent (KYA)
 
-KYA is FlowLink's identity standard for AI agents participating in financial transactions. It answers the question: "Who controls this agent, what is it authorized to do, and should we trust it?"
+KYA is ProofLink's identity standard for AI agents participating in financial transactions. It answers the question: "Who controls this agent, what is it authorized to do, and should we trust it?"
 
 #### What KYA Credentials Are
 
-KYA credentials are **W3C Verifiable Credentials** (VCs) extended with FlowLink-specific fields:
+KYA credentials are **W3C Verifiable Credentials** (VCs) extended with ProofLink-specific fields:
 
 ```json
 {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://flowlink.io/credentials/kya/v1"
+    "https://prooflink.io/credentials/kya/v1"
   ],
   "type": ["VerifiableCredential", "KYACredential"],
   "id": "urn:uuid:agent-uuid",
   "issuer": {
-    "id": "did:flowlink:issuer",
-    "name": "FlowLink"
+    "id": "did:prooflink:issuer",
+    "name": "ProofLink"
   },
   "issuanceDate": "2026-03-21T00:00:00Z",
   "expirationDate": "2027-01-01T00:00:00Z",
   "credentialSubject": {
-    "id": "did:web:paybot.flowlink.io",
+    "id": "did:web:paybot.prooflink.io",
     "agentType": "autonomous",
     "controllingEntity": {
-      "name": "FlowLink Inc",
+      "name": "ProofLink Inc",
       "lei": "5493001KJTIIGC8Y1R12",
       "kybVerified": true
     },
@@ -389,7 +389,7 @@ KYA credentials are **W3C Verifiable Credentials** (VCs) extended with FlowLink-
   "proof": {
     "type": "EcdsaSecp256k1Signature2019",
     "created": "2026-03-21T00:00:00Z",
-    "verificationMethod": "did:flowlink:issuer#key-1",
+    "verificationMethod": "did:prooflink:issuer#key-1",
     "proofPurpose": "assertionMethod",
     "jws": "eyJ..."
   }
@@ -420,11 +420,11 @@ Each agent has a delegation scope that defines its operational boundaries:
 
 #### ERC-8004 Integration
 
-FlowLink integrates with the ERC-8004 Agent Identity Registry standard:
+ProofLink integrates with the ERC-8004 Agent Identity Registry standard:
 
 - Agents can be registered on-chain with `erc8004RegistryAddress` and `erc8004TokenId`
 - The `KYAVerifier` checks `isRegistered(walletAddress)` on the registry contract
-- The `FlowLinkKYA.sol` contract manages on-chain KYA credentials with issuance, revocation, and verification
+- The `ProofLinkKYA.sol` contract manages on-chain KYA credentials with issuance, revocation, and verification
 
 #### API: Register Agent
 
@@ -433,12 +433,12 @@ curl -X POST http://localhost:3001/v1/identity/agents \
   -H "X-API-Key: fl_live_83433bffb7b04d87ae3981f7" \
   -H "Content-Type: application/json" \
   -d '{
-    "agentDid": "did:web:paybot.flowlink.io",
+    "agentDid": "did:web:paybot.prooflink.io",
     "name": "PayBot Prime",
     "agentType": "autonomous",
     "walletAddress": "0x1234567890abcdef1234567890abcdef12345678",
     "controllingEntity": {
-      "name": "FlowLink Inc",
+      "name": "ProofLink Inc",
       "lei": "5493001KJTIIGC8Y1R12"
     },
     "delegationScope": {
@@ -456,7 +456,7 @@ curl -X POST http://localhost:3001/v1/identity/verify \
   -H "X-API-Key: fl_live_83433bffb7b04d87ae3981f7" \
   -H "Content-Type: application/json" \
   -d '{
-    "agentId": "did:web:paybot.flowlink.io",
+    "agentId": "did:web:paybot.prooflink.io",
     "chain": "eip155:8453"
   }'
 
@@ -469,7 +469,7 @@ curl -X POST http://localhost:3001/v1/identity/verify \
     "agentMetadata": {
       "name": "PayBot Prime",
       "type": "autonomous",
-      "operator": "FlowLink Inc",
+      "operator": "ProofLink Inc",
       "registeredAt": "2026-03-21T00:00:00Z",
       "walletAddress": "0x1234..."
     },
@@ -493,10 +493,10 @@ curl -X POST http://localhost:3001/v1/identity/kya/issue \
   -H "X-API-Key: fl_live_83433bffb7b04d87ae3981f7" \
   -H "Content-Type: application/json" \
   -d '{
-    "agentDid": "did:web:paybot.flowlink.io",
+    "agentDid": "did:web:paybot.prooflink.io",
     "agentType": "autonomous",
     "controllingEntity": {
-      "name": "FlowLink Inc",
+      "name": "ProofLink Inc",
       "lei": "5493001KJTIIGC8Y1R12",
       "kybVerified": true
     },
@@ -539,13 +539,13 @@ The FATF Travel Rule (Recommendation 16) requires Virtual Asset Service Provider
 | **European Union** | EUR 0 (CASP-to-CASP); EUR 1,000 (self-hosted) | MiCA / Transfer of Funds Regulation |
 | **Singapore** | SGD 1,500 (~$1,100 USD) | Payment Services Act |
 | **Japan** | JPY 0 (no threshold) | Act on Prevention of Transfer of Criminal Proceeds |
-| **Default** | $1,000 | FlowLink conservative default |
+| **Default** | $1,000 | ProofLink conservative default |
 
 The `TravelRuleChecker` automatically resolves the most restrictive jurisdiction between originator and beneficiary.
 
 #### IVMS101 Data Format
 
-FlowLink constructs IVMS101-compliant messages for Travel Rule transmission:
+ProofLink constructs IVMS101-compliant messages for Travel Rule transmission:
 
 ```json
 {
@@ -567,7 +567,7 @@ FlowLink constructs IVMS101-compliant messages for Travel Rule transmission:
   },
   "originatingVASP": {
     "legalPerson": {
-      "name": "FlowLink Compliance Service"
+      "name": "ProofLink Compliance Service"
     }
   },
   "transactionAmount": "5000",
@@ -578,7 +578,7 @@ FlowLink constructs IVMS101-compliant messages for Travel Rule transmission:
 
 #### Notabene Integration
 
-FlowLink supports two Travel Rule transmission providers:
+ProofLink supports two Travel Rule transmission providers:
 
 | Provider | Class | Usage |
 |----------|-------|-------|
@@ -603,7 +603,7 @@ The provider interface is pluggable -- implement `TravelRuleProvider` to integra
 
 ### 5. Invoice Management (Agent Invoice Standard)
 
-FlowLink defines a machine-readable invoice format for agent-to-agent commerce, bridging the gap between "transaction hash" and "CFO-approved invoice."
+ProofLink defines a machine-readable invoice format for agent-to-agent commerce, bridging the gap between "transaction hash" and "CFO-approved invoice."
 
 #### Invoice Lifecycle State Machine
 
@@ -648,14 +648,14 @@ Invoices use JSON-LD for semantic interoperability:
 
 ```json
 {
-  "@context": ["https://schema.org", "https://flowlink.io/invoices/v1"],
+  "@context": ["https://schema.org", "https://prooflink.io/invoices/v1"],
   "@type": "Invoice",
   "invoiceId": "inv_abc123",
   "state": "ISSUED",
   "seller": {
-    "agentId": "did:web:paybot.flowlink.io",
+    "agentId": "did:web:paybot.prooflink.io",
     "walletAddress": "0x1234...",
-    "legalName": "FlowLink Inc"
+    "legalName": "ProofLink Inc"
   },
   "buyer": {
     "walletAddress": "0xDEF...",
@@ -696,7 +696,7 @@ curl -X POST http://localhost:3001/v1/invoices \
   -d '{
     "seller": {
       "walletAddress": "0x1234567890abcdef1234567890abcdef12345678",
-      "agentId": "did:web:paybot.flowlink.io"
+      "agentId": "did:web:paybot.prooflink.io"
     },
     "buyer": {
       "walletAddress": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
@@ -804,7 +804,7 @@ curl http://localhost:3001/v1/compliance/receipt/{receipt-uuid} \
 
 ### 7. x402 Protocol Integration
 
-x402 is Coinbase's HTTP-native payment protocol that uses HTTP status code 402 (Payment Required) to gate access to resources. FlowLink adds compliance to x402 via a three-hook middleware.
+x402 is Coinbase's HTTP-native payment protocol that uses HTTP status code 402 (Payment Required) to gate access to resources. ProofLink adds compliance to x402 via a three-hook middleware.
 
 #### What x402 Is
 
@@ -816,7 +816,7 @@ x402 enables pay-per-request access to APIs and content:
 
 #### Three-Hook Compliance Middleware
 
-FlowLink's `FlowLinkX402Compliance` class registers three hooks on the x402 resource server:
+ProofLink's `ProofLinkX402Compliance` class registers three hooks on the x402 resource server:
 
 | Hook | When | What It Does |
 |------|------|-------------|
@@ -824,13 +824,13 @@ FlowLink's `FlowLinkX402Compliance` class registers three hooks on the x402 reso
 | `onBeforeSettle` | Before payment settlement | Travel Rule check (if above jurisdiction threshold). Re-screens receiver. Converts amount to USD for threshold comparison. |
 | `onAfterSettle` | After successful settlement | Generates ProofLink receipt, computes receipt hash, optionally attests on-chain via EAS, creates invoice record. |
 
-#### How to Add FlowLink to an x402 Payment Flow
+#### How to Add ProofLink to an x402 Payment Flow
 
 ```typescript
-import { FlowLinkX402Compliance } from "@flowlink/x402-compliance";
+import { ProofLinkX402Compliance } from "@prooflink/x402-compliance";
 
 // Create compliance middleware
-const compliance = new FlowLinkX402Compliance(
+const compliance = new ProofLinkX402Compliance(
   {
     riskThreshold: 50,
     sanctionsLists: ["OFAC_SDN"],
@@ -861,13 +861,13 @@ compliance.on((event) => {
 compliance.destroy();
 ```
 
-The middleware also registers a FlowLink extension on the x402 server that enriches payment responses with ProofLink receipt hashes.
+The middleware also registers a ProofLink extension on the x402 server that enriches payment responses with ProofLink receipt hashes.
 
 ---
 
 ### 8. MCP Server (AI Agent Tools)
 
-FlowLink provides a Model Context Protocol (MCP) server with 11 compliance tools that AI agents can call as naturally as any other tool.
+ProofLink provides a Model Context Protocol (MCP) server with 11 compliance tools that AI agents can call as naturally as any other tool.
 
 #### All 11 MCP Tools
 
@@ -900,12 +900,12 @@ Add to your Claude Desktop MCP configuration (`~/.claude/mcp.json` or Claude Des
 ```json
 {
   "mcpServers": {
-    "flowlink-compliance": {
+    "prooflink-compliance": {
       "command": "node",
-      "args": ["path/to/flowlink/packages/mcp-server/dist/index.js"],
+      "args": ["path/to/prooflink/packages/mcp-server/dist/index.js"],
       "env": {
-        "FLOWLINK_API_URL": "http://localhost:3001",
-        "FLOWLINK_API_KEY": "fl_live_83433bffb7b04d87ae3981f7"
+        "PROOFLINK_API_URL": "http://localhost:3001",
+        "PROOFLINK_API_KEY": "fl_live_83433bffb7b04d87ae3981f7"
       }
     }
   }
@@ -919,10 +919,10 @@ The MCP server supports two transports:
 #### How to Connect to LangChain / Custom Agents
 
 ```typescript
-import { createFlowLinkMCPServer } from "@flowlink/mcp-server";
+import { createProofLinkMCPServer } from "@prooflink/mcp-server";
 
 // Start with SSE transport for remote access
-const handle = await createFlowLinkMCPServer({
+const handle = await createProofLinkMCPServer({
   transport: "sse",
   sse: { port: 3002, cors: true },
 });
@@ -955,9 +955,9 @@ Agent calls: get_risk_report({ address: "0x742d35Cc...", chain: "base", depth: "
 
 ### 9. Smart Contracts
 
-FlowLink has four Solidity contracts deployed on Base Sepolia, built with OpenZeppelin upgradeable patterns (UUPS proxy) and Foundry.
+ProofLink has four Solidity contracts deployed on Base Sepolia, built with OpenZeppelin upgradeable patterns (UUPS proxy) and Foundry.
 
-#### FlowLinkFacilitator.sol
+#### ProofLinkFacilitator.sol
 
 **Purpose:** x402 compliance-gated payment facilitator. Verifies compliance before settlement and anchors ProofLink receipts on-chain.
 
@@ -987,7 +987,7 @@ FlowLink has four Solidity contracts deployed on Base Sepolia, built with OpenZe
 | `anchorReceipt(...)` | Store a compliance receipt on-chain |
 | `verify(receiptId)` | Verify a receipt exists and return its status |
 
-#### FlowLinkKYA.sol
+#### ProofLinkKYA.sol
 
 **Purpose:** On-chain KYA (Know Your Agent) credential management.
 
@@ -1007,7 +1007,7 @@ All contracts target **Base Sepolia** (testnet) with Foundry:
 
 ```bash
 # Run contract tests
-pnpm --filter=@flowlink/contracts test
+pnpm --filter=@prooflink/contracts test
 
 # Deploy (requires Foundry + Base Sepolia RPC)
 forge script script/Deploy.s.sol --rpc-url $BASE_SEPOLIA_RPC --broadcast
@@ -1017,7 +1017,7 @@ forge script script/Deploy.s.sol --rpc-url $BASE_SEPOLIA_RPC --broadcast
 
 ### 10. Dashboard
 
-The FlowLink Dashboard is a Next.js 15 admin UI for real-time compliance monitoring, invoice management, and agent oversight.
+The ProofLink Dashboard is a Next.js 15 admin UI for real-time compliance monitoring, invoice management, and agent oversight.
 
 #### All Pages
 
@@ -1053,7 +1053,7 @@ The FlowLink Dashboard is a Next.js 15 admin UI for real-time compliance monitor
 
 #### Dashboard Works Without Database
 
-The dashboard falls back to mock data when the API is unreachable. This means you can run `pnpm --filter=@flowlink/dashboard dev` standalone to explore the UI without setting up PostgreSQL.
+The dashboard falls back to mock data when the API is unreachable. This means you can run `pnpm --filter=@prooflink/dashboard dev` standalone to explore the UI without setting up PostgreSQL.
 
 ---
 
@@ -1160,7 +1160,7 @@ The dashboard works standalone with mock data:
 ```bash
 pnpm install
 pnpm build
-pnpm --filter=@flowlink/dashboard dev
+pnpm --filter=@prooflink/dashboard dev
 ```
 
 Open http://localhost:3100 to explore the dashboard.
@@ -1170,15 +1170,15 @@ Open http://localhost:3100 to explore the dashboard.
 ```bash
 # Start infrastructure
 docker compose up postgres redis -d
-docker compose exec postgres pg_isready -U flowlink
+docker compose exec postgres pg_isready -U prooflink
 
 # Configure environment
 cp .env.example .env
 
 # Run migrations and start
-pnpm --filter=@flowlink/api db:migrate
-pnpm --filter=@flowlink/api dev      # API on :3001
-pnpm --filter=@flowlink/dashboard dev  # Dashboard on :3100 (in another terminal)
+pnpm --filter=@prooflink/api db:migrate
+pnpm --filter=@prooflink/api dev      # API on :3001
+pnpm --filter=@prooflink/dashboard dev  # Dashboard on :3100 (in another terminal)
 ```
 
 ### Full Docker Dev
@@ -1193,7 +1193,7 @@ Starts PostgreSQL, Redis, API, and Dashboard all at once.
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `DATABASE_URL` | `postgresql://flowlink:flowlink_dev@localhost:5432/flowlink` | PostgreSQL connection string |
+| `DATABASE_URL` | `postgresql://prooflink:prooflink_dev@localhost:5432/prooflink` | PostgreSQL connection string |
 | `REDIS_URL` | `redis://localhost:6379` | Redis connection string |
 | `PORT` | `3001` | API server port |
 | `CORS_ORIGIN` | `http://localhost:3000,http://localhost:3100` | Allowed CORS origins |
@@ -1214,11 +1214,11 @@ curl -X POST $API_URL/identity/agents \
   -H "X-API-Key: $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "agentDid": "did:web:paybot.flowlink.io",
+    "agentDid": "did:web:paybot.prooflink.io",
     "name": "PayBot Prime",
     "agentType": "autonomous",
     "walletAddress": "0x1234567890abcdef1234567890abcdef12345678",
-    "controllingEntity": { "name": "FlowLink Inc" },
+    "controllingEntity": { "name": "ProofLink Inc" },
     "delegationScope": {
       "maxTransactionValue": 10000,
       "dailyLimit": 50000,
@@ -1242,7 +1242,7 @@ curl -X POST $API_URL/invoices \
   -H "X-API-Key: $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "seller": { "walletAddress": "0x1234567890abcdef1234567890abcdef12345678", "agentId": "did:web:paybot.flowlink.io" },
+    "seller": { "walletAddress": "0x1234567890abcdef1234567890abcdef12345678", "agentId": "did:web:paybot.prooflink.io" },
     "buyer": { "walletAddress": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" },
     "lineItems": [{ "description": "API Usage", "quantity": 1000, "unitPrice": 0.01, "total": 10 }],
     "currency": "USDC",
@@ -1257,15 +1257,15 @@ curl -X POST $API_URL/invoices \
 pnpm test
 
 # Individual packages
-pnpm --filter=@flowlink/shared test          # 417 tests -- types, validation, crypto
-pnpm --filter=@flowlink/core test            # 414 tests -- compliance engine
-pnpm --filter=@flowlink/sdk test             # 111 tests -- SDK client
-pnpm --filter=@flowlink/x402-compliance test # 67 tests -- middleware
-pnpm --filter=@flowlink/mcp-server test      # 50 tests -- MCP tools
-pnpm --filter=@flowlink/api test             # 133 tests -- API routes
+pnpm --filter=@prooflink/shared test          # 417 tests -- types, validation, crypto
+pnpm --filter=@prooflink/core test            # 414 tests -- compliance engine
+pnpm --filter=@prooflink/sdk test             # 111 tests -- SDK client
+pnpm --filter=@prooflink/x402-compliance test # 67 tests -- middleware
+pnpm --filter=@prooflink/mcp-server test      # 50 tests -- MCP tools
+pnpm --filter=@prooflink/api test             # 133 tests -- API routes
 
 # Smart contracts (requires Foundry)
-pnpm --filter=@flowlink/contracts test
+pnpm --filter=@prooflink/contracts test
 ```
 
 ---
@@ -1306,7 +1306,7 @@ pnpm --filter=@flowlink/contracts test
 The `AMLScorer` supports runtime rule addition:
 
 ```typescript
-import { AMLScorer, type ScoringRule } from "@flowlink/core";
+import { AMLScorer, type ScoringRule } from "@prooflink/core";
 
 const myRule: ScoringRule = {
   factor: "high_value_first_tx",
@@ -1339,7 +1339,7 @@ The rule interface requires:
 
 2. **Create middleware** following the pattern of `packages/x402-compliance/`:
    - Implement hooks that call the core compliance engine
-   - Map protocol-specific contexts to FlowLink's `TransactionContext`
+   - Map protocol-specific contexts to ProofLink's `TransactionContext`
    - Generate ProofLink receipts after settlement
 
 3. **Add protocol-specific tests** in the middleware package.
@@ -1349,7 +1349,7 @@ The rule interface requires:
 Implement the `SanctionsProvider` interface:
 
 ```typescript
-import { SanctionsProvider, SanctionsProviderResult } from "@flowlink/core";
+import { SanctionsProvider, SanctionsProviderResult } from "@prooflink/core";
 
 export class MyProvider implements SanctionsProvider {
   readonly name = "my_provider";
@@ -1419,4 +1419,4 @@ screener.addProvider(new MyProvider());
 
 ---
 
-*Document generated from FlowLink codebase analysis. All API examples use the development API key. For production deployments, generate a new API key via the API Keys dashboard page.*
+*Document generated from ProofLink codebase analysis. All API examples use the development API key. For production deployments, generate a new API key via the API Keys dashboard page.*

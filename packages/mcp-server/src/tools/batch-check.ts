@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { SupportedChain } from "@flowlink/shared";
+import { SupportedChain } from "@prooflink/shared";
 import { formatMcpError } from "../errors.js";
 import { sanctionsScreener } from "../context.js";
 
@@ -69,7 +69,7 @@ export function registerBatchComplianceCheck(server: McpServer): void {
           "HMT",
         ] as const;
 
-        // Screen each address using the real SanctionsScreener from @flowlink/core
+        // Screen each address using the real SanctionsScreener from @prooflink/core
         const results = await Promise.all(
           params.addresses.map(async (entry) => {
             const screenResult = await sanctionsScreener.screenAddress(

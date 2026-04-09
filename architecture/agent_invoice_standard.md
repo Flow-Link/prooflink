@@ -1,7 +1,7 @@
 ---
 title: "AIS-1: Agent Invoice Standard"
 description: A JSON-LD invoice schema for autonomous agent commerce, bridging on-chain payment proofs to enterprise accounting systems with embedded compliance attestation, work verification, and tax handling.
-author: FlowLink Contributors
+author: ProofLink Contributors
 status: Draft
 type: Standards Track
 category: Application
@@ -96,9 +96,9 @@ The AIS-1 context extends schema.org and defines all invoice-specific terms.
   "@context": {
     "@version": 1.1,
     "@protected": true,
-    "ais": "https://flowlink.dev/ais/v1#",
+    "ais": "https://prooflink.dev/ais/v1#",
     "schema": "https://schema.org/",
-    "kya": "https://flowlink.dev/kya/v1#",
+    "kya": "https://prooflink.dev/kya/v1#",
     "erc8004": "https://eips.ethereum.org/EIPS/eip-8004#",
     "erc8183": "https://eips.ethereum.org/EIPS/eip-8183#",
 
@@ -431,7 +431,7 @@ An AIS-1 `AgentInvoice` is a JSON-LD document with the following structure. Fiel
 
 | Field | Type | Requirement | Description |
 |-------|------|-------------|-------------|
-| `@context` | array | REQUIRED | Must include `"https://schema.org"` and `"https://flowlink.dev/ais/v1"` |
+| `@context` | array | REQUIRED | Must include `"https://schema.org"` and `"https://prooflink.dev/ais/v1"` |
 | `@type` | string | REQUIRED | Must be `"AgentInvoice"` |
 | `invoiceId` | string | REQUIRED | Globally unique identifier. Format: `ais_{issuerPrefix}_{YYYY}_{random12}` |
 | `invoiceVersion` | string | REQUIRED | Schema version. This specification defines `"1.0"` |
@@ -532,7 +532,7 @@ Links the invoice to the compliance attestation that cleared the underlying tran
 | Field | Type | Requirement | Description |
 |-------|------|-------------|-------------|
 | `@type` | string | REQUIRED | `"ComplianceStamp"` |
-| `proofLinkReceiptId` | string | REQUIRED | FlowLink ProofLink receipt identifier |
+| `proofLinkReceiptId` | string | REQUIRED | ProofLink ProofLink receipt identifier |
 | `ipfsHash` | string | REQUIRED | IPFS CID of the full compliance receipt |
 | `easAttestationId` | string | OPTIONAL | EAS attestation UID on-chain |
 | `sanctionsCleared` | boolean | REQUIRED | Whether all applicable sanctions screens passed |
@@ -627,7 +627,7 @@ ais_{issuerPrefix}_{YYYY}_{random12}
 
 Where:
 - `ais_` is the fixed AIS namespace prefix
-- `{issuerPrefix}` is a 2-8 character identifier for the issuer (e.g., `fl` for FlowLink, `acme` for Acme Corp)
+- `{issuerPrefix}` is a 2-8 character identifier for the issuer (e.g., `fl` for ProofLink, `acme` for Acme Corp)
 - `{YYYY}` is the four-digit year
 - `{random12}` is 12 alphanumeric characters (base36, lowercase)
 
@@ -703,7 +703,7 @@ Agent-specific fields that have no UBL equivalent are stored in `UBLExtensions`:
 ```xml
 <ext:UBLExtensions>
   <ext:UBLExtension>
-    <ext:ExtensionURI>https://flowlink.dev/ais/v1</ext:ExtensionURI>
+    <ext:ExtensionURI>https://prooflink.dev/ais/v1</ext:ExtensionURI>
     <ext:ExtensionContent>
       <ais:AgentInvoiceExtension>
         <ais:IssuerAgentId>erc8004:8453:0xABC...:42</ais:IssuerAgentId>
@@ -728,8 +728,8 @@ Agent-specific fields that have no UBL equivalent are stored in `UBLExtensions`:
 AIS-1 invoices transmitted through the Peppol network MUST:
 
 1. Be converted to UBL 2.3 + AIS extension as shown above.
-2. Use the Peppol BIS Billing 3.0 profile with `CustomizationID` set to `urn:cen.eu:en16931:2017#compliant#urn:flowlink.dev:ais:1.0`.
-3. Register the AIS extension namespace with the Peppol Authority (pending; FlowLink to submit extension request).
+2. Use the Peppol BIS Billing 3.0 profile with `CustomizationID` set to `urn:cen.eu:en16931:2017#compliant#urn:prooflink.dev:ais:1.0`.
+3. Register the AIS extension namespace with the Peppol Authority (pending; ProofLink to submit extension request).
 
 ### 3.5 ZUGFeRD 2.4 Compatibility
 
@@ -917,7 +917,7 @@ A US company pays a German supplier for consulting services. No agents involved.
 
 ```json
 {
-  "@context": ["https://schema.org", "https://flowlink.dev/ais/v1"],
+  "@context": ["https://schema.org", "https://prooflink.dev/ais/v1"],
   "@type": "AgentInvoice",
   "invoiceId": "ais_muller_2026_k8jd3nw7p2x1",
   "invoiceVersion": "1.0",
@@ -967,7 +967,7 @@ A US company pays a German supplier for consulting services. No agents involved.
     "@type": "PaymentProof",
     "protocol": "direct_transfer",
     "txHash": "0x7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b",
-    "facilitator": "flowlink.dev",
+    "facilitator": "prooflink.dev",
     "blockNumber": 18234567,
     "paymentTimestamp": "2026-03-18T14:22:07Z"
   },
@@ -1010,7 +1010,7 @@ Acme Corp's procurement agent uses a code-generation agent (registered on ERC-80
 
 ```json
 {
-  "@context": ["https://schema.org", "https://flowlink.dev/ais/v1"],
+  "@context": ["https://schema.org", "https://prooflink.dev/ais/v1"],
   "@type": "AgentInvoice",
   "invoiceId": "ais_codebot_2026_m3x7k9p2w1n4",
   "invoiceVersion": "1.0",
@@ -1024,7 +1024,7 @@ Acme Corp's procurement agent uses a code-generation agent (registered on ERC-80
       "vLEI": "254900XYZ123456789AB",
       "jurisdiction": "US"
     },
-    "kyaCredential": "did:flowlink:kya:codebot_labs_agent_1042",
+    "kyaCredential": "did:prooflink:kya:codebot_labs_agent_1042",
     "walletAddress": "0xCodeBotWallet1234567890abcdef12345678"
   },
   "recipient": {
@@ -1143,7 +1143,7 @@ A research agent (owned by a hedge fund) autonomously hires a data retrieval age
 
 ```json
 {
-  "@context": ["https://schema.org", "https://flowlink.dev/ais/v1"],
+  "@context": ["https://schema.org", "https://prooflink.dev/ais/v1"],
   "@type": "AgentInvoice",
   "invoiceId": "ais_datavault_2026_q9w2e5r8t1y4",
   "invoiceVersion": "1.0",
@@ -1157,7 +1157,7 @@ A research agent (owned by a hedge fund) autonomously hires a data retrieval age
       "vLEI": "529900DATAVAULT12345",
       "jurisdiction": "SG"
     },
-    "kyaCredential": "did:flowlink:kya:datavault_agent_3891",
+    "kyaCredential": "did:prooflink:kya:datavault_agent_3891",
     "walletAddress": "0xDataVaultWallet_abcdef1234567890abcdef"
   },
   "recipient": {
@@ -1169,7 +1169,7 @@ A research agent (owned by a hedge fund) autonomously hires a data retrieval age
       "vLEI": "529900ALPHASIGNAL789",
       "jurisdiction": "US"
     },
-    "kyaCredential": "did:flowlink:kya:alphasignal_agent_2204",
+    "kyaCredential": "did:prooflink:kya:alphasignal_agent_2204",
     "walletAddress": "0xAlphaSignalTreasury_1234567890abcdef12"
   },
   "lineItems": [
@@ -1356,7 +1356,7 @@ interface InvoiceAnchorer {
 ### 7.3 Implementation Phases
 
 **Phase 1 (weeks 1-4): Core schema + Builder + Validator**
-- JSON-LD context published at `https://flowlink.dev/ais/v1`
+- JSON-LD context published at `https://prooflink.dev/ais/v1`
 - TypeScript types generated from schema
 - Builder with fluent API
 - Validator with schema conformance and state machine checks
@@ -1377,16 +1377,16 @@ interface InvoiceAnchorer {
 - QuickBooks adapter (second ERP)
 
 **Phase 4 (weeks 13-16): MCP integration + protocol adapters**
-- `create_invoice` MCP tool in FlowLink MCP server
+- `create_invoice` MCP tool in ProofLink MCP server
 - x402 payment proof auto-extraction
 - MPP session-to-invoice aggregation
 - ERC-8183 work proof auto-linkage
 
 ### 7.4 SDK Distribution
 
-- **npm:** `@flowlink/ais-sdk`
-- **PyPI:** `flowlink-ais` (Python bindings via Pydantic models)
-- **GitHub:** `flowlink/agent-invoice-standard` (schema, reference implementation, examples)
+- **npm:** `@prooflink/ais-sdk`
+- **PyPI:** `prooflink-ais` (Python bindings via Pydantic models)
+- **GitHub:** `prooflink/agent-invoice-standard` (schema, reference implementation, examples)
 - **License:** Apache 2.0
 
 ---
@@ -1429,7 +1429,7 @@ Domain-specific extensions (e.g., healthcare billing codes, government procureme
 
 ### 9.3 Standards Track
 
-FlowLink intends to:
+ProofLink intends to:
 1. Publish AIS-1 as an open specification (Apache 2.0) on GitHub.
 2. Submit the AIS UBL extension to the OASIS UBL Technical Committee for consideration.
 3. Engage with the Peppol Authority on registering the AIS extension namespace.
@@ -1448,7 +1448,7 @@ FlowLink intends to:
 | [JSON-LD-1.1] | JSON-LD 1.1. W3C Recommendation. https://www.w3.org/TR/json-ld11/ |
 | [ERC-8004] | Trustless Agents Standard. https://eips.ethereum.org/EIPS/eip-8004 |
 | [ERC-8183] | Programmable Escrow for Agent Commerce. https://eips.ethereum.org/EIPS/eip-8183 |
-| [KYA-1] | Know Your Agent Verifiable Credential Standard. FlowLink. |
+| [KYA-1] | Know Your Agent Verifiable Credential Standard. ProofLink. |
 | [EAS] | Ethereum Attestation Service. https://attest.org/ |
 | [W3C-VC-2.0] | W3C Verifiable Credentials Data Model v2.0. https://www.w3.org/TR/vc-data-model-2.0/ |
 | [W3C-DID-1.0] | W3C Decentralized Identifiers v1.0. https://www.w3.org/TR/did-core/ |
@@ -1474,6 +1474,6 @@ FlowLink intends to:
 
 ---
 
-*AIS-1 Draft -- FlowLink Contributors -- March 20, 2026*
+*AIS-1 Draft -- ProofLink Contributors -- March 20, 2026*
 *License: Apache 2.0*
 *Classification: Public standard -- open for community review*

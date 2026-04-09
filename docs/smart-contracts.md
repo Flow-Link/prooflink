@@ -1,15 +1,15 @@
 # Smart Contract Guide
 
-This guide covers FlowLink's on-chain infrastructure: four upgradeable smart contracts deployed on Base (and Base Sepolia for testnet) that handle compliance receipt anchoring, agent identity management, invoice lifecycle, and x402 payment gating.
+This guide covers ProofLink's on-chain infrastructure: four upgradeable smart contracts deployed on Base (and Base Sepolia for testnet) that handle compliance receipt anchoring, agent identity management, invoice lifecycle, and x402 payment gating.
 
 ## Contract Overview
 
 | Contract | Purpose | Key Dependencies |
 |---|---|---|
 | `ProofLinkRegistry` | Anchors compliance receipts as EAS attestations | EAS, SchemaRegistry |
-| `FlowLinkKYA` | Agent identity registry and KYA credential management | ERC-8004 Identity Registry, ERC-8004 Validation Registry |
+| `ProofLinkKYA` | Agent identity registry and KYA credential management | ERC-8004 Identity Registry, ERC-8004 Validation Registry |
 | `AgentInvoice` | Invoice anchoring and lifecycle state machine | None (standalone) |
-| `FlowLinkFacilitator` | x402 compliance-gated settlement coordinator | ProofLinkRegistry, FlowLinkKYA |
+| `ProofLinkFacilitator` | x402 compliance-gated settlement coordinator | ProofLinkRegistry, ProofLinkKYA |
 
 All contracts use:
 - Solidity `^0.8.25`
@@ -203,11 +203,11 @@ const txHash = await walletClient.writeContract({
 
 ---
 
-## FlowLinkKYA
+## ProofLinkKYA
 
-**File**: `packages/contracts/src/FlowLinkKYA.sol`
+**File**: `packages/contracts/src/ProofLinkKYA.sol`
 
-The FlowLinkKYA contract manages agent identities and KYA credentials. It integrates with ERC-8004 for cross-protocol identity recognition.
+The ProofLinkKYA contract manages agent identities and KYA credentials. It integrates with ERC-8004 for cross-protocol identity recognition.
 
 ### Agent Registration
 
@@ -236,7 +236,7 @@ When an ERC-8004 Validation Registry is configured, `issueKYA` also writes a val
 
 ```solidity
 validationRegistry.validationResponse(
-    keccak256(abi.encodePacked(agentWallet, "flowlink-kya")),
+    keccak256(abi.encodePacked(agentWallet, "prooflink-kya")),
     75,  // ENHANCED level score
     string(abi.encodePacked("ipfs://", credentialHash)),
     credentialHash,
@@ -274,13 +274,13 @@ function updateDelegationScope(
 ) external onlyRole(VERIFIER_ROLE);
 ```
 
-### Interacting with FlowLinkKYA
+### Interacting with ProofLinkKYA
 
 ```typescript
 // Register an agent
 await walletClient.writeContract({
   address: KYA_ADDRESS,
-  abi: flowLinkKYAAbi,
+  abi: proofLinkKYAAbi,
   functionName: "registerAgent",
   args: [
     "did:web:payment-bot.acme.com",
@@ -297,7 +297,7 @@ const oneYearFromNow = BigInt(Math.floor(Date.now() / 1000) + 365 * 86400);
 
 await walletClient.writeContract({
   address: KYA_ADDRESS,
-  abi: flowLinkKYAAbi,
+  abi: proofLinkKYAAbi,
   functionName: "issueKYA",
   args: ["0xAGENT_WALLET", credHash, oneYearFromNow],
 });
@@ -305,7 +305,7 @@ await walletClient.writeContract({
 // Verify KYA
 const [isValid, credentialHash, validUntil] = await publicClient.readContract({
   address: KYA_ADDRESS,
-  abi: flowLinkKYAAbi,
+  abi: proofLinkKYAAbi,
   functionName: "verifyKYA",
   args: ["0xAGENT_WALLET"],
 });
@@ -313,7 +313,7 @@ const [isValid, credentialHash, validUntil] = await publicClient.readContract({
 // Check if agent is verified
 const verified = await publicClient.readContract({
   address: KYA_ADDRESS,
-  abi: flowLinkKYAAbi,
+  abi: proofLinkKYAAbi,
   functionName: "isVerified",
   args: ["0xAGENT_WALLET"],
 });
@@ -321,7 +321,7 @@ const verified = await publicClient.readContract({
 // Get full agent info
 const agentInfo = await publicClient.readContract({
   address: KYA_ADDRESS,
-  abi: flowLinkKYAAbi,
+  abi: proofLinkKYAAbi,
   functionName: "getAgent",
   args: ["0xAGENT_WALLET"],
 });
@@ -477,11 +477,11 @@ await walletClient.writeContract({
 
 ---
 
-## FlowLinkFacilitator
+## ProofLinkFacilitator
 
-**File**: `packages/contracts/src/FlowLinkFacilitator.sol`
+**File**: `packages/contracts/src/ProofLinkFacilitator.sol`
 
-The FlowLinkFacilitator is the x402 compliance gate. It verifies compliance before settlement, executes settlement only if compliant, and anchors ProofLink receipts.
+The ProofLinkFacilitator is the x402 compliance gate. It verifies compliance before settlement, executes settlement only if compliant, and anchors ProofLink receipts.
 
 ### Compliance Verification
 
@@ -495,7 +495,7 @@ function verify(
 Checks:
 1. Sanctions flags (bits 8-11 are match indicators)
 2. Risk score vs threshold
-3. KYA credential validity (via `FlowLinkKYA.verifyKYA`)
+3. KYA credential validity (via `ProofLinkKYA.verifyKYA`)
 4. Daily spending limits
 
 ### Settlement
@@ -566,7 +566,7 @@ function unpause() external onlyRole(DEFAULT_ADMIN_ROLE);
 
 When paused, `settle()` and `facilitate()` revert with `EnforcedPause`.
 
-### Interacting with FlowLinkFacilitator
+### Interacting with ProofLinkFacilitator
 
 ```typescript
 const FACILITATOR_ADDRESS = "0xFACILITATOR_PROXY_ADDRESS";
@@ -637,13 +637,13 @@ The `Types` library defines all shared structs and enums used across contracts:
 |---|---|---|
 | `Invoice` | invoiceId, contentHash, issuer, recipient, amount, state, timestamps, paymentTxHash, proofLinkReceiptId | AgentInvoice |
 | `InvoiceState` | DRAFT, ISSUED, PAID, SETTLED, DISPUTED, CANCELLED, REFUNDED | AgentInvoice |
-| `KYACredential` | agentWallet, credentialHash, validUntil, status, issuedAt | FlowLinkKYA |
-| `CredentialStatus` | ACTIVE, SUSPENDED, REVOKED, EXPIRED | FlowLinkKYA |
-| `AgentType` | AUTONOMOUS, SEMI_AUTONOMOUS, HUMAN_SUPERVISED | FlowLinkKYA |
-| `AgentInfo` | did, wallet, agentType, maxTxValue, dailyLimit, verified, timestamps | FlowLinkKYA |
-| `PaymentPayload` | payer, payee, amount, token, paymentHash, chainId, nonce, deadline | FlowLinkFacilitator |
-| `ComplianceAttestation` | proofLinkReceiptId, riskScore, sanctionsFlags, travelRuleCompliant, kyaVerified | FlowLinkFacilitator |
-| `SettlementRecord` | settlementId, payer, payee, token, amount, settledAt, proofLinkReceiptId | FlowLinkFacilitator |
+| `KYACredential` | agentWallet, credentialHash, validUntil, status, issuedAt | ProofLinkKYA |
+| `CredentialStatus` | ACTIVE, SUSPENDED, REVOKED, EXPIRED | ProofLinkKYA |
+| `AgentType` | AUTONOMOUS, SEMI_AUTONOMOUS, HUMAN_SUPERVISED | ProofLinkKYA |
+| `AgentInfo` | did, wallet, agentType, maxTxValue, dailyLimit, verified, timestamps | ProofLinkKYA |
+| `PaymentPayload` | payer, payee, amount, token, paymentHash, chainId, nonce, deadline | ProofLinkFacilitator |
+| `ComplianceAttestation` | proofLinkReceiptId, riskScore, sanctionsFlags, travelRuleCompliant, kyaVerified | ProofLinkFacilitator |
+| `SettlementRecord` | settlementId, payer, payee, token, amount, settledAt, proofLinkReceiptId | ProofLinkFacilitator |
 | `ProofLinkReceipt` | receiptId, paymentTxHash, chainId, payer, payee, amount, token, ipfsContentHash, riskScore, sanctionsFlags, travelRuleCompliant, timestamp, easAttestationUID | ProofLinkRegistry |
 
 ---
@@ -686,9 +686,9 @@ export DEPLOYER_PRIVATE_KEY=0x...
 
 1. Deploys `ProofLinkRegistry` implementation + proxy, initializes with EAS addresses
 2. Registers the ProofLink EAS schema
-3. Deploys `FlowLinkKYA` implementation + proxy, initializes with ERC-8004 registry addresses
+3. Deploys `ProofLinkKYA` implementation + proxy, initializes with ERC-8004 registry addresses
 4. Deploys `AgentInvoice` implementation + proxy
-5. Deploys `FlowLinkFacilitator` implementation + proxy, linked to registry and KYA
+5. Deploys `ProofLinkFacilitator` implementation + proxy, linked to registry and KYA
 6. Grants `ATTESTER_ROLE` on ProofLinkRegistry to the Facilitator
 7. Grants `FACILITATOR_ROLE` on AgentInvoice to the Facilitator
 
@@ -713,11 +713,11 @@ All state-changing functions are gated by OpenZeppelin `AccessControlUpgradeable
 
 ### Reentrancy Protection
 
-`FlowLinkFacilitator.settle()` and `facilitate()` use OpenZeppelin's `ReentrancyGuard`. State updates (nonce marking, daily spend tracking) happen before external calls (CEI pattern).
+`ProofLinkFacilitator.settle()` and `facilitate()` use OpenZeppelin's `ReentrancyGuard`. State updates (nonce marking, daily spend tracking) happen before external calls (CEI pattern).
 
 ### Replay Prevention
 
-The `FlowLinkFacilitator` tracks used nonces in `_usedNonces[nonce]`. Each nonce can only be used once. Combined with `deadline` enforcement, this prevents both replay and stale settlement attacks.
+The `ProofLinkFacilitator` tracks used nonces in `_usedNonces[nonce]`. Each nonce can only be used once. Combined with `deadline` enforcement, this prevents both replay and stale settlement attacks.
 
 ### Upgrade Safety
 
@@ -728,7 +728,7 @@ The `FlowLinkFacilitator` tracks used nonces in `_usedNonces[nonce]`. Each nonce
 
 ### Emergency Shutdown
 
-The `FlowLinkFacilitator` supports emergency pause via `PausableUpgradeable`:
+The `ProofLinkFacilitator` supports emergency pause via `PausableUpgradeable`:
 - `PAUSER_ROLE` can call `pause()` to halt all settlements
 - `DEFAULT_ADMIN_ROLE` is required to call `unpause()`
 - This asymmetry ensures that pause is fast (any pauser) but unpause requires admin review

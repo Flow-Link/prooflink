@@ -2,7 +2,7 @@ import type {
   IVMS101Person,
   TravelRuleData,
   TravelRuleStatus,
-} from "@flowlink/shared";
+} from "@prooflink/shared";
 import type { ProofLinkConfig } from "../config.js";
 
 // ---------------------------------------------------------------------------
@@ -352,8 +352,8 @@ export class TravelRuleChecker {
    * currency, with a separate USD field for threshold reference.
    */
   buildIVMS101Message(data: TravelRuleData): IVMS101Message {
-    const vaspName = process.env["FLOWLINK_VASP_NAME"] ?? "FlowLink Compliance Service";
-    const vaspLei = process.env["FLOWLINK_VASP_LEI"];
+    const vaspName = process.env["PROOFLINK_VASP_NAME"] ?? "ProofLink Compliance Service";
+    const vaspLei = process.env["PROOFLINK_VASP_LEI"];
 
     const parseNameIdentifier = (fullName: string | undefined): IVMS101NameIdentifier[] => {
       if (!fullName || fullName === "Unknown") {

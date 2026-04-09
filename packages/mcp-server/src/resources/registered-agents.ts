@@ -1,24 +1,24 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 /**
- * Resource: flowlink://agents/registered
+ * Resource: prooflink://agents/registered
  * Exposes the list of registered agents.
  */
 export function registerAgentsResource(server: McpServer): void {
   server.resource(
     "registered-agents",
-    "flowlink://agents/registered",
+    "prooflink://agents/registered",
     {
       description:
-        "List of all registered AI agents in the FlowLink agent registry — IDs, operator info, delegation scopes, and reputation scores.",
+        "List of all registered AI agents in the ProofLink agent registry — IDs, operator info, delegation scopes, and reputation scores.",
       mimeType: "application/json",
     },
     async () => {
-      // In production: query from ERC-8004 registry / FlowLink agent store
+      // In production: query from ERC-8004 registry / ProofLink agent store
       const agents = [
         {
           agent_id: "agent_001",
-          did: "did:flowlink:agent_001",
+          did: "did:prooflink:agent_001",
           name: "PaymentBot-v2",
           type: "semi-autonomous",
           wallet_address: "0x742d35Cc6634C0532925a3b844Bc9e7595f2bD68",
@@ -41,7 +41,7 @@ export function registerAgentsResource(server: McpServer): void {
         },
         {
           agent_id: "agent_002",
-          did: "did:flowlink:agent_002",
+          did: "did:prooflink:agent_002",
           name: "DataPurchaser",
           type: "autonomous",
           wallet_address: "0x1234567890abcdef1234567890abcdef12345678",
@@ -73,7 +73,7 @@ export function registerAgentsResource(server: McpServer): void {
       return {
         contents: [
           {
-            uri: "flowlink://agents/registered",
+            uri: "prooflink://agents/registered",
             mimeType: "application/json",
             text: JSON.stringify(result, null, 2),
           },

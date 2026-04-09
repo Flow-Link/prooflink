@@ -1,29 +1,29 @@
 #!/usr/bin/env node
 
 /**
- * FlowLink MCP Compliance Server — entry point.
+ * ProofLink MCP Compliance Server — entry point.
  *
  * Supports two transport modes:
- *   stdio (default): FLOWLINK_API_KEY=fl_live_xxx npx @flowlink/mcp-server
- *   SSE:             FLOWLINK_TRANSPORT=sse npx @flowlink/mcp-server
+ *   stdio (default): PROOFLINK_API_KEY=fl_live_xxx npx @prooflink/mcp-server
+ *   SSE:             PROOFLINK_TRANSPORT=sse npx @prooflink/mcp-server
  */
 
-export { createFlowLinkMCPServer } from "./server.js";
-export type { FlowLinkMCPHandle, FlowLinkMCPOptions } from "./server.js";
+export { createProofLinkMCPServer } from "./server.js";
+export type { ProofLinkMCPHandle, ProofLinkMCPOptions } from "./server.js";
 export type { SSETransportOptions, SSETransportHandle } from "./transports/sse.js";
 export { createSSETransport } from "./transports/sse.js";
 export { formatMcpError, formatUnknownError } from "./errors.js";
-export type { FlowLinkMcpErrorCode, McpErrorResponse } from "./errors.js";
+export type { ProofLinkMcpErrorCode, McpErrorResponse } from "./errors.js";
 
-import { createFlowLinkMCPServer } from "./server.js";
+import { createProofLinkMCPServer } from "./server.js";
 
 async function main(): Promise<void> {
-  const transport = process.env["FLOWLINK_TRANSPORT"] === "sse" ? "sse" : "stdio";
-  const port = process.env["FLOWLINK_SSE_PORT"]
-    ? parseInt(process.env["FLOWLINK_SSE_PORT"], 10)
+  const transport = process.env["PROOFLINK_TRANSPORT"] === "sse" ? "sse" : "stdio";
+  const port = process.env["PROOFLINK_SSE_PORT"]
+    ? parseInt(process.env["PROOFLINK_SSE_PORT"], 10)
     : 3001;
 
-  const handle = await createFlowLinkMCPServer({
+  const handle = await createProofLinkMCPServer({
     transport,
     sse: { port },
   });
@@ -32,6 +32,6 @@ async function main(): Promise<void> {
 
 main().catch((error: unknown) => {
   const message = error instanceof Error ? error.message : String(error);
-  process.stderr.write(`[flowlink-mcp] Fatal: ${message}\n`);
+  process.stderr.write(`[prooflink-mcp] Fatal: ${message}\n`);
   process.exit(1);
 });

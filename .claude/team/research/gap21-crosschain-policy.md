@@ -2,17 +2,17 @@
 
 **Status:** Research Complete
 **Date:** 2026-03-25
-**Scope:** How FlowLink should propagate agent delegation scopes (spending limits, allowlists, chain restrictions, time-bound authorizations) across heterogeneous chains — EVM, Solana, and beyond.
+**Scope:** How ProofLink should propagate agent delegation scopes (spending limits, allowlists, chain restrictions, time-bound authorizations) across heterogeneous chains — EVM, Solana, and beyond.
 
 ---
 
 ## 1. Problem Statement
 
-FlowLink's `CompliancePolicyEngine` (`packages/core/src/policy/engine.ts`) and `ProofLinkEngine` (`packages/core/src/engine/prooflink.ts`) evaluate policies locally, per-request. Each `ComplianceRequest` carries a `chain` field (CAIP-2 format: `eip155:1`, `eip155:8453`, `solana:mainnet`) but policies themselves — spending thresholds, allowlists, blocklists, jurisdiction restrictions, velocity windows — exist only in-process memory of the API server.
+ProofLink's `CompliancePolicyEngine` (`packages/core/src/policy/engine.ts`) and `ProofLinkEngine` (`packages/core/src/engine/prooflink.ts`) evaluate policies locally, per-request. Each `ComplianceRequest` carries a `chain` field (CAIP-2 format: `eip155:1`, `eip155:8453`, `solana:mainnet`) but policies themselves — spending thresholds, allowlists, blocklists, jurisdiction restrictions, velocity windows — exist only in-process memory of the API server.
 
 The gap: **when an agent is delegated a spending scope on Ethereum, that scope is invisible to Solana programs, Base contracts, and any other chain the agent touches.** A $500/day limit set by a human operator on chain A does not prevent the agent from spending $500/day on chain B simultaneously. Cross-chain policy state is not synchronized.
 
-This brief covers eight technical approaches to fix this, then recommends a layered implementation architecture for FlowLink.
+This brief covers eight technical approaches to fix this, then recommends a layered implementation architecture for ProofLink.
 
 ---
 
@@ -20,7 +20,7 @@ This brief covers eight technical approaches to fix this, then recommends a laye
 
 ### 2.1 Agent Delegation Scope
 
-In FlowLink, a delegation scope for an agent (`agentDid` in `kyaCredential`) minimally contains:
+In ProofLink, a delegation scope for an agent (`agentDid` in `kyaCredential`) minimally contains:
 
 ```typescript
 interface AgentDelegationScope {
@@ -63,7 +63,7 @@ struct EVM2AnyMessage {
     bytes extraArgs;         // gas limit for ccipReceive()
 }
 ```
-The `data` field is where FlowLink encodes a `PolicyUpdateMessage` (ABI-encoded or protobuf).
+The `data` field is where ProofLink encodes a `PolicyUpdateMessage` (ABI-encoded or protobuf).
 
 **Trust model:** Two-of-two DON consensus (Committing DON signs a Merkle root; Executing DON delivers; RMN independently blesses or curses per-chain lane). RMN is written in a different language by a different team — N-version programming. As of CCIP v2, cursing is per-chain-lane, not global.
 
@@ -71,9 +71,9 @@ The `data` field is where FlowLink encodes a `PolicyUpdateMessage` (ABI-encoded 
 
 **Cost:** Single fee on source chain, denominated in LINK or native gas. Ethereum mainnet: $2-15 per message depending on payload size and destination gas. L2 source chains: $0.05-0.50.
 
-**CCIP 2.0 (Q4 2025 / early 2026):** Per-application risk tolerance levels — institutions can choose a security/speed tradeoff. Relevant: a FlowLink policy update could use a "high security, slower" profile while an x402 micropayment uses "fast, lower security."
+**CCIP 2.0 (Q4 2025 / early 2026):** Per-application risk tolerance levels — institutions can choose a security/speed tradeoff. Relevant: a ProofLink policy update could use a "high security, slower" profile while an x402 micropayment uses "fast, lower security."
 
-**FlowLink application:**
+**ProofLink application:**
 - Policy updates (delegation scope changes) originate from an admin or agent runtime on any chain.
 - `PolicySyncRouter` contract on each chain implements `CCIPReceiver` and updates a local `AgentPolicyRegistry` mapping `agentDid => DelegationScope`.
 - The `DelegationScope.version` field is monotonic; the receiver contract rejects messages with `version <= storedVersion`.
@@ -103,8 +103,8 @@ struct PolicyUpdatePayload {
 ```
 Encoded as ABI bytes, max size ~32KB. Message options (gas limit, native drop) set separately as serialized bytes.
 
-**DVN configuration for FlowLink:**
-- Required DVNs: LayerZero's default DVN + one application-specific DVN (run by FlowLink or a trusted third party).
+**DVN configuration for ProofLink:**
+- Required DVNs: LayerZero's default DVN + one application-specific DVN (run by ProofLink or a trusted third party).
 - Optional: CryptoEconomic DVN backed by restaked ETH via EigenLayer (2025 launch). Slashing on misbehavior.
 - X-of-Y-of-N: e.g., 2-of-3-of-5. High-value policy changes (revoking delegation entirely) could require 3-of-5.
 - Rate limiting: `RateLimiter.sol` pattern built into LayerZero v2 OApp standard — enforce max N policy updates per hour to prevent DoS.
@@ -113,9 +113,9 @@ Encoded as ABI bytes, max size ~32KB. Message options (gas limit, native drop) s
 
 **Latency:** DVN verification + Executor delivery. Typical: 30-120 seconds for EVM-to-EVM. Solana endpoints supported via LayerZero Solana adapter.
 
-**Cost:** Executor fee (gas on destination) + DVN fee. EVM-to-EVM: $0.10-2.00. Highly configurable; FlowLink can pre-fund Executor allowances.
+**Cost:** Executor fee (gas on destination) + DVN fee. EVM-to-EVM: $0.10-2.00. Highly configurable; ProofLink can pre-fund Executor allowances.
 
-**Key differentiator for FlowLink:** `OApp.enforcedOptions()` lets FlowLink mandate a minimum gas limit on all policy update messages — prevents a malformed message from permanently bricking the destination registry. Also: the pathway-specific DVN config means Ethereum-to-Solana can have a different (stricter) security model than Base-to-Optimism.
+**Key differentiator for ProofLink:** `OApp.enforcedOptions()` lets ProofLink mandate a minimum gas limit on all policy update messages — prevents a malformed message from permanently bricking the destination registry. Also: the pathway-specific DVN config means Ethereum-to-Solana can have a different (stricter) security model than Base-to-Optimism.
 
 ---
 
@@ -135,12 +135,12 @@ VAA {
     emitter_address: [u8; 32],
     sequence: u64,
     consistency_level: u8,
-    payload: Vec<u8>               // arbitrary bytes, FlowLink policy encoded here
+    payload: Vec<u8>               // arbitrary bytes, ProofLink policy encoded here
 }
 ```
 t-Schnorr multisig: cost-efficient, chain-agnostic. Linear in verifier count but cheaper than ECDSA multisig at threshold.
 
-**NTT (Native Token Transfers) relevance:** Wormhole's NTT framework includes a `GlobalAccountant` that maintains cross-chain token supply integrity. FlowLink can adopt the same pattern for **global spend accounting** — each chain's `PolicyRegistry` reports net spend to the Global Accountant, which flags threshold breaches. This is the closest existing infrastructure to solving the velocity aggregation problem.
+**NTT (Native Token Transfers) relevance:** Wormhole's NTT framework includes a `GlobalAccountant` that maintains cross-chain token supply integrity. ProofLink can adopt the same pattern for **global spend accounting** — each chain's `PolicyRegistry` reports net spend to the Global Accountant, which flags threshold breaches. This is the closest existing infrastructure to solving the velocity aggregation problem.
 
 **Trust model:** 13-of-19 guardian consensus. Guardians are permissioned (major validators: Jump, Certus One, etc.). Not permissionless — this is a tradeoff vs. Hyperlane.
 
@@ -148,7 +148,7 @@ t-Schnorr multisig: cost-efficient, chain-agnostic. Linear in verifier count but
 
 **Cost:** Guardian network is subsidized; relayer fees vary. Typically $0.50-3.00 per cross-chain message.
 
-**FlowLink application:** Best suited for **Solana as destination**. Wormhole has the deepest Solana integration. `wormhole-anchor-sdk` provides Rust/Anchor primitives to receive and parse VAAs in Solana programs. A FlowLink `policy_registry` Solana program would:
+**ProofLink application:** Best suited for **Solana as destination**. Wormhole has the deepest Solana integration. `wormhole-anchor-sdk` provides Rust/Anchor primitives to receive and parse VAAs in Solana programs. A ProofLink `policy_registry` Solana program would:
 1. Receive VAA containing `PolicyUpdatePayload`.
 2. Verify guardian signatures on-chain.
 3. Update the PDA (Program Derived Address) keyed by `(agentDid, chain)`.
@@ -160,7 +160,7 @@ t-Schnorr multisig: cost-efficient, chain-agnostic. Linear in verifier count but
 
 **What it is:** Permissionless interchain messaging. Any developer can deploy Mailbox contracts on any chain without approval. Security is application-configurable via Interchain Security Modules (ISMs).
 
-**ISM options relevant to FlowLink:**
+**ISM options relevant to ProofLink:**
 
 | ISM Type | Mechanism | Latency | Best for |
 |---|---|---|---|
@@ -171,17 +171,17 @@ t-Schnorr multisig: cost-efficient, chain-agnostic. Linear in verifier count but
 
 **Interchain Accounts (ICA) — critical feature:** Hyperlane ICA allows a contract on chain A to make authenticated calls to any contract on chain B, through a deterministic `OwnableMulticall` proxy (CREATE2). The ICA address is deterministic given `(origin, sender, router, ISM)`.
 
-This means: FlowLink's admin contract on Ethereum can directly call `updateAgentPolicy()` on the Base policy registry, through the ICA, without the destination contract needing special CCIP/LayerZero receiver logic. The destination just needs a standard function interface.
+This means: ProofLink's admin contract on Ethereum can directly call `updateAgentPolicy()` on the Base policy registry, through the ICA, without the destination contract needing special CCIP/LayerZero receiver logic. The destination just needs a standard function interface.
 
 **Message format:** Arbitrary bytes via `Mailbox.dispatch()`. ICA variant wraps a call as `(address target, uint256 value, bytes calldata data)[]`.
 
-**Trust model:** Permissionless deployment; trust is in the ISM configuration. A `MultisigISM` with FlowLink's own validator set is fully self-sovereign. An `AggregationISM` combining FlowLink validators + Hyperlane's default validators gives defense-in-depth.
+**Trust model:** Permissionless deployment; trust is in the ISM configuration. A `MultisigISM` with ProofLink's own validator set is fully self-sovereign. An `AggregationISM` combining ProofLink validators + Hyperlane's default validators gives defense-in-depth.
 
 **Latency:** With `MultisigISM`: 30-90 seconds. With `OptimisticISM`: near-instant with an hours-long fraud window (not suitable for critical policy revocations).
 
 **Cost:** Variable by ISM. Self-run validators + Relayer: near-zero gas overhead beyond destination execution. Third-party relayer: $0.05-0.50.
 
-**FlowLink differentiation:** Hyperlane is the only option where FlowLink can deploy its own chain-specific ISMs without permission. For a new chain (e.g., a new appchain or Solana fork), no protocol upgrade is needed — just deploy a Mailbox and ISM. This future-proofs the architecture.
+**ProofLink differentiation:** Hyperlane is the only option where ProofLink can deploy its own chain-specific ISMs without permission. For a new chain (e.g., a new appchain or Solana fork), no protocol upgrade is needed — just deploy a Mailbox and ISM. This future-proofs the architecture.
 
 **ICA limitation:** Currently EVM-only. Solana not supported for ICA (only basic message passing via Warp Routes / Wormhole integration).
 
@@ -197,11 +197,11 @@ This means: FlowLink's admin contract on Ethereum can directly call `updateAgent
 
 **The gap ERC-4337 alone cannot fill:** Global velocity accounting across chains. A $500/day limit means the sum across all chains must be tracked — ERC-4337 has no cross-chain sum primitive.
 
-**FlowLink integration:**
+**ProofLink integration:**
 - Use ERC-7715 `wallet_grantPermissions` as the **human-facing delegation UX** on EVM chains. Operators grant the agent a session key with encoded `AgentDelegationScope`.
-- The scope is stored in FlowLink's on-chain `PolicyRegistry` (not just in the wallet).
+- The scope is stored in ProofLink's on-chain `PolicyRegistry` (not just in the wallet).
 - Cross-chain propagation uses CCIP or LayerZero to push the policy hash to other chains.
-- Per-chain spend is reported to FlowLink's off-chain aggregator (or an on-chain Global Accountant via Wormhole) for velocity enforcement.
+- Per-chain spend is reported to ProofLink's off-chain aggregator (or an on-chain Global Accountant via Wormhole) for velocity enforcement.
 
 **ERC-7715 permission object (relevant fields):**
 ```json
@@ -225,7 +225,7 @@ This means: FlowLink's admin contract on Ethereum can directly call `updateAgent
   ]
 }
 ```
-This is the on-chain anchor for the delegation. FlowLink reads this to build its `AgentDelegationScope` struct, then propagates cross-chain.
+This is the on-chain anchor for the delegation. ProofLink reads this to build its `AgentDelegationScope` struct, then propagates cross-chain.
 
 ---
 
@@ -259,14 +259,14 @@ This is the on-chain anchor for the delegation. FlowLink reads this to build its
 ```
 The policy engine runs **before** any signing occurs. No network call needed — purely local enforcement.
 
-**Critical insight for FlowLink:** OWS is the **agent-side enforcement point**. It does not solve cross-chain synchronization — it enforces whatever policy is loaded into the local vault. FlowLink's role is to be the **authoritative source** that pushes policy updates into OWS-compliant agent wallets.
+**Critical insight for ProofLink:** OWS is the **agent-side enforcement point**. It does not solve cross-chain synchronization — it enforces whatever policy is loaded into the local vault. ProofLink's role is to be the **authoritative source** that pushes policy updates into OWS-compliant agent wallets.
 
 **Integration path:**
-1. Human operator sets/updates delegation scope via FlowLink dashboard.
-2. FlowLink API pushes updated `OWSPolicyDocument` to agent runtime.
+1. Human operator sets/updates delegation scope via ProofLink dashboard.
+2. ProofLink API pushes updated `OWSPolicyDocument` to agent runtime.
 3. Agent runtime loads updated policy into its OWS vault.
 4. OWS pre-signing engine enforces limits locally before any transaction is signed.
-5. FlowLink on-chain policy registries (synced via CCIP/LayerZero) serve as the verifiable backup for counterparties.
+5. ProofLink on-chain policy registries (synced via CCIP/LayerZero) serve as the verifiable backup for counterparties.
 
 **GitHub:** `github.com/open-wallet-standard/core` (available on npm and PyPI).
 
@@ -281,7 +281,7 @@ The policy engine runs **before** any signing occurs. No network call needed —
 - **Fast Transfer:** Attestation issued before source chain finalization. Reduces Ethereum-source transfer time from minutes to seconds. Enables multi-chain simultaneous transfers.
 - **Hooks:** Post-transfer automation — developers register a hook contract that executes after USDC mints on destination.
 
-**CCTP V2 Hook for FlowLink:**
+**CCTP V2 Hook for ProofLink:**
 ```solidity
 // Destination hook: after USDC mints, record spend against agent's policy
 interface ICCTPHook {
@@ -302,7 +302,7 @@ When an agent transfers USDC cross-chain via CCTP, the hook can:
 
 **Chains supported:** All major EVM chains as of November 2025. Aptos and Sui by H1 2026.
 
-**FlowLink application:** CCTP V2 is the native rail for USDC flows. The hook mechanism is the right place to enforce spend limits on USDC cross-chain transfers. This is a narrow but high-value integration — most FlowLink agent payments are USDC-denominated via x402.
+**ProofLink application:** CCTP V2 is the native rail for USDC flows. The hook mechanism is the right place to enforce spend limits on USDC cross-chain transfers. This is a narrow but high-value integration — most ProofLink agent payments are USDC-denominated via x402.
 
 ---
 
@@ -320,7 +320,7 @@ When an agent transfers USDC cross-chain via CCTP, the hook can:
 
 4. **CCIP SVM adapter (Chainlink, 2025):** Chainlink launched CCIP support for Solana in 2025. The adapter uses Program Derived Addresses as the cross-chain message receiver. A CCIP message from Ethereum can update a Solana PDA.
 
-5. **Wormhole Anchor SDK:** Most mature cross-chain messaging for Solana. FlowLink policy updates sent as Wormhole VAAs can be parsed and verified in a Rust/Anchor program.
+5. **Wormhole Anchor SDK:** Most mature cross-chain messaging for Solana. ProofLink policy updates sent as Wormhole VAAs can be parsed and verified in a Rust/Anchor program.
 
 **Recommended Solana policy sync flow:**
 ```
@@ -376,7 +376,7 @@ pub fn update_policy_from_vaa(
 
 ---
 
-## 5. Recommended Architecture: FlowLink Cross-Chain Policy Sync
+## 5. Recommended Architecture: ProofLink Cross-Chain Policy Sync
 
 ### 5.1 Layered Design
 
@@ -384,10 +384,10 @@ pub fn update_policy_from_vaa(
 Layer 0: Human Operator / Admin Dashboard
   |
   v
-Layer 1: FlowLink Policy Authority (off-chain, EAS-attested)
+Layer 1: ProofLink Policy Authority (off-chain, EAS-attested)
   |-- Signs PolicyUpdateMessage with operator key
   |-- Issues EAS attestation (schema: AgentDelegationScope)
-  |-- Stores in IPFS / FlowLink receipt storage
+  |-- Stores in IPFS / ProofLink receipt storage
   |
   v
 Layer 2: Policy Propagation (on-chain)
@@ -495,12 +495,12 @@ Global velocity (spending across all chains) cannot be enforced purely on-chain 
 
 **Option A: Off-chain aggregator with on-chain challenge (recommended for MVP)**
 - Each chain's `PolicyRegistry` emits `SpendRecorded` events.
-- FlowLink's off-chain aggregator (part of the API server) subscribes to these events on all supported chains.
+- ProofLink's off-chain aggregator (part of the API server) subscribes to these events on all supported chains.
 - When global sum approaches limit, aggregator sends a `pausePolicy(agentDid)` message via LayerZero to all chains simultaneously.
 - Weakness: aggregator is a centralized component. Mitigated by: EAS-attested audit trail, operator alerts, and the fact that per-chain limits can be set conservatively (e.g., $200/chain for a $500/day global limit).
 
 **Option B: Wormhole Global Accountant pattern**
-- Extend Wormhole's NTT Global Accountant for FlowLink policy spend tracking.
+- Extend Wormhole's NTT Global Accountant for ProofLink policy spend tracking.
 - Each chain's registry integrates as a NTT "transceiver" and reports net spend cross-chain.
 - Global Accountant (a Wormhole-managed program) aggregates and can block messages.
 - Weakness: requires Wormhole integration on all chains, and the Global Accountant is a Wormhole-controlled contract.
@@ -513,7 +513,7 @@ Global velocity (spending across all chains) cannot be enforced purely on-chain 
 
 ### 5.5 x402 Integration
 
-FlowLink's x402 payment flow (`protocol: "x402"` in `ComplianceRequest`) already runs through `ProofLinkEngine.checkCompliance()`. To add cross-chain policy enforcement:
+ProofLink's x402 payment flow (`protocol: "x402"` in `ComplianceRequest`) already runs through `ProofLinkEngine.checkCompliance()`. To add cross-chain policy enforcement:
 
 1. After KYA credential validation (Step 1 in `ProofLinkEngine`), add Step 1b: **on-chain policy lookup**.
 2. Query the local chain's `PolicyRegistry.assertPolicyValid(agentDidHash, amountUsd, counterparty, asset)`.
@@ -568,7 +568,7 @@ export function delegationScopeToOWSPolicy(scope: AgentDelegationScope): OWSPoli
 }
 ```
 
-FlowLink API server pushes `OWSPolicyDocument` to the agent runtime via:
+ProofLink API server pushes `OWSPolicyDocument` to the agent runtime via:
 1. Webhook (if agent has a registered webhook endpoint — existing `WebhookManager`).
 2. MCP tool response (if agent is connected via MCP — existing `mcp-server`).
 3. Polling endpoint: `GET /v1/agents/:agentDid/policy` — agent polls on startup and on 401/policy-expired responses.
@@ -585,7 +585,7 @@ FlowLink API server pushes `OWSPolicyDocument` to the agent runtime via:
 - [ ] Conservative per-chain limits: update `PolicyConfig` to accept `perChainSpendingLimitUsd`.
 
 ### Phase 2 — EVM On-Chain Registry (3-4 weeks)
-- [ ] Deploy `PolicyRegistry.sol` on Base (primary FlowLink chain).
+- [ ] Deploy `PolicyRegistry.sol` on Base (primary ProofLink chain).
 - [ ] Deploy on Ethereum, Arbitrum, Optimism.
 - [ ] Implement LayerZero V2 OApp: `PolicySyncOApp.sol` as cross-chain propagation.
 - [ ] Add `ProofLinkEngine` Step 1b: on-chain policy lookup (configurable, fail-open if RPC unavailable).
@@ -600,7 +600,7 @@ FlowLink API server pushes `OWSPolicyDocument` to the agent runtime via:
 ### Phase 4 — CCTP V2 Hook + OWS Push (1-2 weeks)
 - [ ] Register CCTP V2 hook on all deployed chains.
 - [ ] Implement `OWSPolicyDocument` push via existing webhook system.
-- [ ] Add MCP tool: `flowlink_get_policy` for agents to pull their current scope.
+- [ ] Add MCP tool: `prooflink_get_policy` for agents to pull their current scope.
 
 ### Phase 5 — Velocity Aggregation (2-3 weeks)
 - [ ] Migrate from Option C (conservative per-chain) to Option A (off-chain aggregator + on-chain pause).
@@ -624,13 +624,13 @@ Solana lacks ERC-4337 equivalent as of Q1 2026. The SPL token delegate + PDA pol
 Circle's attestation service is a centralized trust assumption. For USDC-specific enforcement (CCTP hook), this is acceptable — Circle already controls USDC minting. For non-USDC assets, CCTP is not applicable.
 
 ### 7.4 OWS Adoption Risk
-OWS was released March 23, 2026 — very new. The spec may evolve. FlowLink's `delegationScopeToOWSPolicy()` conversion layer should be versioned and backwards-compatible.
+OWS was released March 23, 2026 — very new. The spec may evolve. ProofLink's `delegationScopeToOWSPolicy()` conversion layer should be versioned and backwards-compatible.
 
 ### 7.5 Global Velocity Accounting
-No existing protocol solves global cross-chain spend aggregation without either centralized infrastructure or significant latency. This is a fundamental limitation of the current cross-chain stack. Options A/B/C all involve tradeoffs. FlowLink should document this limitation explicitly in the agent delegation UX.
+No existing protocol solves global cross-chain spend aggregation without either centralized infrastructure or significant latency. This is a fundamental limitation of the current cross-chain stack. Options A/B/C all involve tradeoffs. ProofLink should document this limitation explicitly in the agent delegation UX.
 
 ### 7.6 ERC-7715 Browser Wallet Dependency
-`wallet_grantPermissions` requires a wallet that implements ERC-7715 (MetaMask Delegation Toolkit, others). As of early 2026, adoption is limited. FlowLink's permission grant flow should support both ERC-7715 (when available) and a programmatic API flow (for headless agents that don't have a browser wallet).
+`wallet_grantPermissions` requires a wallet that implements ERC-7715 (MetaMask Delegation Toolkit, others). As of early 2026, adoption is limited. ProofLink's permission grant flow should support both ERC-7715 (when available) and a programmatic API flow (for headless agents that don't have a browser wallet).
 
 ---
 

@@ -152,8 +152,8 @@ describe("WebhookManager", () => {
       expect(url).toBe("https://example.com/hook");
       const headers = init.headers as Record<string, string>;
       expect(headers["Content-Type"]).toBe("application/json");
-      expect(headers["X-FlowLink-Signature"]).toBeTruthy();
-      expect(headers["X-FlowLink-Event"]).toBe("compliance.check.passed");
+      expect(headers["X-ProofLink-Signature"]).toBeTruthy();
+      expect(headers["X-ProofLink-Event"]).toBe("compliance.check.passed");
     });
 
     it("skips webhooks not subscribed to the event type", async () => {
@@ -189,7 +189,7 @@ describe("WebhookManager", () => {
 
       const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
       const headers = init.headers as Record<string, string>;
-      const signature = headers["X-FlowLink-Signature"];
+      const signature = headers["X-ProofLink-Signature"];
       const body = init.body as string;
 
       expect(

@@ -1,8 +1,8 @@
 {
-  "name": "@flowlink/request-finance",
+  "name": "@prooflink/request-finance",
   "version": "0.1.0",
   "type": "module",
-  "description": "FlowLink compliance integration for Request Network / Request Finance",
+  "description": "ProofLink compliance integration for Request Network / Request Finance",
   "license": "MIT",
   "exports": {
     ".": {
@@ -21,7 +21,7 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "@flowlink/shared": "workspace:*",
+    "@prooflink/shared": "workspace:*",
     "zod": "^3.24.0"
   },
   "devDependencies": {

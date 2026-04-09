@@ -1,4 +1,4 @@
-# Contributing to FlowLink
+# Contributing to ProofLink
 
 ## Prerequisites
 
@@ -10,8 +10,8 @@
 ## Setup
 
 ```bash
-git clone https://github.com/AkashKarna662/FLOW-LINK.git
-cd FLOW-LINK
+git clone https://github.com/Flow-Link/prooflink.git
+cd prooflink
 pnpm install
 pnpm build
 ```
@@ -41,8 +41,8 @@ pnpm clean        # Remove all build artifacts
 Filter by package:
 
 ```bash
-pnpm --filter=@flowlink/core build
-pnpm --filter=@flowlink/sdk test
+pnpm --filter=@prooflink/core build
+pnpm --filter=@prooflink/sdk test
 ```
 
 ### Commit Convention
@@ -63,7 +63,7 @@ docs(readme): update setup instructions
 
 ```bash
 pnpm test                              # All packages
-pnpm --filter=@flowlink/core test      # Single package
+pnpm --filter=@prooflink/core test      # Single package
 ```
 
 ### Contract Tests
@@ -79,7 +79,7 @@ Require Postgres and Redis:
 
 ```bash
 docker compose up -d postgres redis
-pnpm --filter=@flowlink/api test
+pnpm --filter=@prooflink/api test
 ```
 
 ## Code Style
@@ -131,4 +131,4 @@ When modifying compliance code, document the regulatory requirement and add comp
 
 ## Security
 
-Report vulnerabilities via email to security@flowlink.dev. Do **not** open a public issue.
+Report vulnerabilities via email to security@prooflink.dev. Do **not** open a public issue.

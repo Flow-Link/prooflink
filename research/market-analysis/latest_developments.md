@@ -1,6 +1,6 @@
 # Latest Developments: Agentic Payments & Compliance Infrastructure
 **Research sweep completed:** March 20, 2026
-**Scope:** Last 30 days — items that could materially affect FlowLink strategy
+**Scope:** Last 30 days — items that could materially affect ProofLink strategy
 
 ---
 
@@ -8,9 +8,9 @@
 
 The last 30 days represent a phase-shift moment: agentic payments moved from theoretical to live production, with Mastercard/Santander executing the first regulated end-to-end AI agent payment in Europe, and Visa launching a formal bank testing program with 21 partners. Simultaneously, x402 (Coinbase) gained major integrations, ERC-8183 was formally submitted as an Ethereum draft standard, and two competing protocol stacks (Visa/Stripe MPP vs. x402/CDP) are now racing for infrastructure dominance.
 
-The **compliance gap** remains wide open. None of the new infrastructure layers — x402, MPP, ERC-8183, Coinbase Agentic Wallets, OKX OnchainOS — ships with built-in Travel Rule compliance, GENIUS Act readiness, or cross-chain sanctions screening. This is FlowLink's primary opportunity window.
+The **compliance gap** remains wide open. None of the new infrastructure layers — x402, MPP, ERC-8183, Coinbase Agentic Wallets, OKX OnchainOS — ships with built-in Travel Rule compliance, GENIUS Act readiness, or cross-chain sanctions screening. This is ProofLink's primary opportunity window.
 
-**Brand conflict alert:** A company at `flowlink.ink` is already operating as a "compliant payment links with built-in KYC and sanctions screening" product. Name collision risk is real and needs immediate attention.
+**Brand conflict alert:** A company at `prooflink.ink` is already operating as a "compliant payment links with built-in KYC and sanctions screening" product. Name collision risk is real and needs immediate attention.
 
 ---
 
@@ -21,7 +21,7 @@ The **compliance gap** remains wide open. None of the new infrastructure layers 
 - **What happened:** End-to-end payment executed by an AI agent within a regulated banking framework. An AI agent purchased a book using a Visa credential issued in Spain, completing authorization, tokenized payment, and settlement without per-transaction consumer intervention.
 - **Infrastructure used:** Visa Intelligent Commerce, tokenization (card number substitution), biometric authentication linking tokens to verified account holders.
 - **Compliance model:** Issuer-side spending limits; consumers pre-set parameters. No on-chain compliance layer.
-- **Strategic implication for FlowLink:** The "regulated banking framework" is card-rail specific. Stablecoin/crypto agent payments have no equivalent framework yet — that's the gap.
+- **Strategic implication for ProofLink:** The "regulated banking framework" is card-rail specific. Stablecoin/crypto agent payments have no equivalent framework yet — that's the gap.
 
 ### Visa Agentic Ready — March 17, 2026
 - **What it is:** Structured testing program for banks to experiment with AI agent-initiated payments.
@@ -85,10 +85,10 @@ The **compliance gap** remains wide open. None of the new infrastructure layers 
 - **What it defines:** A "job" primitive with four states (Open → Funded → Submitted → Terminal), escrowed budget, and an evaluator role that triggers payment release or refund.
 - **Roles:** Client (funds), Provider (delivers work), Evaluator (neutral arbiter — can be the client or an oracle)
 - **Escrow mechanics:** Funds locked on Funded; released only if evaluator confirms completion; refunded on rejection or expiry. Platform fees deducted only on completion.
-- **Hook system:** Optional `IACPHook` contracts with `beforeAction()` / `afterAction()` for custom validation, reputation, and compliance logic — this is where FlowLink could plug in.
+- **Hook system:** Optional `IACPHook` contracts with `beforeAction()` / `afterAction()` for custom validation, reputation, and compliance logic — this is where ProofLink could plug in.
 - **Companion standard:** ERC-8004 (agent identity/reputation). ERC-8183 handles economics; ERC-8004 handles identity.
 - **Current adoption:** Zero on-chain production use; reference implementation only.
-- **FlowLink angle:** The hook interface is the natural integration point for compliance middleware. A FlowLink hook contract could enforce Travel Rule data collection and sanctions screening at job completion, before funds release.
+- **ProofLink angle:** The hook interface is the natural integration point for compliance middleware. A ProofLink hook contract could enforce Travel Rule data collection and sanctions screening at job completion, before funds release.
 
 ---
 
@@ -124,7 +124,7 @@ The **compliance gap** remains wide open. None of the new infrastructure layers 
 - Blockchain analytics for tracking illicit activity across multiple chains.
 - Investors: Goldman Sachs, Bessemer, Brevan Howard, Thoma Bravo, Citi Ventures, Blockchain Capital.
 - ~50% annual revenue growth over 4 years.
-- **Signal:** Traditional finance (Goldman, Citi) validating compliance infrastructure as table stakes. This is validation of the market, not a competitor to FlowLink's agent-specific middleware — TRM is chain analytics, not payment-layer compliance.
+- **Signal:** Traditional finance (Goldman, Citi) validating compliance infrastructure as table stakes. This is validation of the market, not a competitor to ProofLink's agent-specific middleware — TRM is chain analytics, not payment-layer compliance.
 
 ### Elliptic — Stablecoin Compliance Playbook Published
 - Released "The Stablecoin Compliance Playbook for Stablecoin Issuers and Financial Institutions."
@@ -133,7 +133,7 @@ The **compliance gap** remains wide open. None of the new infrastructure layers 
 ### RAILGUN
 - Privacy middleware layer for DeFi (anonymizing swaps, yield farming).
 - Compliance-friendly angle: confidential transactions meeting regulatory requirements.
-- Not directly competitive with FlowLink — different use case (privacy vs. compliance verification).
+- Not directly competitive with ProofLink — different use case (privacy vs. compliance verification).
 
 ### BVNK
 - Enterprise stablecoin payments infrastructure.
@@ -149,12 +149,12 @@ The **compliance gap** remains wide open. None of the new infrastructure layers 
 - FinCEN seeking public comment on implementing regulations (comment period closed October 2025).
 - Key obligations being defined: AML/CFT for stablecoin issuers, Travel Rule compliance, transaction monitoring.
 - Federal implementing regulations due by July 2026.
-- **FlowLink implication:** Stablecoin payment products used by AI agents will need GENIUS-compliant AML/CFT infrastructure. No existing agent payment protocol has this built in.
+- **ProofLink implication:** Stablecoin payment products used by AI agents will need GENIUS-compliant AML/CFT infrastructure. No existing agent payment protocol has this built in.
 
 ### FATF AI Horizon Scan
 - FATF published a Horizon Scan on agentic AI in criminal activity — enables authorities and private sector to strengthen safeguards.
 - FATF's Recommendation 16 (Travel Rule) was updated in 2025 to tighten cross-border transparency requirements.
-- **No specific guidance yet on AI agent payment flows.** This is a regulatory vacuum FlowLink can help customers navigate.
+- **No specific guidance yet on AI agent payment flows.** This is a regulatory vacuum ProofLink can help customers navigate.
 
 ### US Treasury — Crypto Mixer Signals (March 9, 2026)
 - Treasury signaling shift on crypto mixers, acknowledging legitimate privacy uses.
@@ -163,7 +163,7 @@ The **compliance gap** remains wide open. None of the new infrastructure layers 
 ### EU AI Act Enforcement
 - Next enforcement milestone active in 2026.
 - Financial services AI systems face explainability and audit requirements.
-- Agent payment systems operating in EU will need audit trails — FlowLink's transaction attestation is directly responsive.
+- Agent payment systems operating in EU will need audit trails — ProofLink's transaction attestation is directly responsive.
 
 ### Amazon v. Perplexity (Federal Court)
 - Federal judge temporarily barred Perplexity's shopping agent from accessing Amazon.
@@ -174,9 +174,9 @@ The **compliance gap** remains wide open. None of the new infrastructure layers 
 
 ## 7. BRAND / COMPETITIVE AWARENESS
 
-### "flowlink.ink" — CRITICAL NAME COLLISION
-- A company operating at `flowlink.ink` is already marketing itself as "a crypto payments platform that creates compliant payment links with built-in KYC, sanctions screening, and enterprise-grade security."
-- This is a near-identical positioning to FlowLink in the crypto compliance payments space.
+### "prooflink.ink" — CRITICAL NAME COLLISION
+- A company operating at `prooflink.ink` is already marketing itself as "a crypto payments platform that creates compliant payment links with built-in KYC, sanctions screening, and enterprise-grade security."
+- This is a near-identical positioning to ProofLink in the crypto compliance payments space.
 - Domain investigation and trademark clearance required immediately.
 
 ### "ProofLink"
@@ -185,9 +185,9 @@ The **compliance gap** remains wide open. None of the new infrastructure layers 
 - No brand conflict detected on the payment compliance angle.
 
 ### Other Namespace Conflicts
-- `flowlink.io` — e-commerce integration platform (B2B data sync, not payments)
-- `flow-link.com` — AI sustainability/carbon footprint for LLMs
-- `flowlink-ai.com` — appears to be a storefront
+- `prooflink.io` — e-commerce integration platform (B2B data sync, not payments)
+- `prooflink.com` — AI sustainability/carbon footprint for LLMs
+- `prooflink-ai.com` — appears to be a storefront
 
 ---
 
@@ -226,19 +226,19 @@ The **compliance gap** remains wide open. None of the new infrastructure layers 
 
 ---
 
-## 10. STRATEGIC IMPLICATIONS FOR FLOWLINK
+## 10. STRATEGIC IMPLICATIONS FOR PROOFLINK
 
 ### Immediate Threats
 1. **Coinbase CDP + x402 + World AgentKit** is assembling the dominant stack for crypto-native agent payments. If they add compliance middleware (even basic), they become a platform competitor.
 2. **Visa MPP + Stripe** is assembling the dominant stack for card-rail agent payments. Their "Trusted Agent Protocol" could expand to cover compliance use cases.
-3. **`flowlink.ink`** is operating in near-identical positioning. Brand differentiation or name change may be necessary.
+3. **`prooflink.ink`** is operating in near-identical positioning. Brand differentiation or name change may be necessary.
 
 ### Immediate Opportunities
-1. **ERC-8183 hook contracts:** The IACPHook interface is tailor-made for a compliance plugin. Shipping a reference compliance hook before anyone else establishes FlowLink as the canonical compliance layer for ERC-8183 jobs.
-2. **x402 compliance wrapper:** x402 has no Travel Rule or sanctions layer. A FlowLink middleware that wraps x402 payments with GENIUS-compliant AML/CFT makes x402 enterprise-usable.
+1. **ERC-8183 hook contracts:** The IACPHook interface is tailor-made for a compliance plugin. Shipping a reference compliance hook before anyone else establishes ProofLink as the canonical compliance layer for ERC-8183 jobs.
+2. **x402 compliance wrapper:** x402 has no Travel Rule or sanctions layer. A ProofLink middleware that wraps x402 payments with GENIUS-compliant AML/CFT makes x402 enterprise-usable.
 3. **MPP compliance extension:** Stripe/Visa MPP has security but not AML/CFT. Same opportunity as x402.
-4. **GENIUS Act readiness:** Federal implementing regs due July 2026. Stablecoin payment operators need compliant infrastructure by then. FlowLink can be the "GENIUS-ready" middleware layer.
-5. **Amazon v. Perplexity precedent:** Agent authorization is now a legal question. FlowLink's attestation layer becomes a legal defensibility tool, not just a compliance nice-to-have.
+4. **GENIUS Act readiness:** Federal implementing regs due July 2026. Stablecoin payment operators need compliant infrastructure by then. ProofLink can be the "GENIUS-ready" middleware layer.
+5. **Amazon v. Perplexity precedent:** Agent authorization is now a legal question. ProofLink's attestation layer becomes a legal defensibility tool, not just a compliance nice-to-have.
 
 ### Watch List
 - **Circuit & Chisel (ATXP):** Most likely direct competitor. Monitor product announcements closely.

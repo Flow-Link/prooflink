@@ -1,6 +1,6 @@
 # MCP Server Verification Report
 
-**Package:** `@flowlink/mcp-server` (`packages/mcp-server/`)
+**Package:** `@prooflink/mcp-server` (`packages/mcp-server/`)
 **Date:** 2026-03-21
 **SDK:** `@modelcontextprotocol/sdk ^1.12.0`
 
@@ -24,13 +24,13 @@ All 50 tests pass. Tests use `InMemoryTransport` to create a real MCP client-ser
 
 ## Architecture Overview
 
-**server.ts** — Factory function `createFlowLinkMCPServer()` creates a `McpServer` instance ("flowlink-compliance" v1.0.0), registers all 11 tools + 3 resources, then returns a handle with `start()`/`close()`. Supports stdio (default) and SSE transports.
+**server.ts** — Factory function `createProofLinkMCPServer()` creates a `McpServer` instance ("prooflink-compliance" v1.0.0), registers all 11 tools + 3 resources, then returns a handle with `start()`/`close()`. Supports stdio (default) and SSE transports.
 
-**context.ts** — Singleton service layer. Instantiates `SanctionsScreener`, `AMLScorer`, and `KYAVerifier` from `@flowlink/core` using `loadConfig()` from env vars. Shared across all tool handlers.
+**context.ts** — Singleton service layer. Instantiates `SanctionsScreener`, `AMLScorer`, and `KYAVerifier` from `@prooflink/core` using `loadConfig()` from env vars. Shared across all tool handlers.
 
 **errors.ts** — Standardized error formatting via `formatMcpError(code, message, details?)`. Produces `{ content: [{ type: "text", text }], structuredContent: { code, message, details }, isError: true }`. 16 error codes defined.
 
-**index.ts** — Entry point with `#!/usr/bin/env node`. Reads `FLOWLINK_TRANSPORT` and `FLOWLINK_SSE_PORT` from env. Exports all public types.
+**index.ts** — Entry point with `#!/usr/bin/env node`. Reads `PROOFLINK_TRANSPORT` and `PROOFLINK_SSE_PORT` from env. Exports all public types.
 
 ---
 
@@ -58,9 +58,9 @@ All 50 tests pass. Tests use `InMemoryTransport` to create a real MCP client-ser
 - **Issues:** Comment says "run sanctions checks on both parties" but `compliance_stamp.seller_cleared` and `buyer_cleared` are always hardcoded `true` — no actual screening happens. EAS attestation UID is synthetic (hash + zeros).
 
 ### 4. `register_agent`
-- **Description:** Register AI agent identity in FlowLink registry (ERC-8004 compatible)
+- **Description:** Register AI agent identity in ProofLink registry (ERC-8004 compatible)
 - **Inputs:** `name` (1-128 chars), `type` (AgentType enum), `wallet_address`, `operator` (name/did?/lei?), `delegation_scope` (max_tx/daily/chains/currencies/expires), `x402_support` (bool), `metadata?`
-- **Outputs:** `agent_id`, `did` (did:flowlink:...), registration details, operator screening, delegation scope with defaults
+- **Outputs:** `agent_id`, `did` (did:prooflink:...), registration details, operator screening, delegation scope with defaults
 - **Validation:** Zod schema + manual wallet_address check; smart defaults (daily = 5x per-tx, chains = ["base"], currencies = ["USDC"], expires = 1yr)
 - **Issues:** Manual `wallet_address` check on line 91 is redundant — `z.string()` already requires it. Operator screening is hardcoded (sanctions always cleared). No persistence — registrations are fire-and-forget.
 
@@ -115,19 +115,19 @@ All 50 tests pass. Tests use `InMemoryTransport` to create a real MCP client-ser
 
 ## Resource Inventory (3 resources)
 
-### 1. `flowlink://compliance/policy`
+### 1. `prooflink://compliance/policy`
 - **Name:** compliance-policy
 - **MIME:** application/json
-- **Content:** Sanctions lists, risk thresholds (from `@flowlink/shared` constants), Travel Rule thresholds, VASP messaging providers, fail_open flag, allowlist/blocklist, EDD jurisdictions
+- **Content:** Sanctions lists, risk thresholds (from `@prooflink/shared` constants), Travel Rule thresholds, VASP messaging providers, fail_open flag, allowlist/blocklist, EDD jurisdictions
 - **Issues:** `fail_open` is hardcoded `false` here but `context.ts` defaults it to `true` from env var — inconsistency
 
-### 2. `flowlink://compliance/stats`
+### 2. `prooflink://compliance/stats`
 - **Name:** compliance-stats
 - **MIME:** application/json
 - **Content:** 24h screening volumes, pass rates, Travel Rule submissions, payment stats, system health
 - **Issues:** All hardcoded sample data (identical to get_compliance_metrics). `uptime_seconds` does use real `process.uptime()`.
 
-### 3. `flowlink://agents/registered`
+### 3. `prooflink://agents/registered`
 - **Name:** registered-agents
 - **MIME:** application/json
 - **Content:** List of registered agents with IDs, operator info, delegation scopes, reputation scores
@@ -209,30 +209,30 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
 ```json
 {
   "mcpServers": {
-    "flowlink-compliance": {
+    "prooflink-compliance": {
       "command": "node",
-      "args": ["/home/akash/PROJECTS/FLOW-LINK/packages/mcp-server/dist/index.js"],
+      "args": ["/home/akash/PROJECTS/prooflink/packages/mcp-server/dist/index.js"],
       "env": {
-        "FLOWLINK_FAIL_OPEN": "true"
+        "PROOFLINK_FAIL_OPEN": "true"
       }
     }
   }
 }
 ```
 
-Build first: `cd /home/akash/PROJECTS/FLOW-LINK && pnpm build --filter=@flowlink/mcp-server`
+Build first: `cd /home/akash/PROJECTS/prooflink && pnpm build --filter=@prooflink/mcp-server`
 
 ### Option 2: npx (after publishing)
 
 ```json
 {
   "mcpServers": {
-    "flowlink-compliance": {
+    "prooflink-compliance": {
       "command": "npx",
-      "args": ["@flowlink/mcp-server"],
+      "args": ["@prooflink/mcp-server"],
       "env": {
-        "FLOWLINK_API_KEY": "fl_live_xxx",
-        "FLOWLINK_FAIL_OPEN": "true"
+        "PROOFLINK_API_KEY": "fl_live_xxx",
+        "PROOFLINK_FAIL_OPEN": "true"
       }
     }
   }
@@ -243,7 +243,7 @@ Build first: `cd /home/akash/PROJECTS/FLOW-LINK && pnpm build --filter=@flowlink
 
 Start the server:
 ```bash
-FLOWLINK_TRANSPORT=sse FLOWLINK_SSE_PORT=3001 node packages/mcp-server/dist/index.js
+PROOFLINK_TRANSPORT=sse PROOFLINK_SSE_PORT=3001 node packages/mcp-server/dist/index.js
 ```
 
 Then configure Claude Desktop to connect via SSE at `http://localhost:3001/sse`.
@@ -254,4 +254,4 @@ Then configure Claude Desktop to connect via SSE at `http://localhost:3001/sse`.
 
 The MCP server is **well-structured and functional for demo/prototype purposes**. The protocol implementation is correct — tool registration via `server.tool()` with Zod schemas, resource registration via `server.resource()`, proper content/structuredContent response format, and isError flagging all follow the MCP spec. The test suite is thorough (50 tests covering all tools with edge cases).
 
-The main gap is that 4 of 11 tools return simulated/hardcoded data (get_receipt, get_metrics, list_invoices, and partially get_risk_report), while 3 tools use real `@flowlink/core` engines for sanctions screening and KYA verification (check_sanctions, batch_compliance_check, pay_with_compliance, get_risk_report, verify_kya). The SSE transport needs the multi-client routing fix and authentication before any production deployment.
+The main gap is that 4 of 11 tools return simulated/hardcoded data (get_receipt, get_metrics, list_invoices, and partially get_risk_report), while 3 tools use real `@prooflink/core` engines for sanctions screening and KYA verification (check_sanctions, batch_compliance_check, pay_with_compliance, get_risk_report, verify_kya). The SSE transport needs the multi-client routing fix and authentication before any production deployment.

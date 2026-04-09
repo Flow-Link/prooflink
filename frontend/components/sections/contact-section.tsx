@@ -117,7 +117,7 @@ function PaymentDemo() {
   }
 
   const handleViewReceipt = () => {
-    window.open('/FlowLink_Transaction_Receipt.pdf', '_blank')
+    window.open('/ProofLink_Transaction_Receipt.pdf', '_blank')
   }
   
   const handleReset = () => {
@@ -400,7 +400,7 @@ export function ContactSection() {
               <h2 className="mb-2 font-sans text-4xl font-light leading-[1.05] tracking-tight text-foreground md:mb-3 md:text-7xl lg:text-8xl">
                 Live Demo
               </h2>
-              <p className="font-mono text-xs text-blue-300 md:text-base">/ Experience FlowLink in Action</p>
+              <p className="font-mono text-xs text-blue-300 md:text-base">/ Experience ProofLink in Action</p>
             </div>
           </div>
 

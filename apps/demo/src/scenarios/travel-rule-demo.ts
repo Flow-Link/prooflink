@@ -3,7 +3,7 @@ import oraImport from "ora";
 import Table from "cli-table3";
 
 import {
-  flowlinkLog,
+  prooflinkLog,
   x402Log,
   statusCleared,
   riskScore,
@@ -144,7 +144,7 @@ export async function runTravelRuleDemo(): Promise<void> {
 
   console.log(chalk.gray("  FATF Travel Rule requires originator/beneficiary data for"));
   console.log(chalk.gray("  virtual asset transfers above jurisdiction-specific thresholds."));
-  console.log(chalk.gray("  FlowLink enforces this automatically with IVMS101 data exchange.\n"));
+  console.log(chalk.gray("  ProofLink enforces this automatically with IVMS101 data exchange.\n"));
 
   console.log(`  ${chalk.gray("Jurisdictions covered:")} ${chalk.white("US (FinCEN $3,000)")}, ${chalk.white("EU/MiCA (EUR 1,000)")}`);
   console.log(`  ${chalk.gray("Protocol:")}             ${chalk.white("TRISA + IVMS101")}`);
@@ -164,7 +164,7 @@ export async function runTravelRuleDemo(): Promise<void> {
   console.log(`  ${chalk.gray("Expected:")}     ${chalk.green("Travel Rule NOT required")}`);
   console.log();
 
-  flowlinkLog("Intercepting x402 payment...");
+  prooflinkLog("Intercepting x402 payment...");
   await sleep(200);
 
   const spinner1 = ora({
@@ -183,7 +183,7 @@ export async function runTravelRuleDemo(): Promise<void> {
   travelRuleStatus(false, 2500, 3000);
 
   displayStatusTransitions([
-    { state: "INITIATED", time: "T+0ms", detail: "Payment intercepted by FlowLink" },
+    { state: "INITIATED", time: "T+0ms", detail: "Payment intercepted by ProofLink" },
     { state: "EVALUATED", time: `T+${screen1Latency}ms`, detail: "Amount $2,500 < $3,000 threshold" },
     { state: "NOT_REQUIRED", time: `T+${screen1Latency + 5}ms`, detail: "Travel Rule check skipped" },
   ]);
@@ -199,7 +199,7 @@ export async function runTravelRuleDemo(): Promise<void> {
   paymentApproved();
 
   const receipt1Id = generateReceiptId("pl");
-  flowlinkLog(`ProofLink receipt: ${chalk.white(receipt1Id)}`);
+  prooflinkLog(`ProofLink receipt: ${chalk.white(receipt1Id)}`);
 
   const receipt1: ReceiptData = {
     receiptId: receipt1Id,
@@ -207,7 +207,7 @@ export async function runTravelRuleDemo(): Promise<void> {
     riskScore: 5,
     checks: [
       { checkType: "SANCTIONS_SCREENING", result: "PASSED", provider: "Chainalysis KYT", latencyMs: screen1Latency },
-      { checkType: "AML_MONITORING", result: "PASSED", provider: "FlowLink Engine", latencyMs: 12 },
+      { checkType: "AML_MONITORING", result: "PASSED", provider: "ProofLink Engine", latencyMs: 12 },
       { checkType: "TRAVEL_RULE", result: "SKIPPED", provider: "N/A (below $3,000 US)", latencyMs: 0 },
     ],
     travelRuleStatus: "NOT_REQUIRED",
@@ -235,7 +235,7 @@ export async function runTravelRuleDemo(): Promise<void> {
   console.log(`  ${chalk.gray("Expected:")}     ${chalk.yellow("Travel Rule REQUIRED -- originator/beneficiary data")}`);
   console.log();
 
-  flowlinkLog("Intercepting x402 payment...");
+  prooflinkLog("Intercepting x402 payment...");
   await sleep(200);
 
   const spinner2 = ora({
@@ -261,7 +261,7 @@ export async function runTravelRuleDemo(): Promise<void> {
     details: { amount: 5000, threshold: 3000, required: true, jurisdiction: "US" },
   });
 
-  flowlinkLog(`Travel Rule ${chalk.yellow.bold("TRIGGERED")} -- collecting IVMS101 originator/beneficiary data`);
+  prooflinkLog(`Travel Rule ${chalk.yellow.bold("TRIGGERED")} -- collecting IVMS101 originator/beneficiary data`);
   await sleep(300);
 
   // Simulate IVMS101 data collection
@@ -303,7 +303,7 @@ export async function runTravelRuleDemo(): Promise<void> {
     transferInfo: {
       amount: "5,000.00",
       currency: "USDC",
-      originatingVASP: "flowlink.finance",
+      originatingVASP: "prooflink.finance",
       beneficiaryVASP: "vasp.ethereum.org",
     },
   };
@@ -327,15 +327,15 @@ export async function runTravelRuleDemo(): Promise<void> {
   await sleep(vaspLatency + 200);
   spinnerVasp.succeed(chalk.gray("VASP exchange complete"));
 
-  flowlinkLog(`TRISA exchange: ${chalk.green.bold("COMPLETED")} ${chalk.gray(`(${vaspLatency}ms)`)}`);
-  flowlinkLog(`  Protocol:    ${chalk.white("TRISA v1")}`);
-  flowlinkLog(`  Peer VASP:   ${chalk.white("vasp.ethereum.org")}`);
-  flowlinkLog(`  Transfer ID: ${chalk.white(generateReceiptId("tr"))}`);
-  flowlinkLog(`  Status:      ${chalk.green.bold("ACCEPTED")}`);
+  prooflinkLog(`TRISA exchange: ${chalk.green.bold("COMPLETED")} ${chalk.gray(`(${vaspLatency}ms)`)}`);
+  prooflinkLog(`  Protocol:    ${chalk.white("TRISA v1")}`);
+  prooflinkLog(`  Peer VASP:   ${chalk.white("vasp.ethereum.org")}`);
+  prooflinkLog(`  Transfer ID: ${chalk.white(generateReceiptId("tr"))}`);
+  prooflinkLog(`  Status:      ${chalk.green.bold("ACCEPTED")}`);
 
   // Show status transitions
   displayStatusTransitions([
-    { state: "INITIATED", time: "T+0ms", detail: "Payment intercepted by FlowLink" },
+    { state: "INITIATED", time: "T+0ms", detail: "Payment intercepted by ProofLink" },
     { state: "EVALUATED", time: `T+${screen2Latency}ms`, detail: "Amount $5,000 > $3,000 threshold (US/FinCEN)" },
     { state: "PENDING", time: `T+${screen2Latency + 10}ms`, detail: "Travel Rule data collection started" },
     { state: "SUBMITTED", time: `T+${screen2Latency + trCollectLatency + benCollectLatency}ms`, detail: "IVMS101 payload submitted to peer VASP" },
@@ -371,7 +371,7 @@ export async function runTravelRuleDemo(): Promise<void> {
     riskScore: 8,
     checks: [
       { checkType: "SANCTIONS_SCREENING", result: "PASSED", provider: "Chainalysis KYT", latencyMs: screen2Latency },
-      { checkType: "AML_MONITORING", result: "PASSED", provider: "FlowLink Engine", latencyMs: 15 },
+      { checkType: "AML_MONITORING", result: "PASSED", provider: "ProofLink Engine", latencyMs: 15 },
       { checkType: "TRAVEL_RULE", result: "PASSED", provider: "TRISA Protocol (IVMS101)", latencyMs: vaspLatency },
       { checkType: "KYA_VERIFICATION", result: "PASSED", provider: "ERC-8004 Registry", latencyMs: 42 },
     ],
@@ -398,8 +398,8 @@ export async function runTravelRuleDemo(): Promise<void> {
   console.log(`  ${chalk.gray("Expected:")}     ${chalk.yellow("Travel Rule REQUIRED -- MiCA applies")}`);
   console.log();
 
-  flowlinkLog("Intercepting x402 payment...");
-  flowlinkLog(`Jurisdiction detection: ${chalk.white("EU/MiCA")} ${chalk.gray("(beneficiary VASP in EU)")}`);
+  prooflinkLog("Intercepting x402 payment...");
+  prooflinkLog(`Jurisdiction detection: ${chalk.white("EU/MiCA")} ${chalk.gray("(beneficiary VASP in EU)")}`);
   await sleep(200);
 
   const spinner3 = ora({
@@ -415,7 +415,7 @@ export async function runTravelRuleDemo(): Promise<void> {
   statusCleared("receiver", RECEIVER, 5, true);
   riskScore(10, 85);
 
-  flowlinkLog(
+  prooflinkLog(
     `Travel Rule: ${chalk.yellow.bold("REQUIRED")} ${chalk.gray("(amount EUR 1,200 above EUR 1,000 MiCA threshold)")}`,
   );
 
@@ -427,9 +427,9 @@ export async function runTravelRuleDemo(): Promise<void> {
     details: { amount: 1200, currency: "EUR", threshold: 0, required: true, jurisdiction: "EU" },
   });
 
-  flowlinkLog(`Travel Rule ${chalk.yellow.bold("TRIGGERED")} -- MiCA Transfer of Funds Regulation applies`);
-  flowlinkLog(`  Regulation: ${chalk.white("Regulation (EU) 2023/1113 (TFR)")}`);
-  flowlinkLog(`  Note: ${chalk.gray("EU TFR 2023/1113 requires IVMS101 data for ALL CASP-to-CASP transfers (no threshold)")}`);
+  prooflinkLog(`Travel Rule ${chalk.yellow.bold("TRIGGERED")} -- MiCA Transfer of Funds Regulation applies`);
+  prooflinkLog(`  Regulation: ${chalk.white("Regulation (EU) 2023/1113 (TFR)")}`);
+  prooflinkLog(`  Note: ${chalk.gray("EU TFR 2023/1113 requires IVMS101 data for ALL CASP-to-CASP transfers (no threshold)")}`);
   await sleep(300);
 
   // IVMS101 data for EU
@@ -474,7 +474,7 @@ export async function runTravelRuleDemo(): Promise<void> {
     transferInfo: {
       amount: "1,200.00",
       currency: "EUR",
-      originatingVASP: "flowlink.finance",
+      originatingVASP: "prooflink.finance",
       beneficiaryVASP: "vasp.euronode.eu",
     },
   };
@@ -505,15 +505,15 @@ export async function runTravelRuleDemo(): Promise<void> {
   await sleep(euVaspLatency + 200);
   spinnerEuVasp.succeed(chalk.gray("EU VASP exchange complete"));
 
-  flowlinkLog(`TRISA exchange: ${chalk.green.bold("COMPLETED")} ${chalk.gray(`(${euVaspLatency}ms)`)}`);
-  flowlinkLog(`  Protocol:    ${chalk.white("TRISA v1 (MiCA-compliant)")}`);
-  flowlinkLog(`  Peer VASP:   ${chalk.white("vasp.euronode.eu")} ${chalk.gray("(DE)")}`);
-  flowlinkLog(`  Regulation:  ${chalk.white("EU TFR 2023/1113")}`);
-  flowlinkLog(`  Transfer ID: ${chalk.white(generateReceiptId("tr"))}`);
-  flowlinkLog(`  Status:      ${chalk.green.bold("ACCEPTED")}`);
+  prooflinkLog(`TRISA exchange: ${chalk.green.bold("COMPLETED")} ${chalk.gray(`(${euVaspLatency}ms)`)}`);
+  prooflinkLog(`  Protocol:    ${chalk.white("TRISA v1 (MiCA-compliant)")}`);
+  prooflinkLog(`  Peer VASP:   ${chalk.white("vasp.euronode.eu")} ${chalk.gray("(DE)")}`);
+  prooflinkLog(`  Regulation:  ${chalk.white("EU TFR 2023/1113")}`);
+  prooflinkLog(`  Transfer ID: ${chalk.white(generateReceiptId("tr"))}`);
+  prooflinkLog(`  Status:      ${chalk.green.bold("ACCEPTED")}`);
 
   displayStatusTransitions([
-    { state: "INITIATED", time: "T+0ms", detail: "Payment intercepted by FlowLink" },
+    { state: "INITIATED", time: "T+0ms", detail: "Payment intercepted by ProofLink" },
     { state: "EVALUATED", time: `T+${screen3Latency}ms`, detail: "Amount EUR 1,200 > EUR 1,000 (MiCA/TFR)" },
     { state: "PENDING", time: `T+${screen3Latency + 10}ms`, detail: "MiCA-enhanced IVMS101 collection started" },
     { state: "SUBMITTED", time: `T+${screen3Latency + euOrigLatency + euBenLatency}ms`, detail: "IVMS101 payload submitted to EU VASP" },
@@ -546,7 +546,7 @@ export async function runTravelRuleDemo(): Promise<void> {
     riskScore: 10,
     checks: [
       { checkType: "SANCTIONS_SCREENING", result: "PASSED", provider: "Chainalysis KYT + EU_CONSOLIDATED", latencyMs: screen3Latency },
-      { checkType: "AML_MONITORING", result: "PASSED", provider: "FlowLink Engine", latencyMs: 18 },
+      { checkType: "AML_MONITORING", result: "PASSED", provider: "ProofLink Engine", latencyMs: 18 },
       { checkType: "TRAVEL_RULE", result: "PASSED", provider: "TRISA Protocol (MiCA/TFR)", latencyMs: euVaspLatency },
       { checkType: "KYA_VERIFICATION", result: "PASSED", provider: "ERC-8004 Registry", latencyMs: 38 },
     ],
@@ -594,7 +594,7 @@ export async function runTravelRuleDemo(): Promise<void> {
   console.log();
   console.log(chalk.white.bold("  Key takeaway:"));
   console.log(chalk.gray("  The same $1,200 payment requires Travel Rule data in the EU (MiCA)"));
-  console.log(chalk.gray("  but NOT in the US. FlowLink detects jurisdiction automatically and"));
+  console.log(chalk.gray("  but NOT in the US. ProofLink detects jurisdiction automatically and"));
   console.log(chalk.gray("  enforces the correct threshold per regulatory framework."));
   console.log();
 

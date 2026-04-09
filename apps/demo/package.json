@@ -1,11 +1,11 @@
 {
-  "name": "@flowlink/demo",
+  "name": "@prooflink/demo",
   "version": "0.2.0",
   "type": "module",
-  "description": "FlowLink hackathon demo — terminal-based compliance showcase",
+  "description": "ProofLink hackathon demo — terminal-based compliance showcase",
   "license": "MIT",
   "bin": {
-    "flowlink-demo": "./dist/index.js"
+    "prooflink-demo": "./dist/index.js"
   },
   "scripts": {
     "dev": "tsx src/index.ts",
@@ -27,8 +27,8 @@
     "demo:list": "tsx src/index.ts --list"
   },
   "dependencies": {
-    "@flowlink/core": "workspace:*",
-    "@flowlink/shared": "workspace:*",
+    "@prooflink/core": "workspace:*",
+    "@prooflink/shared": "workspace:*",
     "chalk": "^5.4.0",
     "cli-table3": "^0.6.5",
     "ora": "^8.1.0",

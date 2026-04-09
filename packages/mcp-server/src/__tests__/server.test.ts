@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { createFlowLinkMCPServer } from "../server.js";
-import type { FlowLinkMCPHandle } from "../server.js";
+import { createProofLinkMCPServer } from "../server.js";
+import type { ProofLinkMCPHandle } from "../server.js";
 
-describe("FlowLink MCP Server", () => {
-  let handle: FlowLinkMCPHandle;
+describe("ProofLink MCP Server", () => {
+  let handle: ProofLinkMCPHandle;
   let client: Client;
 
   beforeAll(async () => {
-    handle = await createFlowLinkMCPServer();
+    handle = await createProofLinkMCPServer();
     client = new Client({ name: "test-client", version: "1.0.0" });
 
     const [clientTransport, serverTransport] =
@@ -968,7 +968,7 @@ describe("FlowLink MCP Server", () => {
       if (result.structuredContent) {
         const data = result.structuredContent as Record<string, unknown>;
         expect(data.agent_id).toBeDefined();
-        expect(data.did).toMatch(/^did:flowlink:/);
+        expect(data.did).toMatch(/^did:prooflink:/);
         expect(data.name).toBe("PaymentBot-v2");
         expect(data.type).toBe("semi-autonomous");
         expect(data.wallet_address).toBe("0xABC123DEF456abc123def456ABC123DEF456abc1");

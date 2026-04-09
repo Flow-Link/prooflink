@@ -1,4 +1,4 @@
-# FlowLink Competitive Intelligence: Deep Dive
+# ProofLink Competitive Intelligence: Deep Dive
 **Date:** March 20, 2026
 **Scope:** Crypto payment, invoicing, payroll, treasury, and streaming infrastructure
 **Method:** Web search, live documentation, GitHub analysis, product pages
@@ -234,7 +234,7 @@ This is a significant strategic pivot — they effectively abandoned the treasur
 - Automated payroll to 200+ recipients in single gasless transaction
 - Transaction labeling and categorization
 
-### Lesson for FlowLink
+### Lesson for ProofLink
 Utopia Labs demonstrated the market: DAOs need treasury + payroll + payments. But the standalone product didn't achieve product-market fit fast enough for its VC backers. Now the technology lives inside Coinbase Wallet's developer infrastructure, not as a standalone product. The market exists — but the business model was difficult.
 
 ---
@@ -378,7 +378,7 @@ Account Abstraction (AA) via ERC-4337 and EIP-7702 (activated May 7, 2025 with P
 - Supports 100+ chains
 - permissionless.js SDK
 
-### Relevance to FlowLink
+### Relevance to ProofLink
 AA infrastructure is the **invisible payment rails** that any serious payment product needs:
 - Gasless invoice payments (sponsor gas for customers)
 - Agent-based recurring payment authorization
@@ -783,7 +783,7 @@ The gap: **A payment product where every invoice/payment is Travel Rule complian
 **The void:** Huma Finance does invoice tokenization and financing. Request Finance does invoicing. **No one bridges both in one UX.**
 
 The flow nobody is providing:
-1. Create invoice in FlowLink
+1. Create invoice in ProofLink
 2. Optionally toggle: "Finance this invoice" → receive USDC now (with Huma-style DeFi liquidity)
 3. When client pays, financing is automatically settled
 
@@ -866,7 +866,7 @@ The gap: **Smart account (ERC-7579) based expense management where spending poli
 
 ---
 
-### Summary of Gaps (Priority Ordered for FlowLink)
+### Summary of Gaps (Priority Ordered for ProofLink)
 
 | Gap | Market Size | Technical Feasibility | Competition Density |
 |-----|------------|----------------------|---------------------|

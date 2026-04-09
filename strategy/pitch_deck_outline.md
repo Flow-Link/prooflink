@@ -1,11 +1,11 @@
-# FlowLink — Pitch Deck Outline
+# ProofLink — Pitch Deck Outline
 
 > "The compliance infrastructure that makes AI agent payments safe, legal, and auditable"
 
 ---
 
 ## Slide 1: Title
-**FlowLink** — The Trust Layer for the Agentic Economy
+**ProofLink** — The Trust Layer for the Agentic Economy
 - Tagline: "Making stablecoin payments safe for CFOs today and AI agents tomorrow"
 
 ---
@@ -46,17 +46,17 @@
 - **x402**: Payments ✅, Compliance ❌, Invoicing ❌
 - **Superfluid/Sablier**: Streaming ✅, Compliance ❌, Invoicing ❌
 - **Chainalysis/TRM**: Monitoring ✅, Payments ❌, Agents ❌
-- **FlowLink**: Compliance ✅, Invoicing ✅, AI Agents ✅, Payments ✅
+- **ProofLink**: Compliance ✅, Invoicing ✅, AI Agents ✅, Payments ✅
 
 ---
 
-## Slide 6: What FlowLink Does
+## Slide 6: What ProofLink Does
 **ProofLink Engine** — compliance middleware for every payment protocol
 
 ```
 AI Agent / Business
     ↓ Payment Request
-FlowLink ProofLink Engine:
+ProofLink ProofLink Engine:
     1. Identity: KYA (Know Your Agent) / KYC verification
     2. Sanctions: OFAC, EU, UN, HMT screening (<100ms)
     3. Travel Rule: FATF-compliant data transmission
@@ -79,7 +79,7 @@ Settlement (x402 / MPP / AP2 / any rail)
 - Jan 2026: ERC-8004 on mainnet (agent identity)
 - Feb 2026: Stripe joins x402, Coinbase Agentic Wallets
 - Mar 2026: Stripe MPP + Tempo mainnet, BVNK acquired for $1.8B
-- **NOW: Payment protocols exist. Compliance doesn't. FlowLink fills the gap.**
+- **NOW: Payment protocols exist. Compliance doesn't. ProofLink fills the gap.**
 
 ---
 
@@ -89,7 +89,7 @@ Settlement (x402 / MPP / AP2 / any rail)
 3. **Agent Invoice Standard**: JSON-LD machine-readable invoices for agent transactions
 4. **Compliance Receipts**: On-chain attestations proving all checks passed
 5. **Cross-Protocol Router**: Works with x402, MPP, AP2, ACP — protocol agnostic
-6. **MCP Server**: Any AI agent can call FlowLink for compliant payments
+6. **MCP Server**: Any AI agent can call ProofLink for compliant payments
 
 ---
 
@@ -139,7 +139,7 @@ Revenue streams:
 ## Slide 12: The Validation
 - **BVNK acquired by Mastercard for $1.8B** (March 17, 2026) — on $90M raised
 - **Bridge acquired by Stripe for $1.1B** (2025)
-- Both were compliance-native stablecoin infrastructure — exactly FlowLink's thesis
+- Both were compliance-native stablecoin infrastructure — exactly ProofLink's thesis
 - **22x capital efficiency** at BVNK — the market rewards lean infrastructure builders
 
 ---
@@ -160,7 +160,7 @@ Revenue streams:
 ---
 
 ## Slide 15: Vision
-"Every AI agent transaction — compliant, invoiced, auditable. FlowLink is the trust infrastructure that makes the agentic economy safe for business."
+"Every AI agent transaction — compliant, invoiced, auditable. ProofLink is the trust infrastructure that makes the agentic economy safe for business."
 
 $150 trillion in B2B payments. $52 billion in AI agents. $100 billion in RegTech.
-**FlowLink sits at the intersection of all three.**
+**ProofLink sits at the intersection of all three.**

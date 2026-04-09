@@ -108,8 +108,8 @@ function makeEscrow(overrides: Partial<Escrow> = {}): Escrow {
     id: "escrow-uuid-1",
     escrowType: "SERVICE",
     state: "CREATED",
-    payerAgentDid: "did:web:payer.flowlink.io",
-    payeeAgentDid: "did:web:payee.flowlink.io",
+    payerAgentDid: "did:web:payer.prooflink.io",
+    payeeAgentDid: "did:web:payee.prooflink.io",
     payerWallet: "0xPayer000000000000000000000000000000000001",
     payeeWallet: "0xPayee000000000000000000000000000000000002",
     amount: "100.0",
@@ -133,8 +133,8 @@ function makeEscrow(overrides: Partial<Escrow> = {}): Escrow {
 function makeCreateParams(overrides: Partial<CreateEscrowParams> = {}): CreateEscrowParams {
   return {
     escrowType: "SERVICE",
-    payerAgentDid: "did:web:payer.flowlink.io",
-    payeeAgentDid: "did:web:payee.flowlink.io",
+    payerAgentDid: "did:web:payer.prooflink.io",
+    payeeAgentDid: "did:web:payee.prooflink.io",
     payerWallet: "0xPayer000000000000000000000000000000000001",
     payeeWallet: "0xPayee000000000000000000000000000000000002",
     amount: "100.0",

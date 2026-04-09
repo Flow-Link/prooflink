@@ -6,7 +6,7 @@
 // Uses the exact Solidity ABI type notation required by EAS SchemaRegistry.
 // ---------------------------------------------------------------------------
 
-import type { ComplianceReceipt } from "@flowlink/shared";
+import type { ComplianceReceipt } from "@prooflink/shared";
 import type { AttestationData } from "./types.js";
 
 /**
@@ -22,7 +22,7 @@ export const PROOFLINK_SCHEMA =
   "bytes32 receiptId, bytes32 paymentTxHash, uint64 chainId, address payer, address payee, uint128 amount, address token, bytes32 ipfsContentHash, uint8 riskScore, uint16 sanctionsFlags, bool travelRuleCompliant, uint8 flowType, bytes32 agentIdHash";
 
 /** Human-readable schema name. */
-export const PROOFLINK_SCHEMA_NAME = "FlowLink.ProofLink.ComplianceReceipt.v1";
+export const PROOFLINK_SCHEMA_NAME = "ProofLink.ProofLink.ComplianceReceipt.v1";
 
 /** Whether the schema allows revocation. */
 export const PROOFLINK_SCHEMA_REVOCABLE = true;

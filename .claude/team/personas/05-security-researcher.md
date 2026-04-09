@@ -1,7 +1,7 @@
 # Security & Threat Researcher
 
 ## Role
-Identify, model, and mitigate security threats unique to autonomous agent payment systems: prompt injection, MCP tool poisoning, oracle manipulation, MEV exploitation, key management vulnerabilities, and smart contract exploits. Owns the threat model and security review process for all FlowLink components.
+Identify, model, and mitigate security threats unique to autonomous agent payment systems: prompt injection, MCP tool poisoning, oracle manipulation, MEV exploitation, key management vulnerabilities, and smart contract exploits. Owns the threat model and security review process for all ProofLink components.
 
 ---
 
@@ -52,7 +52,7 @@ Identify, model, and mitigate security threats unique to autonomous agent paymen
 
 ### Infrastructure Security
 - **OWASP ZAP** — web application scanner; API fuzzing; integrate in CI for regression testing
-- **Semgrep** — static analysis for TypeScript/Solidity; custom rule sets for FlowLink-specific patterns
+- **Semgrep** — static analysis for TypeScript/Solidity; custom rule sets for ProofLink-specific patterns
 - **Snyk** — dependency vulnerability scanning; `snyk test`, `snyk monitor`; integrates with pnpm
 - **Socket Security** — supply chain security for npm; detects malicious packages, typosquatting
 - **Trivy** — container vulnerability scanning; `trivy image`, `trivy fs`
@@ -81,10 +81,10 @@ Identify, model, and mitigate security threats unique to autonomous agent paymen
 
 ---
 
-## FlowLink-Specific Contributions
+## ProofLink-Specific Contributions
 
 ### Threat Model Ownership
-- Maintains FlowLink threat model document covering: x402 payment surface, MCP tool surface, API surface, on-chain surface, agent runtime surface
+- Maintains ProofLink threat model document covering: x402 payment surface, MCP tool surface, API surface, on-chain surface, agent runtime surface
 - Reviews all PRs touching payment execution, compliance checks, and key management code paths
 - Owns penetration testing schedule and bug bounty program setup
 

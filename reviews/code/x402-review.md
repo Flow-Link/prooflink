@@ -2,7 +2,7 @@
 
 **Reviewer:** Senior TypeScript code reviewer (Claude Sonnet 4.6)
 **Date:** 2026-03-21
-**Package:** `@flowlink/x402-compliance` — `packages/x402-compliance/src/`
+**Package:** `@prooflink/x402-compliance` — `packages/x402-compliance/src/`
 **Test result (post-fix):** 28/28 passing
 
 ---
@@ -35,7 +35,7 @@ The package is architecturally sound. The hook/factory pattern with injected ser
 
 **WARNING: `allowlist` short-circuit requires BOTH sender AND receiver on the list**
 — `packages/x402-compliance/src/hooks/before-verify.ts:98`
-— The `ProofLinkEngine` in `@flowlink/core` allowlists on sender alone (`if (this.config.allowlist.includes(request.sender.toLowerCase()))` — `core/src/engine/prooflink.ts:118`). The x402 package requires both parties, making it significantly more restrictive. This divergence is undocumented and will silently reject payments where only the payer is known-good (e.g., internal treasury accounts paying external vendors). If the dual-allowlist semantics are intentional, it must be documented; if not, the condition should be `||` for OR logic.
+— The `ProofLinkEngine` in `@prooflink/core` allowlists on sender alone (`if (this.config.allowlist.includes(request.sender.toLowerCase()))` — `core/src/engine/prooflink.ts:118`). The x402 package requires both parties, making it significantly more restrictive. This divergence is undocumented and will silently reject payments where only the payer is known-good (e.g., internal treasury accounts paying external vendors). If the dual-allowlist semantics are intentional, it must be documented; if not, the condition should be `||` for OR logic.
 **Not fixed** (business intent unknown — needs product decision).
 
 ---
@@ -47,12 +47,12 @@ The package is architecturally sound. The hook/factory pattern with injected ser
 
 ---
 
-**WARNING: `@flowlink/core` is listed as a dependency but never imported**
+**WARNING: `@prooflink/core` is listed as a dependency but never imported**
 — `packages/x402-compliance/package.json:33`
-— `@flowlink/core` is in `dependencies` alongside `@flowlink/shared`, but zero source files in this package import from `@flowlink/core`. The package defines its own service interfaces (`SanctionsScreener`, `AmlScorer`, `TravelRuleService`, `ProofLinkService`) and injects implementations at construction time. This means:
-  1. The `ProofLinkEngine` from `@flowlink/core` is never used despite the doc comment describing "calling the ProofLink engine."
-  2. The `@flowlink/core` package is installed in production bundles for no reason, adding install weight and a dependency surface.
-**Not fixed** — removing the dependency would require either wiring `ProofLinkEngine` into this package's service interfaces, or making the intent explicit. Recommend: either use `ProofLinkEngine` as the default `screener`/`amlScorer` implementation, or remove `@flowlink/core` from dependencies and make it an optional peer.
+— `@prooflink/core` is in `dependencies` alongside `@prooflink/shared`, but zero source files in this package import from `@prooflink/core`. The package defines its own service interfaces (`SanctionsScreener`, `AmlScorer`, `TravelRuleService`, `ProofLinkService`) and injects implementations at construction time. This means:
+  1. The `ProofLinkEngine` from `@prooflink/core` is never used despite the doc comment describing "calling the ProofLink engine."
+  2. The `@prooflink/core` package is installed in production bundles for no reason, adding install weight and a dependency surface.
+**Not fixed** — removing the dependency would require either wiring `ProofLinkEngine` into this package's service interfaces, or making the intent explicit. Recommend: either use `ProofLinkEngine` as the default `screener`/`amlScorer` implementation, or remove `@prooflink/core` from dependencies and make it an optional peer.
 
 ---
 
@@ -67,7 +67,7 @@ The package is architecturally sound. The hook/factory pattern with injected ser
 
 **SUGGESTION: `ScreeningCache` interface is exported but never wired in**
 — `packages/x402-compliance/src/hooks/before-verify.ts:31`, `hooks/index.ts:2`
-— `ScreeningCache` defines a get/set interface for caching compliance decisions, but `BeforeVerifyDeps` does not include it and the hook never uses it. The code re-runs full sanctions+AML checks on every request. Given that the redis config (`RedisConfigSchema`) is part of `FlowLinkConfig`, this was presumably intended to be wired. Without caching, repeat payments from the same sender will triple the external API call count (verify-sender, verify-receiver, aml-score each time). This will push latency above the 200ms budget for any non-trivial Chainalysis API.
+— `ScreeningCache` defines a get/set interface for caching compliance decisions, but `BeforeVerifyDeps` does not include it and the hook never uses it. The code re-runs full sanctions+AML checks on every request. Given that the redis config (`RedisConfigSchema`) is part of `ProofLinkConfig`, this was presumably intended to be wired. Without caching, repeat payments from the same sender will triple the external API call count (verify-sender, verify-receiver, aml-score each time). This will push latency above the 200ms budget for any non-trivial Chainalysis API.
 — Add `cache?: ScreeningCache` to `BeforeVerifyDeps`, check it before calling `screener.screen()` and `amlScorer.score()`, and populate it after clean results.
 
 ---
@@ -99,9 +99,9 @@ The three hooks intercept the payment flow in the correct order and with correct
 - `onBeforeSettle` — runs after cryptographic verification but before the on-chain transaction is submitted. Travel Rule must gate here (pre-transaction), not in verify. Correct placement.
 - `onAfterSettle` — runs after the transaction is on-chain. Receipt generation and attestation are correctly placed here. Fire-and-forget for EAS/invoice is intentional and correct — these must not block the settlement response.
 
-## Compliance Integration with `@flowlink/core`
+## Compliance Integration with `@prooflink/core`
 
-The package does NOT integrate with `ProofLinkEngine` from `@flowlink/core`. Instead it reimplements the pipeline through injected service interfaces. This is architecturally clean (testable, no tight coupling) but creates two parallel implementations of the same pipeline. The core engine has features this package lacks: jurisdictional rules, GENIUS Act / MiCA checks, `failOpen` mode, escalation status, and proper LRU caching. Long-term, these packages should converge — either the x402 package delegates to `ProofLinkEngine` or `@flowlink/core` is removed from dependencies.
+The package does NOT integrate with `ProofLinkEngine` from `@prooflink/core`. Instead it reimplements the pipeline through injected service interfaces. This is architecturally clean (testable, no tight coupling) but creates two parallel implementations of the same pipeline. The core engine has features this package lacks: jurisdictional rules, GENIUS Act / MiCA checks, `failOpen` mode, escalation status, and proper LRU caching. Long-term, these packages should converge — either the x402 package delegates to `ProofLinkEngine` or `@prooflink/core` is removed from dependencies.
 
 ## Performance Budget
 
@@ -115,10 +115,10 @@ The before-settle hook adds a sequential `priceConverter.toUsd()` + conditional 
 
 ## Files Modified
 
-- `/home/akash/PROJECTS/FLOW-LINK/packages/x402-compliance/src/hooks/before-verify.ts` — `payloadKey` collision fix + allowlist event emission fix
-- `/home/akash/PROJECTS/FLOW-LINK/packages/x402-compliance/src/hooks/after-settle.ts` — `settledProofLinks` type updated to `{ hash, timestamp }`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/x402-compliance/src/extension.ts` — `settledProofLinks` type updated; reads `.hash` from entry
-- `/home/akash/PROJECTS/FLOW-LINK/packages/x402-compliance/src/middleware.ts` — replaced `Map<string, string>` with `createProofLinkStore()` (TTL-evicting); cleanup interval now covers both maps
+- `/home/akash/PROJECTS/prooflink/packages/x402-compliance/src/hooks/before-verify.ts` — `payloadKey` collision fix + allowlist event emission fix
+- `/home/akash/PROJECTS/prooflink/packages/x402-compliance/src/hooks/after-settle.ts` — `settledProofLinks` type updated to `{ hash, timestamp }`
+- `/home/akash/PROJECTS/prooflink/packages/x402-compliance/src/extension.ts` — `settledProofLinks` type updated; reads `.hash` from entry
+- `/home/akash/PROJECTS/prooflink/packages/x402-compliance/src/middleware.ts` — replaced `Map<string, string>` with `createProofLinkStore()` (TTL-evicting); cleanup interval now covers both maps
 
 ---
 
@@ -126,5 +126,5 @@ NEXT STEPS:
 1. Decide whether `allowlist` semantics should be sender-only (`||`) or both parties required (`&&`) — update accordingly and document.
 2. Wire `ScreeningCache` (backed by the configured Redis) into `BeforeVerifyDeps` to avoid redundant Chainalysis API calls on repeated payments.
 3. Replace `DefaultProofLinkService.computeHash` with `node:crypto` SHA-256 to eliminate the 2^31 collision domain.
-4. Either remove `@flowlink/core` from dependencies or wire `ProofLinkEngine` as the default service implementation to eliminate the parallel compliance pipeline.
+4. Either remove `@prooflink/core` from dependencies or wire `ProofLinkEngine` as the default service implementation to eliminate the parallel compliance pipeline.
 5. Add the missing tests: allowlist event assertion and `onAfterSettle` idempotency.

@@ -1,12 +1,14 @@
-import { desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 
 import { getDb } from "../db/index.js";
 import { agents, complianceChecks, complianceReceipts, invoices } from "../db/schema.js";
-import { AMLScorer, loadConfig } from "@flowlink/core";
-import type { TransactionContext } from "@flowlink/core";
+import type { AuthContext } from "../middleware/auth.js";
+import { requireScope } from "../middleware/auth.js";
+import { AMLScorer, loadConfig } from "@prooflink/core";
+import type { TransactionContext } from "@prooflink/core";
 import { screenAddress } from "../services/screening.js";
 import { validate } from "../middleware/validate.js";
 import { writeAuditLog } from "../utils/audit.js";
@@ -22,29 +24,38 @@ const amlScorer = new AMLScorer(proofLinkConfig);
 
 const dashboard = new Hono();
 
-// GET /dashboard/stats — Aggregate dashboard stats (no auth — internal dashboard use)
+// GET /dashboard/stats — Aggregate dashboard stats (scoped by tenant)
 dashboard.get("/stats", async (c) => {
+	const auth = c.get("auth") as AuthContext | undefined;
 	const db = getDb();
+
+	const checksWhere = auth?.apiKeyId ? eq(complianceChecks.apiKeyId, auth.apiKeyId) : undefined;
+	const agentsWhere = auth?.apiKeyId ? eq(agents.apiKeyId, auth.apiKeyId) : undefined;
+	const invoicesWhere = auth?.apiKeyId ? eq(invoices.apiKeyId, auth.apiKeyId) : undefined;
 
 	const [checksResult, statusBreakdown, agentsResult, volumeResult] = await Promise.all([
 		db
 			.select({ total: sql<number>`count(*)::int`.as("total") })
-			.from(complianceChecks),
+			.from(complianceChecks)
+			.where(checksWhere),
 		db
 			.select({
 				status: complianceChecks.status,
 				count: sql<number>`count(*)::int`.as("count"),
 			})
 			.from(complianceChecks)
+			.where(checksWhere)
 			.groupBy(complianceChecks.status),
 		db
 			.select({ total: sql<number>`count(*)::int`.as("total") })
-			.from(agents),
+			.from(agents)
+			.where(agentsWhere),
 		db
 			.select({
 				totalVolume: sql<string>`coalesce(sum(${invoices.totalAmount}), 0)::text`.as("total_volume"),
 			})
-			.from(invoices),
+			.from(invoices)
+			.where(invoicesWhere),
 	]);
 
 	const totalChecks = checksResult[0]?.total ?? 0;
@@ -68,12 +79,15 @@ dashboard.get("/stats", async (c) => {
 
 // GET /dashboard/checks — Recent compliance checks for dashboard table
 dashboard.get("/checks", async (c) => {
+	const auth = c.get("auth") as AuthContext | undefined;
 	const db = getDb();
 	const limit = Math.min(Number(c.req.query("limit") || "50"), 100);
 
+	const checksWhere = auth?.apiKeyId ? eq(complianceChecks.apiKeyId, auth.apiKeyId) : undefined;
 	const items = await db
 		.select()
 		.from(complianceChecks)
+		.where(checksWhere)
 		.orderBy(desc(complianceChecks.createdAt))
 		.limit(limit);
 
@@ -102,12 +116,15 @@ dashboard.get("/checks", async (c) => {
 
 // GET /dashboard/invoices — Recent invoices for dashboard
 dashboard.get("/invoices", async (c) => {
+	const auth = c.get("auth") as AuthContext | undefined;
 	const db = getDb();
 	const limit = Math.min(Number(c.req.query("limit") || "50"), 100);
 
+	const invoicesWhere = auth?.apiKeyId ? eq(invoices.apiKeyId, auth.apiKeyId) : undefined;
 	const items = await db
 		.select()
 		.from(invoices)
+		.where(invoicesWhere)
 		.orderBy(desc(invoices.createdAt))
 		.limit(limit);
 
@@ -134,11 +151,14 @@ dashboard.get("/invoices", async (c) => {
 
 // GET /dashboard/agents — Agents list for dashboard
 dashboard.get("/agents", async (c) => {
+	const auth = c.get("auth") as AuthContext | undefined;
 	const db = getDb();
 
+	const agentsWhere = auth?.apiKeyId ? eq(agents.apiKeyId, auth.apiKeyId) : undefined;
 	const items = await db
 		.select()
 		.from(agents)
+		.where(agentsWhere)
 		.orderBy(desc(agents.createdAt));
 
 	return c.json({
@@ -146,7 +166,7 @@ dashboard.get("/agents", async (c) => {
 		data: items.map((agent) => ({
 			did: agent.agentDid,
 			name: agent.name ?? agent.agentDid,
-			provider: "FlowLink",
+			provider: "ProofLink",
 			status: !agent.isActive
 				? "REVOKED"
 				: agent.expiresAt && agent.expiresAt < new Date()
@@ -170,8 +190,10 @@ dashboard.get("/agents", async (c) => {
 
 // GET /dashboard/volume — Volume data for chart
 dashboard.get("/volume", async (c) => {
+	const auth = c.get("auth") as AuthContext | undefined;
 	const db = getDb();
 
+	const checksWhere = auth?.apiKeyId ? eq(complianceChecks.apiKeyId, auth.apiKeyId) : undefined;
 	const result = await db
 		.select({
 			date: sql<string>`date_trunc('day', ${complianceChecks.createdAt})::date::text`.as("date"),
@@ -180,6 +202,7 @@ dashboard.get("/volume", async (c) => {
 			failed: sql<number>`count(*) filter (where ${complianceChecks.status} != 'APPROVED')::int`.as("failed"),
 		})
 		.from(complianceChecks)
+		.where(checksWhere)
 		.groupBy(sql`date_trunc('day', ${complianceChecks.createdAt})::date`)
 		.orderBy(sql`date_trunc('day', ${complianceChecks.createdAt})::date`);
 
@@ -229,7 +252,7 @@ const ScreenBody = z.object({
 	chain: z.string().min(1),
 });
 
-dashboard.post("/screen", validate({ body: ScreenBody }), async (c) => {
+dashboard.post("/screen", requireScope("write"), validate({ body: ScreenBody }), async (c) => {
 	const { address, chain } = c.get("validatedBody") as z.infer<typeof ScreenBody>;
 	const result = await screenAddress(address, chain);
 
@@ -263,8 +286,9 @@ const CheckBody = z.object({
 	asset: z.string().min(1),
 });
 
-dashboard.post("/compliance-check", validate({ body: CheckBody }), async (c) => {
+dashboard.post("/compliance-check", requireScope("write"), validate({ body: CheckBody }), async (c) => {
 	const parsed = c.get("validatedBody") as z.infer<typeof CheckBody>;
+	const auth = c.get("auth") as AuthContext | undefined;
 	const db = getDb();
 
 	// Screen sender and receiver via real-time sanctions screener (with offline fallback)
@@ -285,7 +309,7 @@ dashboard.post("/compliance-check", validate({ body: CheckBody }), async (c) => 
 	const checksPerformed = [
 		{ checkType: "SANCTIONS_SCREENING", target: "sender", result: senderSanctioned ? "FAILED" : "PASSED", provider: dashSenderScreen.provider, performedAt: dashSenderScreen.screenedAt, durationMs: dashScreenDurationMs },
 		{ checkType: "SANCTIONS_SCREENING", target: "receiver", result: receiverSanctioned ? "FAILED" : "PASSED", provider: dashReceiverScreen.provider, performedAt: dashReceiverScreen.screenedAt, durationMs: dashScreenDurationMs },
-		{ checkType: "AML_MONITORING", target: "transaction", result: "PASSED", provider: "flowlink", performedAt: new Date().toISOString(), durationMs: 15 },
+		{ checkType: "AML_MONITORING", target: "transaction", result: "PASSED", provider: "prooflink", performedAt: new Date().toISOString(), durationMs: 15 },
 	];
 
 	// Build transaction context for AML scoring
@@ -314,6 +338,7 @@ dashboard.post("/compliance-check", validate({ body: CheckBody }), async (c) => 
 		riskScore,
 		checks: checksPerformed,
 		totalDurationMs: 17,
+		apiKeyId: auth?.apiKeyId,
 	}).returning();
 
 	if (!check) {
@@ -357,6 +382,7 @@ dashboard.post("/compliance-check", validate({ body: CheckBody }), async (c) => 
 		totalDurationMs: 17,
 	}, {
 		receiptId: receipt?.id,
+		apiKeyId: auth?.apiKeyId,
 	});
 
 	// Emit high-priority sanctions alert if either party is sanctioned
@@ -370,6 +396,8 @@ dashboard.post("/compliance-check", validate({ body: CheckBody }), async (c) => 
 			riskScore,
 			amount: parsed.amount,
 			asset: parsed.asset,
+		}, {
+			apiKeyId: auth?.apiKeyId,
 		});
 	}
 
@@ -409,8 +437,9 @@ const CreateInvoiceBody = z.object({
 	complianceReceiptId: z.string().uuid().optional(),
 });
 
-dashboard.post("/invoices", validate({ body: CreateInvoiceBody }), async (c) => {
+dashboard.post("/invoices", requireScope("write"), validate({ body: CreateInvoiceBody }), async (c) => {
 	const parsed = c.get("validatedBody") as z.infer<typeof CreateInvoiceBody>;
+	const auth = c.get("auth") as AuthContext | undefined;
 	const db = getDb();
 
 	// Enforce delegation scope for the issuing agent
@@ -467,6 +496,7 @@ dashboard.post("/invoices", validate({ body: CreateInvoiceBody }), async (c) => 
 		complianceReceiptId: linkedReceiptId,
 		traceId: invoiceTraceId,
 		dueDate: parsed.dueDate ? new Date(parsed.dueDate) : null,
+		apiKeyId: auth?.apiKeyId,
 		invoiceData: {
 			seller: parsed.seller,
 			buyer: parsed.buyer,
@@ -504,6 +534,7 @@ dashboard.post("/invoices", validate({ body: CreateInvoiceBody }), async (c) => 
 		buyer: invoice.buyerWalletAddress,
 	}, {
 		invoiceId: invoice.id,
+		apiKeyId: auth?.apiKeyId,
 	});
 
 	return c.json({ success: true, data: invoice }, 201);

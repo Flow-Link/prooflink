@@ -1,8 +1,8 @@
 /**
- * Unit tests for FlowLink MCP server tools.
+ * Unit tests for ProofLink MCP server tools.
  *
  * Strategy: spin up a full MCP server with InMemoryTransport (same pattern as
- * server.test.ts) but mock the @flowlink/core service singletons exported from
+ * server.test.ts) but mock the @prooflink/core service singletons exported from
  * context.ts so every test remains purely in-process with no external I/O.
  */
 
@@ -45,8 +45,8 @@ vi.mock("../agent-registry.js", () => {
 });
 
 // ── Import server AND mocked context AFTER mocks are wired ───────────────────
-import { createFlowLinkMCPServer } from "../server.js";
-import type { FlowLinkMCPHandle } from "../server.js";
+import { createProofLinkMCPServer } from "../server.js";
+import type { ProofLinkMCPHandle } from "../server.js";
 import * as ctx from "../context.js";
 import * as agentRegistry from "../agent-registry.js";
 
@@ -92,7 +92,7 @@ const SANCTIONED_SCREEN_RESULT = {
 /** KYA verification result for a valid, trusted agent. */
 const VERIFIED_KYA_RESULT = {
   verified: true,
-  agentDid: "did:flowlink:agent_test",
+  agentDid: "did:prooflink:agent_test",
   controllingEntity: "Acme Corp",
   delegationScope: {
     maxTransactionAmount: 10_000,
@@ -109,7 +109,7 @@ const VERIFIED_KYA_RESULT = {
 /** KYA verification result for a failed / untrusted agent. */
 const FAILED_KYA_RESULT = {
   verified: false,
-  agentDid: "did:flowlink:agent_unknown",
+  agentDid: "did:prooflink:agent_unknown",
   controllingEntity: undefined,
   delegationScope: undefined,
   erc8004Registered: false,
@@ -124,7 +124,7 @@ const FOUND_AGENT_LOOKUP = {
   found: true,
   agent: {
     agentId: "agent_001",
-    did: "did:flowlink:agent_001",
+    did: "did:prooflink:agent_001",
     name: "PaymentBot-v2",
     type: "semi-autonomous" as const,
     walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f2bD68",
@@ -204,12 +204,12 @@ function getStructured(result: { structuredContent?: unknown }): Record<string, 
 
 // ── Test suite ───────────────────────────────────────────────────────────────
 
-describe("FlowLink MCP Tools (unit)", () => {
-  let handle: FlowLinkMCPHandle;
+describe("ProofLink MCP Tools (unit)", () => {
+  let handle: ProofLinkMCPHandle;
   let client: Client;
 
   beforeAll(async () => {
-    handle = await createFlowLinkMCPServer();
+    handle = await createProofLinkMCPServer();
     client = new Client({ name: "tools-test-client", version: "1.0.0" });
 
     const [clientTransport, serverTransport] =
@@ -255,7 +255,7 @@ describe("FlowLink MCP Tools (unit)", () => {
       expect(typeof data.agent_id).toBe("string");
       expect((data.agent_id as string).startsWith("agent_")).toBe(true);
       expect(typeof data.did).toBe("string");
-      expect((data.did as string).startsWith("did:flowlink:")).toBe(true);
+      expect((data.did as string).startsWith("did:prooflink:")).toBe(true);
       expect(data.name).toBe("TestBot");
       expect(data.type).toBe("semi-autonomous");
       expect(data.wallet_address).toBe("0xABC123");

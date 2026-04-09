@@ -1,5 +1,5 @@
 # Agentic Payments: Deep Dive Research
-**Team Delta — FlowLink Research**
+**Team Delta — ProofLink Research**
 **Date: March 20, 2026**
 
 ---
@@ -12,7 +12,7 @@ The agentic payments ecosystem has moved from concept to live infrastructure at 
 2. Fragmenting across competing protocol coalitions (ACP vs AP2 vs x402 vs MPP)
 3. Accelerating faster than regulatory frameworks can follow
 
-The gap FlowLink fills — compliance-first trust infrastructure across all these rails — is not only real but becomes more critical as protocol fragmentation deepens. Every new agent payment protocol creates a new compliance surface. FlowLink's ProofLink Engine is positioned to be the neutral compliance layer underneath all of them.
+The gap ProofLink fills — compliance-first trust infrastructure across all these rails — is not only real but becomes more critical as protocol fragmentation deepens. Every new agent payment protocol creates a new compliance surface. ProofLink's ProofLink Engine is positioned to be the neutral compliance layer underneath all of them.
 
 ---
 
@@ -45,7 +45,7 @@ Payment infrastructure built for humans fails agents on five dimensions:
 
 ## 2. The Protocol Layer: What Exists Today
 
-Six distinct protocol initiatives went live between 2025-2026, each with different tradeoffs. Understanding the full map is essential for FlowLink's positioning.
+Six distinct protocol initiatives went live between 2025-2026, each with different tradeoffs. Understanding the full map is essential for ProofLink's positioning.
 
 ### 2.1 x402 — HTTP-Native Micropayments (Coinbase)
 
@@ -71,7 +71,7 @@ Six distinct protocol initiatives went live between 2025-2026, each with differe
 
 **Ecosystem**: Stripe, AWS, Cloudflare, Vercel, Alchemy native support. World (Sam Altman's biometric identity company) integrated March 17, 2026, adding human-backing verification to x402 agent transactions via zero-knowledge World ID proofs.
 
-**Compliance gap**: x402 is permissionless by design. No built-in AML screening, no sanctions checking, no Travel Rule support. This is the gap FlowLink fills.
+**Compliance gap**: x402 is permissionless by design. No built-in AML screening, no sanctions checking, no Travel Rule support. This is the gap ProofLink fills.
 
 **Sources**: [x402.org](https://www.x402.org/), [Coinbase x402 docs](https://docs.cdp.coinbase.com/x402/welcome), [World x402 integration](https://techcrunch.com/2026/03/17/world-launches-tool-to-verify-humans-behind-ai-shopping-agents/)
 
@@ -275,7 +275,7 @@ Six distinct protocol initiatives went live between 2025-2026, each with differe
 
 **Networks**: Live on Solana and Base. Planned: Monad, Hyperliquid.
 
-**Significance for FlowLink**: KAMIYO solves post-transaction disputes. FlowLink solves pre-transaction compliance. These are complementary, not competing.
+**Significance for ProofLink**: KAMIYO solves post-transaction disputes. ProofLink solves pre-transaction compliance. These are complementary, not competing.
 
 **Sources**: [KAMIYO](https://www.kamiyo.ai/), [KAMIYO GitHub](https://github.com/kamiyo-ai/kamiyo-protocol)
 
@@ -365,7 +365,7 @@ All payment protocols converge on the same unsolved problem: **who is this agent
 
 3. **Validation Registry**: Generic hooks for requesting and recording independent validator checks. Enables third-party attestation of agent behavior.
 
-**Current adoption**: FlowLink's own site claims 49K+ agents registered on ERC-8004 (as of March 2026). DevConnect November 2025 showcased multiple prototype applications.
+**Current adoption**: ProofLink's own site claims 49K+ agents registered on ERC-8004 (as of March 2026). DevConnect November 2025 showcased multiple prototype applications.
 
 **Significance**: ERC-8004 is the identity primitive that makes compliance tractable. Every agent has an auditable identity. Reputation is on-chain. Validators can be compliance providers.
 
@@ -388,7 +388,7 @@ The W3C DID/VC stack provides a protocol-agnostic identity layer for AI agents:
 - ERC-8004 uses on-chain registries
 - World/AgentKit uses zero-knowledge World ID proofs
 
-**FlowLink implication**: KYA (Know Your Agent) is not just a product feature — it is the core compliance primitive that every protocol needs but none of them fully solves. FlowLink's ProofLink Engine, sitting across all protocols, is positioned to be the canonical agent identity verification layer.
+**ProofLink implication**: KYA (Know Your Agent) is not just a product feature — it is the core compliance primitive that every protocol needs but none of them fully solves. ProofLink's ProofLink Engine, sitting across all protocols, is positioned to be the canonical agent identity verification layer.
 
 **Sources**: [Arxiv DID+VC for agents](https://arxiv.org/abs/2511.02841), [Identity Foundation blog](https://blog.identity.foundation/building-ai-trust-at-scale-4/), [Cisco identity framework](https://community.cisco.com/t5/security-blogs/a-new-identity-framework-for-ai-agents/ba-p/5294337)
 
@@ -436,7 +436,7 @@ Identity Layer:       DIDs + Verifiable Credentials + ERC-8004
 Negotiation Layer:    A2A protocol (Google Agent2Agent)
 Payment Layer:        x402 / ACP / MPP / AP2 (competing)
 Settlement Layer:     Stablecoins (USDC/USDT) or SPTs on Tempo/Base/Solana
-Compliance Layer:     [GAP — FlowLink's position]
+Compliance Layer:     [GAP — ProofLink's position]
 Dispute Layer:        KAMIYO / on-chain escrow
 ```
 
@@ -472,7 +472,7 @@ Three trust anchors being used across protocols:
 
 3. **Biometric human backing** (World/AgentKit): Agent carries ZK proof it is operated by a unique, verified human. Prevents bot farms and Sybil attacks.
 
-**In practice**: All three are complementary. A production-grade agent payment flow in 2026 might use: World ID (prove human backing) + ERC-8004 (prove agent reputation) + AP2 Mandate (prove user authorized this purchase) + FlowLink (prove the transaction is AML-clean).
+**In practice**: All three are complementary. A production-grade agent payment flow in 2026 might use: World ID (prove human backing) + ERC-8004 (prove agent reputation) + AP2 Mandate (prove user authorized this purchase) + ProofLink (prove the transaction is AML-clean).
 
 ---
 
@@ -508,7 +508,7 @@ Every protocol analyzed has the same gap: **no built-in sanctions screening or A
 
 **The gap**: None of the protocol-native implementations screen agent-to-agent transactions against OFAC/EU/UN/HMT sanctions lists. None implement FATF Travel Rule for stablecoin transfers. None implement true KYA (Know Your Agent) compliance verification.
 
-**This is FlowLink's core opportunity.**
+**This is ProofLink's core opportunity.**
 
 ### 7.3 Compliance Architecture for Agentic Payments
 
@@ -545,7 +545,7 @@ What a compliant agentic payment stack requires:
    - Regulatory reporting
 ```
 
-**FlowLink's ProofLink Engine** maps directly to steps 1-5.
+**ProofLink's ProofLink Engine** maps directly to steps 1-5.
 
 ---
 
@@ -583,7 +583,7 @@ From the Chainstack analysis:
 - Agents need multi-protocol wallets
 - No universal compliance layer across protocols
 
-**This fragmentation is FlowLink's strategic opening.** A compliance layer that sits above all protocols — checking sanctions, Travel Rule, KYA — becomes the neutral infrastructure both coalitions need.
+**This fragmentation is ProofLink's strategic opening.** A compliance layer that sits above all protocols — checking sanctions, Travel Rule, KYA — becomes the neutral infrastructure both coalitions need.
 
 ---
 
@@ -641,15 +641,15 @@ The $3-5T global agentic commerce market implies a world where:
 - Agent reputation and credit scores determine access to services
 - The "trust layer" — cryptographic proof of agent legitimacy, user authorization, and compliance status — is as fundamental as DNS
 
-**The critical insight**: In this world, compliance is not a checkbox — it is the infrastructure that makes agent commerce legal and trustworthy. Every transaction needs provable chain-of-trust from user intent → agent action → payment → regulatory compliance. This is what FlowLink's ProofLink Engine is being built to provide.
+**The critical insight**: In this world, compliance is not a checkbox — it is the infrastructure that makes agent commerce legal and trustworthy. Every transaction needs provable chain-of-trust from user intent → agent action → payment → regulatory compliance. This is what ProofLink's ProofLink Engine is being built to provide.
 
 ---
 
-## 11. Implications for FlowLink
+## 11. Implications for ProofLink
 
 ### Strategic Positioning
 
-FlowLink's current positioning — "The regulatory-grade trust layer that makes stablecoin payments safe for CFOs today and AI agents tomorrow" — is precisely correct. The research confirms:
+ProofLink's current positioning — "The regulatory-grade trust layer that makes stablecoin payments safe for CFOs today and AI agents tomorrow" — is precisely correct. The research confirms:
 
 1. **Every protocol has a compliance gap**: x402 is permissionless, ACP delegates to Stripe, MPP is open, AP2 is trust-focused but not compliance-focused. The gap is real.
 
@@ -657,7 +657,7 @@ FlowLink's current positioning — "The regulatory-grade trust layer that makes 
 
 3. **ERC-8004 is the right identity primitive to build on**: It's the emerging standard with 49K+ agents already registered. Being the canonical compliance provider for ERC-8004 agents creates a defensible network effect.
 
-4. **KYA (Know Your Agent) is underserved**: Skyfire does agent identity for payment access. Nobody does agent compliance screening for regulatory requirements. This is FlowLink's differentiated position.
+4. **KYA (Know Your Agent) is underserved**: Skyfire does agent identity for payment access. Nobody does agent compliance screening for regulatory requirements. This is ProofLink's differentiated position.
 
 ### Protocol Integration Priority
 
@@ -675,19 +675,19 @@ Based on transaction volume and ecosystem momentum:
 
 1. **Universal Agent Compliance API**: Single API call screens an agent transaction for sanctions, AML, Travel Rule compliance — regardless of which payment protocol it uses.
 
-2. **ERC-8004 Compliance Validator**: Become a registered validator in the ERC-8004 Validation Registry. Agents with FlowLink compliance validation have a provable, on-chain compliance attestation.
+2. **ERC-8004 Compliance Validator**: Become a registered validator in the ERC-8004 Validation Registry. Agents with ProofLink compliance validation have a provable, on-chain compliance attestation.
 
 3. **Agent Behavioral Monitoring**: ML models trained on agent transaction patterns vs. human patterns. First product to specifically detect compromised/rogue agent behavior.
 
 4. **Travel Rule for Stablecoins**: Implement FATF Travel Rule protocol (IVMS101 data standard) for agent-to-agent stablecoin transfers. This is legally required for VASPs and completely unsolved in x402/MPP.
 
-5. **Compliance-as-MCP-Tool**: Expose FlowLink's compliance checks as an MCP server. Any AI agent using MCP can call `check_sanctions(counterparty)` or `verify_travel_rule(transfer)` as a standard tool invocation. This makes compliance ambient — agents check compliance the same way they check the weather.
+5. **Compliance-as-MCP-Tool**: Expose ProofLink's compliance checks as an MCP server. Any AI agent using MCP can call `check_sanctions(counterparty)` or `verify_travel_rule(transfer)` as a standard tool invocation. This makes compliance ambient — agents check compliance the same way they check the weather.
 
 ### Competitive Moat
 
 The compliance layer is naturally neutral — it benefits from not being owned by any protocol coalition. Coinbase's compliance serves Coinbase's interests. Stripe's compliance serves Stripe's interests. A neutral compliance provider that every protocol can plug into, with regulatory credibility, creates a defensible position that becomes harder to displace as transaction volumes grow.
 
-The network effect: every agent screened builds the behavioral database. Every compliance attestation issued builds the reputation dataset. Over time, FlowLink's dataset of agent compliance history becomes a competitive moat no single protocol can replicate.
+The network effect: every agent screened builds the behavioral database. Every compliance attestation issued builds the reputation dataset. Over time, ProofLink's dataset of agent compliance history becomes a competitive moat no single protocol can replicate.
 
 ---
 
@@ -734,4 +734,4 @@ The network effect: every agent screened builds the behavioral database. Every c
 ---
 
 *Research compiled by Team Delta — March 20, 2026*
-*For internal FlowLink strategy use only*
+*For internal ProofLink strategy use only*

@@ -1,8 +1,8 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
-import { FlowLinkX402Compliance } from "../middleware.js";
+import { ProofLinkX402Compliance } from "../middleware.js";
 import { RateLimiter } from "../rate-limiter.js";
 import type {
-  FlowLinkConfig,
+  ProofLinkConfig,
   PaymentPayload,
   PaymentRequirements,
   SettleResponse,
@@ -151,7 +151,7 @@ function makeInvoiceService(invoiceId: string | null = "inv-integration-001"): I
 // Config factory
 // ---------------------------------------------------------------------------
 
-function makeConfig(overrides: Partial<FlowLinkConfig> = {}): FlowLinkConfig {
+function makeConfig(overrides: Partial<ProofLinkConfig> = {}): ProofLinkConfig {
   return {
     chainalysisApiKey: "test-key-integration",
     policy: {
@@ -169,7 +169,7 @@ function makeConfig(overrides: Partial<FlowLinkConfig> = {}): FlowLinkConfig {
 // ---------------------------------------------------------------------------
 
 async function runFullFlow(
-  compliance: FlowLinkX402Compliance,
+  compliance: ProofLinkX402Compliance,
   payload: PaymentPayload,
   requirements: PaymentRequirements,
   txHash = "0xtxhash_integration",
@@ -194,7 +194,7 @@ async function runFullFlow(
 // ---------------------------------------------------------------------------
 
 describe("integration: full compliance flow", () => {
-  let compliance: FlowLinkX402Compliance;
+  let compliance: ProofLinkX402Compliance;
   const events: ComplianceEvent[] = [];
 
   beforeEach(() => {
@@ -212,7 +212,7 @@ describe("integration: full compliance flow", () => {
     const proofLinkService = makeProofLinkService();
     const invoiceService = makeInvoiceService();
 
-    compliance = new FlowLinkX402Compliance(makeConfig(), {
+    compliance = new ProofLinkX402Compliance(makeConfig(), {
       screener,
       amlScorer,
       proofLinkService,
@@ -244,7 +244,7 @@ describe("integration: full compliance flow", () => {
   });
 
   test("event payloads carry sender, receiver, network, and riskScore", async () => {
-    compliance = new FlowLinkX402Compliance(makeConfig(), {
+    compliance = new ProofLinkX402Compliance(makeConfig(), {
       screener: makeScreener(),
       amlScorer: makeAmlScorer(25),
       proofLinkService: makeProofLinkService(),
@@ -270,7 +270,7 @@ describe("integration: full compliance flow", () => {
 
   test("pending decision is deleted from map after after-settle completes", async () => {
     const proofLinkService = makeProofLinkService();
-    compliance = new FlowLinkX402Compliance(makeConfig(), {
+    compliance = new ProofLinkX402Compliance(makeConfig(), {
       screener: makeScreener(),
       amlScorer: makeAmlScorer(),
       proofLinkService,
@@ -308,7 +308,7 @@ describe("integration: full compliance flow", () => {
 // ---------------------------------------------------------------------------
 
 describe("integration: payment blocked at verification stage", () => {
-  let compliance: FlowLinkX402Compliance;
+  let compliance: ProofLinkX402Compliance;
   const events: ComplianceEvent[] = [];
 
   beforeEach(() => { events.length = 0; });
@@ -316,7 +316,7 @@ describe("integration: payment blocked at verification stage", () => {
 
   test("sanctioned sender aborts at before-verify with sanctions_hit reason", async () => {
     const screener = makeScreener([SANCTIONED_SENDER]);
-    compliance = new FlowLinkX402Compliance(makeConfig(), {
+    compliance = new ProofLinkX402Compliance(makeConfig(), {
       screener,
       amlScorer: makeAmlScorer(),
     });
@@ -341,7 +341,7 @@ describe("integration: payment blocked at verification stage", () => {
 
   test("sanctioned receiver aborts at before-verify with sanctions_hit reason", async () => {
     const screener = makeScreener([SANCTIONED_RECEIVER]);
-    compliance = new FlowLinkX402Compliance(makeConfig(), {
+    compliance = new ProofLinkX402Compliance(makeConfig(), {
       screener,
       amlScorer: makeAmlScorer(),
     });
@@ -379,7 +379,7 @@ describe("integration: payment blocked at verification stage", () => {
       }),
     };
 
-    compliance = new FlowLinkX402Compliance(makeConfig(), {
+    compliance = new ProofLinkX402Compliance(makeConfig(), {
       screener,
       amlScorer: makeAmlScorer(),
     });
@@ -404,7 +404,7 @@ describe("integration: payment blocked at verification stage", () => {
 
   test("no pending decision is stored when verify is aborted", async () => {
     const proofLinkService = makeProofLinkService();
-    compliance = new FlowLinkX402Compliance(makeConfig(), {
+    compliance = new ProofLinkX402Compliance(makeConfig(), {
       screener: makeScreener([SANCTIONED_SENDER]),
       amlScorer: makeAmlScorer(),
       proofLinkService,
@@ -433,7 +433,7 @@ describe("integration: payment blocked at verification stage", () => {
 // ---------------------------------------------------------------------------
 
 describe("integration: travel rule for high-value payments", () => {
-  let compliance: FlowLinkX402Compliance;
+  let compliance: ProofLinkX402Compliance;
   const events: ComplianceEvent[] = [];
 
   beforeEach(() => { events.length = 0; });
@@ -444,7 +444,7 @@ describe("integration: travel rule for high-value payments", () => {
     const priceConverter = makePriceConverter(1000); // exactly at threshold
     const proofLinkService = makeProofLinkService();
 
-    compliance = new FlowLinkX402Compliance(
+    compliance = new ProofLinkX402Compliance(
       makeConfig({ policy: { sanctionsLists: ["OFAC_SDN"], maxRiskScore: 70, travelRuleThresholdUsd: 1000 } }),
       {
         screener: makeScreener(),
@@ -483,7 +483,7 @@ describe("integration: travel rule for high-value payments", () => {
       return "0xproof_stored";
     });
 
-    compliance = new FlowLinkX402Compliance(
+    compliance = new ProofLinkX402Compliance(
       makeConfig({ policy: { sanctionsLists: ["OFAC_SDN"], maxRiskScore: 70, travelRuleThresholdUsd: 1000 } }),
       {
         screener: makeScreener(),
@@ -512,7 +512,7 @@ describe("integration: travel rule for high-value payments", () => {
   test("travel rule is skipped when USD value is below threshold", async () => {
     const travelRuleService = makeTravelRuleService();
 
-    compliance = new FlowLinkX402Compliance(
+    compliance = new ProofLinkX402Compliance(
       makeConfig({ policy: { sanctionsLists: ["OFAC_SDN"], maxRiskScore: 70, travelRuleThresholdUsd: 1000 } }),
       {
         screener: makeScreener(),
@@ -533,7 +533,7 @@ describe("integration: travel rule for high-value payments", () => {
   });
 
   test("settlement aborts when travel rule transmission fails", async () => {
-    compliance = new FlowLinkX402Compliance(
+    compliance = new ProofLinkX402Compliance(
       makeConfig({ policy: { sanctionsLists: ["OFAC_SDN"], maxRiskScore: 70, travelRuleThresholdUsd: 1000 } }),
       {
         screener: makeScreener(),
@@ -568,7 +568,7 @@ describe("integration: travel rule for high-value payments", () => {
       return "0xproof_checks";
     });
 
-    compliance = new FlowLinkX402Compliance(
+    compliance = new ProofLinkX402Compliance(
       makeConfig({ policy: { sanctionsLists: ["OFAC_SDN"], maxRiskScore: 70, travelRuleThresholdUsd: 1000 } }),
       {
         screener: makeScreener(),
@@ -603,7 +603,7 @@ describe("integration: travel rule for high-value payments", () => {
 // ---------------------------------------------------------------------------
 
 describe("integration: receipt generation after successful settlement", () => {
-  let compliance: FlowLinkX402Compliance;
+  let compliance: ProofLinkX402Compliance;
 
   afterEach(() => { compliance?.destroy(); });
 
@@ -615,7 +615,7 @@ describe("integration: receipt generation after successful settlement", () => {
     });
     proofLinkService.computeHash = vi.fn(() => "0xproof_receipt_fields");
 
-    compliance = new FlowLinkX402Compliance(makeConfig(), {
+    compliance = new ProofLinkX402Compliance(makeConfig(), {
       screener: makeScreener(),
       amlScorer: makeAmlScorer(30),
       proofLinkService,
@@ -668,7 +668,7 @@ describe("integration: receipt generation after successful settlement", () => {
     });
     proofLinkService.computeHash = vi.fn(() => "0xproof_checks_sanctions");
 
-    compliance = new FlowLinkX402Compliance(makeConfig(), {
+    compliance = new ProofLinkX402Compliance(makeConfig(), {
       screener: makeScreener(),
       amlScorer: makeAmlScorer(),
       proofLinkService,
@@ -694,7 +694,7 @@ describe("integration: receipt generation after successful settlement", () => {
 
   test("receipt generation emits compliance:receipt:generated event", async () => {
     const events: ComplianceEvent[] = [];
-    compliance = new FlowLinkX402Compliance(makeConfig(), {
+    compliance = new ProofLinkX402Compliance(makeConfig(), {
       screener: makeScreener(),
       amlScorer: makeAmlScorer(),
       proofLinkService: makeProofLinkService(),
@@ -722,11 +722,11 @@ describe("integration: receipt generation after successful settlement", () => {
     const invoiceService = makeInvoiceService("inv-test-flow");
     const proofLinkService = makeProofLinkService();
 
-    compliance = new FlowLinkX402Compliance(
+    compliance = new ProofLinkX402Compliance(
       makeConfig({
         invoicing: {
           enabled: true,
-          companyName: "FlowLink Inc",
+          companyName: "ProofLink Inc",
           companyAddress: "123 Crypto Lane",
         },
       }),
@@ -758,7 +758,7 @@ describe("integration: receipt generation after successful settlement", () => {
     const logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() };
     const proofLinkService = makeProofLinkService();
 
-    compliance = new FlowLinkX402Compliance(makeConfig({ logger }), {
+    compliance = new ProofLinkX402Compliance(makeConfig({ logger }), {
       screener: makeScreener(),
       amlScorer: makeAmlScorer(),
       proofLinkService,
@@ -937,7 +937,7 @@ describe("integration: rate limiting", () => {
 // ---------------------------------------------------------------------------
 
 describe("integration: error handling when services are unavailable", () => {
-  let compliance: FlowLinkX402Compliance;
+  let compliance: ProofLinkX402Compliance;
   const events: ComplianceEvent[] = [];
 
   beforeEach(() => { events.length = 0; });
@@ -950,7 +950,7 @@ describe("integration: error handling when services are unavailable", () => {
       }),
     };
 
-    compliance = new FlowLinkX402Compliance(makeConfig(), {
+    compliance = new ProofLinkX402Compliance(makeConfig(), {
       screener,
       amlScorer: makeAmlScorer(),
     });
@@ -978,7 +978,7 @@ describe("integration: error handling when services are unavailable", () => {
       }),
     };
 
-    compliance = new FlowLinkX402Compliance(makeConfig(), {
+    compliance = new ProofLinkX402Compliance(makeConfig(), {
       screener: makeScreener(),
       amlScorer,
     });
@@ -1002,7 +1002,7 @@ describe("integration: error handling when services are unavailable", () => {
     });
     const logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() };
 
-    compliance = new FlowLinkX402Compliance(makeConfig({ logger }), {
+    compliance = new ProofLinkX402Compliance(makeConfig({ logger }), {
       screener: makeScreener(),
       amlScorer: makeAmlScorer(),
       proofLinkService,
@@ -1038,7 +1038,7 @@ describe("integration: error handling when services are unavailable", () => {
     });
     const logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() };
 
-    compliance = new FlowLinkX402Compliance(
+    compliance = new ProofLinkX402Compliance(
       makeConfig({
         logger,
         eas: { schemaUid: "0xschema", privateKey: "0xpk", rpcUrl: "https://rpc.example.com" },
@@ -1079,10 +1079,10 @@ describe("integration: error handling when services are unavailable", () => {
     };
     const logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() };
 
-    compliance = new FlowLinkX402Compliance(
+    compliance = new ProofLinkX402Compliance(
       makeConfig({
         logger,
-        invoicing: { enabled: true, companyName: "FlowLink", companyAddress: "123 Main St" },
+        invoicing: { enabled: true, companyName: "ProofLink", companyAddress: "123 Main St" },
       }),
       {
         screener: makeScreener(),
@@ -1114,7 +1114,7 @@ describe("integration: error handling when services are unavailable", () => {
   });
 
   test("event handler throwing does not abort the hook execution", async () => {
-    compliance = new FlowLinkX402Compliance(makeConfig(), {
+    compliance = new ProofLinkX402Compliance(makeConfig(), {
       screener: makeScreener(),
       amlScorer: makeAmlScorer(),
     });
@@ -1134,7 +1134,7 @@ describe("integration: error handling when services are unavailable", () => {
   });
 
   test("before-settle with missing sender aborts with compliance_error", async () => {
-    compliance = new FlowLinkX402Compliance(makeConfig(), {
+    compliance = new ProofLinkX402Compliance(makeConfig(), {
       screener: makeScreener(),
       amlScorer: makeAmlScorer(),
     });
@@ -1168,7 +1168,7 @@ describe("integration: error handling when services are unavailable", () => {
       }),
     };
 
-    compliance = new FlowLinkX402Compliance(
+    compliance = new ProofLinkX402Compliance(
       makeConfig({ policy: { sanctionsLists: ["OFAC_SDN"], maxRiskScore: 70, travelRuleThresholdUsd: 1000 } }),
       {
         screener: makeScreener(),

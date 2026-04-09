@@ -1,20 +1,20 @@
 openapi: "3.1.0"
 info:
-  title: FlowLink API
+  title: ProofLink API
   version: "1.0.0"
   description: >-
-    FlowLink compliance, identity, and invoicing API for autonomous agent
+    ProofLink compliance, identity, and invoicing API for autonomous agent
     payments. Provides sanctions screening, KYA credential issuance, invoice
     lifecycle management, webhook delivery, and platform analytics.
   contact:
-    name: FlowLink
-    url: https://flowlink.io
+    name: ProofLink
+    url: https://prooflink.io
   license:
     name: MIT
 
 servers:
   - url: "{baseUrl}/v1"
-    description: FlowLink API v1
+    description: ProofLink API v1
     variables:
       baseUrl:
         default: "http://localhost:3001"

@@ -1,4 +1,4 @@
-# FlowLink Smart Contract Architecture
+# ProofLink Smart Contract Architecture
 
 **Version:** 1.0
 **Date:** 2026-03-20
@@ -9,7 +9,7 @@
 
 ## 1. Problem Statement
 
-FlowLink's on-chain layer must provide five capabilities that no existing protocol covers: (1) immutable compliance receipt anchoring tied to the Ethereum Attestation Service, (2) KYA credential management extending ERC-8004's identity registry, (3) structured invoice anchoring for agent-to-agent commerce, (4) an x402-compatible facilitator that gates settlement behind compliance checks, and (5) dispute resolution that integrates with ERC-8183 escrow hooks. These contracts collectively form the trust substrate that makes x402 and ERC-8183 payments enterprise-grade.
+ProofLink's on-chain layer must provide five capabilities that no existing protocol covers: (1) immutable compliance receipt anchoring tied to the Ethereum Attestation Service, (2) KYA credential management extending ERC-8004's identity registry, (3) structured invoice anchoring for agent-to-agent commerce, (4) an x402-compatible facilitator that gates settlement behind compliance checks, and (5) dispute resolution that integrates with ERC-8183 escrow hooks. These contracts collectively form the trust substrate that makes x402 and ERC-8183 payments enterprise-grade.
 
 ---
 
@@ -17,17 +17,17 @@ FlowLink's on-chain layer must provide five capabilities that no existing protoc
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│                         FlowLink On-Chain Layer                      │
+│                         ProofLink On-Chain Layer                      │
 │                                                                      │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────────┐  │
-│  │ ProofLinkRegistry│  │  FlowLinkKYA    │  │   AgentInvoice      │  │
+│  │ ProofLinkRegistry│  │  ProofLinkKYA    │  │   AgentInvoice      │  │
 │  │ (EAS Attestation)│  │  (ERC-8004 ext) │  │   (Invoice Anchor)  │  │
 │  └────────┬────────┘  └────────┬────────┘  └─────────┬───────────┘  │
 │           │                    │                      │              │
 │           └──────────┬─────────┴──────────────────────┘              │
 │                      │                                               │
 │           ┌──────────▼──────────┐  ┌──────────────────────┐         │
-│           │ FlowLinkFacilitator │  │   DisputeOracle      │         │
+│           │ ProofLinkFacilitator │  │   DisputeOracle      │         │
 │           │ (x402 compliance)   │──│   (ERC-8183 hooks)   │         │
 │           └─────────────────────┘  └──────────────────────┘         │
 │                      │                                               │
@@ -41,9 +41,9 @@ FlowLink's on-chain layer must provide five capabilities that no existing protoc
 | Contract | Purpose | Proxy Pattern | Primary Chain |
 |----------|---------|---------------|---------------|
 | `ProofLinkRegistry` | Compliance receipt registry, EAS integration | UUPS | Base, Ethereum |
-| `FlowLinkKYA` | KYA credential issuance and verification, extends ERC-8004 | UUPS | Ethereum, Base |
+| `ProofLinkKYA` | KYA credential issuance and verification, extends ERC-8004 | UUPS | Ethereum, Base |
 | `AgentInvoice` | On-chain invoice hash anchoring and lifecycle | UUPS | Base |
-| `FlowLinkFacilitator` | x402 compliance-gated facilitator | UUPS | Base |
+| `ProofLinkFacilitator` | x402 compliance-gated facilitator | UUPS | Base |
 | `DisputeOracle` | Dispute resolution for ERC-8183 jobs | UUPS | Base, Ethereum |
 
 ---
@@ -52,7 +52,7 @@ FlowLink's on-chain layer must provide five capabilities that no existing protoc
 
 ### 3.1 ProofLinkRegistry.sol
 
-**Purpose:** Anchors cryptographically signed compliance receipts on-chain via the Ethereum Attestation Service (EAS). Every FlowLink-processed payment generates a ProofLink receipt; this contract makes that receipt tamper-evident and publicly verifiable.
+**Purpose:** Anchors cryptographically signed compliance receipts on-chain via the Ethereum Attestation Service (EAS). Every ProofLink-processed payment generates a ProofLink receipt; this contract makes that receipt tamper-evident and publicly verifiable.
 
 #### Interface
 
@@ -63,7 +63,7 @@ pragma solidity ^0.8.24;
 import {IEAS, AttestationRequest, AttestationRequestData} from "@ethereum-attestation-service/eas-contracts/IEAS.sol";
 
 /// @title IProofLinkRegistry
-/// @notice Anchors FlowLink compliance receipts as EAS attestations.
+/// @notice Anchors ProofLink compliance receipts as EAS attestations.
 /// @dev Each receipt maps a payment transaction to its compliance checks.
 ///      The receipt content is stored on IPFS; only the hash is on-chain.
 interface IProofLinkRegistry {
@@ -220,7 +220,7 @@ Slot N+3:  mapping(bytes32 => bool)               _revoked          // receiptId
 
 ```
 ┌────────────────────┐     anchorReceipt()     ┌───────────────────┐
-│ FlowLink Backend   │ ─────────────────────▶  │ ProofLinkRegistry │
+│ ProofLink Backend   │ ─────────────────────▶  │ ProofLinkRegistry │
 │ (off-chain engine) │                         │   (on-chain)      │
 └────────────────────┘                         └────────┬──────────┘
                                                         │
@@ -243,9 +243,9 @@ bytes32 receiptId, bytes32 paymentTxHash, uint64 chainId, address payer, address
 
 ---
 
-### 3.2 FlowLinkKYA.sol
+### 3.2 ProofLinkKYA.sol
 
-**Purpose:** Issues and manages Know Your Agent credentials as on-chain attestations. Extends the ERC-8004 Identity Registry by acting as a registered validator in the ERC-8004 Validation Registry. When FlowLink verifies an agent's KYA status, it writes a validation response that any escrow contract or facilitator can query.
+**Purpose:** Issues and manages Know Your Agent credentials as on-chain attestations. Extends the ERC-8004 Identity Registry by acting as a registered validator in the ERC-8004 Validation Registry. When ProofLink verifies an agent's KYA status, it writes a validation response that any escrow contract or facilitator can query.
 
 #### Interface
 
@@ -253,12 +253,12 @@ bytes32 receiptId, bytes32 paymentTxHash, uint64 chainId, address payer, address
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-/// @title IFlowLinkKYA
+/// @title IProofLinkKYA
 /// @notice Issues and manages KYA (Know Your Agent) credentials.
 /// @dev Acts as a validator in the ERC-8004 Validation Registry.
 ///      Credentials are stored on-chain as compact structs with full
 ///      details on IPFS (referenced by contentHash).
-interface IFlowLinkKYA {
+interface IProofLinkKYA {
 
     // ──────────────────────────────────────────────
     // Enums
@@ -394,7 +394,7 @@ interface IFlowLinkKYA {
     ) external;
 
     /// @notice Record a spend against the agent's daily limit.
-    /// @dev Called by FlowLinkFacilitator after settling a payment.
+    /// @dev Called by ProofLinkFacilitator after settling a payment.
     ///      Reverts if daily limit would be exceeded.
     /// @param agentId          ERC-8004 agent token ID.
     /// @param identityRegistry ERC-8004 Identity Registry address.
@@ -460,7 +460,7 @@ Slot N+2:  mapping(address => bytes32)         _walletToCredentialKey // agentWa
 |------|------------|
 | `ADMIN_ROLE` | Upgrade proxy, set default registries |
 | `ISSUER_ROLE` | `issueCredential`, `suspendCredential`, `revokeCredential`, `reinstateCredential`, `updateSpendingLimits` |
-| `FACILITATOR_ROLE` | `recordSpend` (only FlowLinkFacilitator should hold this) |
+| `FACILITATOR_ROLE` | `recordSpend` (only ProofLinkFacilitator should hold this) |
 
 #### ERC-8004 Integration Pattern
 
@@ -473,7 +473,7 @@ issueCredential(agentId, ..., level=ENHANCED, ...)
     ├── Update _walletToCredentialKey via ERC-8004 getAgentWallet()
     │
     └── Call ValidationRegistry.validationResponse(
-            requestHash = keccak256(agentId, "flowlink-kya"),
+            requestHash = keccak256(agentId, "prooflink-kya"),
             response    = level * 25,     // BASIC=25, STANDARD=50, ENHANCED=75, INSTITUTIONAL=100
             responseURI = "ipfs://{contentHash}",
             responseHash = contentHash,
@@ -481,13 +481,13 @@ issueCredential(agentId, ..., level=ENHANCED, ...)
         )
 ```
 
-This means any contract querying the ERC-8004 Validation Registry with the `"kya"` tag and FlowLink's validator address will see whether an agent has passed FlowLink KYA verification.
+This means any contract querying the ERC-8004 Validation Registry with the `"kya"` tag and ProofLink's validator address will see whether an agent has passed ProofLink KYA verification.
 
 ---
 
 ### 3.3 AgentInvoice.sol
 
-**Purpose:** Anchors structured agent invoices on-chain with lifecycle management. Invoices reference the FlowLink Agent Invoice Standard (JSON-LD schema from product strategy). The contract stores only hashes and critical fields; full invoice data lives on IPFS.
+**Purpose:** Anchors structured agent invoices on-chain with lifecycle management. Invoices reference the ProofLink Agent Invoice Standard (JSON-LD schema from product strategy). The contract stores only hashes and critical fields; full invoice data lives on IPFS.
 
 #### Interface
 
@@ -599,7 +599,7 @@ interface IAgentInvoice {
     function issueInvoice(bytes32 invoiceId) external;
 
     /// @notice Mark invoice as paid with payment proof.
-    /// @dev Callable by FACILITATOR_ROLE (FlowLinkFacilitator) or issuer.
+    /// @dev Callable by FACILITATOR_ROLE (ProofLinkFacilitator) or issuer.
     /// @param invoiceId         The invoice to mark paid.
     /// @param paymentTxHash     On-chain transaction hash of the settlement.
     /// @param proofLinkReceiptId ProofLink compliance receipt ID (may be bytes32(0) if not yet anchored).
@@ -675,9 +675,9 @@ Slot N+3:  mapping(uint256 => uint256)          _nonces            // issuerAgen
 
 ---
 
-### 3.4 FlowLinkFacilitator.sol
+### 3.4 ProofLinkFacilitator.sol
 
-**Purpose:** An x402-compatible facilitator that gates payment settlement behind FlowLink compliance checks. Resource servers point their `facilitatorUrl` at a FlowLink endpoint; this contract handles the on-chain settlement after the off-chain compliance engine approves.
+**Purpose:** An x402-compatible facilitator that gates payment settlement behind ProofLink compliance checks. Resource servers point their `facilitatorUrl` at a ProofLink endpoint; this contract handles the on-chain settlement after the off-chain compliance engine approves.
 
 The facilitator extends the standard x402 facilitator pattern by adding: KYA verification, sanctions check attestation, spending limit enforcement, and ProofLink receipt generation.
 
@@ -687,20 +687,20 @@ The facilitator extends the standard x402 facilitator pattern by adding: KYA ver
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-/// @title IFlowLinkFacilitator
+/// @title IProofLinkFacilitator
 /// @notice x402-compatible facilitator with built-in compliance gating.
-/// @dev The off-chain FlowLink API handles /verify and /settle HTTP endpoints.
+/// @dev The off-chain ProofLink API handles /verify and /settle HTTP endpoints.
 ///      This contract is the on-chain settlement component that the off-chain
 ///      service calls after compliance checks pass.
 ///
 ///      Flow:
-///      1. Resource server POSTs to FlowLink /verify endpoint
-///      2. FlowLink off-chain engine runs compliance checks
-///      3. If approved, resource server POSTs to FlowLink /settle endpoint
-///      4. FlowLink off-chain engine calls this contract's settle() function
+///      1. Resource server POSTs to ProofLink /verify endpoint
+///      2. ProofLink off-chain engine runs compliance checks
+///      3. If approved, resource server POSTs to ProofLink /settle endpoint
+///      4. ProofLink off-chain engine calls this contract's settle() function
 ///      5. Contract executes transferWithAuthorization (EIP-3009) or Permit2
 ///      6. Contract records the settlement and triggers ProofLink receipt anchoring
-interface IFlowLinkFacilitator {
+interface IProofLinkFacilitator {
 
     // ──────────────────────────────────────────────
     // Structs
@@ -891,7 +891,7 @@ settleEIP3009(params, compliance)
 - Nonce tracking uses a `mapping(bytes32 => bool)` rather than a set, which is the cheapest on-chain deduplication.
 - The contract does not store the full `ComplianceAttestation` on-chain. It stores only the `proofLinkReceiptId` in the `SettlementRecord`. Full compliance data is in the ProofLinkRegistry.
 - Batch settlement avoids redundant storage reads by caching the `riskThreshold` in memory.
-- `transferWithAuthorization` is a single external call (~65k gas). The FlowLink overhead adds ~40k gas per settlement for nonce check, record storage, and ProofLink anchoring.
+- `transferWithAuthorization` is a single external call (~65k gas). The ProofLink overhead adds ~40k gas per settlement for nonce check, record storage, and ProofLink anchoring.
 
 #### Reentrancy Protection
 
@@ -903,7 +903,7 @@ settleEIP3009(params, compliance)
 
 ### 3.5 DisputeOracle.sol
 
-**Purpose:** Provides on-chain dispute resolution for FlowLink-processed payments and ERC-8183 jobs. Disputes are filed, evidence is submitted, and resolution is either automated (threshold-based) or delegated to an external arbitrator (Kleros, UMA, or a multisig).
+**Purpose:** Provides on-chain dispute resolution for ProofLink-processed payments and ERC-8183 jobs. Disputes are filed, evidence is submitted, and resolution is either automated (threshold-based) or delegated to an external arbitrator (Kleros, UMA, or a multisig).
 
 #### Interface
 
@@ -912,9 +912,9 @@ settleEIP3009(params, compliance)
 pragma solidity ^0.8.24;
 
 /// @title IDisputeOracle
-/// @notice Dispute resolution for FlowLink payments and ERC-8183 jobs.
+/// @notice Dispute resolution for ProofLink payments and ERC-8183 jobs.
 /// @dev Operates as an ERC-8183 hook contract: when attached to a Job,
-///      it intercepts the evaluator role and applies FlowLink's evidence-based
+///      it intercepts the evaluator role and applies ProofLink's evidence-based
 ///      resolution process.
 interface IDisputeOracle {
 
@@ -959,7 +959,7 @@ interface IDisputeOracle {
         uint40  evidenceDeadline;   // Deadline for evidence submission
         uint40  resolvedAt;
         address arbitrator;         // External arbitrator address (if escalated)
-        bytes32 proofLinkReceiptId; // FlowLink compliance receipt for the disputed tx
+        bytes32 proofLinkReceiptId; // ProofLink compliance receipt for the disputed tx
     }
 
     // ──────────────────────────────────────────────
@@ -1100,7 +1100,7 @@ interface IDisputeOracle {
 
 ```
 Slot 0:    address _invoiceContract         // AgentInvoice contract
-Slot 1:    address _facilitatorContract     // FlowLinkFacilitator contract
+Slot 1:    address _facilitatorContract     // ProofLinkFacilitator contract
 Slot 2:    address _proofLinkRegistry       // ProofLinkRegistry contract
 Slot 3:    address _bondToken               // Token used for dispute bonds (USDC)
 Slot 4:    uint40  _evidencePeriod          // Default: 72 hours (259200 seconds)
@@ -1125,33 +1125,33 @@ Slot N+2:  mapping(address => bool)         _whitelistedArbitrators
 
 ## 4. Integration Patterns
 
-### 4.1 FlowLinkFacilitator as x402 Compliance Facilitator
+### 4.1 ProofLinkFacilitator as x402 Compliance Facilitator
 
-The standard x402 facilitator exposes two HTTP endpoints: `POST /verify` and `POST /settle`. FlowLink wraps these with compliance:
+The standard x402 facilitator exposes two HTTP endpoints: `POST /verify` and `POST /settle`. ProofLink wraps these with compliance:
 
 ```
 Standard x402 flow:
   Client → Server → Facilitator /verify → Facilitator /settle → Blockchain
 
-FlowLink x402 flow:
-  Client → Server → FlowLink /verify                    → FlowLink /settle
+ProofLink x402 flow:
+  Client → Server → ProofLink /verify                    → ProofLink /settle
                          │                                       │
-                         ├── OFAC/EU/UN/HMT screening            ├── FlowLinkFacilitator.settleEIP3009()
+                         ├── OFAC/EU/UN/HMT screening            ├── ProofLinkFacilitator.settleEIP3009()
                          ├── AML risk scoring                    ├── KYA spending limit check
                          ├── KYA credential lookup               ├── ProofLinkRegistry.anchorReceipt()
                          ├── Travel Rule pre-flight              └── AgentInvoice.markPaid() (if invoice exists)
                          └── Return verify result
 ```
 
-**Key contract interaction:** The off-chain FlowLink API service holds the `SETTLER_ROLE` on the `FlowLinkFacilitator` contract. After off-chain compliance checks pass, it calls `settleEIP3009()` or `settlePermit2()` which executes the on-chain token transfer and anchors the receipt.
+**Key contract interaction:** The off-chain ProofLink API service holds the `SETTLER_ROLE` on the `ProofLinkFacilitator` contract. After off-chain compliance checks pass, it calls `settleEIP3009()` or `settlePermit2()` which executes the on-chain token transfer and anchors the receipt.
 
-**Gas sponsorship:** The FlowLink backend service pays gas for all settlements (same as CDP facilitator model). The buyer never submits on-chain transactions directly.
+**Gas sponsorship:** The ProofLink backend service pays gas for all settlements (same as CDP facilitator model). The buyer never submits on-chain transactions directly.
 
-### 4.2 FlowLinkKYA Integration with ERC-8004 Registries
+### 4.2 ProofLinkKYA Integration with ERC-8004 Registries
 
 ```
 ┌──────────────────┐         ┌──────────────────────┐
-│ FlowLink Off-chain│         │  ERC-8004 Identity   │
+│ ProofLink Off-chain│         │  ERC-8004 Identity   │
 │ KYA Engine        │────────▶│  Registry (0x8004...)│
 │ (Jumio, Onfido,   │ lookup  │                      │
 │  vLEI, World ID)  │         └──────────┬───────────┘
@@ -1160,7 +1160,7 @@ FlowLink x402 flow:
          │ issueCredential()             │
          ▼                               │
 ┌──────────────────┐         ┌───────────▼───────────┐
-│  FlowLinkKYA     │────────▶│  ERC-8004 Validation  │
+│  ProofLinkKYA     │────────▶│  ERC-8004 Validation  │
 │  Contract         │ write   │  Registry             │
 │                   │ response│  (tag: "kya")         │
 └──────────────────┘         └───────────────────────┘
@@ -1174,12 +1174,12 @@ FlowLink x402 flow:
 ```
 
 **Contract-level integration:**
-1. `FlowLinkKYA.issueCredential()` calls `ERC8004ValidationRegistry.validationResponse()` with FlowLink as the validator address.
+1. `ProofLinkKYA.issueCredential()` calls `ERC8004ValidationRegistry.validationResponse()` with ProofLink as the validator address.
 2. The validation response score maps to KYA level: BASIC=25, STANDARD=50, ENHANCED=75, INSTITUTIONAL=100.
-3. Any ERC-8183 escrow contract or third-party facilitator can call `ERC8004ValidationRegistry.getValidationStatus(requestHash)` and filter by FlowLink's validator address and the `"kya"` tag.
+3. Any ERC-8183 escrow contract or third-party facilitator can call `ERC8004ValidationRegistry.getValidationStatus(requestHash)` and filter by ProofLink's validator address and the `"kya"` tag.
 
 **Wallet-to-credential resolution:**
-- `FlowLinkKYA` maintains a reverse mapping: `agentWallet => credentialKey`.
+- `ProofLinkKYA` maintains a reverse mapping: `agentWallet => credentialKey`.
 - When the facilitator receives a payment from an unknown wallet, it calls `getCredentialByWallet(wallet)` to determine if the payer is a KYA-credentialed agent.
 - This mapping is updated whenever `issueCredential` is called by reading `ERC8004IdentityRegistry.getAgentWallet(agentId)`.
 
@@ -1208,7 +1208,7 @@ schemaUID = schemaRegistry.register(schema, ISchemaResolver(address(this)), true
 
 **Attestation creation:**
 Each `anchorReceipt()` call creates an EAS attestation via `IEAS.attest()`:
-- Schema: FlowLink ProofLink schema (registered once)
+- Schema: ProofLink ProofLink schema (registered once)
 - Recipient: the `payer` address (allows payers to query their compliance history)
 - Revocable: true (for post-hoc fraud discovery)
 - Data: ABI-encoded receipt fields
@@ -1225,22 +1225,22 @@ Any party can verify a ProofLink receipt by:
 | Network | Contracts Deployed | Rationale |
 |---------|-------------------|-----------|
 | **Base** (primary) | All 5 contracts | x402 primary chain, lowest gas, highest agent tx volume |
-| **Ethereum mainnet** | ProofLinkRegistry, FlowLinkKYA, DisputeOracle | ERC-8004 canonical registry lives here; EAS canonical deployment; highest security for dispute resolution |
-| **Solana** | None on-chain initially | x402 Solana settlements handled off-chain by FlowLink API; receipts anchored on Base via cross-chain message |
+| **Ethereum mainnet** | ProofLinkRegistry, ProofLinkKYA, DisputeOracle | ERC-8004 canonical registry lives here; EAS canonical deployment; highest security for dispute resolution |
+| **Solana** | None on-chain initially | x402 Solana settlements handled off-chain by ProofLink API; receipts anchored on Base via cross-chain message |
 
 **Cross-chain receipt anchoring pattern:**
-When a payment settles on a chain where ProofLinkRegistry is not deployed (e.g., Solana), the off-chain FlowLink engine:
+When a payment settles on a chain where ProofLinkRegistry is not deployed (e.g., Solana), the off-chain ProofLink engine:
 1. Processes the compliance checks off-chain (same engine)
 2. Anchors the receipt on Base via `ProofLinkRegistry.anchorReceipt()` with the Solana tx hash in `paymentTxHash` and Solana's chain ID
 3. The receipt is chain-agnostic: it references the settlement chain but lives on Base
 
 **Future: Circle CCTP for cross-chain settlement:**
-When USDC settles cross-chain via Circle's CCTP, the FlowLinkFacilitator on Base can verify CCTP attestations before anchoring the receipt. This is a Phase 2 capability.
+When USDC settles cross-chain via Circle's CCTP, the ProofLinkFacilitator on Base can verify CCTP attestations before anchoring the receipt. This is a Phase 2 capability.
 
 **Deterministic deployment:**
-All FlowLink contracts should be deployed via CREATE2 with a salt derived from the contract name and version. This ensures identical addresses across all EVM chains:
+All ProofLink contracts should be deployed via CREATE2 with a salt derived from the contract name and version. This ensures identical addresses across all EVM chains:
 ```
-salt = keccak256(abi.encodePacked("FlowLink", contractName, version))
+salt = keccak256(abi.encodePacked("ProofLink", contractName, version))
 ```
 
 ---
@@ -1271,36 +1271,36 @@ All contracts use OpenZeppelin's `AccessControlUpgradeable`:
 ```
 DEFAULT_ADMIN_ROLE (cold multisig)
     └── ADMIN_ROLE (warm multisig or timelock)
-            ├── ATTESTER_ROLE (FlowLink backend service)
-            ├── SETTLER_ROLE (FlowLink backend service)
-            ├── ISSUER_ROLE (FlowLink KYA service)
-            ├── FACILITATOR_ROLE (FlowLinkFacilitator contract address)
-            ├── RESOLVER_ROLE (FlowLink dispute service + whitelisted arbitrators)
-            └── PAUSER_ROLE (FlowLink ops team, separate from admin)
+            ├── ATTESTER_ROLE (ProofLink backend service)
+            ├── SETTLER_ROLE (ProofLink backend service)
+            ├── ISSUER_ROLE (ProofLink KYA service)
+            ├── FACILITATOR_ROLE (ProofLinkFacilitator contract address)
+            ├── RESOLVER_ROLE (ProofLink dispute service + whitelisted arbitrators)
+            └── PAUSER_ROLE (ProofLink ops team, separate from admin)
 ```
 
 ### 5.3 Reentrancy Protection
 
-- `FlowLinkFacilitator`: Uses checks-effects-interactions (CEI) pattern AND `ReentrancyGuardUpgradeable` on all settlement functions. The external call to `transferWithAuthorization` is the last operation in the function.
+- `ProofLinkFacilitator`: Uses checks-effects-interactions (CEI) pattern AND `ReentrancyGuardUpgradeable` on all settlement functions. The external call to `transferWithAuthorization` is the last operation in the function.
 - `DisputeOracle`: Uses `ReentrancyGuardUpgradeable` on `resolveDispute` (which triggers token transfers for bonds).
-- `ProofLinkRegistry` and `FlowLinkKYA`: No external token transfers, so reentrancy risk is minimal. `nonReentrant` applied as defense-in-depth.
+- `ProofLinkRegistry` and `ProofLinkKYA`: No external token transfers, so reentrancy risk is minimal. `nonReentrant` applied as defense-in-depth.
 
 ### 5.4 Oracle Trust Assumptions
 
 | Trust Assumption | Risk | Mitigation |
 |-----------------|------|------------|
-| FlowLink off-chain engine is honest about compliance results | High: a compromised engine could mark sanctioned payments as clean | On-chain receipts create an immutable audit trail; post-hoc auditors can verify IPFS content against sanctions lists; receipts are revocable |
-| ERC-8004 Identity Registry data is accurate | Medium: agents can register with false metadata | FlowLinkKYA independently verifies agent principals; KYA credential is the trust anchor, not raw ERC-8004 registration |
-| EAS attestations are trustworthy | Low: EAS is append-only and permissionless | FlowLink is the attester; trust is in FlowLink's key management, not EAS itself |
-| External arbitrators (Kleros, UMA) resolve disputes fairly | Medium: decentralized arbitration has known edge cases | Whitelist-only arbitrators; FlowLink can override via `RESOLVER_ROLE` as fallback; bond mechanism discourages frivolous disputes |
+| ProofLink off-chain engine is honest about compliance results | High: a compromised engine could mark sanctioned payments as clean | On-chain receipts create an immutable audit trail; post-hoc auditors can verify IPFS content against sanctions lists; receipts are revocable |
+| ERC-8004 Identity Registry data is accurate | Medium: agents can register with false metadata | ProofLinkKYA independently verifies agent principals; KYA credential is the trust anchor, not raw ERC-8004 registration |
+| EAS attestations are trustworthy | Low: EAS is append-only and permissionless | ProofLink is the attester; trust is in ProofLink's key management, not EAS itself |
+| External arbitrators (Kleros, UMA) resolve disputes fairly | Medium: decentralized arbitration has known edge cases | Whitelist-only arbitrators; ProofLink can override via `RESOLVER_ROLE` as fallback; bond mechanism discourages frivolous disputes |
 | Sanctions lists are current | Medium: OFAC updates lag real-world designations | Off-chain engine refreshes lists every 15 minutes; revocation mechanism for receipts issued before a designation |
 
 ### 5.5 Additional Security Measures
 
-- **Nonce replay prevention:** `FlowLinkFacilitator` marks nonces as used in a mapping before executing the transfer. EIP-3009's `validBefore` timestamp provides a secondary expiry.
-- **Spending limit time boundaries:** `FlowLinkKYA._dailySpent` mapping is keyed by `keccak256(agentId, identityRegistry, block.timestamp / 86400)`. Each UTC day resets automatically without requiring a transaction.
+- **Nonce replay prevention:** `ProofLinkFacilitator` marks nonces as used in a mapping before executing the transfer. EIP-3009's `validBefore` timestamp provides a secondary expiry.
+- **Spending limit time boundaries:** `ProofLinkKYA._dailySpent` mapping is keyed by `keccak256(agentId, identityRegistry, block.timestamp / 86400)`. Each UTC day resets automatically without requiring a transaction.
 - **Bond escrow in DisputeOracle:** Dispute bonds are held by the contract itself (USDC transferred via `transferFrom`). Bonds are returned to the winning party or split if no resolution.
-- **Emergency pause:** `FlowLinkFacilitator` has `Pausable` from OpenZeppelin. When paused, all settlement functions revert. `PAUSER_ROLE` is separate from `ADMIN_ROLE` so ops can pause without full admin access.
+- **Emergency pause:** `ProofLinkFacilitator` has `Pausable` from OpenZeppelin. When paused, all settlement functions revert. `PAUSER_ROLE` is separate from `ADMIN_ROLE` so ops can pause without full admin access.
 
 ---
 
@@ -1308,28 +1308,28 @@ DEFAULT_ADMIN_ROLE (cold multisig)
 
 | # | Risk | Severity | Mitigation | Fallback |
 |---|------|----------|------------|----------|
-| 1 | **FlowLink backend key compromise** — attacker with `SETTLER_ROLE` can settle payments with false compliance attestations | Critical | HSM-backed keys for backend service; IP allowlisting on RPC; rate limiting on settlement calls; all receipts auditable post-hoc | Pause contract; revoke compromised key; re-attest affected receipts |
+| 1 | **ProofLink backend key compromise** — attacker with `SETTLER_ROLE` can settle payments with false compliance attestations | Critical | HSM-backed keys for backend service; IP allowlisting on RPC; rate limiting on settlement calls; all receipts auditable post-hoc | Pause contract; revoke compromised key; re-attest affected receipts |
 | 2 | **EAS contract upgrade or migration** — EAS changes attestation format or deploys new version | Medium | Pin EAS contract address in storage (upgradeable); abstract EAS calls behind an internal interface | Fall back to direct on-chain storage without EAS (receipts still stored in `_receipts` mapping) |
 | 3 | **Gas price spikes on Ethereum mainnet** make receipt anchoring prohibitively expensive | Medium | Primary deployment on Base (L2, ~$0.001 gas); Ethereum mainnet used only for KYA and disputes | Batch receipts; defer non-critical anchoring to off-peak hours |
-| 4 | **ERC-8004 registry contract is not upgradeable** and develops a bug or limitation | Low | FlowLinkKYA reads ERC-8004 via interface; can switch to a new registry address via admin function | Maintain internal wallet-to-agent mapping as fallback |
+| 4 | **ERC-8004 registry contract is not upgradeable** and develops a bug or limitation | Low | ProofLinkKYA reads ERC-8004 via interface; can switch to a new registry address via admin function | Maintain internal wallet-to-agent mapping as fallback |
 | 5 | **Permit2Proxy vulnerability** — Uniswap's Permit2 contract has a bug | Medium | Primary settlement via EIP-3009 (USDC native, battle-tested); Permit2 is fallback only | Disable Permit2 settlement path via admin toggle |
 
 ---
 
 ## 7. Implementation Phases
 
-### Phase 1: ProofLinkRegistry + FlowLinkFacilitator (H2H MVP)
+### Phase 1: ProofLinkRegistry + ProofLinkFacilitator (H2H MVP)
 
 **Goal:** Enable compliant x402 payment settlement with on-chain compliance receipts.
 
 **Deliverables:**
 - `ProofLinkRegistry.sol` deployed on Base with EAS integration
-- `FlowLinkFacilitator.sol` deployed on Base with EIP-3009 settlement (USDC only)
-- Off-chain FlowLink API exposes `/verify` and `/settle` endpoints compatible with x402 SDK
+- `ProofLinkFacilitator.sol` deployed on Base with EIP-3009 settlement (USDC only)
+- Off-chain ProofLink API exposes `/verify` and `/settle` endpoints compatible with x402 SDK
 - Compliance receipt anchoring on every settlement
 
 **Acceptance criteria:**
-- x402 SDK `facilitatorUrl` can point at FlowLink endpoint
+- x402 SDK `facilitatorUrl` can point at ProofLink endpoint
 - Settlement completes in <3 seconds (including compliance check)
 - ProofLink receipt verifiable via EAS explorer (easscan.org)
 - Gas cost per settlement <$0.01 on Base
@@ -1338,25 +1338,25 @@ DEFAULT_ADMIN_ROLE (cold multisig)
 
 ---
 
-### Phase 2: FlowLinkKYA + AgentInvoice (H2A)
+### Phase 2: ProofLinkKYA + AgentInvoice (H2A)
 
 **Goal:** Enable agent identity verification and structured invoicing.
 
 **Deliverables:**
-- `FlowLinkKYA.sol` deployed on Ethereum mainnet and Base
+- `ProofLinkKYA.sol` deployed on Ethereum mainnet and Base
 - `AgentInvoice.sol` deployed on Base
-- FlowLinkKYA registered as validator in ERC-8004 Validation Registry
-- Integration between FlowLinkFacilitator and FlowLinkKYA (spending limits)
+- ProofLinkKYA registered as validator in ERC-8004 Validation Registry
+- Integration between ProofLinkFacilitator and ProofLinkKYA (spending limits)
 - Invoice creation and payment linking
 
 **Acceptance criteria:**
-- Agent with ERC-8004 registration can obtain KYA credential via FlowLink API
+- Agent with ERC-8004 registration can obtain KYA credential via ProofLink API
 - KYA validation visible in ERC-8004 Validation Registry with `"kya"` tag
 - Agent spending limits enforced on-chain by facilitator
 - Invoice can be created, issued, paid, and verified on-chain
 - ProofLink receipt linked to invoice
 
-**Parallelizable:** FlowLinkKYA (Ethereum + Base) and AgentInvoice (Base) deployments are independent.
+**Parallelizable:** ProofLinkKYA (Ethereum + Base) and AgentInvoice (Base) deployments are independent.
 
 ---
 
@@ -1386,7 +1386,7 @@ DEFAULT_ADMIN_ROLE (cold multisig)
 **Goal:** Multi-chain settlement and gas optimization.
 
 **Deliverables:**
-- Permit2 settlement path in FlowLinkFacilitator
+- Permit2 settlement path in ProofLinkFacilitator
 - Cross-chain receipt anchoring (Solana payments, receipts on Base)
 - Batch settlement optimization (20 payments per tx)
 - CREATE2 deterministic deployment on all target chains
@@ -1405,10 +1405,10 @@ DEFAULT_ADMIN_ROLE (cold multisig)
 
 2. **Dispute bond token:** Should dispute bonds be in the same token as the disputed payment, or always in USDC? Recommendation: Always USDC for simplicity. Cross-token bonds add swap complexity.
 
-3. **KYA credential portability:** Should FlowLinkKYA credentials be transferable if the ERC-8004 agent NFT is transferred to a new owner? Recommendation: No. Credential should be auto-suspended on agent transfer. New owner must re-verify.
+3. **KYA credential portability:** Should ProofLinkKYA credentials be transferable if the ERC-8004 agent NFT is transferred to a new owner? Recommendation: No. Credential should be auto-suspended on agent transfer. New owner must re-verify.
 
 4. **On-chain vs. off-chain compliance logic:** The current design puts compliance decisions off-chain and only anchors results on-chain. Should any compliance logic (e.g., sanctions address matching) move on-chain? Recommendation: No. Sanctions lists are too large and change too frequently for on-chain storage. On-chain is for anchoring, not computing.
 
-5. **FlowLinkFacilitator as upgradeable proxy risk:** If the proxy is compromised, all settlements route through a malicious implementation. Should we add a time-locked upgrade delay? Recommendation: Yes. Phase 2+ should use a 48-hour timelock on upgrades.
+5. **ProofLinkFacilitator as upgradeable proxy risk:** If the proxy is compromised, all settlements route through a malicious implementation. Should we add a time-locked upgrade delay? Recommendation: Yes. Phase 2+ should use a 48-hour timelock on upgrades.
 
-6. **Solana program equivalents:** Should FlowLink deploy Solana programs (Anchor/native) for receipt anchoring on Solana directly, or always bridge to Base? Recommendation: Defer. Base anchoring is sufficient for MVP. Solana programs are Phase 4+ if Solana agent volume justifies the engineering cost.
+6. **Solana program equivalents:** Should ProofLink deploy Solana programs (Anchor/native) for receipt anchoring on Solana directly, or always bridge to Base? Recommendation: Defer. Base anchoring is sufficient for MVP. Solana programs are Phase 4+ if Solana agent volume justifies the engineering cost.

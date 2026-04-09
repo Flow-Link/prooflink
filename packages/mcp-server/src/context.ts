@@ -1,5 +1,5 @@
 /**
- * Shared service context for the FlowLink MCP server.
+ * Shared service context for the ProofLink MCP server.
  *
  * Initializes a single ProofLinkEngine with default (env-based) config
  * and exposes the individual sub-engines for direct use by tool handlers.
@@ -12,17 +12,17 @@ import {
   KYAVerifier,
   isKnownSanctionedAddress,
   type ProofLinkConfig,
-} from "@flowlink/core";
+} from "@prooflink/core";
 
 // ---------------------------------------------------------------------------
-// Config — loads from FLOWLINK_* env vars, falls back to safe defaults
+// Config — loads from PROOFLINK_* env vars, falls back to safe defaults
 // ---------------------------------------------------------------------------
 
 const config: ProofLinkConfig = loadConfig({
   // MCP server defaults to fail-open: when external screening APIs are unreachable,
   // fall back to the offline OFAC SDN list rather than hard-failing every tool call.
   // This is safe because the offline list still catches sanctioned addresses.
-  failOpen: process.env["FLOWLINK_FAIL_OPEN"] !== "false",
+  failOpen: process.env["PROOFLINK_FAIL_OPEN"] !== "false",
 });
 
 // ---------------------------------------------------------------------------

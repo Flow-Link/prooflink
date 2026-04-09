@@ -1,8 +1,8 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
-import { FlowLinkX402Compliance } from "../middleware.js";
-import { createFlowLinkCompliance } from "../factory.js";
+import { ProofLinkX402Compliance } from "../middleware.js";
+import { createProofLinkCompliance } from "../factory.js";
 import type {
-  FlowLinkConfig,
+  ProofLinkConfig,
   PaymentPayload,
   PaymentRequirements,
   VerifyContext,
@@ -62,7 +62,7 @@ function makeRequirements(overrides?: Partial<PaymentRequirements>): PaymentRequ
   };
 }
 
-function makeConfig(overrides?: Partial<FlowLinkConfig>): FlowLinkConfig {
+function makeConfig(overrides?: Partial<ProofLinkConfig>): ProofLinkConfig {
   return {
     chainalysisApiKey: "test-api-key",
     policy: {
@@ -195,8 +195,8 @@ function createMockServer(): X402ResourceServer & {
 // Tests
 // ---------------------------------------------------------------------------
 
-describe("FlowLinkX402Compliance", () => {
-  let compliance: FlowLinkX402Compliance;
+describe("ProofLinkX402Compliance", () => {
+  let compliance: ProofLinkX402Compliance;
 
   afterEach(() => {
     compliance?.destroy();
@@ -204,18 +204,18 @@ describe("FlowLinkX402Compliance", () => {
 
   describe("constructor & registration", () => {
     test("creates instance with valid config", () => {
-      compliance = new FlowLinkX402Compliance(makeConfig());
-      expect(compliance).toBeInstanceOf(FlowLinkX402Compliance);
+      compliance = new ProofLinkX402Compliance(makeConfig());
+      expect(compliance).toBeInstanceOf(ProofLinkX402Compliance);
     });
 
     test("throws on invalid config", () => {
       expect(() => {
-        new FlowLinkX402Compliance({ chainalysisApiKey: "", policy: {} } as FlowLinkConfig);
+        new ProofLinkX402Compliance({ chainalysisApiKey: "", policy: {} } as ProofLinkConfig);
       }).toThrow();
     });
 
     test("registers all hooks and extension on server", () => {
-      compliance = new FlowLinkX402Compliance(makeConfig());
+      compliance = new ProofLinkX402Compliance(makeConfig());
       const server = createMockServer();
 
       compliance.register(server);
@@ -224,14 +224,14 @@ describe("FlowLinkX402Compliance", () => {
       expect(server.onBeforeSettle).toHaveBeenCalledOnce();
       expect(server.onAfterSettle).toHaveBeenCalledOnce();
       expect(server.registerExtension).toHaveBeenCalledOnce();
-      expect(server.extensions[0]?.key).toBe("flowlink");
+      expect(server.extensions[0]?.key).toBe("prooflink");
     });
   });
 
-  describe("createFlowLinkCompliance factory", () => {
-    test("returns FlowLinkX402Compliance instance", () => {
-      compliance = createFlowLinkCompliance(makeConfig());
-      expect(compliance).toBeInstanceOf(FlowLinkX402Compliance);
+  describe("createProofLinkCompliance factory", () => {
+    test("returns ProofLinkX402Compliance instance", () => {
+      compliance = createProofLinkCompliance(makeConfig());
+      expect(compliance).toBeInstanceOf(ProofLinkX402Compliance);
     });
   });
 
@@ -246,7 +246,7 @@ describe("FlowLinkX402Compliance", () => {
       const proofLinkService = createMockProofLinkService();
       const events: ComplianceEvent[] = [];
 
-      compliance = new FlowLinkX402Compliance(makeConfig(), {
+      compliance = new ProofLinkX402Compliance(makeConfig(), {
         screener,
         amlScorer,
         proofLinkService,
@@ -296,7 +296,7 @@ describe("FlowLinkX402Compliance", () => {
   describe("sanctions screening", () => {
     test("blocks payment from sanctioned sender", async () => {
       const screener = createMockScreener();
-      compliance = new FlowLinkX402Compliance(makeConfig(), { screener });
+      compliance = new ProofLinkX402Compliance(makeConfig(), { screener });
 
       const payload = makePayload({
         payload: {
@@ -326,7 +326,7 @@ describe("FlowLinkX402Compliance", () => {
 
     test("blocks payment to sanctioned receiver", async () => {
       const screener = createMockScreener();
-      compliance = new FlowLinkX402Compliance(makeConfig(), { screener });
+      compliance = new ProofLinkX402Compliance(makeConfig(), { screener });
 
       const result = await compliance.onBeforeVerify({
         paymentPayload: makePayload(),
@@ -342,7 +342,7 @@ describe("FlowLinkX402Compliance", () => {
 
     test("blocks blocklisted sender before any API calls", async () => {
       const screener = createMockScreener();
-      compliance = new FlowLinkX402Compliance(makeConfig(), { screener });
+      compliance = new ProofLinkX402Compliance(makeConfig(), { screener });
 
       const payload = makePayload({
         payload: {
@@ -375,7 +375,7 @@ describe("FlowLinkX402Compliance", () => {
     test("re-verifies receiver at settle phase", async () => {
       const screener = createMockScreener();
       const amlScorer = createMockAmlScorer(10);
-      compliance = new FlowLinkX402Compliance(makeConfig(), { screener, amlScorer });
+      compliance = new ProofLinkX402Compliance(makeConfig(), { screener, amlScorer });
 
       const payload = makePayload();
       const requirements = makeRequirements();
@@ -398,7 +398,7 @@ describe("FlowLinkX402Compliance", () => {
   describe("AML risk scoring", () => {
     test("blocks payment when risk score exceeds threshold", async () => {
       const amlScorer = createMockAmlScorer(85); // exceeds 70 threshold
-      compliance = new FlowLinkX402Compliance(makeConfig(), {
+      compliance = new ProofLinkX402Compliance(makeConfig(), {
         screener: createMockScreener(),
         amlScorer,
       });
@@ -417,7 +417,7 @@ describe("FlowLinkX402Compliance", () => {
 
     test("passes when risk score is within threshold", async () => {
       const amlScorer = createMockAmlScorer(50); // below 70 threshold
-      compliance = new FlowLinkX402Compliance(makeConfig(), {
+      compliance = new ProofLinkX402Compliance(makeConfig(), {
         screener: createMockScreener(),
         amlScorer,
       });
@@ -442,7 +442,7 @@ describe("FlowLinkX402Compliance", () => {
       const screener = createMockScreener();
       const amlScorer = createMockAmlScorer(10);
 
-      compliance = new FlowLinkX402Compliance(
+      compliance = new ProofLinkX402Compliance(
         makeConfig({ notabene: { apiKey: "test", vaspDID: "did:ethr:0x123" } }),
         { screener, amlScorer, travelRuleService, priceConverter },
       );
@@ -471,7 +471,7 @@ describe("FlowLinkX402Compliance", () => {
       const screener = createMockScreener();
       const amlScorer = createMockAmlScorer(10);
 
-      compliance = new FlowLinkX402Compliance(
+      compliance = new ProofLinkX402Compliance(
         makeConfig({ notabene: { apiKey: "test", vaspDID: "did:ethr:0x123" } }),
         { screener, amlScorer, travelRuleService, priceConverter },
       );
@@ -491,7 +491,7 @@ describe("FlowLinkX402Compliance", () => {
       const screener = createMockScreener();
       const amlScorer = createMockAmlScorer(10);
 
-      compliance = new FlowLinkX402Compliance(
+      compliance = new ProofLinkX402Compliance(
         makeConfig({ notabene: { apiKey: "test", vaspDID: "did:ethr:0x123" } }),
         { screener, amlScorer, travelRuleService, priceConverter },
       );
@@ -520,7 +520,7 @@ describe("FlowLinkX402Compliance", () => {
       const kyaVerifier = createMockKYAVerifier(true);
       const screener = createMockScreener();
 
-      compliance = new FlowLinkX402Compliance(makeConfig(), {
+      compliance = new ProofLinkX402Compliance(makeConfig(), {
         screener,
         amlScorer: createMockAmlScorer(10),
         kyaRegistry,
@@ -556,7 +556,7 @@ describe("FlowLinkX402Compliance", () => {
       const kyaVerifier = createMockKYAVerifier(false, false);
       const screener = createMockScreener();
 
-      compliance = new FlowLinkX402Compliance(makeConfig(), {
+      compliance = new ProofLinkX402Compliance(makeConfig(), {
         screener,
         amlScorer: createMockAmlScorer(10),
         kyaRegistry,
@@ -594,7 +594,7 @@ describe("FlowLinkX402Compliance", () => {
       const kyaVerifier = createMockKYAVerifier(false, true);
       const screener = createMockScreener();
 
-      compliance = new FlowLinkX402Compliance(makeConfig(), {
+      compliance = new ProofLinkX402Compliance(makeConfig(), {
         screener,
         amlScorer: createMockAmlScorer(10),
         kyaRegistry,
@@ -632,7 +632,7 @@ describe("FlowLinkX402Compliance", () => {
       const kyaVerifier = createMockKYAVerifier(true);
       const screener = createMockScreener();
 
-      compliance = new FlowLinkX402Compliance(makeConfig(), {
+      compliance = new ProofLinkX402Compliance(makeConfig(), {
         screener,
         amlScorer: createMockAmlScorer(10),
         kyaRegistry,
@@ -656,7 +656,7 @@ describe("FlowLinkX402Compliance", () => {
 
   describe("extension enrichment", () => {
     test("enriches 402 response with compliance policy", async () => {
-      compliance = new FlowLinkX402Compliance(makeConfig());
+      compliance = new ProofLinkX402Compliance(makeConfig());
       const server = createMockServer();
       compliance.register(server);
 
@@ -668,7 +668,7 @@ describe("FlowLinkX402Compliance", () => {
 
       expect(enriched).toEqual({
         complianceRequired: true,
-        provider: "flowlink",
+        provider: "prooflink",
         version: "0.1.0",
         sanctionsLists: ["OFAC_SDN", "EU", "UN"],
         travelRuleThresholdUsd: 3000,
@@ -678,7 +678,7 @@ describe("FlowLinkX402Compliance", () => {
 
     test("enriches settlement response with proofLink hash", async () => {
       const proofLinkService = createMockProofLinkService();
-      compliance = new FlowLinkX402Compliance(makeConfig(), {
+      compliance = new ProofLinkX402Compliance(makeConfig(), {
         screener: createMockScreener(),
         amlScorer: createMockAmlScorer(10),
         proofLinkService,
@@ -710,7 +710,7 @@ describe("FlowLinkX402Compliance", () => {
 
       expect(enriched).toEqual({
         complianceVerified: true,
-        provider: "flowlink",
+        provider: "prooflink",
         proofLinkHash: expect.stringMatching(/^0x/),
       });
     });
@@ -722,7 +722,7 @@ describe("FlowLinkX402Compliance", () => {
 
   describe("address extraction", () => {
     test("extracts EIP-3009 sender address", async () => {
-      compliance = new FlowLinkX402Compliance(makeConfig());
+      compliance = new ProofLinkX402Compliance(makeConfig());
 
       const result = await compliance.onBeforeVerify({
         paymentPayload: makePayload(),
@@ -734,7 +734,7 @@ describe("FlowLinkX402Compliance", () => {
     });
 
     test("extracts Permit2 sender address", async () => {
-      compliance = new FlowLinkX402Compliance(makeConfig());
+      compliance = new ProofLinkX402Compliance(makeConfig());
 
       const payload: PaymentPayload = {
         x402Version: 2,
@@ -762,7 +762,7 @@ describe("FlowLinkX402Compliance", () => {
     });
 
     test("extracts Solana sender address", async () => {
-      compliance = new FlowLinkX402Compliance(makeConfig());
+      compliance = new ProofLinkX402Compliance(makeConfig());
 
       const payload: PaymentPayload = {
         x402Version: 2,
@@ -783,7 +783,7 @@ describe("FlowLinkX402Compliance", () => {
     });
 
     test("aborts when sender address cannot be extracted", async () => {
-      compliance = new FlowLinkX402Compliance(makeConfig());
+      compliance = new ProofLinkX402Compliance(makeConfig());
 
       const payload: PaymentPayload = {
         x402Version: 2,
@@ -815,7 +815,7 @@ describe("FlowLinkX402Compliance", () => {
   describe("event system", () => {
     test("emits events throughout the compliance flow", async () => {
       const events: ComplianceEvent[] = [];
-      compliance = new FlowLinkX402Compliance(makeConfig(), {
+      compliance = new ProofLinkX402Compliance(makeConfig(), {
         screener: createMockScreener(),
         amlScorer: createMockAmlScorer(10),
         proofLinkService: createMockProofLinkService(),
@@ -838,7 +838,7 @@ describe("FlowLinkX402Compliance", () => {
     });
 
     test("unsubscribe removes event handler", () => {
-      compliance = new FlowLinkX402Compliance(makeConfig());
+      compliance = new ProofLinkX402Compliance(makeConfig());
       const handler = vi.fn();
       const unsub = compliance.on(handler);
 
@@ -857,7 +857,7 @@ describe("FlowLinkX402Compliance", () => {
   describe("allowlist", () => {
     test("allowlisted addresses bypass all checks", async () => {
       const screener = createMockScreener();
-      compliance = new FlowLinkX402Compliance(
+      compliance = new ProofLinkX402Compliance(
         makeConfig({
           policy: {
             sanctionsLists: ["OFAC_SDN"],
@@ -886,7 +886,7 @@ describe("FlowLinkX402Compliance", () => {
   describe("on-chain attestation", () => {
     test("triggers EAS attestation when eas config is present", async () => {
       const proofLinkService = createMockProofLinkService();
-      compliance = new FlowLinkX402Compliance(
+      compliance = new ProofLinkX402Compliance(
         makeConfig({
           eas: {
             schemaUid: "0xschema123",

@@ -2,7 +2,7 @@
 // Cross-Protocol Permission Translator (Gap 13)
 //
 // Normalizes incompatible permission models from 6 payment protocols into a
-// unified FlowLink format. Complements protocol-adapter.ts — the adapter
+// unified ProofLink format. Complements protocol-adapter.ts — the adapter
 // decides WHICH compliance checks to run, this translator normalizes HOW
 // permissions are expressed across protocols.
 //

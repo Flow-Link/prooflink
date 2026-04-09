@@ -1,4 +1,4 @@
-# FlowLink Product Strategy
+# ProofLink Product Strategy
 **Version:** 1.0
 **Date:** March 20, 2026
 **Classification:** Internal / Investor-Ready
@@ -8,17 +8,17 @@
 
 ## 1. Executive Summary
 
-FlowLink is the compliance-as-infrastructure layer for stablecoin and agentic payments. It sits between payment protocols (x402, MPP, AP2, ACP) and settlement rails (USDC on Base/Solana/Tempo, card networks via Visa/Mastercard), providing real-time sanctions screening, FATF Travel Rule compliance, KYC/KYB, and the industry's first Know Your Agent (KYA) standard for autonomous AI agent transactions.
+ProofLink is the compliance-as-infrastructure layer for stablecoin and agentic payments. It sits between payment protocols (x402, MPP, AP2, ACP) and settlement rails (USDC on Base/Solana/Tempo, card networks via Visa/Mastercard), providing real-time sanctions screening, FATF Travel Rule compliance, KYC/KYB, and the industry's first Know Your Agent (KYA) standard for autonomous AI agent transactions.
 
 **Why now:** Three converging forces have opened a window that did not exist 12 months ago and will close within 18 months:
 
 1. **Regulatory crystallization.** The GENIUS Act (signed July 2025) and MiCA (fully enforceable) have made stablecoin compliance mandatory, not optional. 99 jurisdictions are implementing the FATF Travel Rule. An enforcement wave is imminent -- 59% of jurisdictions with laws have not yet issued enforcement actions.
 
-2. **Agentic payment protocol explosion.** Six competing agent payment protocols shipped between April 2025 and March 2026 (x402, ACP, AP2, MPP, Visa TAP, Mastercard Agent Pay). None of them have built-in compliance. Every new protocol creates a new compliance surface that FlowLink fills.
+2. **Agentic payment protocol explosion.** Six competing agent payment protocols shipped between April 2025 and March 2026 (x402, ACP, AP2, MPP, Visa TAP, Mastercard Agent Pay). None of them have built-in compliance. Every new protocol creates a new compliance surface that ProofLink fills.
 
 3. **Massive acquisition validation.** Mastercard acquired BVNK for $1.8B (March 17, 2026) on $90M raised -- a 22x capital efficiency multiple. Stripe acquired Bridge for $1.1B. The "build compliant stablecoin infrastructure, get acquired" thesis is proven and recent.
 
-**What makes FlowLink unique:** No one else is building a neutral, protocol-agnostic compliance layer that works across both human and agent payment flows. Incumbents (Chainalysis, Elliptic) do post-hoc monitoring at $150K-$500K/year. Payment protocols (x402, MPP) have zero native compliance. FlowLink enforces compliance pre-payment, in the transaction flow, at developer-accessible pricing, and issues cryptographically signed compliance receipts that satisfy enterprise auditors.
+**What makes ProofLink unique:** No one else is building a neutral, protocol-agnostic compliance layer that works across both human and agent payment flows. Incumbents (Chainalysis, Elliptic) do post-hoc monitoring at $150K-$500K/year. Payment protocols (x402, MPP) have zero native compliance. ProofLink enforces compliance pre-payment, in the transaction flow, at developer-accessible pricing, and issues cryptographically signed compliance receipts that satisfy enterprise auditors.
 
 ---
 
@@ -37,10 +37,10 @@ FlowLink is the compliance-as-infrastructure layer for stablecoin and agentic pa
 
 ### 2.2 Serviceable Addressable Market (SAM)
 
-FlowLink's SAM is the intersection of B2B stablecoin payments requiring compliance infrastructure:
+ProofLink's SAM is the intersection of B2B stablecoin payments requiring compliance infrastructure:
 
 - **B2B stablecoin payments:** $226B annualized (2026), growing at 733% YoY. This is 0.01% of total global B2B payment volume ($1.6 quadrillion) -- the runway is enormous.
-- **Compliance spend per VASP:** $670K-$2M+/year for a VASP doing $100M/month. FlowLink can capture a share of this as a lower-cost aggregated alternative.
+- **Compliance spend per VASP:** $670K-$2M+/year for a VASP doing $100M/month. ProofLink can capture a share of this as a lower-cost aggregated alternative.
 - **Agent payment compliance:** Currently $0 (no product exists). As agentic commerce scales toward $3-5T, even 1 basis point of compliance fees = $300M-$500M annually.
 
 ### 2.3 Serviceable Obtainable Market (SOM) -- Year 1-3
@@ -66,7 +66,7 @@ FlowLink's SAM is the intersection of B2B stablecoin payments requiring complian
 
 ### 3.1 Feature Matrix
 
-| Feature | FlowLink | Request Finance | BVNK (Mastercard) | Bridge (Stripe) | NOWPayments | BitPay | Skyfire | Nevermined |
+| Feature | ProofLink | Request Finance | BVNK (Mastercard) | Bridge (Stripe) | NOWPayments | BitPay | Skyfire | Nevermined |
 |---------|----------|----------------|-------------------|----------------|-------------|--------|---------|------------|
 | Stablecoin invoicing | Yes | Yes (100+ currencies) | Yes (enterprise) | Yes (API) | Yes (300+ coins) | Yes | No | No |
 | OFAC/EU/UN sanctions screening | Native, real-time | No | Partial | No | No | Partial | No | No |
@@ -97,31 +97,31 @@ Based on systematic analysis across all 6 agent payment protocols, 8 infrastruct
 
 ---
 
-## 4. FlowLink's Unique Value Proposition
+## 4. ProofLink's Unique Value Proposition
 
 ### 4.1 The Core Thesis: Compliance-as-Infrastructure for Agentic Payments
 
-FlowLink is not competing with Stripe, Visa, or Circle at the payment rail layer. FlowLink is the **neutral compliance orchestration layer** that makes those rails work for regulated B2B commerce -- both human and autonomous.
+ProofLink is not competing with Stripe, Visa, or Circle at the payment rail layer. ProofLink is the **neutral compliance orchestration layer** that makes those rails work for regulated B2B commerce -- both human and autonomous.
 
 The thesis rests on three structural advantages:
 
 **Structural Advantage 1: Compliance cannot be bolted on.**
-Retroactively adding Travel Rule compliance to existing exchange infrastructure is substantially harder than building it native. Every competitor that tries to add compliance after the fact faces architectural debt. FlowLink builds it from day one.
+Retroactively adding Travel Rule compliance to existing exchange infrastructure is substantially harder than building it native. Every competitor that tries to add compliance after the fact faces architectural debt. ProofLink builds it from day one.
 
-**Structural Advantage 2: Protocol fragmentation increases FlowLink's value.**
-Each new agent payment protocol (x402, MPP, AP2, ACP, TAP, Agent Pay) creates a new compliance surface. An enterprise using multiple protocols faces fragmented, non-interoperable compliance stacks. FlowLink provides one compliance layer across all of them. More fragmentation = more value for the neutral middleware.
+**Structural Advantage 2: Protocol fragmentation increases ProofLink's value.**
+Each new agent payment protocol (x402, MPP, AP2, ACP, TAP, Agent Pay) creates a new compliance surface. An enterprise using multiple protocols faces fragmented, non-interoperable compliance stacks. ProofLink provides one compliance layer across all of them. More fragmentation = more value for the neutral middleware.
 
 **Structural Advantage 3: Compliance is a network effect business.**
-Every agent screened builds the behavioral database. Every compliance attestation issued builds the reputation dataset. Over time, FlowLink's dataset of agent compliance history becomes a competitive moat no single protocol can replicate.
+Every agent screened builds the behavioral database. Every compliance attestation issued builds the reputation dataset. Over time, ProofLink's dataset of agent compliance history becomes a competitive moat no single protocol can replicate.
 
 ### 4.2 Why This Cannot Be Easily Replicated
 
 | Barrier | Detail |
 |---------|--------|
-| **Standards authorship** | If FlowLink authors the KYA standard that AP2 and x402 adopt, every agent transaction in those ecosystems touches FlowLink infrastructure |
+| **Standards authorship** | If ProofLink authors the KYA standard that AP2 and x402 adopt, every agent transaction in those ecosystems touches ProofLink infrastructure |
 | **Multi-protocol integration cost** | Integrating compliance across 6+ competing protocols, 5+ blockchain networks, and 7+ regulatory jurisdictions simultaneously is a 12-18 month effort no protocol owner will prioritize |
 | **Regulatory credibility** | Being the first to define "Travel Rule for AI agents" creates a reference architecture regulators cite -- this is locked in once established |
-| **Behavioral dataset** | Agent transaction pattern data does not exist anywhere today. FlowLink will be the first to build this dataset, creating ML model advantages over time |
+| **Behavioral dataset** | Agent transaction pattern data does not exist anywhere today. ProofLink will be the first to build this dataset, creating ML model advantages over time |
 | **Neutrality** | Coinbase's compliance serves Coinbase. Stripe's serves Stripe. A neutral compliance provider is structurally different from a vertically integrated one |
 
 ---
@@ -130,7 +130,7 @@ Every agent screened builds the behavioral database. Every compliance attestatio
 
 ### 5.1 ProofLink Engine
 
-The ProofLink Engine is FlowLink's core compliance decision engine. It executes in the payment flow -- before funds move -- and produces cryptographically signed compliance receipts.
+The ProofLink Engine is ProofLink's core compliance decision engine. It executes in the payment flow -- before funds move -- and produces cryptographically signed compliance receipts.
 
 **Decision flow (target: <500ms end-to-end):**
 
@@ -171,7 +171,7 @@ ProofLink Engine:
        - Cryptographically signed attestation
        - Content: screens performed, timestamp, results, identity hashes (no raw PII)
        - Anchored on-chain (IPFS hash committed to Base/Ethereum)
-       - Machine-verifiable by counterparties without trusting FlowLink
+       - Machine-verifiable by counterparties without trusting ProofLink
     |
     v
 Payment executes with attached ProofLink attestation
@@ -179,29 +179,29 @@ Payment executes with attached ProofLink attestation
 
 ### 5.2 Integration with Agent Payment Protocols
 
-| Protocol | Integration Model | FlowLink Role |
+| Protocol | Integration Model | ProofLink Role |
 |----------|------------------|---------------|
-| **x402 (Coinbase)** | Middleware between HTTP 402 response and payment execution. FlowLink intercepts the payment payload, runs compliance, attaches ProofLink receipt. | Compliance gateway for permissionless payments |
-| **MPP (Stripe/Tempo)** | Session-level compliance. When an agent opens an MPP session, FlowLink validates the agent's KYA credential and the session's spending parameters against compliance rules. Continuous monitoring during session. | Session compliance validator |
-| **AP2 (Google)** | Mandate-level compliance. FlowLink validates each mandate (Intent, Cart, Payment) against sanctions and AML rules. Compliance data embedded in the mandate itself. | Mandate compliance layer |
-| **ACP (OpenAI/Stripe)** | SPT-level compliance. FlowLink verifies the agent's delegation scope and screens the transaction before SPT execution. | Delegated credential compliance check |
-| **MCP servers** | FlowLink exposes compliance as an MCP server. Any AI agent calls `check_sanctions()`, `verify_travel_rule()`, `validate_kya()` as standard MCP tool invocations. | Compliance-as-MCP-tool (ambient compliance) |
+| **x402 (Coinbase)** | Middleware between HTTP 402 response and payment execution. ProofLink intercepts the payment payload, runs compliance, attaches ProofLink receipt. | Compliance gateway for permissionless payments |
+| **MPP (Stripe/Tempo)** | Session-level compliance. When an agent opens an MPP session, ProofLink validates the agent's KYA credential and the session's spending parameters against compliance rules. Continuous monitoring during session. | Session compliance validator |
+| **AP2 (Google)** | Mandate-level compliance. ProofLink validates each mandate (Intent, Cart, Payment) against sanctions and AML rules. Compliance data embedded in the mandate itself. | Mandate compliance layer |
+| **ACP (OpenAI/Stripe)** | SPT-level compliance. ProofLink verifies the agent's delegation scope and screens the transaction before SPT execution. | Delegated credential compliance check |
+| **MCP servers** | ProofLink exposes compliance as an MCP server. Any AI agent calls `check_sanctions()`, `verify_travel_rule()`, `validate_kya()` as standard MCP tool invocations. | Compliance-as-MCP-tool (ambient compliance) |
 
 ### 5.3 KYA (Know Your Agent) Standard
 
-FlowLink's KYA standard answers three questions about every autonomous agent:
+ProofLink's KYA standard answers three questions about every autonomous agent:
 
 1. **Who is this agent?** (Identity) -- ERC-8004 registry lookup + DID resolution
 2. **Who controls it?** (Authority) -- Human principal linkage via Verifiable Credentials, compatible with Mastercard Verifiable Intent and World ID ZK proofs
-3. **Can it be trusted?** (Reputation) -- ERC-8004 Reputation Registry + FlowLink behavioral scoring
+3. **Can it be trusted?** (Reputation) -- ERC-8004 Reputation Registry + ProofLink behavioral scoring
 
 **KYA credential schema (W3C Verifiable Credential):**
 
 ```json
 {
-  "@context": ["https://www.w3.org/2018/credentials/v1", "https://flowlink.dev/kya/v1"],
+  "@context": ["https://www.w3.org/2018/credentials/v1", "https://prooflink.dev/kya/v1"],
   "type": ["VerifiableCredential", "KYACredential"],
-  "issuer": "did:flowlink:prooflink-engine",
+  "issuer": "did:prooflink:prooflink-engine",
   "credentialSubject": {
     "agentId": "erc8004:{chainId}:{registryAddress}:{tokenId}",
     "agentDID": "did:ethr:0x...",
@@ -228,26 +228,26 @@ FlowLink's KYA standard answers three questions about every autonomous agent:
       "travelRuleCapable": true
     },
     "reputationScore": 87,
-    "validatedBy": ["flowlink_prooflink", "erc8004_validator_xyz"]
+    "validatedBy": ["prooflink_prooflink", "erc8004_validator_xyz"]
   }
 }
 ```
 
-FlowLink publishes this as an open standard while operating the verification infrastructure -- creating both a standards-setting position and a recurring revenue moat.
+ProofLink publishes this as an open standard while operating the verification infrastructure -- creating both a standards-setting position and a recurring revenue moat.
 
 ### 5.4 Agent Invoice Standard (JSON-LD Schema)
 
-No machine-readable invoice format exists for agent-to-agent commerce. FlowLink defines one:
+No machine-readable invoice format exists for agent-to-agent commerce. ProofLink defines one:
 
 ```json
 {
-  "@context": ["https://schema.org", "https://flowlink.dev/invoice/v1"],
+  "@context": ["https://schema.org", "https://prooflink.dev/invoice/v1"],
   "@type": "AgentInvoice",
-  "invoiceId": "inv_flowlink_2026_abc123",
+  "invoiceId": "inv_prooflink_2026_abc123",
   "issuer": {
     "agentId": "erc8004:8453:0x...:42",
     "principalEntity": "LEI-20-char-code",
-    "kya_credential": "did:flowlink:kya:..."
+    "kya_credential": "did:prooflink:kya:..."
   },
   "recipient": {
     "agentId": "erc8004:8453:0x...:99",
@@ -295,11 +295,11 @@ This schema links: agent identity (ERC-8004) -> service description -> payment p
 
 ### 5.5 Compliance Receipts as On-Chain Attestations
 
-Every FlowLink-processed payment generates a ProofLink Compliance Receipt:
+Every ProofLink-processed payment generates a ProofLink Compliance Receipt:
 
 - **Content:** What was screened (sanctions lists, AML checks, identity verification), timestamp with proof, result of each check, agent/human identity credential hashes (no raw PII), jurisdictional rules applied
 - **Storage:** IPFS content-addressed storage, with commitment hash anchored on-chain (Base or Ethereum)
-- **Verification:** Any party can verify the receipt independently without trusting FlowLink
+- **Verification:** Any party can verify the receipt independently without trusting ProofLink
 - **Properties:** Tamper-evident, portable across jurisdictions, satisfies auditor requirements without exposing PII, proves real-time due diligence was exercised
 
 ---
@@ -368,36 +368,36 @@ Every FlowLink-processed payment generates a ProofLink Compliance Receipt:
 - The compliance layer in the A2A stack is [GAP] -- literally no product exists
 - ERC-8183 (programmable escrow) goes live but has no compliance hooks
 - Agent-to-agent stablecoin transfers trigger Travel Rule obligations that no one handles
-- Regulatory frameworks for agentic payments will emerge (EU likely first) -- FlowLink's architecture becomes the reference implementation
+- Regulatory frameworks for agentic payments will emerge (EU likely first) -- ProofLink's architecture becomes the reference implementation
 
 **Product additions:**
 - Full Agent Invoice Standard (JSON-LD schema, machine-readable)
 - Agent-to-agent Travel Rule protocol (IVMS101 data standard adapted for agent principals)
 - Behavioral AML monitoring for agent transaction patterns (ML models trained on proprietary agent activity data)
 - ERC-8004 Compliance Validator (on-chain attestation via Validation Registry)
-- Dispute resolution hooks (ERC-8183 compatible, with FlowLink audit trail as evidentiary record)
+- Dispute resolution hooks (ERC-8183 compatible, with ProofLink audit trail as evidentiary record)
 
 **Distribution:**
 - Standards adoption: publish KYA and Agent Invoice Standard as open specs
-- Become a registered ERC-8004 validator -- agents with FlowLink validation have provable compliance
-- Protocol-level integrations: FlowLink compliance baked into x402 SDK, MPP reference implementation
-- Regulatory engagement: present FlowLink's architecture to FATF, FinCEN, ESMA as the reference for agent payment compliance
+- Become a registered ERC-8004 validator -- agents with ProofLink validation have provable compliance
+- Protocol-level integrations: ProofLink compliance baked into x402 SDK, MPP reference implementation
+- Regulatory engagement: present ProofLink's architecture to FATF, FinCEN, ESMA as the reference for agent payment compliance
 
-**Success metric:** 100,000+ KYA-credentialed agents, FlowLink referenced in regulatory guidance
+**Success metric:** 100,000+ KYA-credentialed agents, ProofLink referenced in regulatory guidance
 
 ---
 
 ### 6.4 Hackathon Strategy
 
-The hottest hackathon tracks are all x402/agentic-commerce related. FlowLink should enter aggressively:
+The hottest hackathon tracks are all x402/agentic-commerce related. ProofLink should enter aggressively:
 
 | Event | Strategy | Prize Opportunity |
 |-------|----------|------------------|
 | **ETHGlobal** (multiple 2026 events) | Demo: AI agent invoicing a business client, business approving + paying via x402, with automatic Travel Rule compliance and on-chain ProofLink receipt | $500K+ prize pools |
-| **SF Agentic Commerce x402 Hackathon** | Previous event: 324 builders, 275K on-chain transactions, $50K+ prizes. Next event: submit FlowLink as compliance middleware track | Partner sponsor opportunity |
-| **Coinbase "Agents in Action"** | Integrate FlowLink compliance into AgentKit workflow. Show: agent creates invoice -> counterparty agent pays via x402 -> FlowLink screens -> ProofLink receipt | CDP ecosystem visibility |
+| **SF Agentic Commerce x402 Hackathon** | Previous event: 324 builders, 275K on-chain transactions, $50K+ prizes. Next event: submit ProofLink as compliance middleware track | Partner sponsor opportunity |
+| **Coinbase "Agents in Action"** | Integrate ProofLink compliance into AgentKit workflow. Show: agent creates invoice -> counterparty agent pays via x402 -> ProofLink screens -> ProofLink receipt | CDP ecosystem visibility |
 | **Base Batches 2026** | Apply to startup track: $10K grant + 8-week program + $50K Base Ecosystem Fund | $50K+ investment, SF Demo Day |
-| **Encode Club** | DeFi compliance track -- show FlowLink as MiCA compliance layer for DeFi protocols | $66K+ prizes |
+| **Encode Club** | DeFi compliance track -- show ProofLink as MiCA compliance layer for DeFi protocols | $66K+ prizes |
 
 **Winning demo formula:** An AI agent invoicing a business client -> the business approving and paying via x402 -> automatic Travel Rule compliance -> on-chain compliance receipt -> ERP reconciliation. This demo wins in every current hackathon because it shows real commerce, real compliance, and real agent sophistication.
 
@@ -446,7 +446,7 @@ These numbers are conservative. BVNK reached $30B annualized volume and $1.8B ac
 
 ### 8.1 The Pitch That Lands
 
-> "FlowLink is the Stripe of compliant B2B crypto payments. We are building the trust layer that sits between every stablecoin transaction and every AI agent payment -- making them legal, auditable, and safe for enterprise CFOs. The compliance infrastructure for the $33 trillion stablecoin economy and the $3-5 trillion agentic commerce market does not exist. We are building it."
+> "ProofLink is the Stripe of compliant B2B crypto payments. We are building the trust layer that sits between every stablecoin transaction and every AI agent payment -- making them legal, auditable, and safe for enterprise CFOs. The compliance infrastructure for the $33 trillion stablecoin economy and the $3-5 trillion agentic commerce market does not exist. We are building it."
 
 ### 8.2 Key Numbers for the Deck
 
@@ -475,17 +475,17 @@ Use these exact figures -- every one is sourced from primary research:
 | **Tempo** | Series A (Stripe + Paradigm) | $5B | $500M raised | 2025/2026 |
 | **Ripple** | Funding round | $40B | $500M raised | 2025 |
 
-**The signal:** Every major card network and payment platform is acquiring stablecoin infrastructure at $1B+ valuations. The next acquirer is Visa, JPMorgan, or PayPal. FlowLink's compliance-first positioning makes it an ideal acquisition target for any of them.
+**The signal:** Every major card network and payment platform is acquiring stablecoin infrastructure at $1B+ valuations. The next acquirer is Visa, JPMorgan, or PayPal. ProofLink's compliance-first positioning makes it an ideal acquisition target for any of them.
 
 ### 8.4 Target VCs
 
 | VC Firm | Why | Thesis Fit |
 |---------|-----|-----------|
 | **a16z Crypto** | Raising ~$2B 5th fund (March 2026). Thesis: "stablecoins are the fastest, cheapest, most global way to send a dollar." State of Crypto report signals payments infrastructure conviction. | Direct thesis alignment |
-| **Paradigm** | Backed Tempo with Stripe at $5B. Focus: protocols, payment infrastructure. | Existing bet on agent payment rails; FlowLink is the compliance layer |
+| **Paradigm** | Backed Tempo with Stripe at $5B. Focus: protocols, payment infrastructure. | Existing bet on agent payment rails; ProofLink is the compliance layer |
 | **Pantera Capital** | Active in payment protocols, DeFi. | Stablecoin infrastructure thesis |
 | **ICONIQ Growth** | Led Rain $250M Series C at $1.95B. | Proven conviction in stablecoin payments |
-| **Dragonfly Capital** | Participated in Rain. Crypto protocols + payments. | Capital efficiency focus aligns with FlowLink |
+| **Dragonfly Capital** | Participated in Rain. Crypto protocols + payments. | Capital efficiency focus aligns with ProofLink |
 | **Haun Ventures** | Crypto consumer + infrastructure. Active in stablecoin space. | Regulatory-aware fund, compliance thesis resonates |
 | **Bessemer Venture Partners** | Fintech + crypto infrastructure. Rain Series C. | Enterprise SaaS + compliance infrastructure |
 | **Galaxy Ventures** | Crypto + digital assets focus. Rain Series C. | Infrastructure-first thesis |
@@ -501,17 +501,17 @@ From direct VC commentary (The Block, DL News, a16z):
 5. **Measurable cash flows** -- how does this generate actual returns from transaction fees/volume
 6. **"Stablecoin-as-a-Service" as a category** -- VC investment in stablecoin companies exceeded $1.5B in 2025
 
-FlowLink checks every box: compliance infrastructure (not a token), transaction fee revenue model (measurable cash flows), regulatory moat (GENIUS Act + MiCA native), capital efficient (build on top of existing compliance providers, don't replicate Chainalysis).
+ProofLink checks every box: compliance infrastructure (not a token), transaction fee revenue model (measurable cash flows), regulatory moat (GENIUS Act + MiCA native), capital efficient (build on top of existing compliance providers, don't replicate Chainalysis).
 
 ---
 
 ## 9. Differentiation from Request Finance
 
-Request Finance is the closest direct competitor in crypto invoicing. Here is the specific breakdown of why FlowLink wins:
+Request Finance is the closest direct competitor in crypto invoicing. Here is the specific breakdown of why ProofLink wins:
 
 ### 9.1 Technical Differences
 
-| Dimension | Request Finance | FlowLink |
+| Dimension | Request Finance | ProofLink |
 |-----------|----------------|----------|
 | **Core product** | Crypto invoicing + payroll | Compliance-first payment orchestration with invoicing |
 | **Compliance** | Basic (limited to what blockchain provides) | Native real-time sanctions screening, Travel Rule, AML, KYA |
@@ -525,7 +525,7 @@ Request Finance is the closest direct competitor in crypto invoicing. Here is th
 
 ### 9.2 Strategic Differences
 
-| Dimension | Request Finance | FlowLink |
+| Dimension | Request Finance | ProofLink |
 |-----------|----------------|----------|
 | **Market positioning** | "Crypto invoicing tool" | "Trust protocol for money moving at machine speed" |
 | **TAM ceiling** | Crypto invoicing (~$6B market) | Compliance infrastructure ($100B RegTech) + agentic payments ($3-5T) |
@@ -533,13 +533,13 @@ Request Finance is the closest direct competitor in crypto invoicing. Here is th
 | **Acquisition attractiveness** | Niche invoicing tool | Compliance infrastructure layer (Mastercard/Visa/JPMorgan acquisition target) |
 | **Regulatory positioning** | Reactive | Proactive -- defining standards before regulators mandate them |
 
-### 9.3 Why FlowLink Wins
+### 9.3 Why ProofLink Wins
 
 1. **Request Finance has no compliance layer.** In a post-GENIUS Act, post-MiCA world, this is disqualifying for enterprise adoption. CFOs need proof of compliance -- Request cannot provide it.
 
-2. **Request Finance has no agent story.** The $3-5T agentic commerce market is invisible to Request's product. FlowLink is built for the H2H -> H2A -> A2A progression.
+2. **Request Finance has no agent story.** The $3-5T agentic commerce market is invisible to Request's product. ProofLink is built for the H2H -> H2A -> A2A progression.
 
-3. **Request Finance is invoice-centric, not compliance-centric.** When compliance becomes mandatory (it already is), the compliance layer becomes the platform, and invoicing becomes a feature on top. FlowLink has the right architectural priority.
+3. **Request Finance is invoice-centric, not compliance-centric.** When compliance becomes mandatory (it already is), the compliance layer becomes the platform, and invoicing becomes a feature on top. ProofLink has the right architectural priority.
 
 4. **Request Finance cannot issue compliance receipts.** The signed, verifiable, on-chain compliance attestation is a product category that Request would need to rebuild its architecture to offer.
 
@@ -551,21 +551,21 @@ Request Finance is the closest direct competitor in crypto invoicing. Here is th
 
 | Risk | Severity | Probability | Mitigation |
 |------|----------|-------------|------------|
-| **Protocol fragmentation worsens** -- no standard wins, FlowLink must support 6+ protocols indefinitely | High | Medium | Architecture is already protocol-agnostic. Each new protocol integration is incremental. Fragmentation actually increases FlowLink's value as the neutral layer. |
+| **Protocol fragmentation worsens** -- no standard wins, ProofLink must support 6+ protocols indefinitely | High | Medium | Architecture is already protocol-agnostic. Each new protocol integration is incremental. Fragmentation actually increases ProofLink's value as the neutral layer. |
 | **x402/MPP adoption stalls** -- agentic commerce narrative ahead of reality (x402 at $28K/day real volume) | Medium | Medium | Build for H2H B2B first (proven $226B/year market). Agentic is the 2027+ expansion, not the 2026 revenue driver. |
 | **Compliance provider dependency** -- Chainalysis, Notabene, or TRM change pricing/access | Medium | Low | Multi-provider architecture. Free tier on Chainalysis free SDN API. Upgrade paths to TRM, ChainAware. No single-vendor lock-in. |
 | **Latency budget** -- <500ms compliance decision may be hard to achieve with multiple provider calls | Medium | Medium | Parallel API calls. Cache sanctions lists locally (Chainalysis allows this). Pre-compute KYA credentials. Target: 200ms for cached decisions, 500ms for cold. |
-| **ERC-8004/ERC-8183 adoption stalls** -- standards fail to gain traction | Low | Medium | These are reference standards, not dependencies. FlowLink's compliance engine works with any identity system. ERC-8004 is preferred but not required. |
+| **ERC-8004/ERC-8183 adoption stalls** -- standards fail to gain traction | Low | Medium | These are reference standards, not dependencies. ProofLink's compliance engine works with any identity system. ERC-8004 is preferred but not required. |
 
 ### 10.2 Regulatory Risks
 
 | Risk | Severity | Probability | Mitigation |
 |------|----------|-------------|------------|
-| **FlowLink classified as a VASP/MSB** -- must obtain expensive licenses | High | Medium | Architecture as non-custodial compliance middleware, not a payment processor. Never hold or transmit customer funds. If reclassified, partner bank model ($0 upfront, revenue share) is the fallback. |
+| **ProofLink classified as a VASP/MSB** -- must obtain expensive licenses | High | Medium | Architecture as non-custodial compliance middleware, not a payment processor. Never hold or transmit customer funds. If reclassified, partner bank model ($0 upfront, revenue share) is the fallback. |
 | **MiCA CASP licensing required for EU operations** | Medium | High | Use Circle's EURC and partner with MiCA-licensed intermediaries initially. Apply for CASP license when revenue justifies ($100K-$500K cost). |
 | **US state MTL requirements** -- 49 states, $1.3M-$3M+ upfront | High | Low (if non-custodial) | Non-custodial architecture avoids MTL trigger. If needed, partner bank model. NY BitLicense: avoid NY initially or use licensed partner. |
-| **FATF issues agent-specific guidance that contradicts FlowLink's approach** | Medium | Low | Being first to define "Travel Rule for agents" means FlowLink's architecture influences the guidance. Engage proactively with FATF working groups. |
-| **GENIUS Act yield prohibition limits business model** | Low | N/A | FlowLink's model is transaction fees, not yield. This restriction is irrelevant to FlowLink but eliminates potential competitors who rely on yield. |
+| **FATF issues agent-specific guidance that contradicts ProofLink's approach** | Medium | Low | Being first to define "Travel Rule for agents" means ProofLink's architecture influences the guidance. Engage proactively with FATF working groups. |
+| **GENIUS Act yield prohibition limits business model** | Low | N/A | ProofLink's model is transaction fees, not yield. This restriction is irrelevant to ProofLink but eliminates potential competitors who rely on yield. |
 
 ### 10.3 Market Risks
 
@@ -574,7 +574,7 @@ Request Finance is the closest direct competitor in crypto invoicing. Here is th
 | **Incumbents vertically integrate** -- Stripe adds compliance layer, Mastercard adds KYA, Visa builds trust | High | High | Build the compliance moat faster than they can ship. Be the open standard they reference rather than compete with. Stripe took 2 years to add basic stablecoin support; compliance is even harder. |
 | **"Crypto winter" kills enterprise stablecoin adoption** | Medium | Low | Stablecoins are not speculative crypto. $33T volume is real economic activity. BVNK's volume quadrupled during the 2025 market correction. Stablecoins are countercyclical -- they grow when businesses seek cheaper rails. |
 | **Enterprise sales cycle too long** -- 6-12 months for compliance products | High | High | Lead with developer-first free tier (capture startups now). Enterprise is a parallel motion. BVNK proved enterprise stablecoin sales can be fast when compliance is native. |
-| **KYA standard not adopted** -- competing standards emerge | Medium | Medium | Publish as open standard (Apache 2.0). Get one major protocol (x402 or AP2) to adopt. If competing standards win, implement them -- FlowLink is the orchestration layer, not the standard itself. |
+| **KYA standard not adopted** -- competing standards emerge | Medium | Medium | Publish as open standard (Apache 2.0). Get one major protocol (x402 or AP2) to adopt. If competing standards win, implement them -- ProofLink is the orchestration layer, not the standard itself. |
 
 ### 10.4 Risk Summary Heat Map
 
@@ -596,7 +596,7 @@ Request Finance is the closest direct competitor in crypto invoicing. Here is th
 4. Agent Economy Research (Infrastructure projects, identity standards, payment rails, invoicing gaps)
 5. Compliance Landscape Research (FATF Travel Rule, sanctions screening, KYC/KYB, MiCA, US regulation, on-chain compliance)
 6. Agentic Payments Deep Dive (All 6 protocols, infrastructure projects, MCP servers, identity delegation, compliance gaps)
-7. Current State Analysis (FlowLink product assessment)
+7. Current State Analysis (ProofLink product assessment)
 
 ## Appendix B: Acronym Reference
 

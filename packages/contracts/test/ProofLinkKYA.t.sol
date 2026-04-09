@@ -4,7 +4,7 @@ pragma solidity ^0.8.25;
 import {Test, console2} from "forge-std/Test.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
-import {FlowLinkKYA} from "../src/FlowLinkKYA.sol";
+import {ProofLinkKYA} from "../src/ProofLinkKYA.sol";
 import {Types} from "../src/libraries/Types.sol";
 import {IERC8004IdentityRegistry, IERC8004ValidationRegistry} from "../src/interfaces/IERC8004.sol";
 
@@ -54,8 +54,8 @@ contract MockValidationRegistry is IERC8004ValidationRegistry {
     }
 }
 
-contract FlowLinkKYATest is Test {
-    FlowLinkKYA public kya;
+contract ProofLinkKYATest is Test {
+    ProofLinkKYA public kya;
     MockIdentityRegistry public identityRegistry;
     MockValidationRegistry public validationRegistry;
 
@@ -71,12 +71,12 @@ contract FlowLinkKYATest is Test {
         identityRegistry = new MockIdentityRegistry();
         validationRegistry = new MockValidationRegistry();
 
-        FlowLinkKYA impl = new FlowLinkKYA();
+        ProofLinkKYA impl = new ProofLinkKYA();
         bytes memory initData = abi.encodeCall(
-            FlowLinkKYA.initialize, (address(identityRegistry), address(validationRegistry), admin)
+            ProofLinkKYA.initialize, (address(identityRegistry), address(validationRegistry), admin)
         );
         ERC1967Proxy proxy = new ERC1967Proxy(address(impl), initData);
-        kya = FlowLinkKYA(address(proxy));
+        kya = ProofLinkKYA(address(proxy));
 
         // Grant verifier role
         bytes32 verifierRole = kya.VERIFIER_ROLE();
@@ -118,7 +118,7 @@ contract FlowLinkKYATest is Test {
     function test_issueKYA_emitsEvent() public {
         vm.prank(verifier);
         vm.expectEmit(true, true, false, true);
-        emit FlowLinkKYA.KYAIssued(agentWallet, credentialHash, validUntil, uint40(block.timestamp));
+        emit ProofLinkKYA.KYAIssued(agentWallet, credentialHash, validUntil, uint40(block.timestamp));
         kya.issueKYA(agentWallet, credentialHash, validUntil);
     }
 
@@ -135,25 +135,25 @@ contract FlowLinkKYATest is Test {
         kya.issueKYA(agentWallet, credentialHash, validUntil);
 
         vm.prank(verifier);
-        vm.expectRevert(FlowLinkKYA.CredentialAlreadyExists.selector);
+        vm.expectRevert(ProofLinkKYA.CredentialAlreadyExists.selector);
         kya.issueKYA(agentWallet, keccak256("new-cred"), validUntil);
     }
 
     function test_issueKYA_revert_zeroAddress() public {
         vm.prank(verifier);
-        vm.expectRevert(FlowLinkKYA.ZeroAddress.selector);
+        vm.expectRevert(ProofLinkKYA.ZeroAddress.selector);
         kya.issueKYA(address(0), credentialHash, validUntil);
     }
 
     function test_issueKYA_revert_emptyHash() public {
         vm.prank(verifier);
-        vm.expectRevert(FlowLinkKYA.EmptyCredentialHash.selector);
+        vm.expectRevert(ProofLinkKYA.EmptyCredentialHash.selector);
         kya.issueKYA(agentWallet, bytes32(0), validUntil);
     }
 
     function test_issueKYA_revert_pastExpiry() public {
         vm.prank(verifier);
-        vm.expectRevert(FlowLinkKYA.InvalidExpiry.selector);
+        vm.expectRevert(ProofLinkKYA.InvalidExpiry.selector);
         kya.issueKYA(agentWallet, credentialHash, uint64(block.timestamp - 1));
     }
 
@@ -199,13 +199,13 @@ contract FlowLinkKYATest is Test {
 
         vm.prank(verifier);
         vm.expectEmit(true, true, false, false);
-        emit FlowLinkKYA.KYARevoked(agentWallet, verifier);
+        emit ProofLinkKYA.KYARevoked(agentWallet, verifier);
         kya.revokeKYA(agentWallet);
     }
 
     function test_revokeKYA_revert_notFound() public {
         vm.prank(verifier);
-        vm.expectRevert(FlowLinkKYA.CredentialNotFound.selector);
+        vm.expectRevert(ProofLinkKYA.CredentialNotFound.selector);
         kya.revokeKYA(agentWallet);
     }
 
@@ -217,7 +217,7 @@ contract FlowLinkKYATest is Test {
         kya.revokeKYA(agentWallet);
 
         vm.prank(verifier);
-        vm.expectRevert(FlowLinkKYA.CredentialAlreadyRevoked.selector);
+        vm.expectRevert(ProofLinkKYA.CredentialAlreadyRevoked.selector);
         kya.revokeKYA(agentWallet);
     }
 
@@ -255,7 +255,7 @@ contract FlowLinkKYATest is Test {
         kya.issueKYA(agentWallet, credentialHash, validUntil);
 
         vm.prank(verifier);
-        vm.expectRevert(FlowLinkKYA.CredentialNotSuspended.selector);
+        vm.expectRevert(ProofLinkKYA.CredentialNotSuspended.selector);
         kya.reinstateKYA(agentWallet);
     }
 
@@ -294,7 +294,7 @@ contract FlowLinkKYATest is Test {
     }
 
     function test_getCredential_revert_notFound() public {
-        vm.expectRevert(FlowLinkKYA.CredentialNotFound.selector);
+        vm.expectRevert(ProofLinkKYA.CredentialNotFound.selector);
         kya.getCredential(makeAddr("nobody"));
     }
 
@@ -304,11 +304,11 @@ contract FlowLinkKYATest is Test {
 
     function test_registerAgent_validData() public {
         vm.prank(verifier);
-        kya.registerAgent("did:flowlink:agent-001", agentWallet, 0, 10_000e6);
+        kya.registerAgent("did:prooflink:agent-001", agentWallet, 0, 10_000e6);
 
         Types.AgentInfo memory info = kya.getAgent(agentWallet);
         assertEq(info.wallet, agentWallet);
-        assertEq(info.did, "did:flowlink:agent-001");
+        assertEq(info.did, "did:prooflink:agent-001");
         assertTrue(info.agentType == Types.AgentType.AUTONOMOUS);
         assertEq(info.maxTxValue, 10_000e6);
         assertEq(info.dailyLimit, 0);
@@ -319,54 +319,54 @@ contract FlowLinkKYATest is Test {
     function test_registerAgent_emitsEvent() public {
         vm.prank(verifier);
         vm.expectEmit(true, false, false, true);
-        emit FlowLinkKYA.AgentRegistered(agentWallet, "did:flowlink:agent-001", 0, 10_000e6, uint40(block.timestamp));
-        kya.registerAgent("did:flowlink:agent-001", agentWallet, 0, 10_000e6);
+        emit ProofLinkKYA.AgentRegistered(agentWallet, "did:prooflink:agent-001", 0, 10_000e6, uint40(block.timestamp));
+        kya.registerAgent("did:prooflink:agent-001", agentWallet, 0, 10_000e6);
     }
 
     function test_registerAgent_incrementsCount() public {
         assertEq(kya.agentCount(), 0);
 
         vm.prank(verifier);
-        kya.registerAgent("did:flowlink:agent-001", agentWallet, 0, 10_000e6);
+        kya.registerAgent("did:prooflink:agent-001", agentWallet, 0, 10_000e6);
         assertEq(kya.agentCount(), 1);
 
         address wallet2 = makeAddr("agent2");
         vm.prank(verifier);
-        kya.registerAgent("did:flowlink:agent-002", wallet2, 1, 5_000e6);
+        kya.registerAgent("did:prooflink:agent-002", wallet2, 1, 5_000e6);
         assertEq(kya.agentCount(), 2);
     }
 
     function test_registerAgent_revert_duplicateWallet() public {
         vm.prank(verifier);
-        kya.registerAgent("did:flowlink:agent-001", agentWallet, 0, 10_000e6);
+        kya.registerAgent("did:prooflink:agent-001", agentWallet, 0, 10_000e6);
 
         vm.prank(verifier);
-        vm.expectRevert(FlowLinkKYA.AgentAlreadyRegistered.selector);
-        kya.registerAgent("did:flowlink:agent-002", agentWallet, 1, 5_000e6);
+        vm.expectRevert(ProofLinkKYA.AgentAlreadyRegistered.selector);
+        kya.registerAgent("did:prooflink:agent-002", agentWallet, 1, 5_000e6);
     }
 
     function test_registerAgent_revert_zeroAddress() public {
         vm.prank(verifier);
-        vm.expectRevert(FlowLinkKYA.ZeroAddress.selector);
-        kya.registerAgent("did:flowlink:agent-001", address(0), 0, 10_000e6);
+        vm.expectRevert(ProofLinkKYA.ZeroAddress.selector);
+        kya.registerAgent("did:prooflink:agent-001", address(0), 0, 10_000e6);
     }
 
     function test_registerAgent_revert_emptyDID() public {
         vm.prank(verifier);
-        vm.expectRevert(FlowLinkKYA.EmptyDID.selector);
+        vm.expectRevert(ProofLinkKYA.EmptyDID.selector);
         kya.registerAgent("", agentWallet, 0, 10_000e6);
     }
 
     function test_registerAgent_revert_invalidAgentType() public {
         vm.prank(verifier);
-        vm.expectRevert(FlowLinkKYA.InvalidAgentType.selector);
-        kya.registerAgent("did:flowlink:agent-001", agentWallet, 3, 10_000e6);
+        vm.expectRevert(ProofLinkKYA.InvalidAgentType.selector);
+        kya.registerAgent("did:prooflink:agent-001", agentWallet, 3, 10_000e6);
     }
 
     function test_registerAgent_revert_unauthorized() public {
         vm.prank(unauthorized);
         vm.expectRevert();
-        kya.registerAgent("did:flowlink:agent-001", agentWallet, 0, 10_000e6);
+        kya.registerAgent("did:prooflink:agent-001", agentWallet, 0, 10_000e6);
     }
 
     function test_registerAgent_allTypes() public {
@@ -391,17 +391,17 @@ contract FlowLinkKYATest is Test {
 
     function test_getAgent_returnsCorrectInfo() public {
         vm.prank(verifier);
-        kya.registerAgent("did:flowlink:agent-001", agentWallet, 1, 50_000e6);
+        kya.registerAgent("did:prooflink:agent-001", agentWallet, 1, 50_000e6);
 
         Types.AgentInfo memory info = kya.getAgent(agentWallet);
         assertEq(info.wallet, agentWallet);
-        assertEq(info.did, "did:flowlink:agent-001");
+        assertEq(info.did, "did:prooflink:agent-001");
         assertTrue(info.agentType == Types.AgentType.SEMI_AUTONOMOUS);
         assertEq(info.maxTxValue, 50_000e6);
     }
 
     function test_getAgent_revert_notFound() public {
-        vm.expectRevert(FlowLinkKYA.AgentNotFound.selector);
+        vm.expectRevert(ProofLinkKYA.AgentNotFound.selector);
         kya.getAgent(makeAddr("nobody"));
     }
 
@@ -411,7 +411,7 @@ contract FlowLinkKYATest is Test {
 
     function test_updateDelegationScope() public {
         vm.prank(verifier);
-        kya.registerAgent("did:flowlink:agent-001", agentWallet, 0, 10_000e6);
+        kya.registerAgent("did:prooflink:agent-001", agentWallet, 0, 10_000e6);
 
         vm.prank(verifier);
         kya.updateDelegationScope(agentWallet, 50_000e6, 100_000e6);
@@ -423,23 +423,23 @@ contract FlowLinkKYATest is Test {
 
     function test_updateDelegationScope_emitsEvent() public {
         vm.prank(verifier);
-        kya.registerAgent("did:flowlink:agent-001", agentWallet, 0, 10_000e6);
+        kya.registerAgent("did:prooflink:agent-001", agentWallet, 0, 10_000e6);
 
         vm.prank(verifier);
         vm.expectEmit(true, false, false, true);
-        emit FlowLinkKYA.AgentUpdated(agentWallet, 50_000e6, 100_000e6, uint40(block.timestamp));
+        emit ProofLinkKYA.AgentUpdated(agentWallet, 50_000e6, 100_000e6, uint40(block.timestamp));
         kya.updateDelegationScope(agentWallet, 50_000e6, 100_000e6);
     }
 
     function test_updateDelegationScope_revert_notFound() public {
         vm.prank(verifier);
-        vm.expectRevert(FlowLinkKYA.AgentNotFound.selector);
+        vm.expectRevert(ProofLinkKYA.AgentNotFound.selector);
         kya.updateDelegationScope(makeAddr("nobody"), 1000, 2000);
     }
 
     function test_updateDelegationScope_revert_unauthorized() public {
         vm.prank(verifier);
-        kya.registerAgent("did:flowlink:agent-001", agentWallet, 0, 10_000e6);
+        kya.registerAgent("did:prooflink:agent-001", agentWallet, 0, 10_000e6);
 
         vm.prank(unauthorized);
         vm.expectRevert();
@@ -452,7 +452,7 @@ contract FlowLinkKYATest is Test {
 
     function test_isVerified_registeredAgent() public {
         vm.prank(verifier);
-        kya.registerAgent("did:flowlink:agent-001", agentWallet, 0, 10_000e6);
+        kya.registerAgent("did:prooflink:agent-001", agentWallet, 0, 10_000e6);
 
         assertTrue(kya.isVerified(agentWallet));
     }
@@ -463,7 +463,7 @@ contract FlowLinkKYATest is Test {
 
     function test_isVerified_afterDeactivation() public {
         vm.prank(verifier);
-        kya.registerAgent("did:flowlink:agent-001", agentWallet, 0, 10_000e6);
+        kya.registerAgent("did:prooflink:agent-001", agentWallet, 0, 10_000e6);
 
         vm.prank(verifier);
         kya.deactivateAgent(agentWallet);
@@ -477,7 +477,7 @@ contract FlowLinkKYATest is Test {
 
     function test_deactivateAgent() public {
         vm.prank(verifier);
-        kya.registerAgent("did:flowlink:agent-001", agentWallet, 0, 10_000e6);
+        kya.registerAgent("did:prooflink:agent-001", agentWallet, 0, 10_000e6);
 
         vm.prank(verifier);
         kya.deactivateAgent(agentWallet);
@@ -488,23 +488,23 @@ contract FlowLinkKYATest is Test {
 
     function test_deactivateAgent_emitsEvent() public {
         vm.prank(verifier);
-        kya.registerAgent("did:flowlink:agent-001", agentWallet, 0, 10_000e6);
+        kya.registerAgent("did:prooflink:agent-001", agentWallet, 0, 10_000e6);
 
         vm.prank(verifier);
         vm.expectEmit(true, true, false, false);
-        emit FlowLinkKYA.AgentDeactivated(agentWallet, verifier);
+        emit ProofLinkKYA.AgentDeactivated(agentWallet, verifier);
         kya.deactivateAgent(agentWallet);
     }
 
     function test_deactivateAgent_revert_notFound() public {
         vm.prank(verifier);
-        vm.expectRevert(FlowLinkKYA.AgentNotFound.selector);
+        vm.expectRevert(ProofLinkKYA.AgentNotFound.selector);
         kya.deactivateAgent(makeAddr("nobody"));
     }
 
     function test_deactivateAgent_revert_unauthorized() public {
         vm.prank(verifier);
-        kya.registerAgent("did:flowlink:agent-001", agentWallet, 0, 10_000e6);
+        kya.registerAgent("did:prooflink:agent-001", agentWallet, 0, 10_000e6);
 
         vm.prank(unauthorized);
         vm.expectRevert();
@@ -521,7 +521,7 @@ contract FlowLinkKYATest is Test {
 
         vm.prank(verifier);
         vm.expectEmit(true, true, false, false);
-        emit FlowLinkKYA.KYASuspended(agentWallet, verifier);
+        emit ProofLinkKYA.KYASuspended(agentWallet, verifier);
         kya.suspendKYA(agentWallet);
     }
 
@@ -534,7 +534,7 @@ contract FlowLinkKYATest is Test {
 
         vm.prank(verifier);
         vm.expectEmit(true, true, false, false);
-        emit FlowLinkKYA.KYAReinstated(agentWallet, verifier);
+        emit ProofLinkKYA.KYAReinstated(agentWallet, verifier);
         kya.reinstateKYA(agentWallet);
     }
 
@@ -547,7 +547,7 @@ contract FlowLinkKYATest is Test {
 
         // Already suspended, cannot suspend again
         vm.prank(verifier);
-        vm.expectRevert(FlowLinkKYA.CredentialNotActive.selector);
+        vm.expectRevert(ProofLinkKYA.CredentialNotActive.selector);
         kya.suspendKYA(agentWallet);
     }
 
@@ -583,7 +583,7 @@ contract FlowLinkKYATest is Test {
 
     function test_setRegistries_revert_zeroIdentityRegistry() public {
         vm.prank(admin);
-        vm.expectRevert(FlowLinkKYA.ZeroAddress.selector);
+        vm.expectRevert(ProofLinkKYA.ZeroAddress.selector);
         kya.setRegistries(address(0), makeAddr("b"));
     }
 
@@ -604,13 +604,13 @@ contract FlowLinkKYATest is Test {
     function test_setDefaultValidationScore_emitsEvent() public {
         vm.prank(admin);
         vm.expectEmit(false, false, false, true);
-        emit FlowLinkKYA.DefaultValidationScoreUpdated(75, 90);
+        emit ProofLinkKYA.DefaultValidationScoreUpdated(75, 90);
         kya.setDefaultValidationScore(90);
     }
 
     function test_setDefaultValidationScore_revert_tooHigh() public {
         vm.prank(admin);
-        vm.expectRevert(FlowLinkKYA.InvalidValidationScore.selector);
+        vm.expectRevert(ProofLinkKYA.InvalidValidationScore.selector);
         kya.setDefaultValidationScore(101);
     }
 

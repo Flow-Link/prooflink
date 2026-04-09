@@ -1,5 +1,5 @@
 {
-  "name": "@flowlink/x402-compliance",
+  "name": "@prooflink/x402-compliance",
   "version": "0.2.0",
   "description": "Compliance middleware for x402 payment protocol — sanctions screening, AML, Travel Rule, ProofLink receipts, rate limiting, multi-chain support",
   "license": "Apache-2.0",
@@ -58,7 +58,7 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "@flowlink/shared": "workspace:*",
+    "@prooflink/shared": "workspace:*",
     "zod": "^3.24.0"
   },
   "devDependencies": {

@@ -146,22 +146,22 @@ export const RISK_THRESHOLDS = {
 } as const;
 
 // ---------------------------------------------------------------------------
-// FlowLink Contract Addresses (Base Mainnet — placeholders pre-deployment)
+// ProofLink Contract Addresses (Base Mainnet — placeholders pre-deployment)
 // ---------------------------------------------------------------------------
 
 export const CONTRACT_ADDRESSES = {
   BASE_MAINNET: {
     PROOFLINK_REGISTRY: "0x0000000000000000000000000000000000000000",
-    FLOWLINK_KYA: "0x0000000000000000000000000000000000000000",
+    PROOFLINK_KYA: "0x0000000000000000000000000000000000000000",
     AGENT_INVOICE: "0x0000000000000000000000000000000000000000",
-    FLOWLINK_FACILITATOR: "0x0000000000000000000000000000000000000000",
+    PROOFLINK_FACILITATOR: "0x0000000000000000000000000000000000000000",
     DISPUTE_ORACLE: "0x0000000000000000000000000000000000000000",
   },
   BASE_SEPOLIA: {
     PROOFLINK_REGISTRY: "0x0000000000000000000000000000000000000000",
-    FLOWLINK_KYA: "0x0000000000000000000000000000000000000000",
+    PROOFLINK_KYA: "0x0000000000000000000000000000000000000000",
     AGENT_INVOICE: "0x0000000000000000000000000000000000000000",
-    FLOWLINK_FACILITATOR: "0x0000000000000000000000000000000000000000",
+    PROOFLINK_FACILITATOR: "0x0000000000000000000000000000000000000000",
     DISPUTE_ORACLE: "0x0000000000000000000000000000000000000000",
   },
 } as const;
@@ -171,10 +171,10 @@ export const CONTRACT_ADDRESSES = {
 // ---------------------------------------------------------------------------
 
 export const MCP_SERVER = {
-  NAME: "flowlink-compliance",
+  NAME: "prooflink-compliance",
   VERSION: "1.0.0",
-  VENDOR: "FlowLink",
-  BASE_URL: "https://mcp.flowlink.io/v1",
+  VENDOR: "ProofLink",
+  BASE_URL: "https://mcp.prooflink.io/v1",
 } as const;
 
 // ---------------------------------------------------------------------------

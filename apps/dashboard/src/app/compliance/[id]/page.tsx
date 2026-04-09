@@ -460,7 +460,7 @@ export default function ComplianceDetailPage() {
             <div className="mt-6 rounded-lg border border-border/50 bg-secondary/10 p-4">
               <h4 className="text-sm font-medium mb-2">Verification Receipt</h4>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                This compliance check was performed by FlowLink&apos;s x402 compliance
+                This compliance check was performed by ProofLink&apos;s x402 compliance
                 middleware. The check evaluated the transaction against OFAC
                 sanctions lists, risk score thresholds, transaction velocity
                 limits, and jurisdiction restrictions. The result is

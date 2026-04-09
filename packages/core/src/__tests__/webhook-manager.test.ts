@@ -284,7 +284,7 @@ describe("WebhookManager — dispatch HTTP headers", () => {
     expect(headers["Content-Type"]).toBe("application/json");
   });
 
-  it("should send X-FlowLink-Event header with event type", async () => {
+  it("should send X-ProofLink-Event header with event type", async () => {
     const mockFetch = vi.fn().mockResolvedValue(ok200());
     const mgr = createManager(mockFetch);
     mgr.register("https://example.com/hook", "secret", ["invoice.created"]);
@@ -293,10 +293,10 @@ describe("WebhookManager — dispatch HTTP headers", () => {
 
     const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
     const headers = init.headers as Record<string, string>;
-    expect(headers["X-FlowLink-Event"]).toBe("invoice.created");
+    expect(headers["X-ProofLink-Event"]).toBe("invoice.created");
   });
 
-  it("should send X-FlowLink-Delivery header with event ID", async () => {
+  it("should send X-ProofLink-Delivery header with event ID", async () => {
     const mockFetch = vi.fn().mockResolvedValue(ok200());
     const mgr = createManager(mockFetch);
     mgr.register("https://example.com/hook", "secret", ["invoice.paid"]);
@@ -306,12 +306,12 @@ describe("WebhookManager — dispatch HTTP headers", () => {
     const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
     const headers = init.headers as Record<string, string>;
     // Should be a UUID
-    expect(headers["X-FlowLink-Delivery"]).toMatch(
+    expect(headers["X-ProofLink-Delivery"]).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
     );
   });
 
-  it("should send valid X-FlowLink-Signature that verifies against the payload and secret", async () => {
+  it("should send valid X-ProofLink-Signature that verifies against the payload and secret", async () => {
     const mockFetch = vi.fn().mockResolvedValue(ok200());
     const mgr = createManager(mockFetch);
     const secret = "hmac-test-secret";
@@ -321,7 +321,7 @@ describe("WebhookManager — dispatch HTTP headers", () => {
 
     const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
     const headers = init.headers as Record<string, string>;
-    const signature = headers["X-FlowLink-Signature"];
+    const signature = headers["X-ProofLink-Signature"];
     const body = init.body as string;
 
     expect(WebhookManager.verifySignature(body, secret, signature!)).toBe(true);

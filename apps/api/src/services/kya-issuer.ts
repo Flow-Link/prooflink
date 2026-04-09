@@ -28,11 +28,11 @@ export interface IssuedCredential {
 // Constants
 // ---------------------------------------------------------------------------
 
-const FLOWLINK_ISSUER_DID = "did:web:flowlink.io";
-const FLOWLINK_ISSUER_NAME = "FlowLink";
+const PROOFLINK_ISSUER_DID = "did:web:prooflink.io";
+const PROOFLINK_ISSUER_NAME = "ProofLink";
 const VC_CONTEXT = [
   "https://www.w3.org/2018/credentials/v1",
-  "https://flowlink.io/credentials/kya/v1",
+  "https://prooflink.io/credentials/kya/v1",
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -130,7 +130,7 @@ export function issueKYACredential(input: IssueKYACredentialInput): IssuedCreden
     "@context": [...VC_CONTEXT],
     type: ["VerifiableCredential", "KYACredential"],
     id: credentialId,
-    issuer: { id: FLOWLINK_ISSUER_DID, name: FLOWLINK_ISSUER_NAME },
+    issuer: { id: PROOFLINK_ISSUER_DID, name: PROOFLINK_ISSUER_NAME },
     issuanceDate,
     expirationDate,
     credentialSubject,
@@ -145,14 +145,14 @@ export function issueKYACredential(input: IssueKYACredentialInput): IssuedCreden
     "@context": [...VC_CONTEXT],
     type: ["VerifiableCredential", "KYACredential"],
     id: credentialId,
-    issuer: { id: FLOWLINK_ISSUER_DID, name: FLOWLINK_ISSUER_NAME },
+    issuer: { id: PROOFLINK_ISSUER_DID, name: PROOFLINK_ISSUER_NAME },
     issuanceDate,
     expirationDate,
     credentialSubject,
     proof: {
       type: "HmacSha256Signature2024",
       created: issuanceDate,
-      verificationMethod: `${FLOWLINK_ISSUER_DID}#key-1`,
+      verificationMethod: `${PROOFLINK_ISSUER_DID}#key-1`,
       proofPurpose: "assertionMethod",
       jws,
     },

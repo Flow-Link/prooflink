@@ -3,7 +3,7 @@ import {
   ReceiptIssuer,
   generateReceiptId,
 } from "../receipts/issuer.js";
-import type { ComplianceDecision } from "@flowlink/shared";
+import type { ComplianceDecision } from "@prooflink/shared";
 import type { ProofLinkConfig } from "../config.js";
 
 // ---------------------------------------------------------------------------
@@ -403,14 +403,14 @@ describe("ReceiptIssuer — riskScore", () => {
           checkType: "AML_MONITORING",
           result: "PASSED",
           performedAt: new Date().toISOString(),
-          provider: "flowlink_aml",
+          provider: "prooflink_aml",
           detail: "Score 0/85",
         },
         {
           checkType: "JURISDICTIONAL_RULES",
           result: "PASSED",
           performedAt: new Date().toISOString(),
-          provider: "flowlink_jurisdiction",
+          provider: "prooflink_jurisdiction",
         },
       ],
     };

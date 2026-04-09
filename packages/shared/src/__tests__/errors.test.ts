@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
-  FlowLinkError,
+  ProofLinkError,
   SanctionsMatchError,
   SanctionsError,
   AMLError,
@@ -23,18 +23,18 @@ import {
 } from "../errors.js";
 
 // ---------------------------------------------------------------------------
-// FlowLinkError (base)
+// ProofLinkError (base)
 // ---------------------------------------------------------------------------
 
-describe("FlowLinkError", () => {
+describe("ProofLinkError", () => {
   it("sets name, message, code, statusCode and details", () => {
-    const err = new FlowLinkError("bad thing", "BAD_THING" as ErrorCode, 400, {
+    const err = new ProofLinkError("bad thing", "BAD_THING" as ErrorCode, 400, {
       field: "x",
     });
 
     expect(err).toBeInstanceOf(Error);
-    expect(err).toBeInstanceOf(FlowLinkError);
-    expect(err.name).toBe("FlowLinkError");
+    expect(err).toBeInstanceOf(ProofLinkError);
+    expect(err.name).toBe("ProofLinkError");
     expect(err.message).toBe("bad thing");
     expect(err.code).toBe("BAD_THING");
     expect(err.statusCode).toBe(400);
@@ -42,20 +42,20 @@ describe("FlowLinkError", () => {
   });
 
   it("defaults statusCode to 500 when omitted", () => {
-    const err = new FlowLinkError("oops", "OOPS" as ErrorCode);
+    const err = new ProofLinkError("oops", "OOPS" as ErrorCode);
     expect(err.statusCode).toBe(500);
   });
 
   it("defaults details to empty object when omitted", () => {
-    const err = new FlowLinkError("oops", "OOPS" as ErrorCode, 500);
+    const err = new ProofLinkError("oops", "OOPS" as ErrorCode, 500);
     expect(err.details).toEqual({});
   });
 
   it("toJSON returns all fields", () => {
-    const err = new FlowLinkError("msg", "CODE" as ErrorCode, 418, { extra: true });
+    const err = new ProofLinkError("msg", "CODE" as ErrorCode, 418, { extra: true });
     const json = err.toJSON();
 
-    expect(json.name).toBe("FlowLinkError");
+    expect(json.name).toBe("ProofLinkError");
     expect(json.message).toBe("msg");
     expect(json.code).toBe("CODE");
     expect(json.statusCode).toBe(418);
@@ -63,13 +63,13 @@ describe("FlowLinkError", () => {
   });
 
   it("has a stack trace", () => {
-    const err = new FlowLinkError("trace test", "INTERNAL_ERROR");
+    const err = new ProofLinkError("trace test", "INTERNAL_ERROR");
     expect(err.stack).toBeDefined();
     expect(typeof err.stack).toBe("string");
   });
 
   it("toJSON output is JSON-serializable (no circular refs)", () => {
-    const err = new FlowLinkError("serializable", "INTERNAL_ERROR", 500, { nested: { val: 1 } });
+    const err = new ProofLinkError("serializable", "INTERNAL_ERROR", 500, { nested: { val: 1 } });
     expect(() => JSON.stringify(err.toJSON())).not.toThrow();
   });
 });
@@ -130,7 +130,7 @@ describe("SanctionsError", () => {
   it("includes address and lists in message and details", () => {
     const err = new SanctionsError("0xBAD", ["OFAC_SDN", "EU_CONSOLIDATED"]);
 
-    expect(err).toBeInstanceOf(FlowLinkError);
+    expect(err).toBeInstanceOf(ProofLinkError);
     expect(err.name).toBe("SanctionsError");
     expect(err.code).toBe("SANCTIONS_MATCH");
     expect(err.statusCode).toBe(403);
@@ -169,10 +169,10 @@ describe("SanctionsMatchError (deprecated alias)", () => {
     expect(SanctionsMatchError).toBe(SanctionsError);
   });
 
-  it("instances created via alias are instanceof SanctionsError and FlowLinkError", () => {
+  it("instances created via alias are instanceof SanctionsError and ProofLinkError", () => {
     const err = new SanctionsMatchError("0xBAD", ["OFAC_SDN"]);
     expect(err).toBeInstanceOf(SanctionsError);
-    expect(err).toBeInstanceOf(FlowLinkError);
+    expect(err).toBeInstanceOf(ProofLinkError);
     expect(err).toBeInstanceOf(Error);
   });
 
@@ -191,7 +191,7 @@ describe("AMLError", () => {
   it("sets code AML_THRESHOLD_EXCEEDED with statusCode 403", () => {
     const err = new AMLError(90, 85);
 
-    expect(err).toBeInstanceOf(FlowLinkError);
+    expect(err).toBeInstanceOf(ProofLinkError);
     expect(err.name).toBe("AMLError");
     expect(err.code).toBe("AML_THRESHOLD_EXCEEDED");
     expect(err.statusCode).toBe(403);
@@ -221,7 +221,7 @@ describe("ComplianceError", () => {
   it("formats message with checkType and reason", () => {
     const err = new ComplianceError("SANCTIONS_SCREENING", "API timeout");
 
-    expect(err).toBeInstanceOf(FlowLinkError);
+    expect(err).toBeInstanceOf(ProofLinkError);
     expect(err.name).toBe("ComplianceError");
     expect(err.message).toContain("SANCTIONS_SCREENING");
     expect(err.message).toContain("API timeout");
@@ -275,9 +275,9 @@ describe("KYAVerificationError", () => {
     expect(err.details.issuer).toBe("did:web:untrusted.example.com");
   });
 
-  it("is instanceof FlowLinkError", () => {
+  it("is instanceof ProofLinkError", () => {
     const err = new KYAVerificationError("a", "b");
-    expect(err).toBeInstanceOf(FlowLinkError);
+    expect(err).toBeInstanceOf(ProofLinkError);
   });
 });
 
@@ -326,10 +326,10 @@ describe("ComplianceCheckFailedError", () => {
     expect(err.details.checkType).toBe("SANCTIONS_SCREENING");
   });
 
-  it("is instanceof ComplianceError and FlowLinkError", () => {
+  it("is instanceof ComplianceError and ProofLinkError", () => {
     const err = new ComplianceCheckFailedError("AML_MONITORING", "scorer failed");
     expect(err).toBeInstanceOf(ComplianceError);
-    expect(err).toBeInstanceOf(FlowLinkError);
+    expect(err).toBeInstanceOf(ProofLinkError);
     expect(err).toBeInstanceOf(Error);
   });
 
@@ -356,9 +356,9 @@ describe("NetworkError", () => {
     expect(err.details.reason).toBe("ECONNREFUSED");
   });
 
-  it("is instanceof FlowLinkError", () => {
+  it("is instanceof ProofLinkError", () => {
     const err = new NetworkError("ETIMEDOUT");
-    expect(err).toBeInstanceOf(FlowLinkError);
+    expect(err).toBeInstanceOf(ProofLinkError);
     expect(err).toBeInstanceOf(Error);
   });
 
@@ -386,9 +386,9 @@ describe("TimeoutError", () => {
     expect(err.details.timeoutMs).toBe(5000);
   });
 
-  it("is instanceof FlowLinkError", () => {
+  it("is instanceof ProofLinkError", () => {
     const err = new TimeoutError("op", 1000);
-    expect(err).toBeInstanceOf(FlowLinkError);
+    expect(err).toBeInstanceOf(ProofLinkError);
     expect(err).toBeInstanceOf(Error);
   });
 
@@ -441,9 +441,9 @@ describe("ValidationError", () => {
     expect(err.details.endpoint).toBe("/api/v1/invoices");
   });
 
-  it("is instanceof FlowLinkError", () => {
+  it("is instanceof ProofLinkError", () => {
     const err = new ValidationError([{ field: "f", message: "m" }]);
-    expect(err).toBeInstanceOf(FlowLinkError);
+    expect(err).toBeInstanceOf(ProofLinkError);
     expect(err).toBeInstanceOf(Error);
   });
 });
@@ -495,10 +495,10 @@ describe("AuthenticationError", () => {
     expect(err.message).toContain("invalid API key");
   });
 
-  it("is instanceof AuthError and FlowLinkError", () => {
+  it("is instanceof AuthError and ProofLinkError", () => {
     const err = new AuthenticationError("reason");
     expect(err).toBeInstanceOf(AuthError);
-    expect(err).toBeInstanceOf(FlowLinkError);
+    expect(err).toBeInstanceOf(ProofLinkError);
     expect(err).toBeInstanceOf(Error);
   });
 
@@ -706,7 +706,7 @@ describe("UpstreamServiceError", () => {
 // ---------------------------------------------------------------------------
 
 describe("error instanceof chain", () => {
-  it("all subclasses are instanceof FlowLinkError and Error", () => {
+  it("all subclasses are instanceof ProofLinkError and Error", () => {
     const errors = [
       new SanctionsError("0x1", ["OFAC_SDN"]),
       new SanctionsMatchError("0x1", ["OFAC_SDN"]), // alias
@@ -730,7 +730,7 @@ describe("error instanceof chain", () => {
 
     for (const err of errors) {
       expect(err).toBeInstanceOf(Error);
-      expect(err).toBeInstanceOf(FlowLinkError);
+      expect(err).toBeInstanceOf(ProofLinkError);
     }
   });
 
@@ -756,7 +756,7 @@ describe("error instanceof chain", () => {
 
 describe("error toJSON serialization", () => {
   it("toJSON output for all error classes contains expected keys", () => {
-    const errors: FlowLinkError[] = [
+    const errors: ProofLinkError[] = [
       new SanctionsError("0xADDR", ["OFAC_SDN"]),
       new AMLError(95, 85),
       new TravelRuleError("timeout"),

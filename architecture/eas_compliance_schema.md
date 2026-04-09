@@ -10,7 +10,7 @@
 
 ## 1. Problem Statement
 
-Every FlowLink-processed payment must produce a tamper-evident, machine-verifiable compliance receipt that proves real-time due diligence was exercised. Enterprise auditors, counterparty VASPs, and regulatory bodies must be able to verify this receipt **without trusting FlowLink's database**. The Ethereum Attestation Service (EAS) provides the open, chain-agnostic attestation primitive. This document specifies the exact schema, registration procedure, attestation creation flow, verification protocol, and privacy architecture for ProofLink Compliance Receipts on EAS.
+Every ProofLink-processed payment must produce a tamper-evident, machine-verifiable compliance receipt that proves real-time due diligence was exercised. Enterprise auditors, counterparty VASPs, and regulatory bodies must be able to verify this receipt **without trusting ProofLink's database**. The Ethereum Attestation Service (EAS) provides the open, chain-agnostic attestation primitive. This document specifies the exact schema, registration procedure, attestation creation flow, verification protocol, and privacy architecture for ProofLink Compliance Receipts on EAS.
 
 ---
 
@@ -94,7 +94,7 @@ Example: `sanctionsFlags = 0x000F` means all four lists screened, no matches fou
 
 ## 4. On-Chain vs Off-Chain Attestation Strategy
 
-EAS supports both on-chain attestations (stored in the EAS contract) and off-chain attestations (EIP-712 signed, stored anywhere, optionally timestamped on-chain). FlowLink uses **both**, depending on context.
+EAS supports both on-chain attestations (stored in the EAS contract) and off-chain attestations (EIP-712 signed, stored anywhere, optionally timestamped on-chain). ProofLink uses **both**, depending on context.
 
 ### 4.1 Decision Matrix
 
@@ -118,7 +118,7 @@ EAS supports both on-chain attestations (stored in the EAS contract) and off-cha
 | Off-chain timestamp only | ~50,000 | ~$0.0002 | ~$0.002 |
 | Revocation | ~60,000 | ~$0.00025 | ~$0.0025 |
 
-**Note:** Base L2 fees are dominated by L1 data availability costs, which fluctuate. The estimates above assume post-EIP-4844 blob pricing. Actual costs should be benchmarked during testnet deployment. At current Base mainnet prices (~0.001-0.01 gwei), a single on-chain attestation costs **$0.001-$0.01** — negligible relative to FlowLink's 5-30 bps transaction fee.
+**Note:** Base L2 fees are dominated by L1 data availability costs, which fluctuate. The estimates above assume post-EIP-4844 blob pricing. Actual costs should be benchmarked during testnet deployment. At current Base mainnet prices (~0.001-0.01 gwei), a single on-chain attestation costs **$0.001-$0.01** — negligible relative to ProofLink's 5-30 bps transaction fee.
 
 ### 4.3 Hybrid Architecture
 
@@ -696,9 +696,9 @@ async function createBatchAttestations(
 
 ## 7. Verification Flow
 
-### 7.1 Third-Party Verification (No FlowLink Dependency)
+### 7.1 Third-Party Verification (No ProofLink Dependency)
 
-Any party can verify a ProofLink compliance receipt using only the EAS contract and the IPFS content hash. No FlowLink API access required.
+Any party can verify a ProofLink compliance receipt using only the EAS contract and the IPFS content hash. No ProofLink API access required.
 
 ```
 Verifier receives: { receiptId, easAttestationUID } (e.g., from the payee)
@@ -733,7 +733,7 @@ Step 4 (optional): Fetch full compliance report from IPFS
         v
 Step 5: Verification complete
         The verifier now has cryptographic proof that:
-        - FlowLink screened this payment at timestamp T
+        - ProofLink screened this payment at timestamp T
         - Against sanctions lists X, Y, Z
         - With AML risk score R
         - Travel Rule was satisfied
@@ -862,7 +862,7 @@ async function verifyComplianceReceipt(
 
 ### 7.3 Solidity: On-Chain Verification (for Smart Contracts)
 
-Other smart contracts (e.g., `FlowLinkFacilitator`, escrow contracts, DeFi protocols) can verify compliance on-chain:
+Other smart contracts (e.g., `ProofLinkFacilitator`, escrow contracts, DeFi protocols) can verify compliance on-chain:
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -1005,7 +1005,7 @@ The full compliance report stored on IPFS contains detailed information that mus
   },
 
   "amlScoring": {
-    "provider": "flowlink_behavioral",
+    "provider": "prooflink_behavioral",
     "compositeScore": 12,
     "velocityScore": 5,
     "destinationRiskScore": 8,
@@ -1036,10 +1036,10 @@ The full compliance report stored on IPFS contains detailed information that mus
 
 The IPFS content is **encrypted** before pinning. Access is controlled via:
 
-1. **Encryption:** The JSON report is encrypted with AES-256-GCM. The encryption key is derived from `HKDF(FlowLink_master_key, receiptId)`.
-2. **Key distribution:** Decryption keys are shared via the FlowLink API with authorized parties: the payer, the payee, and any party the payer/payee explicitly grants access to (auditors, regulators).
-3. **Selective disclosure:** For regulatory requests, FlowLink can provide the decryption key for a specific receipt without exposing all receipts.
-4. **Future enhancement:** Replace centralized key management with Lit Protocol or Threshold Network for decentralized access control. This eliminates FlowLink as a single point of trust for IPFS content access.
+1. **Encryption:** The JSON report is encrypted with AES-256-GCM. The encryption key is derived from `HKDF(ProofLink_master_key, receiptId)`.
+2. **Key distribution:** Decryption keys are shared via the ProofLink API with authorized parties: the payer, the payee, and any party the payer/payee explicitly grants access to (auditors, regulators).
+3. **Selective disclosure:** For regulatory requests, ProofLink can provide the decryption key for a specific receipt without exposing all receipts.
+4. **Future enhancement:** Replace centralized key management with Lit Protocol or Threshold Network for decentralized access control. This eliminates ProofLink as a single point of trust for IPFS content access.
 
 ### 8.4 Merkle Tree for Selective Disclosure
 
@@ -1107,7 +1107,7 @@ Base L2 gas costs consist of: (1) L2 execution gas, and (2) L1 data availability
 | 100,000 payments | Hybrid + batching (batches of 50) | ~$12 |
 | 1,000,000 payments | Off-chain + daily batch summaries | ~$50 |
 
-**Conclusion:** Gas costs on Base are negligible relative to FlowLink's transaction fee revenue. Even at 1M payments/month, gas costs are <$100 — a rounding error against $5K-$300K monthly transaction fee revenue at that volume.
+**Conclusion:** Gas costs on Base are negligible relative to ProofLink's transaction fee revenue. Even at 1M payments/month, gas costs are <$100 — a rounding error against $5K-$300K monthly transaction fee revenue at that volume.
 
 ---
 
@@ -1192,7 +1192,7 @@ const a2aReceipt: ComplianceReceiptData = {
 };
 
 // Attestation type: ON-CHAIN (A2A always on-chain for composability)
-// Other contracts (ERC-8183 escrow, FlowLinkFacilitator) can query this
+// Other contracts (ERC-8183 escrow, ProofLinkFacilitator) can query this
 // attestation to verify compliance before releasing escrowed funds.
 //
 // IPFS report additionally contains:

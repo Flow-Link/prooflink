@@ -3,7 +3,7 @@
 **Classification:** Architecture Research | Protocol Standards
 **Date:** March 2026
 **Severity:** Critical (addresses Master Gap A15, A5, B5, D7, D12)
-**FlowLink Relevance:** Core infrastructure — the permission translation layer is FlowLink's primary differentiation surface
+**ProofLink Relevance:** Core infrastructure — the permission translation layer is ProofLink's primary differentiation surface
 
 ---
 
@@ -13,7 +13,7 @@ Six distinct permission and authorization systems are now operational or near-ra
 
 The IETF draft-klrc-aiagent-auth-00 (published March 2026) defines the identity composition layer (WIMSE + SPIFFE + OAuth 2.0) but explicitly does not define payment-specific authorization patterns — that gap is unaddressed in any standard as of this writing.
 
-FlowLink is positioned to be the canonical cross-protocol permission translation layer. This document provides the technical specification of each protocol's permission model and a concrete implementation design for a `PermissionTranslator` service that FlowLink can ship.
+ProofLink is positioned to be the canonical cross-protocol permission translation layer. This document provides the technical specification of each protocol's permission model and a concrete implementation design for a `PermissionTranslator` service that ProofLink can ship.
 
 ---
 
@@ -497,7 +497,7 @@ Composes three existing standards — no new protocols:
 
 #### Payment Gap
 
-The draft explicitly omits payment-specific patterns. It references ACP, AP2, and A2A in normative references but provides no guidance on how WIMSE identity maps to x402 `from` addresses, AP2 mandate `payer.identity`, or ACP `merchant_id`. This is the interoperability gap FlowLink must fill.
+The draft explicitly omits payment-specific patterns. It references ACP, AP2, and A2A in normative references but provides no guidance on how WIMSE identity maps to x402 `from` addresses, AP2 mandate `payer.identity`, or ACP `merchant_id`. This is the interoperability gap ProofLink must fill.
 
 ---
 
@@ -550,7 +550,7 @@ No existing bridge between these six systems. When an agent operating under an A
 4. Verify the payment falls within the mandate's constraints
 5. None of these steps are automated or standardized
 
-The same translation problem exists for every other protocol pairing — there are C(6,2) = 15 potential pairs, and each direction adds complexity. FlowLink should implement a **canonical internal representation** with adapters for each protocol.
+The same translation problem exists for every other protocol pairing — there are C(6,2) = 15 potential pairs, and each direction adds complexity. ProofLink should implement a **canonical internal representation** with adapters for each protocol.
 
 ### 4.2 Canonical Permission Object (CPO)
 
@@ -585,7 +585,7 @@ interface CanonicalPermission {
   protocolSource: "x402" | "ap2" | "mpp" | "acp" | "erc7715" | "erc7710";
   rawCredential: unknown;      // Original protocol-native credential, preserved for audit
   createdAt: number;
-  permissionId: string;        // FlowLink-internal UUID
+  permissionId: string;        // ProofLink-internal UUID
 }
 ```
 
@@ -723,7 +723,7 @@ async function toACPVaultToken(
 
 ### 4.4 Delegation Chain Validation
 
-A critical gap across all protocols: when an agent presents a permission derived from a parent grant, FlowLink must validate the delegation chain is unbroken and within scope.
+A critical gap across all protocols: when an agent presents a permission derived from a parent grant, ProofLink must validate the delegation chain is unbroken and within scope.
 
 ```typescript
 interface DelegationChain {
@@ -809,7 +809,7 @@ function fromERC7710Delegation(
 
 ### 4.6 WIMSE/OAuth → CPO (IETF draft-klrc-aiagent-auth-00)
 
-For agents authenticated via WIMSE + OAuth (the IETF framework), FlowLink should extract payment-relevant scope from the JWT claims:
+For agents authenticated via WIMSE + OAuth (the IETF framework), ProofLink should extract payment-relevant scope from the JWT claims:
 
 ```typescript
 function fromWIMSEOAuthToken(jwt: ParsedJWT): Partial<CanonicalPermission> {
@@ -819,8 +819,8 @@ function fromWIMSEOAuthToken(jwt: ParsedJWT): Partial<CanonicalPermission> {
   const grantorId = jwt.sub;                    // WIMSE URI or SPIFFE ID
   const granteeId = jwt.aud as string;          // Resource server
 
-  // Custom payment scope claims (FlowLink extension)
-  const paymentScope = jwt["flowlink:payment"];
+  // Custom payment scope claims (ProofLink extension)
+  const paymentScope = jwt["prooflink:payment"];
 
   return {
     grantorId,
@@ -838,13 +838,13 @@ function fromWIMSEOAuthToken(jwt: ParsedJWT): Partial<CanonicalPermission> {
 }
 ```
 
-This requires FlowLink to define a `flowlink:payment` JWT claim namespace and register it with authorization servers in the WIMSE ecosystem.
+This requires ProofLink to define a `prooflink:payment` JWT claim namespace and register it with authorization servers in the WIMSE ecosystem.
 
 ---
 
 ## 5. IMPLEMENTATION RECOMMENDATIONS
 
-### 5.1 Build the PermissionTranslator as a Core FlowLink Service
+### 5.1 Build the PermissionTranslator as a Core ProofLink Service
 
 Location: `packages/core/src/permissions/`
 
@@ -868,12 +868,12 @@ packages/core/src/permissions/
     erc7710-revoke.ts   # disableDelegation call
 ```
 
-### 5.2 Introduce a `flowlink:payment` JWT Claim Namespace
+### 5.2 Introduce a `prooflink:payment` JWT Claim Namespace
 
 Register with the IANA JWT Claims Registry:
 ```json
 {
-  "flowlink:payment": {
+  "prooflink:payment": {
     "max_amount_usd": 10.00,
     "allowed_assets": ["USDC", "USDT"],
     "allowed_merchants": ["merchant-id-1"],
@@ -883,7 +883,7 @@ Register with the IANA JWT Claims Registry:
 }
 ```
 
-This allows FlowLink to inject payment-scoped constraints into WIMSE/OAuth tokens without breaking the IETF framework. Agents authenticated via SPIFFE can carry payment permissions in their JWT SVIDs.
+This allows ProofLink to inject payment-scoped constraints into WIMSE/OAuth tokens without breaking the IETF framework. Agents authenticated via SPIFFE can carry payment permissions in their JWT SVIDs.
 
 ### 5.3 Canonical Permission as Compliance Input
 
@@ -917,7 +917,7 @@ if (permChain) {
 
 ### 5.5 Build a Revocation Aggregator
 
-Since each protocol has a different revocation model, FlowLink needs a unified revocation interface:
+Since each protocol has a different revocation model, ProofLink needs a unified revocation interface:
 
 ```typescript
 interface RevocationManager {
@@ -933,7 +933,7 @@ interface RevocationManager {
 ```
 
 The implementation checks:
-1. Local FlowLink revocation list (fastest)
+1. Local ProofLink revocation list (fastest)
 2. MPP session status via Stripe API
 3. ERC-7710 delegation status on-chain
 4. ERC-7715 permission status via wallet RPC
@@ -971,15 +971,15 @@ interface TranslationResult {
 | **Emergency freeze across all active permissions** | If an agent is compromised, there is no "kill switch" that revokes all outstanding permissions across all six protocols simultaneously. | High |
 | **Permission inheritance in multi-agent hierarchies** | When Agent A delegates to Agent B which spawns Agent C, there is no standard for B's permissions to be automatically bounded by A's permissions. Each protocol handles delegation independently. | High |
 
-### 6.2 Risks in FlowLink's Translation Layer
+### 6.2 Risks in ProofLink's Translation Layer
 
-1. **Translation introduces liability**: By translating between protocols, FlowLink may be considered to have "authorized" a payment even if the original permission was insufficient. Legal review required for each translation path.
+1. **Translation introduces liability**: By translating between protocols, ProofLink may be considered to have "authorized" a payment even if the original permission was insufficient. Legal review required for each translation path.
 
-2. **Approximation of maxAmountUsd**: USD normalization via price oracle introduces error for volatile assets. A permission for 10 ETH may be approximated as $35,000 USD at signing but worth $40,000 at settlement if ETH moves. FlowLink must use conservative (ceiling) pricing for limits and floor pricing for settlement.
+2. **Approximation of maxAmountUsd**: USD normalization via price oracle introduces error for volatile assets. A permission for 10 ETH may be approximated as $35,000 USD at signing but worth $40,000 at settlement if ETH moves. ProofLink must use conservative (ceiling) pricing for limits and floor pricing for settlement.
 
-3. **Facilitator trust in x402**: The Coinbase facilitator is the canonical verify/settle endpoint, but FlowLink's CPO translation runs before facilitator call. If the facilitator rejects the payment (balance insufficient, nonce used), FlowLink has already "approved" it at the CPO layer. The settle hook must handle facilitator rejection as a post-approval failure.
+3. **Facilitator trust in x402**: The Coinbase facilitator is the canonical verify/settle endpoint, but ProofLink's CPO translation runs before facilitator call. If the facilitator rejects the payment (balance insufficient, nonce used), ProofLink has already "approved" it at the CPO layer. The settle hook must handle facilitator rejection as a post-approval failure.
 
-4. **ACP single-use token races**: If FlowLink generates an ACP vault token as part of CPO translation and the outer transaction fails, the token is burned and cannot be reused. FlowLink must not generate ACP tokens speculatively.
+4. **ACP single-use token races**: If ProofLink generates an ACP vault token as part of CPO translation and the outer transaction fails, the token is burned and cannot be reused. ProofLink must not generate ACP tokens speculatively.
 
 5. **ERC-7710 chain validation requires on-chain state**: `disabledDelegations` mapping requires an RPC call per delegation in the chain. At scale (deep chains), this adds significant latency. Cache with short TTL (sub-second) and use a dedicated RPC node.
 
@@ -987,11 +987,11 @@ interface TranslationResult {
 
 ## 7. RELATED STANDARDS AND FUTURE WORK
 
-- **ERC-8004** (Ethereum agent registry, mainnet January 2026): Provides the `AgentID` → address mapping that FlowLink's CPO `granteeId` field should resolve. Integrate ERC-8004 lookups into the adapter layer.
-- **OWASP Agent Observability Standard**: Requires per-permission audit events. FlowLink's `lossReport` satisfies the "authorization decision" event requirement.
-- **AuthZEN / OpenID Authorization API 1.0**: The CPO structure maps cleanly to AuthZEN's Subject-Action-Resource-Context tuple. FlowLink can expose a policy decision point that accepts CPO and returns authorization decisions.
+- **ERC-8004** (Ethereum agent registry, mainnet January 2026): Provides the `AgentID` → address mapping that ProofLink's CPO `granteeId` field should resolve. Integrate ERC-8004 lookups into the adapter layer.
+- **OWASP Agent Observability Standard**: Requires per-permission audit events. ProofLink's `lossReport` satisfies the "authorization decision" event requirement.
+- **AuthZEN / OpenID Authorization API 1.0**: The CPO structure maps cleanly to AuthZEN's Subject-Action-Resource-Context tuple. ProofLink can expose a policy decision point that accepts CPO and returns authorization decisions.
 - **draft-goswami-agentic-jwt-00**: A competing IETF draft for "Secure Intent Protocol" using JWT-compatible agentic workflow tokens. Monitor for convergence with draft-klrc-aiagent-auth-00.
-- **Google A2A x402 extension** (`github.com/google-agentic-commerce/a2a-x402`): Reference implementation of AP2 + x402 composition. FlowLink's `fromAP2` + `toX402` adapters should validate against this reference.
+- **Google A2A x402 extension** (`github.com/google-agentic-commerce/a2a-x402`): Reference implementation of AP2 + x402 composition. ProofLink's `fromAP2` + `toX402` adapters should validate against this reference.
 
 ---
 

@@ -1,4 +1,4 @@
-# FlowLink Competitive Threat Analysis: The Missing Five
+# ProofLink Competitive Threat Analysis: The Missing Five
 **Date:** March 20, 2026
 **Scope:** Deep dive on five competitors absent from original analysis — identified by strategy review as requiring urgent evaluation
 **Method:** Live web search, product page fetches, GitHub analysis, funding database cross-reference
@@ -12,7 +12,7 @@
 3. [PaySentry — Closest to Compliance Receipts](#3-paysentry--closest-to-compliance-receipts)
 4. [Nevermined — Billing and Metering Threat](#4-nevermined--billing-and-metering-threat)
 5. [KAMIYO — Dispute Resolution Threat](#5-kamiyo--dispute-resolution-threat)
-6. [Updated Competitive Positioning](#6-updated-competitive-positioning-for-flowlink)
+6. [Updated Competitive Positioning](#6-updated-competitive-positioning-for-prooflink)
 
 ---
 
@@ -53,12 +53,12 @@ TRM does not publish public pricing. The Vendr marketplace lists TRM Labs with a
 
 ### Payment Flow Integration — The Emerging Threat
 
-This is where TRM becomes relevant to FlowLink. Three recent developments show TRM moving toward payment workflow integration:
+This is where TRM becomes relevant to ProofLink. Three recent developments show TRM moving toward payment workflow integration:
 
 **1. Finray Technologies Partnership (February 2026)**
 TRM embedded its blockchain intelligence into Finray's XZiel unified compliance engine. The integration targets PSPs, fintech platforms, banks, and EMIs expanding into crypto. Key detail: risk signals from TRM feed *directly into payment workflow triage* — "real-time alert triage, automated escalation, and consolidated case management." Coverage: Bitcoin, Ethereum, Tron, USDT, USDC stablecoin flows. API activation time: days; full workflow: 2–4 weeks.
 
-This is TRM moving from post-hoc forensics to *pre-transaction* and *in-flow* compliance. The audit output: "Risk rationale, source attribution, exposure types, and timestamps are captured and stored to support regulatory reviews, supervisory examinations, and SAR escalation processes." This is structurally similar to what FlowLink's compliance receipt feature aims to produce.
+This is TRM moving from post-hoc forensics to *pre-transaction* and *in-flow* compliance. The audit output: "Risk rationale, source attribution, exposure types, and timestamps are captured and stored to support regulatory reviews, supervisory examinations, and SAR escalation processes." This is structurally similar to what ProofLink's compliance receipt feature aims to produce.
 
 **2. Sphinx Partnership — AI Agents for Compliance Operations**
 TRM partnered with Sphinx to deploy AI agents inside TRM Transaction Monitoring. The agents "gather evidence, enrich cases, and draft dispositions for analyst review." This addresses backlogs of 10,000+ cases at compliance teams. Notably: this is AI agents used *by* compliance teams to process alerts, not monitoring of AI agents as payment initiators.
@@ -71,19 +71,19 @@ TRM published a major report flagging autonomous AI agents as a financial crime 
 - TRM is building AI-enabled defense: "orchestrated AI agents to scale blockchain forensics... a single compliance analyst operating as if backed by dozens of analysts"
 
 **Why This Is The Sleeper Threat:**
-TRM is not building a payment product. But they are building the *compliance wrapper* that will be mandated around payment products by regulators. If TRM becomes the industry standard for crypto payment compliance (they already are for exchanges and banks), then payment products that do not integrate with TRM will face enterprise sales friction. More dangerously: if TRM builds out their transaction monitoring to cover AI agent payment flows (which their March 2026 report signals is coming), they will define the compliance receipt format. FlowLink needs to be TRM-compatible by design, or risk being locked out of regulated enterprise deals.
+TRM is not building a payment product. But they are building the *compliance wrapper* that will be mandated around payment products by regulators. If TRM becomes the industry standard for crypto payment compliance (they already are for exchanges and banks), then payment products that do not integrate with TRM will face enterprise sales friction. More dangerously: if TRM builds out their transaction monitoring to cover AI agent payment flows (which their March 2026 report signals is coming), they will define the compliance receipt format. ProofLink needs to be TRM-compatible by design, or risk being locked out of regulated enterprise deals.
 
 **Is TRM Building Directly into Agent Payments?**
 Not yet as of March 2026. Their AI agent work is: (a) using agents as compliance analysts, and (b) studying agents as crime vectors. They have not announced a product that monitors or certifies autonomous AI agent payment flows. This is the gap — and the opportunity.
 
-### FlowLink Risk Assessment: TRM Labs
+### ProofLink Risk Assessment: TRM Labs
 
 **Risk Level: HIGH (indirect, 12–18 month horizon)**
 
-- TRM will not compete with FlowLink on payments — they will compete on the compliance layer *above* payment rails
-- If TRM establishes the standard for "compliance receipt" format before FlowLink does, FlowLink becomes just another payment rail that must emit TRM-formatted data
-- TRM's enterprise customer list (Stripe, Visa, Coinbase, Circle) overlaps with exactly the partners FlowLink needs for distribution
-- TRM's $1B valuation and Goldman Sachs backing gives them enterprise credibility that FlowLink cannot match in a direct compliance pitch
+- TRM will not compete with ProofLink on payments — they will compete on the compliance layer *above* payment rails
+- If TRM establishes the standard for "compliance receipt" format before ProofLink does, ProofLink becomes just another payment rail that must emit TRM-formatted data
+- TRM's enterprise customer list (Stripe, Visa, Coinbase, Circle) overlaps with exactly the partners ProofLink needs for distribution
+- TRM's $1B valuation and Goldman Sachs backing gives them enterprise credibility that ProofLink cannot match in a direct compliance pitch
 
 ---
 
@@ -124,9 +124,9 @@ Skyfire exited beta with an enterprise-ready payment network. Processing payment
 
 **Valuation not publicly disclosed.**
 
-### How Skyfire Differs from FlowLink
+### How Skyfire Differs from ProofLink
 
-| Dimension | Skyfire | FlowLink |
+| Dimension | Skyfire | ProofLink |
 |-----------|---------|----------|
 | Core focus | Agent identity + agent-to-merchant payments | B2B payment flows, compliance receipts, streaming, invoicing |
 | KYA scope | Verifying agents act on behalf of authorized users for consumer commerce | Not yet defined for the agent identity layer |
@@ -136,8 +136,8 @@ Skyfire exited beta with an enterprise-ready payment network. Processing payment
 | Open standard | KYAPay is open source | Protocol TBD |
 | Visa integration | Yes (Trusted Agent Protocol) | Not yet |
 
-**The KYA gap for FlowLink:**
-Skyfire answers "is this agent authorized to spend?" FlowLink needs to answer "what was this payment for, is it compliant, and here is the audit trail." These are complementary, not competing, questions — but Skyfire is establishing the identity standard that FlowLink's compliance receipt layer needs to hook into. If Skyfire's KYAPay becomes the industry standard for agent identity, FlowLink should emit compliance receipts that are KYAPay-aware.
+**The KYA gap for ProofLink:**
+Skyfire answers "is this agent authorized to spend?" ProofLink needs to answer "what was this payment for, is it compliant, and here is the audit trail." These are complementary, not competing, questions — but Skyfire is establishing the identity standard that ProofLink's compliance receipt layer needs to hook into. If Skyfire's KYAPay becomes the industry standard for agent identity, ProofLink should emit compliance receipts that are KYAPay-aware.
 
 **Skyfire's blind spots:**
 - No compliance receipt or audit trail product — they verify identity but do not produce regulatory documentation
@@ -147,13 +147,13 @@ Skyfire answers "is this agent authorized to spend?" FlowLink needs to answer "w
 - $9.5M seed-stage with limited runway vs. the compliance buildout needed for enterprise regulated deals
 - KYAPay is open source, which means incumbents (Visa, Mastercard, Stripe) can absorb it without paying Skyfire
 
-### FlowLink Risk Assessment: Skyfire
+### ProofLink Risk Assessment: Skyfire
 
 **Risk Level: MEDIUM (standard competitor, not existential)**
 
-- Skyfire is attacking the consumer/LLM marketplace segment; FlowLink's B2B focus is relatively safe
-- The real risk is Skyfire defining the KYA identity standard before FlowLink builds agent identity into its compliance layer
-- Mitigation: FlowLink should implement KYAPay-compatible agent verification natively, positioning as "KYAPay-native compliance receipts" — turning Skyfire's open standard into a FlowLink distribution advantage
+- Skyfire is attacking the consumer/LLM marketplace segment; ProofLink's B2B focus is relatively safe
+- The real risk is Skyfire defining the KYA identity standard before ProofLink builds agent identity into its compliance layer
+- Mitigation: ProofLink should implement KYAPay-compatible agent verification natively, positioning as "KYAPay-native compliance receipts" — turning Skyfire's open standard into a ProofLink distribution advantage
 
 ---
 
@@ -226,9 +226,9 @@ const result = engine.evaluate(transaction);
 - No fiat/stablecoin settlement — it sits *above* payment rails, doesn't settle payments itself
 - 28 commits, 3 GitHub stars — extremely early, one developer
 
-### FlowLink vs. PaySentry
+### ProofLink vs. PaySentry
 
-| Dimension | PaySentry | FlowLink |
+| Dimension | PaySentry | ProofLink |
 |-----------|-----------|----------|
 | Audit trail | Immutable provenance chain (local) | Compliance receipt (regulatory-weight, structured) |
 | Compliance framework | None | MiCA, GENIUS Act, Travel Rule aware |
@@ -239,17 +239,17 @@ const result = engine.evaluate(transaction);
 | Maturity | Pre-alpha (one dev) | — |
 | Regulatory standing | None | Target: VASP licensed |
 
-**The key insight:** PaySentry's architecture correctly identifies the four components FlowLink's compliance receipt needs: intent, policy, execution, settlement. PaySentry has built the right schema but the wrong delivery model (self-hosted open source with no compliance credentials is not what regulated enterprises will buy).
+**The key insight:** PaySentry's architecture correctly identifies the four components ProofLink's compliance receipt needs: intent, policy, execution, settlement. PaySentry has built the right schema but the wrong delivery model (self-hosted open source with no compliance credentials is not what regulated enterprises will buy).
 
-FlowLink should study PaySentry's provenance chain design as a technical reference, and offer what PaySentry cannot: a hosted, regulated, legally-weight compliance receipt with identity attestation.
+ProofLink should study PaySentry's provenance chain design as a technical reference, and offer what PaySentry cannot: a hosted, regulated, legally-weight compliance receipt with identity attestation.
 
-### FlowLink Risk Assessment: PaySentry
+### ProofLink Risk Assessment: PaySentry
 
 **Risk Level: LOW (today) / MEDIUM (if acquired or institutionalized)**
 
 - No threat as a product given open-source-only, single-developer status
 - Real risk: the architecture gets adopted by a well-funded player (Stripe, Circle, Coinbase) who productizes it
-- PaySentry's MCP tool interface (`get_audit_trail`, `file_dispute`) is the right UX pattern — FlowLink should match or exceed this interface
+- PaySentry's MCP tool interface (`get_audit_trail`, `file_dispute`) is the right UX pattern — ProofLink should match or exceed this interface
 
 ---
 
@@ -301,9 +301,9 @@ Settlement layer: ERC-4337 smart accounts with session keys — delegated spendi
 
 **Positioning:** "PayPal for AI" — billing infrastructure that abstracts payment complexity from AI developers.
 
-### How Nevermined's Billing Differs from FlowLink
+### How Nevermined's Billing Differs from ProofLink
 
-| Dimension | Nevermined | FlowLink |
+| Dimension | Nevermined | ProofLink |
 |-----------|-----------|----------|
 | Primary use case | Monetize AI APIs and agents | B2B payments, payroll, invoicing, compliance |
 | Metering | Sub-token/call-level granularity | Invoice/payment-level |
@@ -316,12 +316,12 @@ Settlement layer: ERC-4337 smart accounts with session keys — delegated spendi
 | Dispute resolution | None found | Smart contract escrow + oracle |
 
 **The billing architecture comparison:**
-Nevermined's credit system (prepaid → burn per call) is purpose-built for LLM/API commerce. FlowLink's compliance receipt is purpose-built for B2B obligation settlement (invoice → payment → audit). These are different problem shapes. Nevermined handles: "API sold 10,000 tokens to agent X." FlowLink handles: "Company A paid Company B $50,000 for services under contract C, compliant with regulation D."
+Nevermined's credit system (prepaid → burn per call) is purpose-built for LLM/API commerce. ProofLink's compliance receipt is purpose-built for B2B obligation settlement (invoice → payment → audit). These are different problem shapes. Nevermined handles: "API sold 10,000 tokens to agent X." ProofLink handles: "Company A paid Company B $50,000 for services under contract C, compliant with regulation D."
 
-**Where Nevermined could creep into FlowLink's territory:**
+**Where Nevermined could creep into ProofLink's territory:**
 - If Nevermined adds invoicing as a billing artifact (not just receipts)
 - If they expand from API-to-agent to B2B-to-B2B contexts
-- Their SOC-2 Type II certification gives them enterprise credibility that FlowLink must match
+- Their SOC-2 Type II certification gives them enterprise credibility that ProofLink must match
 
 **Nevermined's blind spots:**
 - No dispute resolution
@@ -332,14 +332,14 @@ Nevermined's credit system (prepaid → burn per call) is purpose-built for LLM/
 - Sole focus on API monetization limits enterprise B2B appeal
 - $7M raised is a modest war chest against well-funded incumbents
 
-### FlowLink Risk Assessment: Nevermined
+### ProofLink Risk Assessment: Nevermined
 
 **Risk Level: MEDIUM (adjacent competitor, convergence risk in 12–24 months)**
 
 - Not competing today in B2B invoicing/payroll
 - Real risk: as AI agent commerce matures, the distinction between "API billing" and "B2B payment obligation" blurs
-- Nevermined's SOC-2 and compliance certifications are ahead of where FlowLink starts — FlowLink must close this gap before Nevermined adds invoice/contract primitives
-- Pricing at 1–2% per transaction (no minimums) is aggressive and developer-friendly — FlowLink needs a comparable entry-level pricing model
+- Nevermined's SOC-2 and compliance certifications are ahead of where ProofLink starts — ProofLink must close this gap before Nevermined adds invoice/contract primitives
+- Pricing at 1–2% per transaction (no minimums) is aggressive and developer-friendly — ProofLink needs a comparable entry-level pricing model
 
 ---
 
@@ -418,9 +418,9 @@ Exactly-once billable settlement events serve as audit records, creating "verifi
 
 **Funding and team: not publicly disclosed.** No LinkedIn, Crunchbase, or press coverage found. Entirely stealth.
 
-### KAMIYO vs FlowLink Dispute Resolution
+### KAMIYO vs ProofLink Dispute Resolution
 
-| Dimension | KAMIYO | FlowLink |
+| Dimension | KAMIYO | ProofLink |
 |-----------|--------|----------|
 | Mechanism | ZK oracle voting (decentralized) | TBD (smart contract escrow target) |
 | Resolution time | 48 hours (claimed) | — |
@@ -432,8 +432,8 @@ Exactly-once billable settlement events serve as audit records, creating "verifi
 | Regulatory standing | None (open-source protocol) | Target: VASP licensed |
 | Identity layer | None found | KYA-compatible (target) |
 
-**KAMIYO's architectural insight for FlowLink:**
-The graduated refund scale (quality-score-based settlement rather than binary win/lose) is a superior dispute model for agent commerce vs. traditional binary arbitration. FlowLink's dispute resolution design should study and adapt this approach — applying it to milestone-based escrow payments where partial delivery is common.
+**KAMIYO's architectural insight for ProofLink:**
+The graduated refund scale (quality-score-based settlement rather than binary win/lose) is a superior dispute model for agent commerce vs. traditional binary arbitration. ProofLink's dispute resolution design should study and adapt this approach — applying it to milestone-based escrow payments where partial delivery is common.
 
 **KAMIYO's blind spots:**
 - Solana-native limits EVM market reach (though x402 bridges help)
@@ -444,18 +444,18 @@ The graduated refund scale (quality-score-based settlement rather than binary wi
 - Entirely stealth — no team, no VC backing, no enterprise credibility
 - 2-month-old protocol with 3 stars = not ready for production enterprise deployment
 
-### FlowLink Risk Assessment: KAMIYO
+### ProofLink Risk Assessment: KAMIYO
 
 **Risk Level: LOW (today) / MEDIUM (if backed and scaled)**
 
 - KAMIYO today is a protocol experiment, not a product
 - The dispute mechanism design is architecturally interesting and worth monitoring
-- Real risk: if KAMIYO gets Series A funding and distribution, its Meishi compliance passport + dispute oracle competes directly with FlowLink's compliance receipt for agent-to-agent commerce
+- Real risk: if KAMIYO gets Series A funding and distribution, its Meishi compliance passport + dispute oracle competes directly with ProofLink's compliance receipt for agent-to-agent commerce
 - The Solana-first position means no direct competition in EVM-centric B2B payment flows
 
 ---
 
-## 6. Updated Competitive Positioning for FlowLink
+## 6. Updated Competitive Positioning for ProofLink
 
 ### The Revised Threat Landscape
 
@@ -480,36 +480,36 @@ The emerging stack for agentic payments has three levels:
 └─────────────────────────────────────────────────────────┘
 ```
 
-**FlowLink's positioning target:** Own the full compliance + trust layer, natively interoperate with the identity layer, and be rails-agnostic at the payment layer.
+**ProofLink's positioning target:** Own the full compliance + trust layer, natively interoperate with the identity layer, and be rails-agnostic at the payment layer.
 
 ---
 
-### Revised Competitive Position: FlowLink vs. These Five
+### Revised Competitive Position: ProofLink vs. These Five
 
 **Against TRM Labs:**
-FlowLink is not a forensics company and should not compete with TRM on retroactive analytics. The correct move is to be **TRM-compatible** — emit compliance receipts in a format that TRM's enterprise customers can ingest without manual reconciliation. This turns TRM from a threat into a distribution channel. If TRM Transaction Monitoring users can plug in FlowLink as their agent payment compliance layer, FlowLink gets warm introductions to TRM's 150%-growth customer base.
+ProofLink is not a forensics company and should not compete with TRM on retroactive analytics. The correct move is to be **TRM-compatible** — emit compliance receipts in a format that TRM's enterprise customers can ingest without manual reconciliation. This turns TRM from a threat into a distribution channel. If TRM Transaction Monitoring users can plug in ProofLink as their agent payment compliance layer, ProofLink gets warm introductions to TRM's 150%-growth customer base.
 
-*Differentiator to maintain:* FlowLink produces **pre-transaction** and **at-transaction** compliance artifacts (the receipt IS the compliance event, not a forensic reconstruction after the fact). TRM works backwards from completed transactions. FlowLink works forward in real time.
+*Differentiator to maintain:* ProofLink produces **pre-transaction** and **at-transaction** compliance artifacts (the receipt IS the compliance event, not a forensic reconstruction after the fact). TRM works backwards from completed transactions. ProofLink works forward in real time.
 
 **Against Skyfire Network:**
-Skyfire owns agent identity for consumer e-commerce. FlowLink should build on Skyfire's KYAPay standard rather than competing with it. Announce native KYAPay support as a feature. The positioning: "Skyfire verifies your agent; FlowLink compliantly executes and documents the payment."
+Skyfire owns agent identity for consumer e-commerce. ProofLink should build on Skyfire's KYAPay standard rather than competing with it. Announce native KYAPay support as a feature. The positioning: "Skyfire verifies your agent; ProofLink compliantly executes and documents the payment."
 
-*Differentiator to maintain:* FlowLink's B2B focus (invoicing, payroll, contractor payments) is structurally distinct from Skyfire's consumer checkout focus. Skyfire is solving "can the agent buy on Amazon?" FlowLink solves "can the agent pay a contractor in Germany, with the right withholding, under MiCA Travel Rule compliance, with an audit trail that holds up under regulatory examination?"
+*Differentiator to maintain:* ProofLink's B2B focus (invoicing, payroll, contractor payments) is structurally distinct from Skyfire's consumer checkout focus. Skyfire is solving "can the agent buy on Amazon?" ProofLink solves "can the agent pay a contractor in Germany, with the right withholding, under MiCA Travel Rule compliance, with an audit trail that holds up under regulatory examination?"
 
 **Against PaySentry:**
-PaySentry is a reference architecture, not a competitor. Its open-source status and lack of regulatory credentials make it unsuitable for enterprise regulated use cases. FlowLink should study PaySentry's provenance chain design (intent → policy → execution → settlement) and implement this as the internal data model for FlowLink compliance receipts — then add what PaySentry cannot provide: regulatory weight, hosted infrastructure, signed timestamps, VASP licensing.
+PaySentry is a reference architecture, not a competitor. Its open-source status and lack of regulatory credentials make it unsuitable for enterprise regulated use cases. ProofLink should study PaySentry's provenance chain design (intent → policy → execution → settlement) and implement this as the internal data model for ProofLink compliance receipts — then add what PaySentry cannot provide: regulatory weight, hosted infrastructure, signed timestamps, VASP licensing.
 
-*Differentiator to maintain:* PaySentry is MIT-licensed self-hosted code with no compliance credentials. FlowLink is a regulated, hosted service with enterprise SLA and legal-weight audit output. Enterprise buyers cannot deploy PaySentry to satisfy a regulator — they can deploy FlowLink.
+*Differentiator to maintain:* PaySentry is MIT-licensed self-hosted code with no compliance credentials. ProofLink is a regulated, hosted service with enterprise SLA and legal-weight audit output. Enterprise buyers cannot deploy PaySentry to satisfy a regulator — they can deploy ProofLink.
 
 **Against Nevermined:**
-Nevermined's strongest card is SOC-2 Type II. FlowLink must obtain this certification before competing in the same enterprise accounts. Until then, lead with the compliance receipt's regulatory depth (MiCA, Travel Rule, GENIUS Act) — areas where Nevermined has no coverage. Position: "Nevermined bills your API calls; FlowLink settles your B2B obligations."
+Nevermined's strongest card is SOC-2 Type II. ProofLink must obtain this certification before competing in the same enterprise accounts. Until then, lead with the compliance receipt's regulatory depth (MiCA, Travel Rule, GENIUS Act) — areas where Nevermined has no coverage. Position: "Nevermined bills your API calls; ProofLink settles your B2B obligations."
 
-*Differentiator to maintain:* Nevermined handles API monetization (sub-second, sub-dollar micro-transactions). FlowLink handles B2B payment obligations (invoices, contracts, payroll, compliance). The use cases overlap only at the edges. FlowLink should not chase the API metering market — the margins are worse and the compliance complexity is lower, making Nevermined's 1–2% price point defensible in that segment.
+*Differentiator to maintain:* Nevermined handles API monetization (sub-second, sub-dollar micro-transactions). ProofLink handles B2B payment obligations (invoices, contracts, payroll, compliance). The use cases overlap only at the edges. ProofLink should not chase the API metering market — the margins are worse and the compliance complexity is lower, making Nevermined's 1–2% price point defensible in that segment.
 
 **Against KAMIYO:**
-KAMIYO's graduated dispute resolution (quality-score-based settlement) is the best dispute mechanism design observed in the research. Implement this design principle — not binary win/lose, but graduated refund based on measured service quality. KAMIYO is too early-stage and Solana-native to be a near-term threat on FlowLink's EVM-focused B2B market.
+KAMIYO's graduated dispute resolution (quality-score-based settlement) is the best dispute mechanism design observed in the research. Implement this design principle — not binary win/lose, but graduated refund based on measured service quality. KAMIYO is too early-stage and Solana-native to be a near-term threat on ProofLink's EVM-focused B2B market.
 
-*Differentiator to maintain:* FlowLink's dispute resolution needs KYC/AML-backed identity (KAMIYO has none), regulatory compliance documentation (KAMIYO's Meishi passport is EU AI Act focused, not VASP/Travel Rule), and integration into the broader invoicing and payroll workflow (KAMIYO is a standalone protocol primitive). When KAMIYO's oracle model proves out on Solana, evaluate white-labeling or integration rather than rebuilding from scratch.
+*Differentiator to maintain:* ProofLink's dispute resolution needs KYC/AML-backed identity (KAMIYO has none), regulatory compliance documentation (KAMIYO's Meishi passport is EU AI Act focused, not VASP/Travel Rule), and integration into the broader invoicing and payroll workflow (KAMIYO is a standalone protocol primitive). When KAMIYO's oracle model proves out on Solana, evaluate white-labeling or integration rather than rebuilding from scratch.
 
 ---
 
@@ -517,33 +517,33 @@ KAMIYO's graduated dispute resolution (quality-score-based settlement) is the be
 
 **Immediate (0–3 months):**
 
-1. **Design compliance receipt schema to be TRM-compatible.** Map FlowLink's receipt output to the fields TRM's Transaction Monitoring ingests. This enables co-selling and reduces friction with TRM's enterprise customer base.
+1. **Design compliance receipt schema to be TRM-compatible.** Map ProofLink's receipt output to the fields TRM's Transaction Monitoring ingests. This enables co-selling and reduces friction with TRM's enterprise customer base.
 
-2. **Implement KYAPay-compatible agent verification.** Skyfire's KYAPay is open source and gaining Visa/institutional traction. FlowLink should natively consume KYAPay identity tokens as the agent authorization credential in compliance receipts.
+2. **Implement KYAPay-compatible agent verification.** Skyfire's KYAPay is open source and gaining Visa/institutional traction. ProofLink should natively consume KYAPay identity tokens as the agent authorization credential in compliance receipts.
 
-3. **Study PaySentry's provenance chain schema** (`@paysentry/protect`) as the internal data model for FlowLink's audit trail. The four-state chain (intent → policy → execution → settlement) is the right abstraction — adopt it.
+3. **Study PaySentry's provenance chain schema** (`@paysentry/protect`) as the internal data model for ProofLink's audit trail. The four-state chain (intent → policy → execution → settlement) is the right abstraction — adopt it.
 
 **Near-term (3–6 months):**
 
-4. **Obtain SOC-2 Type II certification.** Nevermined already has it. Without it, FlowLink loses enterprise sales to Nevermined even in cases where FlowLink's compliance depth is superior. SOC-2 is now table stakes.
+4. **Obtain SOC-2 Type II certification.** Nevermined already has it. Without it, ProofLink loses enterprise sales to Nevermined even in cases where ProofLink's compliance depth is superior. SOC-2 is now table stakes.
 
 5. **Design graduated dispute resolution** using KAMIYO's quality-score model as inspiration. Binary escrow (pay or not pay) is inadequate for agent service delivery where partial completion is common.
 
-6. **Monitor TRM's agent payment monitoring product development.** If TRM announces an agent-specific compliance product in the next 6 months (triggered by their March 2026 report), FlowLink needs to accelerate. Set Google Alerts on "TRM Labs agent payments" and "TRM Labs autonomous."
+6. **Monitor TRM's agent payment monitoring product development.** If TRM announces an agent-specific compliance product in the next 6 months (triggered by their March 2026 report), ProofLink needs to accelerate. Set Google Alerts on "TRM Labs agent payments" and "TRM Labs autonomous."
 
 **Strategic (6–18 months):**
 
-7. **Pursue VASP licensing** before Nevermined does. Nevermined's $7M raise is modest — they are unlikely to prioritize regulatory licensing in the near term. FlowLink can create a compliance moat by being the only agent-native payment infrastructure with full VASP licensing.
+7. **Pursue VASP licensing** before Nevermined does. Nevermined's $7M raise is modest — they are unlikely to prioritize regulatory licensing in the near term. ProofLink can create a compliance moat by being the only agent-native payment infrastructure with full VASP licensing.
 
-8. **Establish TRM partnership.** Approach TRM Labs for a technical integration partnership — FlowLink emits TRM-ready compliance data, TRM lists FlowLink as a certified integration. This gives FlowLink warm access to TRM's 150%-growth customer list and a credibility signal in regulated enterprise sales.
+8. **Establish TRM partnership.** Approach TRM Labs for a technical integration partnership — ProofLink emits TRM-ready compliance data, TRM lists ProofLink as a certified integration. This gives ProofLink warm access to TRM's 150%-growth customer list and a credibility signal in regulated enterprise sales.
 
-9. **Evaluate KAMIYO oracle mechanism** for FlowLink's dispute resolution layer once the protocol matures past v1.0. A white-label or fork of their ZK oracle dispute mechanism would be faster than building dispute oracles from scratch.
+9. **Evaluate KAMIYO oracle mechanism** for ProofLink's dispute resolution layer once the protocol matures past v1.0. A white-label or fork of their ZK oracle dispute mechanism would be faster than building dispute oracles from scratch.
 
 ---
 
 ### Revised Feature Gap Table (Adding New Competitors)
 
-| Feature | TRM Labs | Skyfire | PaySentry | Nevermined | KAMIYO | FlowLink Target |
+| Feature | TRM Labs | Skyfire | PaySentry | Nevermined | KAMIYO | ProofLink Target |
 |---------|---------|---------|-----------|-----------|--------|----------------|
 | Agent identity (KYA) | No | Yes (KYAPay) | No | Yes (ERC-8004) | No | Yes (KYAPay-compatible) |
 | Compliance receipt | Forensic (retroactive) | No | Provenance chain | Transaction log | Meishi passport | Real-time, regulatory-weight |

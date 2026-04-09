@@ -76,7 +76,7 @@ function setCleanFetch(): void {
   mockFetch.mockImplementation(() => Promise.resolve(cleanChainalysisResponse()));
 }
 
-const AGENT_DID = "did:flowlink:agent:inference-v3";
+const AGENT_DID = "did:prooflink:agent:inference-v3";
 
 function makeKYAPayload(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return {
@@ -106,7 +106,7 @@ function makeValidKYACredential(overrides: Record<string, unknown> = {}): Record
   return {
     "@context": ["https://www.w3.org/2018/credentials/v1"],
     type: ["VerifiableCredential", "KYACredential"],
-    issuer: "did:web:flowlink.io",
+    issuer: "did:web:prooflink.io",
     issuanceDate: "2026-01-01T00:00:00Z",
     expirationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
     credentialSubject: {
@@ -337,7 +337,7 @@ describe("Agent lifecycle — KYA retrieval", () => {
     });
 
     // Act
-    const res = await app.request("/v1/identity/did:flowlink:agent:unknown-999");
+    const res = await app.request("/v1/identity/did:prooflink:agent:unknown-999");
 
     // Assert
     expect(res.status).toBe(404);
@@ -457,7 +457,7 @@ describe("Agent lifecycle — identity verification", () => {
     const res = await app.request("/v1/identity/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ agentId: "did:flowlink:agent:totally-unknown" }),
+      body: JSON.stringify({ agentId: "did:prooflink:agent:totally-unknown" }),
     });
 
     // Assert — 200 with verified: false (not a 404)

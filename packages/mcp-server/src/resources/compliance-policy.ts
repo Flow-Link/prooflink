@@ -2,19 +2,19 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {
   TRAVEL_RULE_THRESHOLDS,
   RISK_THRESHOLDS,
-} from "@flowlink/shared";
+} from "@prooflink/shared";
 
 /**
- * Resource: flowlink://compliance/policy
+ * Resource: prooflink://compliance/policy
  * Exposes the current compliance policy configuration.
  */
 export function registerCompliancePolicyResource(server: McpServer): void {
   server.resource(
     "compliance-policy",
-    "flowlink://compliance/policy",
+    "prooflink://compliance/policy",
     {
       description:
-        "Current FlowLink compliance policy — sanctions lists, risk thresholds, Travel Rule config, and fail-open/fail-closed behavior.",
+        "Current ProofLink compliance policy — sanctions lists, risk thresholds, Travel Rule config, and fail-open/fail-closed behavior.",
       mimeType: "application/json",
     },
     async () => {
@@ -40,7 +40,7 @@ export function registerCompliancePolicyResource(server: McpServer): void {
       return {
         contents: [
           {
-            uri: "flowlink://compliance/policy",
+            uri: "prooflink://compliance/policy",
             mimeType: "application/json",
             text: JSON.stringify(policy, null, 2),
           },

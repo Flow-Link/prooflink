@@ -8,9 +8,9 @@ import { loadConfig, ProofLinkConfigSchema } from "../config.js";
 const ORIGINAL_ENV = { ...process.env };
 
 beforeEach(() => {
-  // Clear any FlowLink-specific env vars before each test
+  // Clear any ProofLink-specific env vars before each test
   for (const key of Object.keys(process.env)) {
-    if (key.startsWith("FLOWLINK_")) {
+    if (key.startsWith("PROOFLINK_")) {
       delete process.env[key];
     }
   }
@@ -19,7 +19,7 @@ beforeEach(() => {
 afterEach(() => {
   // Restore original env
   for (const key of Object.keys(process.env)) {
-    if (key.startsWith("FLOWLINK_")) {
+    if (key.startsWith("PROOFLINK_")) {
       delete process.env[key];
     }
   }
@@ -142,14 +142,14 @@ describe("loadConfig — defaults", () => {
 // ---------------------------------------------------------------------------
 
 describe("loadConfig — environment variables", () => {
-  it("reads FLOWLINK_CHAINALYSIS_API_KEY", () => {
-    process.env.FLOWLINK_CHAINALYSIS_API_KEY = "test-key-abc";
+  it("reads PROOFLINK_CHAINALYSIS_API_KEY", () => {
+    process.env.PROOFLINK_CHAINALYSIS_API_KEY = "test-key-abc";
     const config = loadConfig();
     expect(config.chainalysisApiKey).toBe("test-key-abc");
   });
 
-  it("reads FLOWLINK_CHAINALYSIS_BASE_URL", () => {
-    process.env.FLOWLINK_CHAINALYSIS_BASE_URL =
+  it("reads PROOFLINK_CHAINALYSIS_BASE_URL", () => {
+    process.env.PROOFLINK_CHAINALYSIS_BASE_URL =
       "https://custom.chainalysis.example.com";
     const config = loadConfig();
     expect(config.chainalysisBaseUrl).toBe(
@@ -157,50 +157,50 @@ describe("loadConfig — environment variables", () => {
     );
   });
 
-  it("reads FLOWLINK_MAX_RISK_SCORE as number", () => {
-    process.env.FLOWLINK_MAX_RISK_SCORE = "70";
+  it("reads PROOFLINK_MAX_RISK_SCORE as number", () => {
+    process.env.PROOFLINK_MAX_RISK_SCORE = "70";
     const config = loadConfig();
     expect(config.maxRiskScore).toBe(70);
   });
 
-  it("reads FLOWLINK_ESCALATION_THRESHOLD as number", () => {
-    process.env.FLOWLINK_ESCALATION_THRESHOLD = "50";
+  it("reads PROOFLINK_ESCALATION_THRESHOLD as number", () => {
+    process.env.PROOFLINK_ESCALATION_THRESHOLD = "50";
     const config = loadConfig();
     expect(config.escalationThreshold).toBe(50);
   });
 
-  it("reads FLOWLINK_FAIL_OPEN=true as boolean true", () => {
-    process.env.FLOWLINK_FAIL_OPEN = "true";
+  it("reads PROOFLINK_FAIL_OPEN=true as boolean true", () => {
+    process.env.PROOFLINK_FAIL_OPEN = "true";
     const config = loadConfig();
     expect(config.failOpen).toBe(true);
   });
 
-  it("reads FLOWLINK_FAIL_OPEN=false as boolean false", () => {
-    process.env.FLOWLINK_FAIL_OPEN = "false";
+  it("reads PROOFLINK_FAIL_OPEN=false as boolean false", () => {
+    process.env.PROOFLINK_FAIL_OPEN = "false";
     const config = loadConfig();
     expect(config.failOpen).toBe(false);
   });
 
-  it("reads FLOWLINK_RPC_URL", () => {
-    process.env.FLOWLINK_RPC_URL = "https://mainnet.infura.io/v3/key";
+  it("reads PROOFLINK_RPC_URL", () => {
+    process.env.PROOFLINK_RPC_URL = "https://mainnet.infura.io/v3/key";
     const config = loadConfig();
     expect(config.rpcUrl).toBe("https://mainnet.infura.io/v3/key");
   });
 
-  it("reads FLOWLINK_CHAIN_ID as number", () => {
-    process.env.FLOWLINK_CHAIN_ID = "8453";
+  it("reads PROOFLINK_CHAIN_ID as number", () => {
+    process.env.PROOFLINK_CHAIN_ID = "8453";
     const config = loadConfig();
     expect(config.chainId).toBe(8453);
   });
 
-  it("reads FLOWLINK_SIGNER_PRIVATE_KEY", () => {
-    process.env.FLOWLINK_SIGNER_PRIVATE_KEY = "0xdeadbeef";
+  it("reads PROOFLINK_SIGNER_PRIVATE_KEY", () => {
+    process.env.PROOFLINK_SIGNER_PRIVATE_KEY = "0xdeadbeef";
     const config = loadConfig();
     expect(config.signerPrivateKey).toBe("0xdeadbeef");
   });
 
-  it("reads FLOWLINK_ERC8004_REGISTRY", () => {
-    process.env.FLOWLINK_ERC8004_REGISTRY =
+  it("reads PROOFLINK_ERC8004_REGISTRY", () => {
+    process.env.PROOFLINK_ERC8004_REGISTRY =
       "0x1234567890abcdef1234567890abcdef12345678";
     const config = loadConfig();
     expect(config.erc8004RegistryAddress).toBe(
@@ -208,15 +208,15 @@ describe("loadConfig — environment variables", () => {
     );
   });
 
-  it("reads FLOWLINK_IPFS_GATEWAY_URL", () => {
-    process.env.FLOWLINK_IPFS_GATEWAY_URL = "https://ipfs.infura.io";
+  it("reads PROOFLINK_IPFS_GATEWAY_URL", () => {
+    process.env.PROOFLINK_IPFS_GATEWAY_URL = "https://ipfs.infura.io";
     const config = loadConfig();
     expect(config.ipfsGatewayUrl).toBe("https://ipfs.infura.io");
   });
 
   it("reads Notabene config from env when both API_KEY and VASP_DID are present", () => {
-    process.env.FLOWLINK_NOTABENE_API_KEY = "nb_test_key";
-    process.env.FLOWLINK_NOTABENE_VASP_DID = "did:ethr:0xVASP123";
+    process.env.PROOFLINK_NOTABENE_API_KEY = "nb_test_key";
+    process.env.PROOFLINK_NOTABENE_VASP_DID = "did:ethr:0xVASP123";
     const config = loadConfig();
     expect(config.notabene?.apiKey).toBe("nb_test_key");
     expect(config.notabene?.vaspDID).toBe("did:ethr:0xVASP123");
@@ -224,23 +224,23 @@ describe("loadConfig — environment variables", () => {
   });
 
   it("does not set notabene when only VASP_DID is present", () => {
-    process.env.FLOWLINK_NOTABENE_VASP_DID = "did:ethr:0xVASP123";
+    process.env.PROOFLINK_NOTABENE_VASP_DID = "did:ethr:0xVASP123";
     const config = loadConfig();
     expect(config.notabene).toBeUndefined();
   });
 
-  it("reads FLOWLINK_NOTABENE_TESTNET=true", () => {
-    process.env.FLOWLINK_NOTABENE_API_KEY = "nb_key";
-    process.env.FLOWLINK_NOTABENE_VASP_DID = "did:ethr:0xVASP";
-    process.env.FLOWLINK_NOTABENE_TESTNET = "true";
+  it("reads PROOFLINK_NOTABENE_TESTNET=true", () => {
+    process.env.PROOFLINK_NOTABENE_API_KEY = "nb_key";
+    process.env.PROOFLINK_NOTABENE_VASP_DID = "did:ethr:0xVASP";
+    process.env.PROOFLINK_NOTABENE_TESTNET = "true";
     const config = loadConfig();
     expect(config.notabene?.testnet).toBe(true);
   });
 
-  it("reads FLOWLINK_NOTABENE_BASE_URL override", () => {
-    process.env.FLOWLINK_NOTABENE_API_KEY = "nb_key";
-    process.env.FLOWLINK_NOTABENE_VASP_DID = "did:ethr:0xVASP";
-    process.env.FLOWLINK_NOTABENE_BASE_URL = "https://sandbox.notabene.id/v1";
+  it("reads PROOFLINK_NOTABENE_BASE_URL override", () => {
+    process.env.PROOFLINK_NOTABENE_API_KEY = "nb_key";
+    process.env.PROOFLINK_NOTABENE_VASP_DID = "did:ethr:0xVASP";
+    process.env.PROOFLINK_NOTABENE_BASE_URL = "https://sandbox.notabene.id/v1";
     const config = loadConfig();
     expect(config.notabene?.baseUrl).toBe("https://sandbox.notabene.id/v1");
   });
@@ -252,7 +252,7 @@ describe("loadConfig — environment variables", () => {
 
 describe("loadConfig — overrides take precedence", () => {
   it("override value wins over env var", () => {
-    process.env.FLOWLINK_MAX_RISK_SCORE = "70";
+    process.env.PROOFLINK_MAX_RISK_SCORE = "70";
     const config = loadConfig({ maxRiskScore: 50 });
     expect(config.maxRiskScore).toBe(50);
   });

@@ -1,7 +1,7 @@
 # SDK Client Verification Report
 
 **Date:** 2026-03-21
-**Package:** `@flowlink/sdk` (v0.1.0)
+**Package:** `@prooflink/sdk` (v0.1.0)
 **Files reviewed:** `packages/sdk/src/{client,http,types,errors,index}.ts`
 **Compared against:** `apps/api/src/routes/{compliance,identity,invoices,receipts,analytics,webhooks,health}.ts`
 
@@ -19,7 +19,7 @@ All 111 tests pass. Coverage includes:
 - Constructor validation (missing apiKey)
 - Every client method's HTTP verb, path, and parameter passing
 - Client-side validation for required fields (address, chain, receiptId, invoiceId, agentId)
-- Error hierarchy (FlowLinkError, FlowLinkAPIError, FlowLinkValidationError, FlowLinkTimeoutError, FlowLinkNetworkError)
+- Error hierarchy (ProofLinkError, ProofLinkAPIError, ProofLinkValidationError, ProofLinkTimeoutError, ProofLinkNetworkError)
 - Retry logic: 500/502/503/408/429 retry, Retry-After header respect, retry exhaustion
 - Request structure: headers, Content-Type, URL encoding, query param omission
 
@@ -118,11 +118,11 @@ This is a **critical bug** unless the API strips the envelope before the SDK rec
 ## 5. Error Hierarchy
 
 ```
-FlowLinkError (base)
-├── FlowLinkAPIError        — non-2xx HTTP, includes status, parsed body, headers
-├── FlowLinkValidationError — client-side param validation, includes field name
-├── FlowLinkTimeoutError    — request timeout, includes timeoutMs and URL
-└── FlowLinkNetworkError    — DNS/connection failures after retry exhaustion
+ProofLinkError (base)
+├── ProofLinkAPIError        — non-2xx HTTP, includes status, parsed body, headers
+├── ProofLinkValidationError — client-side param validation, includes field name
+├── ProofLinkTimeoutError    — request timeout, includes timeoutMs and URL
+└── ProofLinkNetworkError    — DNS/connection failures after retry exhaustion
 ```
 
 **Assessment:** Well-structured. Errors are specific, informative, and catchable at any level of the hierarchy. `ApiErrorBody` includes `code`, `message`, and optional `details`.
@@ -148,10 +148,10 @@ FlowLinkError (base)
 
 ## 7. Public API (index.ts exports)
 
-**Classes:** `FlowLinkClient`, `HttpClient`
-**Errors:** `FlowLinkError`, `FlowLinkAPIError`, `FlowLinkValidationError`, `FlowLinkTimeoutError`, `FlowLinkNetworkError`
-**SDK types:** `FlowLinkClientConfig`, `ComplianceCheckParams`, `ComplianceHistoryParams`, `CreateInvoiceParams`, `ListInvoicesParams`, `AgentRegistration`, `IssueKYAParams`, `PaginatedResponse`, `PaginationParams`, `ScreenAddressParams`, `TransactionContext`, `TravelRuleResult`
-**Re-exported shared types:** 34 types from `@flowlink/shared/types`
+**Classes:** `ProofLinkClient`, `HttpClient`
+**Errors:** `ProofLinkError`, `ProofLinkAPIError`, `ProofLinkValidationError`, `ProofLinkTimeoutError`, `ProofLinkNetworkError`
+**SDK types:** `ProofLinkClientConfig`, `ComplianceCheckParams`, `ComplianceHistoryParams`, `CreateInvoiceParams`, `ListInvoicesParams`, `AgentRegistration`, `IssueKYAParams`, `PaginatedResponse`, `PaginationParams`, `ScreenAddressParams`, `TransactionContext`, `TravelRuleResult`
+**Re-exported shared types:** 34 types from `@prooflink/shared/types`
 
 `ScreenAddressParams` is exported but never used by any client method (screenAddress takes positional args).
 
@@ -162,15 +162,15 @@ FlowLinkError (base)
 ### Installation
 
 ```bash
-pnpm add @flowlink/sdk
+pnpm add @prooflink/sdk
 ```
 
 ### Basic Usage
 
 ```ts
-import { FlowLinkClient } from "@flowlink/sdk";
+import { ProofLinkClient } from "@prooflink/sdk";
 
-const client = new FlowLinkClient({
+const client = new ProofLinkClient({
   apiKey: "fl_live_your_key_here",
   // baseUrl: "http://localhost:3000/v1",  // optional, for local dev
   // timeout: 15_000,                       // optional, default 30s
@@ -246,25 +246,25 @@ const agents = await client.listAgents({ page: 1, limit: 20 });
 
 ```ts
 import {
-  FlowLinkAPIError,
-  FlowLinkTimeoutError,
-  FlowLinkNetworkError,
-  FlowLinkValidationError,
-  FlowLinkError,
-} from "@flowlink/sdk";
+  ProofLinkAPIError,
+  ProofLinkTimeoutError,
+  ProofLinkNetworkError,
+  ProofLinkValidationError,
+  ProofLinkError,
+} from "@prooflink/sdk";
 
 try {
   await client.screenAddress("0xAddr", "ethereum");
 } catch (err) {
-  if (err instanceof FlowLinkValidationError) {
+  if (err instanceof ProofLinkValidationError) {
     console.error(`Validation: ${err.message} (field: ${err.field})`);
-  } else if (err instanceof FlowLinkAPIError) {
+  } else if (err instanceof ProofLinkAPIError) {
     console.error(`API ${err.status}: ${err.body?.code} — ${err.body?.message}`);
-  } else if (err instanceof FlowLinkTimeoutError) {
+  } else if (err instanceof ProofLinkTimeoutError) {
     console.error(`Timeout after ${err.timeoutMs}ms on ${err.url}`);
-  } else if (err instanceof FlowLinkNetworkError) {
+  } else if (err instanceof ProofLinkNetworkError) {
     console.error(`Network: ${err.message}`);
-  } else if (err instanceof FlowLinkError) {
+  } else if (err instanceof ProofLinkError) {
     console.error(`SDK error: ${err.message}`);
   }
 }

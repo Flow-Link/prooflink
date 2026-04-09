@@ -2,21 +2,21 @@
 
 **Status:** Research Complete
 **Date:** 2026-03-25
-**Scope:** Payment model survey + implementation design for FlowLink integration
+**Scope:** Payment model survey + implementation design for ProofLink integration
 **Relevant codebase:** `packages/x402-compliance/` (current x402 settlement layer)
 
 ---
 
 ## Executive Summary
 
-FlowLink currently implements x402 exact-amount settlement: one HTTP request, one EIP-3009 signature, one on-chain settlement. This is correct for compliance gating but architecturally limited for agent workloads that are:
+ProofLink currently implements x402 exact-amount settlement: one HTTP request, one EIP-3009 signature, one on-chain settlement. This is correct for compliance gating but architecturally limited for agent workloads that are:
 
 - **High-frequency** (thousands of sub-cent calls per session)
 - **Result-conditional** (pay only if the LLM/tool output satisfies a predicate)
 - **Long-running** (streaming jobs measured in minutes, not milliseconds)
 - **Multi-agent** (orchestrator delegates budget slices to sub-agents)
 
-This brief surveys eight approaches, characterizes each against the four axes above, and designs a `StreamingPaymentManager` abstraction that FlowLink can layer on top of its existing x402-compliance middleware without breaking the current API surface.
+This brief surveys eight approaches, characterizes each against the four axes above, and designs a `StreamingPaymentManager` abstraction that ProofLink can layer on top of its existing x402-compliance middleware without breaking the current API surface.
 
 ---
 
@@ -32,7 +32,7 @@ Two primitives are relevant:
 Creates a directed stream from sender to receiver at a fixed `flowRate` in wei/second. Opening, updating, and closing require one on-chain tx each. Between open and close, zero gas. A stream of 10 USDCx/month = `3,805,175,038,052 wei/s`. The sender must maintain a non-negative real-time balance or the stream becomes insolvent (liquidatable by sentinels).
 
 **General Distribution Agreement (GDA) — Distribution Pools**
-One distributor (e.g., the FlowLink escrow contract) streams to a pool. Recipients hold "units" in the pool. Gas cost is O(1) regardless of recipient count — distributing to 1,000 agents costs the same as distributing to 1. Each recipient's share is `flowRate * (units_i / totalUnits)`. Pool membership and unit assignment are mutable.
+One distributor (e.g., the ProofLink escrow contract) streams to a pool. Recipients hold "units" in the pool. Gas cost is O(1) regardless of recipient count — distributing to 1,000 agents costs the same as distributing to 1. Each recipient's share is `flowRate * (units_i / totalUnits)`. Pool membership and unit assignment are mutable.
 
 A key 2025 development: ERC-8004 (Agent Pool) formalizes an interface for AI agents to register with a GDA pool and earn continuous token streams based on task completion proofs, enabling the first standardized "pay-per-contribution-rate" model for agent networks.
 
@@ -116,7 +116,7 @@ Stream creation: one tx. Withdrawal: one tx per claim (recipient-initiated). No 
 
 Circle Nanopayments (testnet March 2026, 12+ chains) is purpose-built for AI agent micropayments. The architecture:
 
-1. **Client signs an EIP-3009 `transferWithAuthorization` off-chain** — this is identical to the x402 payment header FlowLink already processes.
+1. **Client signs an EIP-3009 `transferWithAuthorization` off-chain** — this is identical to the x402 payment header ProofLink already processes.
 2. **Signed voucher is submitted to Circle Gateway** (not on-chain) — near-instant ACK (~50ms).
 3. **Circle Gateway runs inside an AWS Nitro Enclave (TEE)**: verifies EIP-3009 signatures, computes net balances across all pending vouchers.
 4. **Batch settlement**: Gateway periodically (configurable) sweeps accumulated vouchers into a single on-chain tx, paying net balances. Gas cost per payment approaches zero — Circle absorbs batch gas and recovers via thin spread.
@@ -146,9 +146,9 @@ None natively — it is a transfer primitive, not a conditional escrow. Conditio
 | Long-running | Good | Signed vouchers are timestamped, expiry configurable |
 | Multi-agent delegation | Moderate | Each agent needs its own wallet + EIP-3009 signing key |
 
-**Best fit:** High-frequency agent-to-service micropayments (tool calls, LLM inference, API lookups) where per-call cost must be <$0.001 and gas elimination is critical. This is a direct upgrade to FlowLink's x402 facilitator for high-volume workloads — the existing `EIP3009Authorization` type in `packages/x402-compliance/src/types.ts` is already structurally compatible.
+**Best fit:** High-frequency agent-to-service micropayments (tool calls, LLM inference, API lookups) where per-call cost must be <$0.001 and gas elimination is critical. This is a direct upgrade to ProofLink's x402 facilitator for high-volume workloads — the existing `EIP3009Authorization` type in `packages/x402-compliance/src/types.ts` is already structurally compatible.
 
-**Integration path for FlowLink:** The `FlowLinkX402Compliance` middleware is facilitator-agnostic. Replacing the Coinbase facilitator endpoint with a Circle Nanopayments Gateway endpoint requires zero changes to the compliance layer — only the `facilitatorUrl` in the x402 server config changes.
+**Integration path for ProofLink:** The `ProofLinkX402Compliance` middleware is facilitator-agnostic. Replacing the Coinbase facilitator endpoint with a Circle Nanopayments Gateway endpoint requires zero changes to the compliance layer — only the `facilitatorUrl` in the x402 server config changes.
 
 ---
 
@@ -351,9 +351,9 @@ For **complex predicates** (e.g., "pay only if output satisfies quality metric Q
 | Long-running | Excellent | Channels are indefinitely open |
 | Multi-agent delegation | Moderate | No macaroon-style delegation; each ASC is bilateral |
 
-**Best fit:** High-value agent-to-service calls where atomicity is critical and service correctness must be cryptographically bound to payment. Particularly relevant for FlowLink's trust-layer positioning — this is the architecture that makes "pay-per-verified-result" a primitive, not an application concern.
+**Best fit:** High-value agent-to-service calls where atomicity is critical and service correctness must be cryptographically bound to payment. Particularly relevant for ProofLink's trust-layer positioning — this is the architecture that makes "pay-per-verified-result" a primitive, not an application concern.
 
-**Critical gap vs. current FlowLink:** A402 requires TEE infrastructure (AWS Nitro / SGX). This is an operational commitment but aligns with Circle Nanopayments' own TEE-based settlement (both use AWS Nitro Enclaves).
+**Critical gap vs. current ProofLink:** A402 requires TEE infrastructure (AWS Nitro / SGX). This is an operational commitment but aligns with Circle Nanopayments' own TEE-based settlement (both use AWS Nitro Enclaves).
 
 ---
 
@@ -431,11 +431,11 @@ This inverts the payment model: **the agent retains control of settlement**. Pay
 
 ---
 
-## FlowLink Integration Design
+## ProofLink Integration Design
 
 ### Architecture: `StreamingPaymentManager`
 
-FlowLink should introduce a `StreamingPaymentManager` abstraction in a new package `packages/streaming-payments/`. This sits **beside** (not inside) `packages/x402-compliance/`, consuming the same `PaymentPayload` and `PaymentRequirements` types from `types.ts`.
+ProofLink should introduce a `StreamingPaymentManager` abstraction in a new package `packages/streaming-payments/`. This sits **beside** (not inside) `packages/x402-compliance/`, consuming the same `PaymentPayload` and `PaymentRequirements` types from `types.ts`.
 
 ```typescript
 // packages/streaming-payments/src/types.ts
@@ -476,7 +476,7 @@ export interface StreamingPayment {
 
 **Phase 1 (Immediate, 0 infra change): Circle Nanopayments as Facilitator**
 
-Replace the Coinbase facilitator URL with the Circle Nanopayments Gateway URL. The existing `FlowLinkX402Compliance` middleware requires no changes — `EIP3009Authorization` is already the correct type. All compliance hooks (sanctions screening, AML, travel rule, ProofLink) continue to run.
+Replace the Coinbase facilitator URL with the Circle Nanopayments Gateway URL. The existing `ProofLinkX402Compliance` middleware requires no changes — `EIP3009Authorization` is already the correct type. All compliance hooks (sanctions screening, AML, travel rule, ProofLink) continue to run.
 
 Implementation: one-line change in server config + env var `FACILITATOR_URL=https://gateway.nanopayments.circle.com`. Compliance at batch settlement time (the `afterSettle` hook) needs to handle deferred txhash — receipts are issued against the batch tx, not per-payment.
 
@@ -485,8 +485,8 @@ Implementation: one-line change in server config + env var `FACILITATOR_URL=http
 Add an L402 authentication layer that issues macaroons tied to a session budget. Sub-agents receive attenuated macaroons with spending caps. The existing `KYACredential` type in `types.ts` maps naturally to L402 macaroon caveats.
 
 ```typescript
-// Macaroon caveat structure for FlowLink agents
-interface FlowLinkMacaroonCaveats {
+// Macaroon caveat structure for ProofLink agents
+interface ProofLinkMacaroonCaveats {
   "agent_id": string              // maps to KYACredential.agentId
   "max_spend_usd": number         // budget cap
   "allowed_services": string[]   // service endpoint patterns
@@ -499,17 +499,17 @@ The `before-verify` hook can verify macaroon caveats as part of KYA verification
 
 **Phase 3 (Medium-term, 6–8 weeks): Superfluid GDA Integration for Agent Pool Payments**
 
-For multi-agent orchestration scenarios, deploy a Superfluid Pool contract that FlowLink manages. Orchestrators open a CFA to the pool; sub-agents receive units. The compliance middleware wraps pool `updateMemberUnits()` calls. This maps well to ERC-8004's agent pool interface.
+For multi-agent orchestration scenarios, deploy a Superfluid Pool contract that ProofLink manages. Orchestrators open a CFA to the pool; sub-agents receive units. The compliance middleware wraps pool `updateMemberUnits()` calls. This maps well to ERC-8004's agent pool interface.
 
 **Phase 4 (Research/Long-term): A402 ASC for Atomic Pay-Per-Result**
 
-The A402 architecture requires TEE infrastructure (AWS Nitro Enclave). Circle Nanopayments already uses this. A FlowLink A402 integration would:
-1. Run a TEE Liquidity Vault as a sidecar to the FlowLink API server.
+The A402 architecture requires TEE infrastructure (AWS Nitro Enclave). Circle Nanopayments already uses this. A ProofLink A402 integration would:
+1. Run a TEE Liquidity Vault as a sidecar to the ProofLink API server.
 2. All ASC lifecycle management happens inside the enclave.
 3. The `afterSettle` hook receives the attested batch receipt from the vault.
 4. Compliance (sanctions, AML) runs on vault inputs before ASC open.
 
-This provides the strongest pay-per-result guarantee and is the architecture to target for FlowLink's long-term trust-layer differentiation.
+This provides the strongest pay-per-result guarantee and is the architecture to target for ProofLink's long-term trust-layer differentiation.
 
 ---
 
@@ -517,7 +517,7 @@ This provides the strongest pay-per-result guarantee and is the architecture to 
 
 1. **Circle Nanopayments testnet reliability**: As of March 2026, this is testnet-only. Production SLA, dispute resolution process, and batch failure recovery are unspecified. Do not use for production until mainnet launch and SLA documentation.
 
-2. **A402 TEE trust model**: The Liquidity Vault is trusted (AWS Nitro Enclaves are not formally verified). A compromised enclave can steal funds. FlowLink must evaluate whether this risk profile is acceptable given regulatory requirements.
+2. **A402 TEE trust model**: The Liquidity Vault is trusted (AWS Nitro Enclaves are not formally verified). A compromised enclave can steal funds. ProofLink must evaluate whether this risk profile is acceptable given regulatory requirements.
 
 3. **Superfluid liquidation risk**: CFA senders must maintain a positive buffer balance or face liquidation by sentinel bots. For agent wallets with unpredictable top-up patterns, this creates operational risk. The GDA pool admin wallet needs automated balance monitoring.
 
@@ -525,7 +525,7 @@ This provides the strongest pay-per-result guarantee and is the architecture to 
 
 5. **x402 deferred settlement — no standard yet**: Cloudflare's batch proposal is a governance proposal, not an implemented standard. Building against it now requires betting on a specific governance outcome in the x402 Foundation.
 
-6. **EIP-3009 overlap with all approaches**: All EVM-based approaches (Nanopayments, x402, Superfluid Super Tokens) converge on EIP-3009 `transferWithAuthorization` as the signing primitive. FlowLink's existing `EIP3009Authorization` type is the correct abstraction point. This is a strategic advantage — the existing middleware is extensible to all EVM streaming approaches without type changes.
+6. **EIP-3009 overlap with all approaches**: All EVM-based approaches (Nanopayments, x402, Superfluid Super Tokens) converge on EIP-3009 `transferWithAuthorization` as the signing primitive. ProofLink's existing `EIP3009Authorization` type is the correct abstraction point. This is a strategic advantage — the existing middleware is extensible to all EVM streaming approaches without type changes.
 
 ---
 

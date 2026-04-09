@@ -1,13 +1,13 @@
-# FlowLink Build Plan — Full Implementation
+# ProofLink Build Plan — Full Implementation
 
 ## Monorepo Structure
 ```
-flowlink/
+prooflink/
 ├── packages/
 │   ├── core/                 # ProofLink Engine — compliance decision pipeline
 │   ├── x402-compliance/      # x402 middleware — npm package
 │   ├── mcp-server/           # MCP compliance server
-│   ├── sdk/                  # FlowLink SDK for integrators
+│   ├── sdk/                  # ProofLink SDK for integrators
 │   ├── contracts/            # Solidity smart contracts (Foundry)
 │   └── shared/               # Shared types, utils, constants
 ├── apps/
@@ -33,9 +33,9 @@ flowlink/
 
 ### Team 2: Smart Contracts (packages/contracts)
 - ProofLinkRegistry.sol (EAS attestation)
-- FlowLinkKYA.sol (agent identity)
+- ProofLinkKYA.sol (agent identity)
 - AgentInvoice.sol (invoice anchoring)
-- FlowLinkFacilitator.sol (x402 compliance gate)
+- ProofLinkFacilitator.sol (x402 compliance gate)
 - Foundry tests
 
 ### Team 3: x402 Middleware (packages/x402-compliance)

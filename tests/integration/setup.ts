@@ -13,8 +13,8 @@ import type { ComplianceRequest } from "../../packages/core/src/engine/prooflink
 import type { ProofLinkConfig } from "../../packages/core/src/config.js";
 import { MockNotabeneProvider } from "../../packages/core/src/travel-rule/checker.js";
 import type { TravelRuleProvider } from "../../packages/core/src/travel-rule/checker.js";
-import { FlowLinkX402Compliance } from "../../packages/x402-compliance/src/middleware.js";
-import type { FlowLinkConfig } from "../../packages/x402-compliance/src/types.js";
+import { ProofLinkX402Compliance } from "../../packages/x402-compliance/src/middleware.js";
+import type { ProofLinkConfig } from "../../packages/x402-compliance/src/types.js";
 import type {
   SanctionsScreener,
   AmlScorer,
@@ -131,7 +131,7 @@ export function createProofLinkEngine(
 // x402 compliance middleware factories
 // ---------------------------------------------------------------------------
 
-export function makeX402Config(overrides?: Partial<FlowLinkConfig>): FlowLinkConfig {
+export function makeX402Config(overrides?: Partial<ProofLinkConfig>): ProofLinkConfig {
   return {
     chainalysisApiKey: "test-api-key",
     policy: {
@@ -302,8 +302,8 @@ export const mockUpdateReturning = vi.fn();
 
 export const sampleInvoice = {
   id: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
-  issuerAgentDid: "did:flowlink:agent:seller",
-  recipientAgentDid: "did:flowlink:agent:buyer",
+  issuerAgentDid: "did:prooflink:agent:seller",
+  recipientAgentDid: "did:prooflink:agent:buyer",
   sellerWalletAddress: "0xSELLER000000000000000000000000000000000",
   buyerWalletAddress: "0xBUYER0000000000000000000000000000000000",
   currency: "USDC",
@@ -342,5 +342,5 @@ export const sampleReceipt = {
 } as const;
 
 /** Re-export createApp for integration tests that spin up the API. */
-export { createApp, FlowLinkX402Compliance };
+export { createApp, ProofLinkX402Compliance };
 export type { ComplianceEvent };

@@ -1,14 +1,14 @@
 import { randomUUID } from "node:crypto";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { AgentType, SupportedChain, SupportedToken } from "@flowlink/shared";
+import { AgentType, SupportedChain, SupportedToken } from "@prooflink/shared";
 import { formatMcpError } from "../errors.js";
 
 export function registerRegisterAgent(server: McpServer): void {
   server.tool(
     "register_agent",
     [
-      "Register a new AI agent identity in the FlowLink agent registry.",
+      "Register a new AI agent identity in the ProofLink agent registry.",
       "Creates an ERC-8004 compatible agent registration with operator identity,",
       "delegation scope (spending limits, allowed chains/tokens), and compliance standing.",
       "",
@@ -94,7 +94,7 @@ export function registerRegisterAgent(server: McpServer): void {
 
       try {
         const agentId = `agent_${randomUUID().replace(/-/g, "")}`;
-        const did = `did:flowlink:${agentId}`;
+        const did = `did:prooflink:${agentId}`;
         const registeredAt = new Date().toISOString();
 
         // In production: write to ERC-8004 registry on-chain,

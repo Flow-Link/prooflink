@@ -1,9 +1,9 @@
 {
-  "name": "@flowlink/e2e-tests",
+  "name": "@prooflink/e2e-tests",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "FlowLink end-to-end scenario test suite",
+  "description": "ProofLink end-to-end scenario test suite",
   "scripts": {
     "test": "vitest run --config vitest.config.ts",
     "test:watch": "vitest --config vitest.config.ts",

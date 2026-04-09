@@ -1,7 +1,7 @@
 /**
- * FlowLink Dashboard API client
+ * ProofLink Dashboard API client
  *
- * Connects to the real FlowLink API at localhost:3001/dashboard/*.
+ * Connects to the real ProofLink API at localhost:3001/dashboard/*.
  * Falls back to mock data when the API is unreachable (e.g., no DB running).
  */
 
@@ -201,13 +201,13 @@ let _apiKey = '';
 export function setApiKey(key: string): void {
 	_apiKey = key;
 	if (typeof window !== 'undefined') {
-		localStorage.setItem('flowlink_api_key', key);
+		localStorage.setItem('prooflink_api_key', key);
 	}
 }
 
 export function getApiKey(): string {
 	if (!_apiKey && typeof window !== 'undefined') {
-		_apiKey = localStorage.getItem('flowlink_api_key') ?? '';
+		_apiKey = localStorage.getItem('prooflink_api_key') ?? '';
 	}
 	return _apiKey;
 }
@@ -285,7 +285,7 @@ const mockChecks: ComplianceCheck[] = Array.from({ length: 50 }, (_, i) => {
 		amount: Math.floor(Math.random() * 50000) + 100,
 		currency: 'USDC',
 		counterparty: randomAddress(),
-		agentDid: `did:web:agent${Math.floor(Math.random() * 5) + 1}.flowlink.io`,
+		agentDid: `did:web:agent${Math.floor(Math.random() * 5) + 1}.prooflink.io`,
 		createdAt: randomDate(30),
 		checks: {
 			ofac: status !== 'FAIL' || Math.random() > 0.5,
@@ -318,9 +318,9 @@ function generateMockVolumeData(): VolumeDataPoint[] {
 
 const mockAgents: Agent[] = [
 	{
-		did: 'did:web:agent1.flowlink.io',
+		did: 'did:web:agent1.prooflink.io',
 		name: 'PayBot Prime',
-		provider: 'FlowLink',
+		provider: 'ProofLink',
 		status: 'VERIFIED',
 		credentialType: 'KYA-v1',
 		issuedAt: '2024-01-15T00:00:00Z',
@@ -337,7 +337,7 @@ const mockAgents: Agent[] = [
 		})),
 	},
 	{
-		did: 'did:web:agent2.flowlink.io',
+		did: 'did:web:agent2.prooflink.io',
 		name: 'ComplianceGuard',
 		provider: 'TrustNet',
 		status: 'VERIFIED',
@@ -533,7 +533,7 @@ export async function getWebhooks(): Promise<Webhook[]> {
 	return [
 		{
 			id: 'wh_001',
-			url: 'https://api.example.com/webhooks/flowlink',
+			url: 'https://api.example.com/webhooks/prooflink',
 			events: ['check.completed', 'check.failed'],
 			status: 'ACTIVE',
 			createdAt: '2024-06-01T00:00:00Z',
@@ -547,7 +547,7 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
 		{
 			id: 'usr_001',
 			name: 'Akash',
-			email: 'akash@flowlink.io',
+			email: 'akash@prooflink.io',
 			role: 'ADMIN',
 			status: 'ACTIVE',
 			joinedAt: '2024-01-01T00:00:00Z',
@@ -659,7 +659,7 @@ export async function getActivityFeed(): Promise<ActivityEvent[]> {
 				? `${randomAddress().slice(0, 12)}... on ${CHAINS[Math.floor(Math.random() * CHAINS.length)]}`
 				: `Agent ${Math.floor(Math.random() * 5) + 1}`,
 			timestamp: randomDate(7),
-			agentDid: `did:web:agent${Math.floor(Math.random() * 5) + 1}.flowlink.io`,
+			agentDid: `did:web:agent${Math.floor(Math.random() * 5) + 1}.prooflink.io`,
 			checkId: type.includes('check')
 				? `chk_${String(Math.floor(Math.random() * 50) + 1).padStart(4, '0')}`
 				: undefined,

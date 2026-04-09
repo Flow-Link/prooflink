@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 
 // ---------------------------------------------------------------------------
-// OpenAPI 3.1 specification — full spec for the FlowLink API
+// OpenAPI 3.1 specification — full spec for the ProofLink API
 //
 // Covers all /v1/ endpoints: compliance, invoices, identity, webhooks,
 // analytics. Includes request/response schemas derived from Zod types.
@@ -10,15 +10,15 @@ import { Hono } from "hono";
 const OPENAPI_SPEC = {
   openapi: "3.1.0",
   info: {
-    title: "FlowLink API",
+    title: "ProofLink API",
     version: "1.0.0",
     description:
-      "FlowLink compliance, identity, and invoicing API for autonomous agent payments. " +
+      "ProofLink compliance, identity, and invoicing API for autonomous agent payments. " +
       "Provides sanctions screening, KYA credential issuance, invoice lifecycle management, " +
       "webhook delivery, and platform analytics.",
     contact: {
-      name: "FlowLink",
-      url: "https://flowlink.io",
+      name: "ProofLink",
+      url: "https://prooflink.io",
     },
     license: {
       name: "MIT",
@@ -27,7 +27,7 @@ const OPENAPI_SPEC = {
   servers: [
     {
       url: "{baseUrl}/v1",
-      description: "FlowLink API v1",
+      description: "ProofLink API v1",
       variables: {
         baseUrl: {
           default: "http://localhost:3001",
@@ -1049,7 +1049,7 @@ openapi.get("/docs", (c) => {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FlowLink API Docs</title>
+  <title>ProofLink API Docs</title>
   <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
 </head>
 <body>

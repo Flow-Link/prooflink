@@ -61,7 +61,7 @@ export const AgentIdentity = z.object({
 export type AgentIdentity = z.infer<typeof AgentIdentity>;
 
 // ---------------------------------------------------------------------------
-// KYA Verifiable Credential (W3C VC + FlowLink extensions)
+// KYA Verifiable Credential (W3C VC + ProofLink extensions)
 // ---------------------------------------------------------------------------
 
 export const KYACredentialSubject = z.object({
@@ -81,7 +81,7 @@ export type KYACredentialSubject = z.infer<typeof KYACredentialSubject>;
 export const KYACredential = z.object({
   "@context": z.array(z.string()).default([
     "https://www.w3.org/2018/credentials/v1",
-    "https://flowlink.io/credentials/kya/v1",
+    "https://prooflink.io/credentials/kya/v1",
   ]),
   type: z.array(z.string()).default([
     "VerifiableCredential",
@@ -89,8 +89,8 @@ export const KYACredential = z.object({
   ]),
   id: z.string(), // credential URI
   issuer: z.object({
-    id: z.string(), // FlowLink DID
-    name: z.string().default("FlowLink"),
+    id: z.string(), // ProofLink DID
+    name: z.string().default("ProofLink"),
   }),
   issuanceDate: z.string().datetime(),
   expirationDate: z.string().datetime(),

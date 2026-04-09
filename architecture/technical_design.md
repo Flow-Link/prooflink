@@ -1,4 +1,4 @@
-# FlowLink Technical Architecture
+# ProofLink Technical Architecture
 **Version:** 1.0
 **Date:** March 20, 2026
 **Status:** Architecture Design (Pre-Implementation)
@@ -64,7 +64,7 @@
 ### 1.3 Data Flow: Happy Path (Agent-Initiated Payment)
 
 ```
-1. Agent discovers FlowLink-registered service via ERC-8004 registry
+1. Agent discovers ProofLink-registered service via ERC-8004 registry
 2. Agent initiates payment via x402 header / MPP session / AP2 mandate
 3. API Gateway routes to Payment Protocol Router
 4. Router identifies protocol, extracts payment intent
@@ -222,26 +222,26 @@ interface SanctionsResult {
 
 ### 2.3 KYC/KYA Verification Flow
 
-FlowLink does NOT perform KYC directly. It verifies that KYC has been performed by a trusted issuer and that the result is valid.
+ProofLink does NOT perform KYC directly. It verifies that KYC has been performed by a trusted issuer and that the result is valid.
 
 ```
 Human User Flow:
   1. User completes KYC with a trusted provider (Jumio, Onfido, Sumsub, Persona)
   2. Provider issues a Verifiable Credential (VC) to user's DID
-  3. User presents VC to FlowLink during onboarding
-  4. FlowLink verifies VC signature against trusted issuer registry
-  5. FlowLink stores VC hash (not PII) in compliance database
+  3. User presents VC to ProofLink during onboarding
+  4. ProofLink verifies VC signature against trusted issuer registry
+  5. ProofLink stores VC hash (not PII) in compliance database
   6. Subsequent transactions reference stored verification status
 
 Agent (KYA) Flow:
   1. Controlling entity (human/business) registers agent on ERC-8004
   2. Controlling entity's vLEI or KYB credential attached to agent registration
-  3. FlowLink validates:
+  3. ProofLink validates:
      a. Agent exists in ERC-8004 Identity Registry
      b. Controlling entity has valid KYB/KYC credential from trusted issuer
      c. Delegation scope is explicitly defined
      d. Agent wallet is verified via EIP-712 or ERC-1271 signature
-  4. FlowLink issues a KYA Verifiable Credential to the agent's DID
+  4. ProofLink issues a KYA Verifiable Credential to the agent's DID
   5. KYA credential encodes: controlling entity LEI, delegation scope, expiry
 ```
 
@@ -249,10 +249,10 @@ Agent (KYA) Flow:
 
 ```
 Integration Architecture:
-  FlowLink -> Notabene Gateway -> [TRP | OpenVASP | TRUST | Sygna | TRISA]
+  ProofLink -> Notabene Gateway -> [TRP | OpenVASP | TRUST | Sygna | TRISA]
                                      -> Counterparty VASP
 
-FlowLink acts as a VASP or on behalf of a VASP for Travel Rule purposes.
+ProofLink acts as a VASP or on behalf of a VASP for Travel Rule purposes.
 
 IVMS101 Message Construction:
 {
@@ -275,14 +275,14 @@ IVMS101 Message Construction:
     "accountNumber": ["0x..."]
   },
   "originatingVASP": {
-    "legalPerson": { "name": { "nameIdentifier": [{ "legalPersonName": "FlowLink Inc." }] } }
+    "legalPerson": { "name": { "nameIdentifier": [{ "legalPersonName": "ProofLink Inc." }] } }
   }
 }
 
-For Agent Transactions (FlowLink Extension):
+For Agent Transactions (ProofLink Extension):
   - originatorPersons includes the agent's controlling entity (not the agent itself)
   - agentMetadata (custom field): { agentId: ERC-8004 ID, delegationScope: "...", kyaCredentialHash: "..." }
-  - This is FlowLink's proposed extension to IVMS101 for agent-mediated transfers
+  - This is ProofLink's proposed extension to IVMS101 for agent-mediated transfers
 ```
 
 ### 2.5 AML Transaction Monitoring
@@ -321,42 +321,42 @@ Two modes:
 
 ### 3.1 W3C DID-Based Agent Identity
 
-Each agent in FlowLink has a DID that resolves to a DID Document containing its capabilities, wallet, and controlling entity.
+Each agent in ProofLink has a DID that resolves to a DID Document containing its capabilities, wallet, and controlling entity.
 
 ```
-DID Method: did:flowlink:<network>:<agentId>
-Example:    did:flowlink:base:0x1234abcd
+DID Method: did:prooflink:<network>:<agentId>
+Example:    did:prooflink:base:0x1234abcd
 
 DID Document Structure:
 {
-  "@context": ["https://www.w3.org/ns/did/v1", "https://flowlink.io/ns/kya/v1"],
-  "id": "did:flowlink:base:42",
+  "@context": ["https://www.w3.org/ns/did/v1", "https://prooflink.io/ns/kya/v1"],
+  "id": "did:prooflink:base:42",
   "controller": "did:web:acme-corp.com",
   "verificationMethod": [{
-    "id": "did:flowlink:base:42#wallet-key",
+    "id": "did:prooflink:base:42#wallet-key",
     "type": "EcdsaSecp256k1VerificationKey2019",
-    "controller": "did:flowlink:base:42",
+    "controller": "did:prooflink:base:42",
     "publicKeyHex": "0x04..."
   }],
-  "authentication": ["did:flowlink:base:42#wallet-key"],
+  "authentication": ["did:prooflink:base:42#wallet-key"],
   "service": [
     {
-      "id": "did:flowlink:base:42#erc8004",
+      "id": "did:prooflink:base:42#erc8004",
       "type": "ERC8004Identity",
       "serviceEndpoint": "ethereum:0x.../42"
     },
     {
-      "id": "did:flowlink:base:42#x402",
+      "id": "did:prooflink:base:42#x402",
       "type": "x402PaymentEndpoint",
       "serviceEndpoint": "https://agent.acme-corp.com/api"
     },
     {
-      "id": "did:flowlink:base:42#mcp",
+      "id": "did:prooflink:base:42#mcp",
       "type": "MCPServer",
       "serviceEndpoint": "https://agent.acme-corp.com/mcp"
     }
   ],
-  "flowlink:kya": {
+  "prooflink:kya": {
     "controllingEntity": {
       "lei": "5493001KJTIIGC8Y1R12",
       "vleiCredential": "https://vlei.gleif.org/cred/..."
@@ -379,18 +379,18 @@ DID Document Structure:
 
 ### 3.2 ERC-8004 Integration
 
-FlowLink operates as a **Validator** in the ERC-8004 Validation Registry. When an agent requests FlowLink compliance validation:
+ProofLink operates as a **Validator** in the ERC-8004 Validation Registry. When an agent requests ProofLink compliance validation:
 
 ```solidity
-// FlowLink registers as a validator in ERC-8004 Validation Registry
-// Agent owner requests validation from FlowLink's validator address
-// FlowLink performs KYA checks off-chain, then submits score on-chain
+// ProofLink registers as a validator in ERC-8004 Validation Registry
+// Agent owner requests validation from ProofLink's validator address
+// ProofLink performs KYA checks off-chain, then submits score on-chain
 
 // ERC-8004 Validation Registry interaction:
 interface IValidationRegistry {
     function requestValidation(
         uint256 agentId,
-        address validator,       // FlowLink's validator address
+        address validator,       // ProofLink's validator address
         bytes32 commitmentHash   // hash of validation criteria
     ) external;
 
@@ -402,7 +402,7 @@ interface IValidationRegistry {
     ) external;
 }
 
-// FlowLink's validation criteria (encoded in commitmentHash):
+// ProofLink's validation criteria (encoded in commitmentHash):
 // - Controlling entity has valid KYB credential
 // - Controlling entity has valid vLEI
 // - Agent wallet verified via EIP-712
@@ -414,18 +414,18 @@ interface IValidationRegistry {
 ### 3.3 Verifiable Credentials for Agents
 
 ```json
-// KYA Verifiable Credential issued by FlowLink
+// KYA Verifiable Credential issued by ProofLink
 {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://flowlink.io/ns/kya/v1"
+    "https://prooflink.io/ns/kya/v1"
   ],
   "type": ["VerifiableCredential", "KYACredential"],
-  "issuer": "did:web:flowlink.io",
+  "issuer": "did:web:prooflink.io",
   "issuanceDate": "2026-03-20T10:00:00Z",
   "expirationDate": "2026-09-20T10:00:00Z",
   "credentialSubject": {
-    "id": "did:flowlink:base:42",
+    "id": "did:prooflink:base:42",
     "type": "AutonomousAgent",
     "erc8004Id": 42,
     "controllingEntity": {
@@ -453,7 +453,7 @@ interface IValidationRegistry {
   "proof": {
     "type": "EcdsaSecp256k1Signature2019",
     "created": "2026-03-20T10:00:00Z",
-    "verificationMethod": "did:web:flowlink.io#signing-key",
+    "verificationMethod": "did:web:prooflink.io#signing-key",
     "proofPurpose": "assertionMethod",
     "jws": "eyJ..."
   }
@@ -462,7 +462,7 @@ interface IValidationRegistry {
 
 ### 3.4 GLEIF vLEI for Controlling Entities
 
-Every agent must be linked to a Legal Entity Identifier. FlowLink validates the vLEI credential chain:
+Every agent must be linked to a Legal Entity Identifier. ProofLink validates the vLEI credential chain:
 
 ```
 GLEIF Root of Trust
@@ -487,20 +487,20 @@ Registration Sequence:
 2. CE registers agent on ERC-8004 Identity Registry
    -> tx: identityRegistry.register(registrationFileURI)
    -> returns: agentId (ERC-721 tokenId)
-3. CE submits KYA validation request to FlowLink
+3. CE submits KYA validation request to ProofLink
    -> POST /api/v1/agents/validate
    -> body: { agentId, erc8004Registry, controllingEntityDID, vleiCredential }
-4. FlowLink performs off-chain validation:
+4. ProofLink performs off-chain validation:
    a. Fetch ERC-8004 registration file
    b. Verify CE's vLEI credential
    c. Verify CE's KYB status with identity provider
    d. Screen CE against sanctions lists
    e. Verify agent wallet ownership (EIP-712 challenge-response)
    f. Validate delegation scope is within CE's authority
-5. FlowLink submits validation to ERC-8004 Validation Registry
+5. ProofLink submits validation to ERC-8004 Validation Registry
    -> tx: validationRegistry.submitValidation(agentId, requestId, score, evidenceURI)
-6. FlowLink issues KYA Verifiable Credential to agent's DID
-7. Agent can now transact through FlowLink with pre-validated compliance status
+6. ProofLink issues KYA Verifiable Credential to agent's DID
+7. Agent can now transact through ProofLink with pre-validated compliance status
 ```
 
 ---
@@ -545,20 +545,20 @@ interface ProtocolAdapter {
 
 ### 4.2 x402 Integration (HTTP 402 Middleware)
 
-FlowLink operates as a **compliance-aware x402 facilitator proxy**. It wraps the settlement facilitator with compliance checks.
+ProofLink operates as a **compliance-aware x402 facilitator proxy**. It wraps the settlement facilitator with compliance checks.
 
 ```
 Standard x402 Flow:
   Client -> Server (402) -> Client signs payment -> Server -> Facilitator -> Chain
 
-FlowLink-Enhanced x402 Flow:
+ProofLink-Enhanced x402 Flow:
   Client -> Server (402) -> Client signs payment -> Server
-    -> FlowLink Proxy:
+    -> ProofLink Proxy:
        1. Extract payment from X-PAYMENT header
        2. Decode EIP-3009 / Permit2 / ERC-7710 authorization
        3. Run ProofLink compliance pipeline on (from, to, value)
        4. If APPROVED: forward to facilitator /verify then /settle
-       5. Attach X-FLOWLINK-COMPLIANCE header to response
+       5. Attach X-PROOFLINK-COMPLIANCE header to response
     -> Settlement on chain
     -> 200 OK + compliance receipt
 ```
@@ -566,11 +566,11 @@ FlowLink-Enhanced x402 Flow:
 **Express middleware integration:**
 
 ```typescript
-import { x402ComplianceMiddleware } from "@flowlink/x402";
+import { x402ComplianceMiddleware } from "@prooflink/x402";
 
 app.use("/api/paid-resource", x402ComplianceMiddleware({
   facilitatorUrl: "https://x402.cdp.coinbase.com",  // or self-hosted
-  proofLinkUrl: "https://api.flowlink.io/v1/compliance/check",
+  proofLinkUrl: "https://api.prooflink.io/v1/compliance/check",
   compliancePolicy: {
     sanctionsScreening: true,
     travelRule: true,
@@ -582,64 +582,64 @@ app.use("/api/paid-resource", x402ComplianceMiddleware({
 
 ### 4.3 MPP/Tempo Integration (Session-Based)
 
-MPP uses spending sessions. FlowLink hooks into session creation and per-payment settlement.
+MPP uses spending sessions. ProofLink hooks into session creation and per-payment settlement.
 
 ```
-MPP Session Flow with FlowLink:
+MPP Session Flow with ProofLink:
 
 1. Agent creates MPP session (spending cap authorization)
-2. FlowLink validates agent identity at session creation time
-3. FlowLink performs full compliance check on agent + session parameters
-4. Session approved -> FlowLink issues session-level compliance token
+2. ProofLink validates agent identity at session creation time
+3. ProofLink performs full compliance check on agent + session parameters
+4. Session approved -> ProofLink issues session-level compliance token
 5. Per-payment within session:
    a. Stripe PaymentIntent created
-   b. FlowLink performs lightweight compliance check (sanctions only; agent pre-validated)
+   b. ProofLink performs lightweight compliance check (sanctions only; agent pre-validated)
    c. Payment settles on Tempo/Stripe
-   d. FlowLink logs payment in compliance audit trail
-6. Session close: FlowLink generates session-level compliance receipt
+   d. ProofLink logs payment in compliance audit trail
+6. Session close: ProofLink generates session-level compliance receipt
 ```
 
-**Integration point:** FlowLink registers as a webhook listener on Stripe PaymentIntents for MPP-tagged payments.
+**Integration point:** ProofLink registers as a webhook listener on Stripe PaymentIntents for MPP-tagged payments.
 
 ### 4.4 AP2 Integration (Mandate System)
 
-AP2's three-mandate model maps cleanly to FlowLink's compliance pipeline.
+AP2's three-mandate model maps cleanly to ProofLink's compliance pipeline.
 
 ```
 AP2 Mandate Compliance Mapping:
 
 Intent Mandate:
-  - FlowLink verifies: agent has valid KYA credential
-  - FlowLink verifies: intent is within delegation scope
-  - FlowLink attaches: compliance pre-approval token
+  - ProofLink verifies: agent has valid KYA credential
+  - ProofLink verifies: intent is within delegation scope
+  - ProofLink attaches: compliance pre-approval token
 
 Cart Mandate:
-  - FlowLink verifies: cart total within agent's authorized limits
-  - FlowLink screens: merchant against sanctions lists
-  - FlowLink checks: product category restrictions (if any)
+  - ProofLink verifies: cart total within agent's authorized limits
+  - ProofLink screens: merchant against sanctions lists
+  - ProofLink checks: product category restrictions (if any)
 
 Payment Mandate:
-  - FlowLink performs: full ProofLink compliance pipeline
-  - FlowLink issues: compliance receipt
-  - FlowLink transmits: Travel Rule data if required
+  - ProofLink performs: full ProofLink compliance pipeline
+  - ProofLink issues: compliance receipt
+  - ProofLink transmits: Travel Rule data if required
 
-Implementation: FlowLink provides an AP2-compatible credential verifier
+Implementation: ProofLink provides an AP2-compatible credential verifier
 that AP2 agents include in their mandate chain.
 ```
 
 ### 4.5 ACP Compatibility
 
-ACP operates within Stripe's infrastructure using Shared Payment Tokens (SPTs). FlowLink integrates via Stripe's webhook system.
+ACP operates within Stripe's infrastructure using Shared Payment Tokens (SPTs). ProofLink integrates via Stripe's webhook system.
 
 ```
 ACP Flow:
   - Agent receives SPT from user
   - Agent creates Stripe PaymentIntent with SPT
-  - FlowLink monitors via Stripe webhook (payment_intent.created)
-  - FlowLink performs compliance check
-  - If flagged: FlowLink calls Stripe API to cancel PaymentIntent
+  - ProofLink monitors via Stripe webhook (payment_intent.created)
+  - ProofLink performs compliance check
+  - If flagged: ProofLink calls Stripe API to cancel PaymentIntent
   - If approved: payment proceeds normally
-  - FlowLink generates compliance receipt post-settlement
+  - ProofLink generates compliance receipt post-settlement
 ```
 
 ### 4.6 Multi-Protocol Routing Decision
@@ -674,9 +674,9 @@ Protocol Detection Logic (in API Gateway):
 {
   "@context": [
     "https://schema.org/",
-    "https://flowlink.io/ns/invoice/v1"
+    "https://prooflink.io/ns/invoice/v1"
   ],
-  "@type": "FlowLinkAgentInvoice",
+  "@type": "ProofLinkAgentInvoice",
   "invoiceId": "urn:uuid:550e8400-e29b-41d4-a716-446655440000",
   "version": "1.0",
   "status": "issued",
@@ -684,7 +684,7 @@ Protocol Detection Logic (in API Gateway):
   "dueAt": "2026-04-20T10:00:00Z",
 
   "issuer": {
-    "agentId": "did:flowlink:base:42",
+    "agentId": "did:prooflink:base:42",
     "erc8004Id": 42,
     "controllingEntity": {
       "name": "Acme AI Services LLC",
@@ -694,7 +694,7 @@ Protocol Detection Logic (in API Gateway):
   },
 
   "recipient": {
-    "agentId": "did:flowlink:base:99",
+    "agentId": "did:prooflink:base:99",
     "erc8004Id": 99,
     "controllingEntity": {
       "name": "Widget Corp",
@@ -763,13 +763,13 @@ Protocol Detection Logic (in API Gateway):
     "chain": "eip155:8453",
     "txHash": "0x...",
     "attestationId": "0x...",
-    "schema": "FlowLinkInvoiceV1"
+    "schema": "ProofLinkInvoiceV1"
   },
 
   "proof": {
     "type": "EcdsaSecp256k1Signature2019",
     "created": "2026-03-20T10:00:00Z",
-    "verificationMethod": "did:flowlink:base:42#wallet-key",
+    "verificationMethod": "did:prooflink:base:42#wallet-key",
     "jws": "eyJ..."
   }
 }
@@ -777,7 +777,7 @@ Protocol Detection Logic (in API Gateway):
 
 ### 5.2 On-Chain Anchoring Mechanism
 
-Invoices are stored off-chain (IPFS or FlowLink storage). A hash commitment is anchored on-chain using the Ethereum Attestation Service (EAS).
+Invoices are stored off-chain (IPFS or ProofLink storage). A hash commitment is anchored on-chain using the Ethereum Attestation Service (EAS).
 
 ```
 Anchoring Flow:
@@ -785,7 +785,7 @@ Anchoring Flow:
 2. Invoice stored on IPFS -> CID returned
 3. Compute: invoiceHash = keccak256(canonicalize(invoice))
 4. Submit EAS attestation on Base:
-   - schema: FlowLinkInvoiceV1
+   - schema: ProofLinkInvoiceV1
    - data: { invoiceHash, issuerAgent, recipientAgent, amount, currency, ipfsCID }
    - recipient: recipient agent's wallet address
 5. EAS attestation UID stored in invoice record
@@ -802,10 +802,10 @@ Supported ERP Systems (Phase 1):
 - SAP S/4HANA: OData API
 
 Integration Pattern:
-  FlowLink Invoice -> ERP Adapter -> ERP System
+  ProofLink Invoice -> ERP Adapter -> ERP System
 
 Mapping:
-  FlowLink invoiceId        -> ERP Vendor Invoice Number
+  ProofLink invoiceId        -> ERP Vendor Invoice Number
   issuer.controllingEntity   -> ERP Vendor record
   recipient.controllingEntity -> ERP Company entity
   lineItems[].description    -> ERP Line item description
@@ -815,9 +815,9 @@ Mapping:
   complianceStamp            -> ERP Custom field / attachment
 
 Sync Modes:
-  1. Push: FlowLink pushes invoice to ERP on creation
-  2. Pull: ERP queries FlowLink API for new invoices (polling)
-  3. Webhook: FlowLink notifies ERP on invoice status changes
+  1. Push: ProofLink pushes invoice to ERP on creation
+  2. Pull: ERP queries ProofLink API for new invoices (polling)
+  3. Webhook: ProofLink notifies ERP on invoice status changes
 ```
 
 ---
@@ -826,13 +826,13 @@ Sync Modes:
 
 ### 6.1 Cryptographic Proof Structure
 
-Every transaction through FlowLink generates a compliance receipt -- a signed attestation that all required checks were performed.
+Every transaction through ProofLink generates a compliance receipt -- a signed attestation that all required checks were performed.
 
 ```json
 {
   "receiptId": "urn:uuid:550e8400-e29b-41d4-a716-446655440001",
   "version": "1.0",
-  "type": "FlowLinkComplianceReceipt",
+  "type": "ProofLinkComplianceReceipt",
   "issuedAt": "2026-03-20T10:00:05Z",
   "expiresAt": "2026-03-20T10:05:05Z",
 
@@ -844,8 +844,8 @@ Every transaction through FlowLink generates a compliance receipt -- a signed at
     "asset": "USDC",
     "sender": "0xSenderAddress",
     "receiver": "0xReceiverAddress",
-    "senderAgentDID": "did:flowlink:base:42",
-    "receiverAgentDID": "did:flowlink:base:99"
+    "senderAgentDID": "did:prooflink:base:42",
+    "receiverAgentDID": "did:prooflink:base:99"
   },
 
   "checks": [
@@ -905,7 +905,7 @@ Every transaction through FlowLink generates a compliance receipt -- a signed at
 
   "proof": {
     "type": "EcdsaSecp256k1Signature2019",
-    "verificationMethod": "did:web:flowlink.io#compliance-signing-key",
+    "verificationMethod": "did:web:prooflink.io#compliance-signing-key",
     "jws": "eyJ..."
   },
 
@@ -919,10 +919,10 @@ Every transaction through FlowLink generates a compliance receipt -- a signed at
 
 ### 6.2 On-Chain Attestation (EAS)
 
-FlowLink uses the Ethereum Attestation Service on Base for compliance receipt attestations.
+ProofLink uses the Ethereum Attestation Service on Base for compliance receipt attestations.
 
 ```solidity
-// EAS Schema for FlowLink Compliance Receipts
+// EAS Schema for ProofLink Compliance Receipts
 // Schema: "bytes32 receiptHash, address sender, address receiver, uint256 amount,
 //          string asset, uint8 riskScore, bool sanctionsCleared, bool travelRuleSatisfied,
 //          uint64 timestamp"
@@ -930,9 +930,9 @@ FlowLink uses the Ethereum Attestation Service on Base for compliance receipt at
 // Schema UID registered on Base EAS
 
 // Attestation flow:
-// 1. FlowLink computes receiptHash = keccak256(abi.encode(fullReceipt))
-// 2. FlowLink submits attestation via EAS.attest():
-//    - schema: FlowLinkComplianceReceiptV1
+// 1. ProofLink computes receiptHash = keccak256(abi.encode(fullReceipt))
+// 2. ProofLink submits attestation via EAS.attest():
+//    - schema: ProofLinkComplianceReceiptV1
 //    - recipient: receiver address
 //    - data: encoded receipt summary
 //    - revocable: true (for corrections)
@@ -943,7 +943,7 @@ FlowLink uses the Ethereum Attestation Service on Base for compliance receipt at
 **Why EAS over custom contracts:**
 - EAS is already deployed on Base, Ethereum, Arbitrum, Optimism
 - Standard tooling for verification (EAS SDK, GraphQL explorer)
-- Composable: other protocols can verify FlowLink attestations without custom integration
+- Composable: other protocols can verify ProofLink attestations without custom integration
 - Revocable: receipts can be revoked if compliance status changes
 
 ### 6.3 Audit Trail Format
@@ -1029,13 +1029,13 @@ Supported Chains:
   - Solana (x402 settlement support)
 
 Contract Suite:
-  1. FlowLinkComplianceAttester.sol  - EAS-based compliance attestation
+  1. ProofLinkComplianceAttester.sol  - EAS-based compliance attestation
   2. AgentIdentityExtension.sol      - ERC-8004 extension for KYA data
   3. InvoiceAnchor.sol               - Invoice hash commitment
   4. DisputeResolution.sol           - ERC-8183-compatible dispute hooks
 ```
 
-### 7.2 FlowLink Compliance Contract
+### 7.2 ProofLink Compliance Contract
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -1043,12 +1043,12 @@ pragma solidity ^0.8.24;
 
 import { IEAS, AttestationRequest, AttestationRequestData } from "@eas/contracts/IEAS.sol";
 
-contract FlowLinkComplianceAttester {
+contract ProofLinkComplianceAttester {
     IEAS public immutable eas;
     bytes32 public immutable complianceSchemaUID;
     address public complianceSigner;
 
-    // Only FlowLink's compliance signer can create attestations
+    // Only ProofLink's compliance signer can create attestations
     modifier onlyComplianceSigner() {
         require(msg.sender == complianceSigner, "Unauthorized");
         _;
@@ -1120,7 +1120,7 @@ import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 /// @notice Extension contract that stores KYA metadata for ERC-8004 agents.
 /// Does NOT modify ERC-8004 — reads from Identity Registry and stores
-/// FlowLink-specific compliance data in a separate mapping.
+/// ProofLink-specific compliance data in a separate mapping.
 contract AgentKYAExtension {
 
     // Reference to the ERC-8004 Identity Registry
@@ -1144,10 +1144,10 @@ contract AgentKYAExtension {
         _;
     }
 
-    // Only FlowLink validator can submit KYA results
-    address public flowlinkValidator;
+    // Only ProofLink validator can submit KYA results
+    address public prooflinkValidator;
     modifier onlyValidator() {
-        require(msg.sender == flowlinkValidator, "Not validator");
+        require(msg.sender == prooflinkValidator, "Not validator");
         _;
     }
 
@@ -1189,7 +1189,7 @@ pragma solidity ^0.8.24;
 
 /// @notice Minimal on-chain invoice anchor. Full invoice data lives off-chain (IPFS).
 /// This contract stores the hash commitment and tracks payment/dispute status.
-contract FlowLinkInvoiceAnchor {
+contract ProofLinkInvoiceAnchor {
 
     enum InvoiceStatus { Issued, Paid, Disputed, Cancelled, Resolved }
 
@@ -1204,7 +1204,7 @@ contract FlowLinkInvoiceAnchor {
         uint64 issuedAt;
         uint64 paidAt;
         bytes32 paymentTxHash;      // settlement transaction hash
-        bytes32 complianceReceiptId; // FlowLink compliance receipt reference
+        bytes32 complianceReceiptId; // ProofLink compliance receipt reference
     }
 
     mapping(bytes32 => Invoice) public invoices;  // invoiceHash -> Invoice
@@ -1243,7 +1243,7 @@ contract FlowLinkInvoiceAnchor {
     function markPaid(bytes32 invoiceHash, bytes32 paymentTxHash, bytes32 complianceReceiptId) external {
         Invoice storage inv = invoices[invoiceHash];
         require(inv.status == InvoiceStatus.Issued, "Not payable");
-        // In production: verify caller is authorized (FlowLink or recipient)
+        // In production: verify caller is authorized (ProofLink or recipient)
 
         inv.status = InvoiceStatus.Paid;
         inv.paidAt = uint64(block.timestamp);
@@ -1270,21 +1270,21 @@ contract FlowLinkInvoiceAnchor {
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-/// @notice ERC-8183-compatible dispute resolution using FlowLink compliance data.
+/// @notice ERC-8183-compatible dispute resolution using ProofLink compliance data.
 /// Acts as an "evaluator" in ERC-8183 job lifecycle.
-contract FlowLinkDisputeResolver {
+contract ProofLinkDisputeResolver {
 
     struct Dispute {
         bytes32 invoiceHash;
         address claimant;
         address respondent;
         string evidenceURI;         // IPFS link to dispute evidence
-        bytes32 complianceReceiptId; // FlowLink receipt for the disputed tx
+        bytes32 complianceReceiptId; // ProofLink receipt for the disputed tx
         uint64 filedAt;
         uint64 resolvedAt;
         DisputeStatus status;
         DisputeOutcome outcome;
-        address resolver;           // FlowLink or external oracle (Kleros/UMA)
+        address resolver;           // ProofLink or external oracle (Kleros/UMA)
     }
 
     enum DisputeStatus { Filed, UnderReview, Resolved }
@@ -1293,7 +1293,7 @@ contract FlowLinkDisputeResolver {
     mapping(uint256 => Dispute) public disputes;
     uint256 public disputeCount;
 
-    // FlowLink's authorized resolver addresses
+    // ProofLink's authorized resolver addresses
     mapping(address => bool) public authorizedResolvers;
 
     function fileDispute(
@@ -1340,7 +1340,7 @@ contract FlowLinkDisputeResolver {
 ### 8.1 REST API (Human-Facing Flows)
 
 ```
-Base URL: https://api.flowlink.io/v1
+Base URL: https://api.prooflink.io/v1
 
 Authentication: Bearer token (JWT) or API key
 
@@ -1382,7 +1382,7 @@ GET    /reports/sar-candidates         - SAR candidate list
 
 ```http
 POST /v1/compliance/check HTTP/1.1
-Host: api.flowlink.io
+Host: api.prooflink.io
 Authorization: Bearer <jwt>
 Content-Type: application/json
 
@@ -1390,7 +1390,7 @@ Content-Type: application/json
   "sender": {
     "address": "0x1234...",
     "chain": "eip155:8453",
-    "agentDID": "did:flowlink:base:42"
+    "agentDID": "did:prooflink:base:42"
   },
   "receiver": {
     "address": "0x5678...",
@@ -1422,7 +1422,7 @@ Response (200):
 
 ### 8.2 x402-Compatible HTTP API
 
-FlowLink exposes its own x402-gated endpoints (compliance-as-a-service via x402).
+ProofLink exposes its own x402-gated endpoints (compliance-as-a-service via x402).
 
 ```
 # Agents can pay for compliance checks via x402
@@ -1439,11 +1439,11 @@ GET /x402/compliance/screen
 
 ### 8.3 MCP Server for AI Agent Integration
 
-FlowLink exposes compliance tools as an MCP server, making compliance ambient for any MCP-compatible agent.
+ProofLink exposes compliance tools as an MCP server, making compliance ambient for any MCP-compatible agent.
 
 ```json
 {
-  "name": "flowlink-compliance",
+  "name": "prooflink-compliance",
   "version": "1.0.0",
   "description": "Compliance-as-infrastructure for AI agent payments",
   "tools": [
@@ -1519,7 +1519,7 @@ FlowLink exposes compliance tools as an MCP server, making compliance ambient fo
 ### 8.4 WebSocket for Real-Time Compliance Events
 
 ```
-WebSocket URL: wss://api.flowlink.io/v1/ws
+WebSocket URL: wss://api.prooflink.io/v1/ws
 
 Events:
   compliance.check.started     - Compliance pipeline started
@@ -1755,7 +1755,7 @@ CREATE TABLE sanctions_cache (
 | Ethereum | Alchemy | ERC-8004 registry reads, high-value attestations | $499/mo (Growth) |
 | Solana | QuickNode | x402 Solana settlement verification | $299/mo |
 
-**Rationale:** Self-hosting blockchain nodes is operationally expensive and unnecessary for FlowLink's use case. FlowLink reads from chain (registry lookups, attestation verification) and writes infrequently (attestations, KYA submissions). Managed RPC with fallback providers is the correct architecture.
+**Rationale:** Self-hosting blockchain nodes is operationally expensive and unnecessary for ProofLink's use case. ProofLink reads from chain (registry lookups, attestation verification) and writes infrequently (attestations, KYA submissions). Managed RPC with fallback providers is the correct architecture.
 
 **Fallback:** If primary provider has an outage, automatically route to secondary (Alchemy -> Infura -> public RPC).
 
@@ -1790,7 +1790,7 @@ Root Key (AWS KMS, HSM-backed)
   |
   +-- EAS Attestation Key (on-chain transaction signing)
   |     - Stored in AWS KMS with Ethereum key support
-  |     - Used by FlowLinkComplianceAttester contract
+  |     - Used by ProofLinkComplianceAttester contract
   |     - Rotation: per-quarter with contract upgrade
   |
   +-- ERC-8004 Validator Key (on-chain validation submissions)
@@ -1802,27 +1802,27 @@ Root Key (AWS KMS, HSM-backed)
   |
   +-- DID Signing Key (VC issuance for KYA credentials)
         - Ed25519, stored in KMS
-        - Used by FlowLink's DID document verification method
+        - Used by ProofLink's DID document verification method
 ```
 
 ### 10.2 Agent Wallet Security Model
 
-FlowLink does NOT custody agent funds. Agents maintain their own wallets. FlowLink's role is verification only.
+ProofLink does NOT custody agent funds. Agents maintain their own wallets. ProofLink's role is verification only.
 
 ```
 Security Boundaries:
 
-1. Agent Wallet -> NOT managed by FlowLink
+1. Agent Wallet -> NOT managed by ProofLink
    - Agent controls its own keys (MPC, TEE, or ERC-4337 smart wallet)
-   - FlowLink never has access to agent private keys
-   - FlowLink verifies agent wallet ownership via EIP-712 signed challenge
+   - ProofLink never has access to agent private keys
+   - ProofLink verifies agent wallet ownership via EIP-712 signed challenge
 
-2. Compliance Signing Key -> FlowLink HSM
+2. Compliance Signing Key -> ProofLink HSM
    - Used only for signing compliance receipts and attestations
    - Never used for financial transactions
    - Audit log of every signing operation
 
-3. On-Chain Keys -> FlowLink KMS
+3. On-Chain Keys -> ProofLink KMS
    - Used only for EAS attestations and ERC-8004 validation submissions
    - Transaction value: always 0 (attestations only, no value transfer)
    - Gas funded from a dedicated hot wallet with spending alerts
@@ -1856,7 +1856,7 @@ GDPR Compliance Strategy:
 
 1. Data Minimization:
    - Store credential HASHES, not raw PII
-   - KYA credentials reference off-chain VCs; FlowLink stores verification result, not identity data
+   - KYA credentials reference off-chain VCs; ProofLink stores verification result, not identity data
    - Sanctions screening: store result (clear/flagged), not the screening input details
 
 2. Right to Erasure (Article 17):
@@ -1961,7 +1961,7 @@ GDPR Compliance Strategy:
 | 1 | **Chainalysis API latency spikes** break <500ms SLA | High | Cache PASS results 5min; fallback to Chainalysis Free API (SDN-only) if paid API degrades; circuit breaker pattern |
 | 2 | **ERC-8004 adoption stalls** at 49K agents | Medium | Support alternative identity registries; DID resolution is registry-agnostic; ERC-8004 is preferred, not required |
 | 3 | **Protocol fragmentation** (x402/MPP/AP2 all diverge) | High | Protocol adapter pattern means adding new protocols is additive, not breaking; prioritize x402 + MPP for launch |
-| 4 | **Regulatory scope expansion** (FATF issues agent-specific guidance conflicting with FlowLink model) | Medium | Architecture is modular; jurisdictional rule engine is configurable; proactive engagement with regulators |
+| 4 | **Regulatory scope expansion** (FATF issues agent-specific guidance conflicting with ProofLink model) | Medium | Architecture is modular; jurisdictional rule engine is configurable; proactive engagement with regulators |
 | 5 | **Coinbase x402 facilitator downtime** | Medium | Support self-hosted facilitator (x402-rs) as fallback; thirdweb multi-chain facilitator as secondary |
 | 6 | **GDPR enforcement on compliance receipts** | Medium | Receipt hashes (not PII) go on-chain; PII encrypted at rest; EU data stays in EU region |
 | 7 | **Smart contract vulnerability** | High | Foundry fuzz testing; professional audit before mainnet; minimal on-chain logic (attestations only, no value custody) |
@@ -1994,17 +1994,17 @@ GDPR Compliance Strategy:
 - ERC-8004 Validation Registry integration (on-chain submission)
 - AgentKYAExtension contract deployment on Base testnet
 
-**Acceptance criteria:** An agent registered on ERC-8004 can receive a FlowLink KYA credential and have its compliance score written to the Validation Registry.
+**Acceptance criteria:** An agent registered on ERC-8004 can receive a ProofLink KYA credential and have its compliance score written to the Validation Registry.
 
 ### Phase 3: x402 Integration (4 weeks)
-**Goal:** FlowLink as compliance-aware x402 facilitator proxy.
+**Goal:** ProofLink as compliance-aware x402 facilitator proxy.
 
 - x402 middleware (Express/Hono) with ProofLink compliance hook
 - x402 compliance header injection
 - MCP server with compliance tools (5 tools)
-- x402 self-service paywall for FlowLink's own API
+- x402 self-service paywall for ProofLink's own API
 
-**Acceptance criteria:** An AI agent making an x402 payment through FlowLink's proxy receives a compliance receipt attached to the response.
+**Acceptance criteria:** An AI agent making an x402 payment through ProofLink's proxy receives a compliance receipt attached to the response.
 
 ### Phase 4: Invoice System + On-Chain (6 weeks)
 **Goal:** Agent invoice creation, anchoring, and ERP sync.
@@ -2012,7 +2012,7 @@ GDPR Compliance Strategy:
 - Invoice JSON-LD schema implementation
 - Invoice CRUD API
 - On-chain anchoring via EAS (Base)
-- FlowLinkComplianceAttester contract deployment on Base mainnet
+- ProofLinkComplianceAttester contract deployment on Base mainnet
 - InvoiceAnchor contract deployment
 - QuickBooks Online integration (first ERP)
 
@@ -2044,9 +2044,9 @@ GDPR Compliance Strategy:
 
 ## Appendix C: Open Questions
 
-1. **VASP Registration:** Does FlowLink itself need to register as a VASP/MSB in the US? Recommendation: operate as compliance infrastructure provider (not a VASP) in Phase 1; reassess when handling settlement directly.
+1. **VASP Registration:** Does ProofLink itself need to register as a VASP/MSB in the US? Recommendation: operate as compliance infrastructure provider (not a VASP) in Phase 1; reassess when handling settlement directly.
 
-2. **Dispute Resolution Authority:** Should FlowLink adjudicate disputes itself, or integrate with decentralized arbitration (Kleros/UMA)? Recommendation: FlowLink as first-party resolver in Phase 1; add Kleros integration as optional escalation path in Phase 3+.
+2. **Dispute Resolution Authority:** Should ProofLink adjudicate disputes itself, or integrate with decentralized arbitration (Kleros/UMA)? Recommendation: ProofLink as first-party resolver in Phase 1; add Kleros integration as optional escalation path in Phase 3+.
 
 3. **Solana Program Deployment:** Do we need custom Solana programs for compliance attestation, or is EVM-only (Base) sufficient for on-chain components? Recommendation: Base-only for Phase 1-4; Solana programs only if significant Solana-native agent demand materializes.
 
@@ -2054,6 +2054,6 @@ GDPR Compliance Strategy:
 
 5. **KYA Credential Pricing:** Should KYA validation be free (to drive adoption) or paid (to generate revenue)? Recommendation: free for basic validation (sanctions + ERC-8004 lookup); paid for full KYA credential issuance with vLEI verification.
 
-6. **ERC-8183 Integration Timing:** ERC-8183 (programmable escrow) has no production implementations yet. When should FlowLink integrate? Recommendation: monitor; integrate when first production deployment appears. Architecture is compatible via the DisputeResolution contract's evaluator pattern.
+6. **ERC-8183 Integration Timing:** ERC-8183 (programmable escrow) has no production implementations yet. When should ProofLink integrate? Recommendation: monitor; integrate when first production deployment appears. Architecture is compatible via the DisputeResolution contract's evaluator pattern.
 
 7. **Multi-Chain EAS Attestations:** Should compliance receipts be attested on Base only, or on every chain where the transaction settles? Recommendation: Base only (single source of truth); receipts reference the settlement chain and txHash in their data.

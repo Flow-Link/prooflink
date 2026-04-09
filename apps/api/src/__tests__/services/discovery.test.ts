@@ -12,11 +12,11 @@ import { describe, it } from "vitest";
 
 describe("buildAgentCard", () => {
   it.todo("returns a valid A2A AgentCard object with required top-level fields");
-  it.todo("includes x-flowlink-compliance extension in AgentCard");
-  it.todo("includes x-flowlink-streaming extension when model supports streaming");
-  it.todo("sets agentDid in x-flowlink-compliance from the provided agent record");
+  it.todo("includes x-prooflink-compliance extension in AgentCard");
+  it.todo("includes x-prooflink-streaming extension when model supports streaming");
+  it.todo("sets agentDid in x-prooflink-compliance from the provided agent record");
   it.todo("returns capabilities reflecting the agent's supported protocols");
-  it.todo("does not include x-flowlink-streaming when agent has no streaming config");
+  it.todo("does not include x-prooflink-streaming when agent has no streaming config");
 });
 
 // ---------------------------------------------------------------------------

@@ -1,8 +1,8 @@
-# FlowLink Comprehensive Review — 2026-03-21
+# ProofLink Comprehensive Review — 2026-03-21
 
 ## Executive Summary
 
-**30+ parallel review agents** audited every dimension of the FlowLink codebase. The project has a strong foundation — build passes, typecheck is clean, all 22 test suites pass (all tests green), and the architecture is well-structured. However, **47 critical issues** and **60+ warnings** were identified across security, compliance accuracy, concurrency, API design, type safety, smart contracts, and documentation.
+**30+ parallel review agents** audited every dimension of the ProofLink codebase. The project has a strong foundation — build passes, typecheck is clean, all 22 test suites pass (all tests green), and the architecture is well-structured. However, **47 critical issues** and **60+ warnings** were identified across security, compliance accuracy, concurrency, API design, type safety, smart contracts, and documentation.
 
 **Build Status:** ✅ All pass (build, typecheck, tests)
 **Lint Status:** ⚠️ Dashboard lint broken (Next.js deprecation)
@@ -16,7 +16,7 @@
 | # | Issue | Location | Impact |
 |---|-------|----------|--------|
 | S1 | **WebSocket auth accepts ANY string as valid API key** — no DB validation | `apps/api/src/routes/ws.ts:128-133` | Unauthenticated access to all compliance events |
-| S2 | **CORS wildcard subdomain bypass** — `origin.endsWith(domain)` matches `evil-flowlink.io` | `apps/api/src/app.ts:71-76` | Cross-origin credential theft |
+| S2 | **CORS wildcard subdomain bypass** — `origin.endsWith(domain)` matches `evil-prooflink.io` | `apps/api/src/app.ts:71-76` | Cross-origin credential theft |
 | S3 | **CORS fallback returns first allowed origin for rejected origins** instead of null | `apps/api/src/app.ts:65,78` | Complete CORS policy negation |
 | S4 | **Request signature excludes body** — MITM can replace request body after signing | `apps/api/src/middleware/auth.ts:176-178` | Request tampering |
 | S5 | **Receipts/invoices have no tenant scoping** — any API key reads any tenant's data | `apps/api/src/routes/receipts.ts:31-49`, `invoices.ts:136-155` | Data breach across tenants |
@@ -60,9 +60,9 @@
 
 | # | Issue | Location | Impact |
 |---|-------|----------|--------|
-| SC1 | **ReentrancyGuard (non-upgradeable) in UUPS proxy** | `packages/contracts/src/FlowLinkFacilitator.sol:7,26` | Storage collision |
-| SC2 | **Nonce space shared across all payers** — DoS vector | `packages/contracts/src/FlowLinkFacilitator.sol:56,236` | Griefing attack |
-| SC3 | **settle() records spending but never transfers tokens** | `packages/contracts/src/FlowLinkFacilitator.sol:228-283` | Fake settlements |
+| SC1 | **ReentrancyGuard (non-upgradeable) in UUPS proxy** | `packages/contracts/src/ProofLinkFacilitator.sol:7,26` | Storage collision |
+| SC2 | **Nonce space shared across all payers** — DoS vector | `packages/contracts/src/ProofLinkFacilitator.sol:56,236` | Griefing attack |
+| SC3 | **settle() records spending but never transfers tokens** | `packages/contracts/src/ProofLinkFacilitator.sol:228-283` | Fake settlements |
 | SC4 | **cancelInvoice deletes record** — same hash reusable | `packages/contracts/src/AgentInvoice.sol:319` | Invoice replay |
 | SC5 | **ProofLinkRegistry zero schemaUID edge case** | `packages/contracts/src/ProofLinkRegistry.sol:222` | Schema re-registration |
 
@@ -131,7 +131,7 @@
 | W16 | Webhook secret rotation not supported | `packages/core/src/webhooks/` |
 | W17 | No distributed tracing support | Codebase-wide |
 | W18 | No audit log sanitization for PII | `apps/api/src/utils/logger.ts` |
-| W19 | API key exposed in `FlowLinkTimeoutError.url` | `packages/sdk/src/http.ts:156` |
+| W19 | API key exposed in `ProofLinkTimeoutError.url` | `packages/sdk/src/http.ts:156` |
 | W20 | Health monitor torn reads on `lastStatus`/`lastHealth` | `packages/core/src/health/monitor.ts` |
 | W21 | Duplicate receipt endpoints with different response shapes | `routes/compliance.ts:225` vs `routes/receipts.ts` |
 | W22 | `PUT /identity/agents/:id/delegation` does PATCH semantics | `routes/identity.ts:454` |

@@ -1,4 +1,4 @@
-import type { ComplianceReceipt, ProofLinkReceipt } from "@flowlink/shared/types";
+import type { ComplianceReceipt, ProofLinkReceipt } from "@prooflink/shared/types";
 import type { RequestNetworkInvoice } from "./types.js";
 import { RequestFinanceAdapter } from "./adapter.js";
 
@@ -7,9 +7,9 @@ import { RequestFinanceAdapter } from "./adapter.js";
 // ---------------------------------------------------------------------------
 
 export interface ComplianceBridgeConfig {
-  /** FlowLink ProofLink API base URL */
+  /** ProofLink ProofLink API base URL */
   proofLinkApiUrl: string;
-  /** API key for FlowLink compliance service */
+  /** API key for ProofLink compliance service */
   apiKey: string;
   /** Travel Rule threshold in USD — transactions above trigger IVMS101 */
   travelRuleThresholdUsd: number;
@@ -51,15 +51,15 @@ export class ComplianceBridgeError extends Error {
 // ---------------------------------------------------------------------------
 
 /**
- * Bridge between Request Network payment flow and FlowLink compliance.
+ * Bridge between Request Network payment flow and ProofLink compliance.
  *
  * Workflow:
  * 1. Before Request Finance processes a payment, call `checkBeforePayment`
- * 2. FlowLink runs sanctions screening, AML scoring, Travel Rule
+ * 2. ProofLink runs sanctions screening, AML scoring, Travel Rule
  * 3. If approved, ProofLink receipt is attached to RN invoice metadata
  * 4. Payment proceeds (or is blocked) based on compliance decision
  *
- * This enables any Request Network payment to get FlowLink compliance
+ * This enables any Request Network payment to get ProofLink compliance
  * without modifying the Request Network protocol itself.
  */
 export class ComplianceBridge {
@@ -76,7 +76,7 @@ export class ComplianceBridge {
   // -------------------------------------------------------------------------
 
   /**
-   * Run FlowLink compliance check before a Request Network payment.
+   * Run ProofLink compliance check before a Request Network payment.
    *
    * This is the primary integration point: call this before executing
    * payment on the Request Network payment contracts.
@@ -84,18 +84,18 @@ export class ComplianceBridge {
   async checkBeforePayment(
     rnInvoice: RequestNetworkInvoice,
   ): Promise<ComplianceBridgeResult> {
-    const flowlinkInvoice = this.adapter.fromRequestNetwork(rnInvoice);
+    const prooflinkInvoice = this.adapter.fromRequestNetwork(rnInvoice);
 
     try {
-      // Call FlowLink ProofLink compliance API
+      // Call ProofLink ProofLink compliance API
       const complianceResponse = await this.callProofLink({
         sender: rnInvoice.payer.value,
         receiver: rnInvoice.payee.value,
         amount: rnInvoice.expectedAmount,
-        asset: flowlinkInvoice.currency,
+        asset: prooflinkInvoice.currency,
         chain: this.resolveCAIP2Chain(rnInvoice.currency.network),
         protocol: "DIRECT",
-        invoiceId: flowlinkInvoice.invoiceId,
+        invoiceId: prooflinkInvoice.invoiceId,
       });
 
       const approved = complianceResponse.overallStatus === "APPROVED";
@@ -108,7 +108,7 @@ export class ComplianceBridge {
             sender: rnInvoice.payer.value,
             receiver: rnInvoice.payee.value,
             amount: rnInvoice.expectedAmount,
-            asset: flowlinkInvoice.currency,
+            asset: prooflinkInvoice.currency,
             complianceDecision: {
               status: "APPROVED",
               riskScore: complianceResponse.riskScore,
@@ -119,7 +119,7 @@ export class ComplianceBridge {
               timestamp: complianceResponse.timestamp,
               ttl: 300,
             },
-            invoiceId: flowlinkInvoice.invoiceId,
+            invoiceId: prooflinkInvoice.invoiceId,
             attestationUid: complianceResponse.easAttestationUid,
             ipfsCid: complianceResponse.ipfsCid,
             createdAt: new Date().toISOString(),
@@ -152,7 +152,7 @@ export class ComplianceBridge {
       }
 
       throw new ComplianceBridgeError(
-        "FlowLink compliance check failed and failOpen is disabled",
+        "ProofLink compliance check failed and failOpen is disabled",
         error,
       );
     }
@@ -166,7 +166,7 @@ export class ComplianceBridge {
    * Submit Travel Rule (IVMS101) data for a Request Network payment.
    *
    * Call this for transactions above the Travel Rule threshold.
-   * FlowLink handles VASP-to-VASP transmission via Notabene/OpenVASP.
+   * ProofLink handles VASP-to-VASP transmission via Notabene/OpenVASP.
    */
   async submitTravelRule(params: {
     rnInvoice: RequestNetworkInvoice;
@@ -211,7 +211,7 @@ export class ComplianceBridge {
 
   /**
    * Attach an existing ProofLink receipt to a Request Network invoice.
-   * Used to retroactively mark RN invoices as FlowLink-compliant.
+   * Used to retroactively mark RN invoices as ProofLink-compliant.
    */
   attachProofLinkReceipt(
     rnInvoice: RequestNetworkInvoice,
@@ -221,7 +221,7 @@ export class ComplianceBridge {
       ...rnInvoice,
       contentData: {
         ...rnInvoice.contentData,
-        flowlinkCompliance: {
+        prooflinkCompliance: {
           proofLinkReceiptId: receipt.complianceDecision.receiptId,
           complianceStatus: receipt.complianceDecision.status === "APPROVED"
             ? "verified"
@@ -290,7 +290,7 @@ export class ComplianceBridge {
       ...rnInvoice,
       contentData: {
         ...rnInvoice.contentData,
-        flowlinkCompliance: {
+        prooflinkCompliance: {
           proofLinkReceiptId: receipt.receiptId,
           complianceStatus: approved ? "verified" : "blocked",
           sanctionsCleared: receipt.checksPerformed.some(

@@ -1,4 +1,4 @@
-# FlowLink — Final Consistency Check
+# ProofLink — Final Consistency Check
 **Reviewer:** Final Comprehensive Review (Consistency Pass)
 **Date:** March 20, 2026
 **Documents reviewed:**
@@ -53,7 +53,7 @@ Each row shows the value of a critical metric as it appears in each document. A 
 | TRM Labs pricing | $100K+/yr (Slide 5) | $100K+/yr | $100K–$1.4M/yr | $100K+/yr; $693K average | — | — | YES |
 | Design partner threshold | $10M+ cross-border payables/yr (deck) | $10M+ cross-border payables/yr | — | — | Flags vs exec summary $5M+/month as ambiguous | $5M–$50M/month (W4-3) | **FAIL — deck uses annual figure; action plan uses monthly figures; exec summary (per final_quality_check) uses yet another unit** |
 | Request Finance monthly volume | $27.2M (implied) | — | $27.2M Dec 2025 | $27.2M | — | — | YES |
-| Request Finance pricing | $499/mo + 15bps (competitive matrix) | — | $600/month Basic | $600/month (Q11) | — | — | **FAIL — Slide 5 competitive matrix shows FlowLink pricing of $499/mo, implicitly comparing to Request Finance, but does not clearly state Request Finance at $600. Unit economics correctly states $600. Minor but creates reader confusion in Slide 5.** |
+| Request Finance pricing | $499/mo + 15bps (competitive matrix) | — | $600/month Basic | $600/month (Q11) | — | — | **FAIL — Slide 5 competitive matrix shows ProofLink pricing of $499/mo, implicitly comparing to Request Finance, but does not clearly state Request Finance at $600. Unit economics correctly states $600. Minor but creates reader confusion in Slide 5.** |
 | Chainalysis valuation | — | $8.6B (Slide 16) | $2.5B (2024, down from $8.6B peak) | $2.5B (Q9) | — | — | **FAIL — Slide 16 cites $8.6B (peak 2022) without noting it is the historical peak, while FAQ and unit economics correctly use $2.5B (current). An uninformed reader of Slide 16 will assume current valuation is $8.6B.** |
 | Rain valuation | $1.95B (Slide 12) | $1.95B | — | $1.95B | — | — | YES |
 | a16z fund size | $2B | $2B | — | — | — | — | YES |

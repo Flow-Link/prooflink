@@ -1,5 +1,5 @@
 import type {
-  FlowLinkConfig,
+  ProofLinkConfig,
   ResourceServerExtension,
   PaymentPayload,
   PaymentRequirements,
@@ -7,25 +7,25 @@ import type {
 import { payloadKey } from "./hooks/before-verify.js";
 
 // ---------------------------------------------------------------------------
-// FlowLink ResourceServerExtension
+// ProofLink ResourceServerExtension
 // ---------------------------------------------------------------------------
 
-export interface FlowLinkExtensionDeps {
-  config: FlowLinkConfig;
+export interface ProofLinkExtensionDeps {
+  config: ProofLinkConfig;
   settledProofLinks: Map<string, { hash: string; timestamp: number }>;
 }
 
 /**
- * Creates the FlowLink x402 ResourceServerExtension.
+ * Creates the ProofLink x402 ResourceServerExtension.
  *
  * - `enrichPaymentRequiredResponse()` — adds compliance policy info to 402 response headers
  * - `enrichSettlementResponse()` — adds ProofLink receipt hash to settlement response
  */
-export function createFlowLinkExtension(deps: FlowLinkExtensionDeps): ResourceServerExtension {
+export function createProofLinkExtension(deps: ProofLinkExtensionDeps): ResourceServerExtension {
   const { config, settledProofLinks } = deps;
 
   return {
-    key: "flowlink",
+    key: "prooflink",
 
     async enrichPaymentRequiredResponse(
       _declaration: Record<string, unknown>,
@@ -33,7 +33,7 @@ export function createFlowLinkExtension(deps: FlowLinkExtensionDeps): ResourceSe
     ): Promise<Record<string, unknown>> {
       return {
         complianceRequired: true,
-        provider: "flowlink",
+        provider: "prooflink",
         version: "0.1.0",
         sanctionsLists: config.policy.sanctionsLists,
         travelRuleThresholdUsd: config.policy.travelRuleThresholdUsd,
@@ -55,7 +55,7 @@ export function createFlowLinkExtension(deps: FlowLinkExtensionDeps): ResourceSe
 
       return {
         complianceVerified: true,
-        provider: "flowlink",
+        provider: "prooflink",
         proofLinkHash: entry?.hash ?? null,
       };
     },

@@ -12,7 +12,7 @@ import type { IssueKYACredentialInput } from "../../services/kya-issuer.js";
 
 function makeInput(overrides: Partial<IssueKYACredentialInput> = {}): IssueKYACredentialInput {
   return {
-    agentDid: "did:web:agent.flowlink.io",
+    agentDid: "did:web:agent.prooflink.io",
     controllingEntityName: "Acme Corp",
     walletAddress: "0xABCDEF1234567890ABCDEF1234567890ABCDEF12",
     delegationScope: {
@@ -191,10 +191,10 @@ describe("issueKYACredential + verifyCredentialSignature", () => {
   // Credential structure
   // -------------------------------------------------------------------------
 
-  it("credential has @context with W3C and FlowLink context URLs", () => {
+  it("credential has @context with W3C and ProofLink context URLs", () => {
     const { credential } = issueKYACredential(makeInput());
     expect(credential["@context"]).toContain("https://www.w3.org/2018/credentials/v1");
-    expect(credential["@context"]).toContain("https://flowlink.io/credentials/kya/v1");
+    expect(credential["@context"]).toContain("https://prooflink.io/credentials/kya/v1");
   });
 
   it("credential type includes VerifiableCredential and KYACredential", () => {
@@ -210,7 +210,7 @@ describe("issueKYACredential + verifyCredentialSignature", () => {
 
   it("credential proof.verificationMethod references the issuer DID", () => {
     const { credential } = issueKYACredential(makeInput());
-    expect(credential.proof.verificationMethod).toContain("did:web:flowlink.io");
+    expect(credential.proof.verificationMethod).toContain("did:web:prooflink.io");
   });
 
   it("credential proof.proofPurpose is assertionMethod", () => {
@@ -218,14 +218,14 @@ describe("issueKYACredential + verifyCredentialSignature", () => {
     expect(credential.proof.proofPurpose).toBe("assertionMethod");
   });
 
-  it("credential issuer.id is did:web:flowlink.io", () => {
+  it("credential issuer.id is did:web:prooflink.io", () => {
     const { credential } = issueKYACredential(makeInput());
-    expect((credential.issuer as { id: string }).id).toBe("did:web:flowlink.io");
+    expect((credential.issuer as { id: string }).id).toBe("did:web:prooflink.io");
   });
 
-  it("credential issuer.name is FlowLink", () => {
+  it("credential issuer.name is ProofLink", () => {
     const { credential } = issueKYACredential(makeInput());
-    expect((credential.issuer as { name: string }).name).toBe("FlowLink");
+    expect((credential.issuer as { name: string }).name).toBe("ProofLink");
   });
 
   it("credential id is a urn:uuid: string", () => {

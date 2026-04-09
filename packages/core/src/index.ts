@@ -1,17 +1,17 @@
 // ---------------------------------------------------------------------------
-// @flowlink/core — ProofLink Compliance Decision Engine
+// @prooflink/core — ProofLink Compliance Decision Engine
 // ---------------------------------------------------------------------------
 
 // Engine
 export { ProofLinkEngine } from "./engine/prooflink.js";
-export type { ComplianceRequest, ProofLinkEvents } from "./engine/prooflink.js";
+export type { ComplianceRequest } from "./engine/prooflink.js";
 
 // Events
 export { TypedEventEmitter } from "./events/emitter.js";
 export type {
-  FlowLinkEvents,
-  FlowLinkEventName,
-  FlowLinkEventListener,
+  ProofLinkEvents,
+  ProofLinkEventName,
+  ProofLinkEventListener,
 } from "./events/emitter.js";
 
 // Sanctions
@@ -80,7 +80,7 @@ export type {
 // Plugins
 export { PluginManager } from "./plugins/index.js";
 export type {
-  FlowLinkPlugin,
+  ProofLinkPlugin,
   PluginContext,
   PluginDecisionContext,
 } from "./plugins/index.js";

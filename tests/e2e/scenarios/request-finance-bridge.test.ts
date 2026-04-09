@@ -1,14 +1,14 @@
 /**
- * E2E: Request Finance Bridge — FlowLink ↔ Request Network
+ * E2E: Request Finance Bridge — ProofLink ↔ Request Network
  *
  * Tests the RequestFinanceAdapter and the full round-trip:
- * 1. Create invoice in FlowLink format (AgentInvoice)
+ * 1. Create invoice in ProofLink format (AgentInvoice)
  * 2. Convert to Request Network format (toRequestNetwork)
  *    - Verify currency, amounts, parties, chain mapped correctly
- *    - Verify contentData populated with FlowLink invoice metadata
+ *    - Verify contentData populated with ProofLink invoice metadata
  * 3. Run compliance check — simulate the compliance pipeline
- * 4. Attach compliance stamp to FlowLink invoice
- * 5. Convert back to FlowLink format (fromRequestNetwork)
+ * 4. Attach compliance stamp to ProofLink invoice
+ * 5. Convert back to ProofLink format (fromRequestNetwork)
  *    - Verify compliance stamp preserved through the round-trip
  * 6. Verify state sync (syncState)
  *
@@ -21,7 +21,7 @@
 
 import { describe, expect, it } from "vitest";
 import { RequestFinanceAdapter } from "../../../packages/integrations/request-finance/src/adapter.js";
-import type { AgentInvoice, ComplianceStamp } from "@flowlink/shared/types";
+import type { AgentInvoice, ComplianceStamp } from "@prooflink/shared/types";
 import type { RequestNetworkInvoice } from "../../../packages/integrations/request-finance/src/types.js";
 
 // ---------------------------------------------------------------------------
@@ -32,22 +32,22 @@ const SELLER_WALLET = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 const BUYER_WALLET = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
 const NOW = "2026-03-20T12:00:00.000Z";
 
-function makeFlowLinkInvoice(overrides: Partial<AgentInvoice> = {}): AgentInvoice {
+function makeProofLinkInvoice(overrides: Partial<AgentInvoice> = {}): AgentInvoice {
   return {
-    "@context": ["https://schema.org", "https://flowlink.io/invoices/v1"],
+    "@context": ["https://schema.org", "https://prooflink.io/invoices/v1"],
     "@type": "Invoice",
     invoiceId: "INV-2026-0042",
     state: "ISSUED",
     seller: {
       walletAddress: SELLER_WALLET,
-      agentId: "did:flowlink:agent:seller-001",
+      agentId: "did:prooflink:agent:seller-001",
       legalName: "Acme Compute Ltd",
       taxId: "US123456789",
     },
     buyer: {
       walletAddress: BUYER_WALLET,
-      agentId: "did:flowlink:agent:buyer-001",
-      legalName: "FlowLink Client",
+      agentId: "did:prooflink:agent:buyer-001",
+      legalName: "ProofLink Client",
     },
     lineItems: [
       {
@@ -97,9 +97,9 @@ function makeRequestNetworkInvoice(overrides: Partial<RequestNetworkInvoice> = {
     timestamp: Math.floor(new Date(NOW).getTime() / 1000),
     creationDate: NOW,
     contentData: {
-      reason: "FlowLink Invoice INV-2026-0042",
-      createdWith: "FlowLink",
-      builderId: "flowlink-integration",
+      reason: "ProofLink Invoice INV-2026-0042",
+      createdWith: "ProofLink",
+      builderId: "prooflink-integration",
       invoiceNumber: "INV-2026-0042",
       invoiceItems: [
         {
@@ -110,7 +110,7 @@ function makeRequestNetworkInvoice(overrides: Partial<RequestNetworkInvoice> = {
         },
       ],
       sellerInfo: { businessName: "Acme Compute Ltd", taxRegistration: "US123456789" },
-      buyerInfo: { businessName: "FlowLink Client" },
+      buyerInfo: { businessName: "ProofLink Client" },
     },
     ...overrides,
   };
@@ -124,19 +124,19 @@ describe("E2E: Request Finance Bridge", () => {
   const adapter = new RequestFinanceAdapter();
 
   // -------------------------------------------------------------------------
-  // Step 1 & 2: FlowLink → Request Network
+  // Step 1 & 2: ProofLink → Request Network
   // -------------------------------------------------------------------------
 
-  describe("toRequestNetwork — FlowLink invoice to Request Network format", () => {
+  describe("toRequestNetwork — ProofLink invoice to Request Network format", () => {
     it("should map seller address to payee", () => {
-      const rn = adapter.toRequestNetwork(makeFlowLinkInvoice());
+      const rn = adapter.toRequestNetwork(makeProofLinkInvoice());
 
       expect(rn.payee.type).toBe("ethereumAddress");
       expect(rn.payee.value).toBe(SELLER_WALLET);
     });
 
     it("should map buyer address to payer", () => {
-      const rn = adapter.toRequestNetwork(makeFlowLinkInvoice());
+      const rn = adapter.toRequestNetwork(makeProofLinkInvoice());
 
       expect(rn.payer.type).toBe("ethereumAddress");
       expect(rn.payer.value).toBe(BUYER_WALLET);
@@ -144,7 +144,7 @@ describe("E2E: Request Finance Bridge", () => {
 
     it("should map USDC on Base chain to correct ERC20 contract address", () => {
       const rn = adapter.toRequestNetwork(
-        makeFlowLinkInvoice({
+        makeProofLinkInvoice({
           paymentProtocol: "X402",
           paymentProof: {
             protocol: "X402",
@@ -163,41 +163,41 @@ describe("E2E: Request Finance Bridge", () => {
     });
 
     it("should convert totalAmount to smallest unit (6 decimals for USDC)", () => {
-      const rn = adapter.toRequestNetwork(makeFlowLinkInvoice());
+      const rn = adapter.toRequestNetwork(makeProofLinkInvoice());
 
       // 45 USDC × 10^6 = 45_000_000
       expect(rn.expectedAmount).toBe("45000000");
     });
 
     it("should populate contentData with invoice metadata", () => {
-      const rn = adapter.toRequestNetwork(makeFlowLinkInvoice());
+      const rn = adapter.toRequestNetwork(makeProofLinkInvoice());
 
-      expect(rn.contentData?.builderId).toBe("flowlink-integration");
-      expect(rn.contentData?.createdWith).toBe("FlowLink");
+      expect(rn.contentData?.builderId).toBe("prooflink-integration");
+      expect(rn.contentData?.createdWith).toBe("ProofLink");
       expect(rn.contentData?.invoiceNumber).toBe("INV-2026-0042");
       expect(rn.contentData?.invoiceItems).toHaveLength(1);
     });
 
     it("should include sellerInfo when legalName/taxId are present", () => {
-      const rn = adapter.toRequestNetwork(makeFlowLinkInvoice());
+      const rn = adapter.toRequestNetwork(makeProofLinkInvoice());
 
       expect(rn.contentData?.sellerInfo?.businessName).toBe("Acme Compute Ltd");
       expect(rn.contentData?.sellerInfo?.taxRegistration).toBe("US123456789");
     });
 
     it("should include buyerInfo when legalName is present", () => {
-      const rn = adapter.toRequestNetwork(makeFlowLinkInvoice());
+      const rn = adapter.toRequestNetwork(makeProofLinkInvoice());
 
-      expect(rn.contentData?.buyerInfo?.businessName).toBe("FlowLink Client");
+      expect(rn.contentData?.buyerInfo?.businessName).toBe("ProofLink Client");
     });
 
-    it("should embed compliance stamp into contentData.flowlinkCompliance when stamp present", () => {
-      const invoice = makeFlowLinkInvoice({
+    it("should embed compliance stamp into contentData.prooflinkCompliance when stamp present", () => {
+      const invoice = makeProofLinkInvoice({
         complianceStamp: makeComplianceStamp(),
       });
       const rn = adapter.toRequestNetwork(invoice);
 
-      const compliance = rn.contentData?.flowlinkCompliance;
+      const compliance = rn.contentData?.prooflinkCompliance;
       expect(compliance).toBeDefined();
       expect(compliance?.proofLinkReceiptId).toBe("pl_01HW4K9X7MNPQ3R5T7W9A");
       expect(compliance?.sanctionsCleared).toBe(true);
@@ -206,13 +206,13 @@ describe("E2E: Request Finance Bridge", () => {
     });
 
     it("should set requestId prefixed with fl-", () => {
-      const rn = adapter.toRequestNetwork(makeFlowLinkInvoice());
+      const rn = adapter.toRequestNetwork(makeProofLinkInvoice());
 
       expect(rn.requestId).toBe("fl-INV-2026-0042");
     });
 
     it("should map invoice timestamp from createdAt", () => {
-      const rn = adapter.toRequestNetwork(makeFlowLinkInvoice());
+      const rn = adapter.toRequestNetwork(makeProofLinkInvoice());
 
       const expectedTimestamp = Math.floor(new Date(NOW).getTime() / 1000);
       expect(rn.timestamp).toBe(expectedTimestamp);
@@ -220,32 +220,32 @@ describe("E2E: Request Finance Bridge", () => {
 
     it("should map dueDate when present", () => {
       const dueDate = "2026-04-20T00:00:00.000Z";
-      const rn = adapter.toRequestNetwork(makeFlowLinkInvoice({ dueDate }));
+      const rn = adapter.toRequestNetwork(makeProofLinkInvoice({ dueDate }));
 
       expect(rn.paymentDueDate).toBe(dueDate);
     });
 
     it("should set ipfsCid from invoiceUrl when present", () => {
       const invoiceUrl = "ipfs://QmTestHash123";
-      const rn = adapter.toRequestNetwork(makeFlowLinkInvoice({ invoiceUrl }));
+      const rn = adapter.toRequestNetwork(makeProofLinkInvoice({ invoiceUrl }));
 
       expect(rn.ipfsCid).toBe(invoiceUrl);
     });
 
     it("should map ISSUED state to created in Request Network", () => {
-      const rn = adapter.toRequestNetwork(makeFlowLinkInvoice({ state: "ISSUED" }));
+      const rn = adapter.toRequestNetwork(makeProofLinkInvoice({ state: "ISSUED" }));
 
       expect(rn.state).toBe("created");
     });
 
     it("should map PAID state to paid in Request Network", () => {
-      const rn = adapter.toRequestNetwork(makeFlowLinkInvoice({ state: "PAID" }));
+      const rn = adapter.toRequestNetwork(makeProofLinkInvoice({ state: "PAID" }));
 
       expect(rn.state).toBe("paid");
     });
 
     it("should map CANCELLED state to canceled in Request Network", () => {
-      const rn = adapter.toRequestNetwork(makeFlowLinkInvoice({ state: "CANCELLED" }));
+      const rn = adapter.toRequestNetwork(makeProofLinkInvoice({ state: "CANCELLED" }));
 
       expect(rn.state).toBe("canceled");
     });
@@ -276,10 +276,10 @@ describe("E2E: Request Finance Bridge", () => {
   });
 
   // -------------------------------------------------------------------------
-  // Step 5: Request Network → FlowLink (round-trip)
+  // Step 5: Request Network → ProofLink (round-trip)
   // -------------------------------------------------------------------------
 
-  describe("fromRequestNetwork — Request Network invoice to FlowLink format", () => {
+  describe("fromRequestNetwork — Request Network invoice to ProofLink format", () => {
     it("should map payee to seller.walletAddress", () => {
       const fl = adapter.fromRequestNetwork(makeRequestNetworkInvoice());
 
@@ -311,19 +311,19 @@ describe("E2E: Request Finance Bridge", () => {
       expect(fl.seller.legalName).toBe("Acme Compute Ltd");
     });
 
-    it("should map RN created state to FlowLink ISSUED state", () => {
+    it("should map RN created state to ProofLink ISSUED state", () => {
       const fl = adapter.fromRequestNetwork(makeRequestNetworkInvoice({ state: "created" }));
 
       expect(fl.state).toBe("ISSUED");
     });
 
-    it("should map RN paid state to FlowLink PAID state", () => {
+    it("should map RN paid state to ProofLink PAID state", () => {
       const fl = adapter.fromRequestNetwork(makeRequestNetworkInvoice({ state: "paid" }));
 
       expect(fl.state).toBe("PAID");
     });
 
-    it("should map RN canceled state to FlowLink CANCELLED state", () => {
+    it("should map RN canceled state to ProofLink CANCELLED state", () => {
       const fl = adapter.fromRequestNetwork(makeRequestNetworkInvoice({ state: "canceled" }));
 
       expect(fl.state).toBe("CANCELLED");
@@ -370,18 +370,18 @@ describe("E2E: Request Finance Bridge", () => {
   // -------------------------------------------------------------------------
 
   describe("Round-trip compliance stamp preservation", () => {
-    it("should preserve compliance stamp through FlowLink → RN → FlowLink", () => {
+    it("should preserve compliance stamp through ProofLink → RN → ProofLink", () => {
       const originalStamp = makeComplianceStamp();
-      const invoice = makeFlowLinkInvoice({ complianceStamp: originalStamp });
+      const invoice = makeProofLinkInvoice({ complianceStamp: originalStamp });
 
-      // FlowLink → RN
+      // ProofLink → RN
       const rnInvoice = adapter.toRequestNetwork(invoice);
 
       // Verify stamp embedded in RN format
-      expect(rnInvoice.contentData?.flowlinkCompliance?.proofLinkReceiptId)
+      expect(rnInvoice.contentData?.prooflinkCompliance?.proofLinkReceiptId)
         .toBe(originalStamp.proofLinkReceiptId);
 
-      // RN → FlowLink
+      // RN → ProofLink
       const recoveredInvoice = adapter.fromRequestNetwork(rnInvoice);
 
       // Compliance stamp must survive the round-trip
@@ -397,7 +397,7 @@ describe("E2E: Request Finance Bridge", () => {
       const stamp = makeComplianceStamp({
         easAttestationUid: "0xABCDEF1234567890abcdef1234567890ABCDEF1234567890abcdef1234567890AB",
       });
-      const invoice = makeFlowLinkInvoice({ complianceStamp: stamp });
+      const invoice = makeProofLinkInvoice({ complianceStamp: stamp });
 
       const rn = adapter.toRequestNetwork(invoice);
       const recovered = adapter.fromRequestNetwork(rn);
@@ -405,7 +405,7 @@ describe("E2E: Request Finance Bridge", () => {
       expect(recovered.complianceStamp?.easAttestationUid).toBe(stamp.easAttestationUid);
     });
 
-    it("should return undefined complianceStamp when RN has no flowlinkCompliance data", () => {
+    it("should return undefined complianceStamp when RN has no prooflinkCompliance data", () => {
       const fl = adapter.fromRequestNetwork(makeRequestNetworkInvoice());
 
       // No compliance data in the fixture's contentData
@@ -448,7 +448,7 @@ describe("E2E: Request Finance Bridge", () => {
   // Step 6: State sync
   // -------------------------------------------------------------------------
 
-  describe("syncState — FlowLink ↔ Request Network state synchronisation", () => {
+  describe("syncState — ProofLink ↔ Request Network state synchronisation", () => {
     it("should detect state change from ISSUED to PAID when RN reports paid", () => {
       const { newState, changed } = adapter.syncState("ISSUED", "paid");
 
@@ -464,27 +464,27 @@ describe("E2E: Request Finance Bridge", () => {
     });
 
     it("should report changed=false when state has not changed", () => {
-      // RN created maps to FlowLink ISSUED
+      // RN created maps to ProofLink ISSUED
       const { newState, changed } = adapter.syncState("ISSUED", "created");
 
       expect(newState).toBe("ISSUED");
       expect(changed).toBe(false);
     });
 
-    it("should handle overpaid RN state as FlowLink PAID", () => {
+    it("should handle overpaid RN state as ProofLink PAID", () => {
       const { newState } = adapter.syncState("ISSUED", "overpaid");
 
       expect(newState).toBe("PAID");
     });
 
-    it("should handle underpaid RN state as FlowLink ISSUED (still open)", () => {
+    it("should handle underpaid RN state as ProofLink ISSUED (still open)", () => {
       const { newState } = adapter.syncState("ISSUED", "underpaid");
 
       // underpaid means invoice not fully settled — stays ISSUED
       expect(newState).toBe("ISSUED");
     });
 
-    it("should handle accepted RN state as FlowLink ISSUED", () => {
+    it("should handle accepted RN state as ProofLink ISSUED", () => {
       const { newState, changed } = adapter.syncState("ISSUED", "accepted");
 
       expect(newState).toBe("ISSUED");

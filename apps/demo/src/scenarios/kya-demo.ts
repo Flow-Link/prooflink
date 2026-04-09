@@ -2,7 +2,7 @@ import chalk from "chalk";
 import oraImport from "ora";
 
 import {
-  flowlinkLog,
+  prooflinkLog,
   agentLog,
   x402Log,
   statusCleared,
@@ -70,9 +70,9 @@ export async function runKyaDemo(): Promise<void> {
   await sleep(regLatency + 200);
   spinnerReg.succeed(chalk.gray("Agent registered on-chain"));
 
-  flowlinkLog(`Agent DID: ${chalk.cyan(AGENT_DID)}`);
-  flowlinkLog(`Registration tx: ${chalk.white(truncateAddress(generateTxHash()))}`);
-  flowlinkLog(`Chain: ${chalk.white("Base (8453)")}`);
+  prooflinkLog(`Agent DID: ${chalk.cyan(AGENT_DID)}`);
+  prooflinkLog(`Registration tx: ${chalk.white(truncateAddress(generateTxHash()))}`);
+  prooflinkLog(`Chain: ${chalk.white("Base (8453)")}`);
 
   reporter.addEvent({
     type: "kya",
@@ -93,7 +93,7 @@ export async function runKyaDemo(): Promise<void> {
 
   stepHeader("\U0001F50D", "Verifying KYA credential...");
 
-  console.log(chalk.gray("  FlowLink verifies the agent's identity chain:\n"));
+  console.log(chalk.gray("  ProofLink verifies the agent's identity chain:\n"));
 
   // Sub-step: Resolve DID
   const spinnerDid = ora({
@@ -104,7 +104,7 @@ export async function runKyaDemo(): Promise<void> {
   const didLatency = Math.floor(Math.random() * 10) + 15;
   await sleep(didLatency + 100);
   spinnerDid.stop();
-  flowlinkLog(`DID resolution: ${chalk.green.bold("RESOLVED")} ${chalk.gray(`(${didLatency}ms)`)}`);
+  prooflinkLog(`DID resolution: ${chalk.green.bold("RESOLVED")} ${chalk.gray(`(${didLatency}ms)`)}`);
 
   reporter.addEvent({
     type: "kya",
@@ -122,9 +122,9 @@ export async function runKyaDemo(): Promise<void> {
   const leiLatency = Math.floor(Math.random() * 20) + 40;
   await sleep(leiLatency + 100);
   spinnerLei.stop();
-  flowlinkLog(`Operator LEI: ${chalk.green.bold("VERIFIED")} ${chalk.gray(`(${leiLatency}ms)`)}`);
-  flowlinkLog(`  Entity: ${chalk.white("Acme AI Corp")} | Jurisdiction: ${chalk.white("US-DE")}`);
-  flowlinkLog(`  LEI status: ${chalk.green("ISSUED")} | Next renewal: ${chalk.gray("2027-01-15")}`);
+  prooflinkLog(`Operator LEI: ${chalk.green.bold("VERIFIED")} ${chalk.gray(`(${leiLatency}ms)`)}`);
+  prooflinkLog(`  Entity: ${chalk.white("Acme AI Corp")} | Jurisdiction: ${chalk.white("US-DE")}`);
+  prooflinkLog(`  LEI status: ${chalk.green("ISSUED")} | Next renewal: ${chalk.gray("2027-01-15")}`);
 
   reporter.addEvent({
     type: "kya",
@@ -142,7 +142,7 @@ export async function runKyaDemo(): Promise<void> {
   const opSanctionsLatency = Math.floor(Math.random() * 15) + 25;
   await sleep(opSanctionsLatency + 80);
   spinnerOpSanctions.stop();
-  flowlinkLog(`Operator sanctions: ${chalk.green.bold("CLEARED")} ${chalk.gray(`(${opSanctionsLatency}ms)`)}`);
+  prooflinkLog(`Operator sanctions: ${chalk.green.bold("CLEARED")} ${chalk.gray(`(${opSanctionsLatency}ms)`)}`);
 
   reporter.addEvent({
     type: "screening",
@@ -160,8 +160,8 @@ export async function runKyaDemo(): Promise<void> {
   const tierLatency = Math.floor(Math.random() * 8) + 10;
   await sleep(tierLatency + 80);
   spinnerTier.stop();
-  flowlinkLog(`Autonomy tier: ${chalk.white("SEMI_AUTONOMOUS")} ${chalk.gray("(Tier 2 of 4)")}`);
-  flowlinkLog(`  Spending limit: ${chalk.white("$10,000/day")} | Approval: ${chalk.white("auto < $5,000")}`);
+  prooflinkLog(`Autonomy tier: ${chalk.white("SEMI_AUTONOMOUS")} ${chalk.gray("(Tier 2 of 4)")}`);
+  prooflinkLog(`  Spending limit: ${chalk.white("$10,000/day")} | Approval: ${chalk.white("auto < $5,000")}`);
 
   // Sub-step: Compute trust score
   const spinnerTrust = ora({
@@ -174,12 +174,12 @@ export async function runKyaDemo(): Promise<void> {
   spinnerTrust.stop();
 
   const trustScore = 87;
-  flowlinkLog(`Trust score: ${chalk.green.bold(`${trustScore}/100`)} ${chalk.gray(`(${trustLatency}ms)`)}`);
-  flowlinkLog(`  Components:`);
-  flowlinkLog(`    Operator reputation:   ${chalk.green("92/100")}`);
-  flowlinkLog(`    Transaction history:   ${chalk.green("85/100")}`);
-  flowlinkLog(`    Identity completeness: ${chalk.green("90/100")}`);
-  flowlinkLog(`    Time on registry:      ${chalk.yellow("72/100")} ${chalk.gray("(< 6 months)")}`);
+  prooflinkLog(`Trust score: ${chalk.green.bold(`${trustScore}/100`)} ${chalk.gray(`(${trustLatency}ms)`)}`);
+  prooflinkLog(`  Components:`);
+  prooflinkLog(`    Operator reputation:   ${chalk.green("92/100")}`);
+  prooflinkLog(`    Transaction history:   ${chalk.green("85/100")}`);
+  prooflinkLog(`    Identity completeness: ${chalk.green("90/100")}`);
+  prooflinkLog(`    Time on registry:      ${chalk.yellow("72/100")} ${chalk.gray("(< 6 months)")}`);
 
   reporter.addEvent({
     type: "kya",
@@ -212,8 +212,8 @@ export async function runKyaDemo(): Promise<void> {
   agentLog("Initiating payment with KYA credential attached...");
   await sleep(200);
 
-  flowlinkLog("Intercepting x402 payment...");
-  flowlinkLog(`KYA credential: ${chalk.green.bold("ATTACHED")} ${chalk.gray("(pre-verified, skip re-check)")}`);
+  prooflinkLog("Intercepting x402 payment...");
+  prooflinkLog(`KYA credential: ${chalk.green.bold("ATTACHED")} ${chalk.gray("(pre-verified, skip re-check)")}`);
   await sleep(150);
 
   // Screen addresses
@@ -264,8 +264,8 @@ export async function runKyaDemo(): Promise<void> {
   const easUid = generateEasUid();
   const signature = generateSignature();
 
-  flowlinkLog(`ProofLink receipt: ${chalk.white(receiptId)}`);
-  flowlinkLog(`EAS attestation: ${chalk.white(truncateAddress(easUid))}`);
+  prooflinkLog(`ProofLink receipt: ${chalk.white(receiptId)}`);
+  prooflinkLog(`EAS attestation: ${chalk.white(truncateAddress(easUid))}`);
 
   const receipt: ReceiptData = {
     receiptId,
@@ -275,7 +275,7 @@ export async function runKyaDemo(): Promise<void> {
       { checkType: "KYA_VERIFICATION", result: "PASSED", provider: "ERC-8004 Registry", latencyMs: kyaTotalLatency },
       { checkType: "OPERATOR_LEI", result: "PASSED", provider: "GLEIF API", latencyMs: leiLatency },
       { checkType: "SANCTIONS_SCREENING", result: "PASSED", provider: "Chainalysis KYT", latencyMs: screenLatency },
-      { checkType: "AML_MONITORING", result: "PASSED", provider: "FlowLink Engine", latencyMs: 12 },
+      { checkType: "AML_MONITORING", result: "PASSED", provider: "ProofLink Engine", latencyMs: 12 },
       { checkType: "TRAVEL_RULE", result: "SKIPPED", provider: "N/A (below threshold)", latencyMs: 0 },
     ],
     travelRuleStatus: "NOT_REQUIRED",
@@ -289,9 +289,9 @@ export async function runKyaDemo(): Promise<void> {
 
   // KYA credential JSON
   formatJson("KYA Credential (Verifiable)", {
-    "@context": ["https://www.w3.org/2018/credentials/v1", "https://flowlink.finance/kya/v1"],
+    "@context": ["https://www.w3.org/2018/credentials/v1", "https://prooflink.finance/kya/v1"],
     type: ["VerifiableCredential", "KnowYourAgentCredential"],
-    issuer: "did:flowlink:compliance-engine",
+    issuer: "did:prooflink:compliance-engine",
     issuanceDate: new Date().toISOString(),
     credentialSubject: {
       id: AGENT_DID,
@@ -308,7 +308,7 @@ export async function runKyaDemo(): Promise<void> {
     },
     proof: {
       type: "EIP712Signature2021",
-      verificationMethod: "did:flowlink:compliance-engine#key-1",
+      verificationMethod: "did:prooflink:compliance-engine#key-1",
       proofValue: signature,
     },
   });

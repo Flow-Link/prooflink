@@ -122,8 +122,8 @@ The guard is correct — `setRawMode` is only called when `isTTY` is truthy. How
 
 ## Files Modified
 
-- `/home/akash/PROJECTS/FLOW-LINK/packages/sdk/src/http.ts` — AbortSignal fix, Retry-After implementation
-- `/home/akash/PROJECTS/FLOW-LINK/packages/sdk/src/client.ts` — `deleteInvoice`, `listAgents`, `PaginationParams` import
-- `/home/akash/PROJECTS/FLOW-LINK/packages/sdk/src/__tests__/client.test.ts` — 3 new test cases
-- `/home/akash/PROJECTS/FLOW-LINK/apps/demo/src/utils/display.ts` — `riskScore` threshold, ANSI regex
-- `/home/akash/PROJECTS/FLOW-LINK/apps/demo/src/scenarios/full-demo.ts` — removed unused import
+- `/home/akash/PROJECTS/prooflink/packages/sdk/src/http.ts` — AbortSignal fix, Retry-After implementation
+- `/home/akash/PROJECTS/prooflink/packages/sdk/src/client.ts` — `deleteInvoice`, `listAgents`, `PaginationParams` import
+- `/home/akash/PROJECTS/prooflink/packages/sdk/src/__tests__/client.test.ts` — 3 new test cases
+- `/home/akash/PROJECTS/prooflink/apps/demo/src/utils/display.ts` — `riskScore` threshold, ANSI regex
+- `/home/akash/PROJECTS/prooflink/apps/demo/src/scenarios/full-demo.ts` — removed unused import

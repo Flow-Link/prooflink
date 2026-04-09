@@ -2,7 +2,7 @@
 // Notabene Travel Rule — API client
 // ---------------------------------------------------------------------------
 
-import type { TravelRuleData } from "@flowlink/shared";
+import type { TravelRuleData } from "@prooflink/shared";
 import type {
   ListTransfersParams,
   NotabeneConfig,
@@ -53,7 +53,7 @@ export class NotabeneClient {
   /**
    * Submit a new Travel Rule transfer to Notabene.
    *
-   * Converts FlowLink `TravelRuleData` into the Notabene transfer format
+   * Converts ProofLink `TravelRuleData` into the Notabene transfer format
    * and creates a new transfer via the API.
    */
   async submitTransfer(data: TravelRuleData): Promise<NotabeneResponse> {

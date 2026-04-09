@@ -56,7 +56,7 @@ export function registerCreateInvoice(server: McpServer): void {
     "create_compliant_invoice",
     [
       "Generate a machine-readable, compliance-stamped invoice for services rendered by or to an AI agent.",
-      "Produces a JSON-LD invoice anchored on-chain with a FlowLink compliance stamp.",
+      "Produces a JSON-LD invoice anchored on-chain with a ProofLink compliance stamp.",
       "",
       "Example usage:",
       "  create_compliant_invoice({",
@@ -145,10 +145,10 @@ export function registerCreateInvoice(server: McpServer): void {
           compliance_stamp: complianceStamp,
           payment_instructions: {
             x402_endpoint: params.payment_protocol === "x402"
-              ? `https://pay.flowlink.io/x402/${invoiceId}`
+              ? `https://pay.prooflink.io/x402/${invoiceId}`
               : undefined,
             wallet_address: params.seller.wallet_address,
-            memo: `FlowLink Invoice ${invoiceId}`,
+            memo: `ProofLink Invoice ${invoiceId}`,
           },
           receipt_id: receiptId,
         };

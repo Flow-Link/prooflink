@@ -84,9 +84,9 @@ const subject = credential.credentialSubject as unknown as KYACredentialSubject;
 
 `credentialSubject` is typed `{ id: string; [key: string]: unknown }`. The double cast bypasses TypeScript entirely. If `walletAddress`, `delegationScope`, or `delegationScope.expiresAt` are absent in the real credential JSON the code will throw at runtime or silently produce wrong results.
 
-**Fix:** Parse via the `KYACredentialSubject` Zod schema exported from `@flowlink/shared`:
+**Fix:** Parse via the `KYACredentialSubject` Zod schema exported from `@prooflink/shared`:
 ```ts
-import { KYACredentialSubject as KYACredentialSubjectSchema } from "@flowlink/shared";
+import { KYACredentialSubject as KYACredentialSubjectSchema } from "@prooflink/shared";
 const subjectParse = KYACredentialSubjectSchema.safeParse(credential.credentialSubject);
 if (!subjectParse.success) {
   errors.push(`Invalid credentialSubject: ${subjectParse.error.message}`);
@@ -125,7 +125,7 @@ Files on disk may have been tampered with or written by a buggy earlier version.
 
 **Fix:**
 ```ts
-import { ComplianceReceipt } from "@flowlink/shared";
+import { ComplianceReceipt } from "@prooflink/shared";
 const raw = JSON.parse(content);
 return ComplianceReceipt.parse(raw);
 ```
@@ -284,7 +284,7 @@ If a new credential is issued for the same `subjectId` (e.g., scope change, revo
 
 **Fix:**
 ```ts
-import { sha256 } from "@flowlink/shared";
+import { sha256 } from "@prooflink/shared";
 const credentialHash = sha256(JSON.stringify(credential));
 const cacheKey = `kya:${subjectId}:${credentialHash}`;
 ```
@@ -328,7 +328,7 @@ The hardcoded `euJurisdictions` array contains 20 countries. It is missing Bulga
 
 **Fix:**
 ```ts
-import { SUPPORTED_JURISDICTIONS } from "@flowlink/shared";
+import { SUPPORTED_JURISDICTIONS } from "@prooflink/shared";
 const euJurisdictions = SUPPORTED_JURISDICTIONS.EU_EEA;
 ```
 
@@ -551,7 +551,7 @@ OFAC may list the same wallet in multiple Bitcoin address formats. The offline c
 
 Core defines `WebhookConfig` with `active: boolean` and its own `WebhookEventType` string union. Shared defines `WebhookConfig` with `enabled: boolean` and a different Zod `WebhookEventType` enum. Objects from one schema will fail validation by the other. Any API layer that mixes these will silently produce wrong behavior.
 
-**Fix:** Consolidate to one canonical `WebhookConfig` / `WebhookEventType` in `@flowlink/shared` and import it in core.
+**Fix:** Consolidate to one canonical `WebhookConfig` / `WebhookEventType` in `@prooflink/shared` and import it in core.
 
 ---
 

@@ -84,11 +84,11 @@ const validCheckBody = {
 const validInvoiceBody = {
   seller: {
     walletAddress: "0xSELLER000000000000000000000000000000000",
-    agentId: "did:flowlink:agent:seller",
+    agentId: "did:prooflink:agent:seller",
   },
   buyer: {
     walletAddress: "0xBUYER0000000000000000000000000000000000",
-    agentId: "did:flowlink:agent:buyer",
+    agentId: "did:prooflink:agent:buyer",
   },
   lineItems: [
     { description: "API calls", quantity: 1000, unit: "call", unitPrice: 0.25, total: 250 },
@@ -160,7 +160,7 @@ describe("POST /api/v1/compliance/check", () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...validCheckBody,
-        sender: { ...validCheckBody.sender, agentDID: "did:flowlink:agent:001" },
+        sender: { ...validCheckBody.sender, agentDID: "did:prooflink:agent:001" },
       }),
     });
 

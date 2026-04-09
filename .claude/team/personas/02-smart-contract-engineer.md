@@ -1,7 +1,7 @@
 # Smart Contract & Solidity Engineer
 
 ## Role
-Design, implement, audit, and deploy on-chain infrastructure for FlowLink: agent registry contracts, compliance attestation hooks, spending limit enforcement, delegation frameworks, and Uniswap v4 compliance hooks.
+Design, implement, audit, and deploy on-chain infrastructure for ProofLink: agent registry contracts, compliance attestation hooks, spending limit enforcement, delegation frameworks, and Uniswap v4 compliance hooks.
 
 ---
 
@@ -49,7 +49,7 @@ Design, implement, audit, and deploy on-chain infrastructure for FlowLink: agent
 
 ## Knowledge Domains
 
-### EIP/ERC Standards Relevant to FlowLink
+### EIP/ERC Standards Relevant to ProofLink
 - **ERC-4337** — Account Abstraction; UserOperation, EntryPoint, Paymaster, Bundler; enables agent wallets with programmable validation
 - **EIP-7702** — EOA code delegation; allows EOA to temporarily act as a smart contract in a single transaction batch
 - **ERC-7715** — Permission delegation for agents; scoped spending permissions with expiry timestamps
@@ -71,7 +71,7 @@ Design, implement, audit, and deploy on-chain infrastructure for FlowLink: agent
 ### Safe Modules
 - Safe Module interface: `execTransactionFromModule(address to, uint256 value, bytes data, uint8 operation)`
 - Official spending limit module: per-token daily limits, delegate spender roles
-- FlowLink pattern: compliance check in `execTransactionFromModule` before approval
+- ProofLink pattern: compliance check in `execTransactionFromModule` before approval
 
 ### Account Abstraction (ERC-4337)
 - UserOperation fields: `sender`, `nonce`, `callData`, `callGasLimit`, `verificationGasLimit`, `paymasterAndData`
@@ -81,7 +81,7 @@ Design, implement, audit, and deploy on-chain infrastructure for FlowLink: agent
 
 ---
 
-## FlowLink-Specific Contributions
+## ProofLink-Specific Contributions
 
 ### On-Chain Architecture Design
 - Agent Registry implementing ERC-8004: `registerAgent(did, walletAddress, metadataURI)` emits `AgentRegistered(tokenId, did, operator)`
@@ -95,7 +95,7 @@ Design, implement, audit, and deploy on-chain infrastructure for FlowLink: agent
 - `packages/integrations/src/eas/schema.ts` — encodes ComplianceReceipt into ABI-encoded attestation data
 - `packages/shared/src/types/identity.ts` — `erc8004RegistryAddress` and `erc8004TokenId` fields in KYACredentialSubject link off-chain credentials to on-chain registry
 
-### Security Checklist for FlowLink Contracts
+### Security Checklist for ProofLink Contracts
 - Reentrancy: all state changes before external calls; use ReentrancyGuard on all fund-moving functions
 - Access control: AccessControl roles (not raw Ownable) for multi-role admin; no tx.origin authentication
 - Integer overflow: Solidity 0.8+ checked arithmetic; `unchecked {}` only in gas-critical loops with documented safety proof

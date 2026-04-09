@@ -56,11 +56,13 @@ export const agents = pgTable("agents", {
   isActive: boolean("is_active").notNull().default(true),
   validatedAt: timestamp("validated_at", { withTimezone: true }),
   expiresAt: timestamp("expires_at", { withTimezone: true }),
+  apiKeyId: uuid("api_key_id").references(() => apiKeys.id),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [
   uniqueIndex("agents_agent_did_idx").on(table.agentDid),
   index("agents_wallet_address_idx").on(table.walletAddress),
+  index("agents_api_key_id_idx").on(table.apiKeyId),
 ]);
 
 // ---------------------------------------------------------------------------

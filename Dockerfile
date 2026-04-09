@@ -34,7 +34,7 @@ COPY packages/x402-compliance ./packages/x402-compliance
 COPY packages/mcp-server ./packages/mcp-server
 COPY apps/api ./apps/api
 
-RUN pnpm build --filter=@flowlink/api...
+RUN pnpm build --filter=@prooflink/api...
 
 # Stage 3: Production dependencies only
 FROM node:22-alpine AS prod-deps
@@ -54,8 +54,8 @@ RUN pnpm install --frozen-lockfile --ignore-scripts --prod
 # Stage 4: Production image
 FROM node:22-alpine AS production
 RUN apk add --no-cache dumb-init && \
-    addgroup -g 1001 -S flowlink && \
-    adduser -S flowlink -u 1001 -G flowlink
+    addgroup -g 1001 -S prooflink && \
+    adduser -S prooflink -u 1001 -G prooflink
 
 WORKDIR /app
 
@@ -63,23 +63,23 @@ ENV NODE_ENV=production
 ENV PORT=3001
 
 # Copy production node_modules
-COPY --from=prod-deps --chown=flowlink:flowlink /app/node_modules ./node_modules
-COPY --from=prod-deps --chown=flowlink:flowlink /app/packages/shared/node_modules ./packages/shared/node_modules
-COPY --from=prod-deps --chown=flowlink:flowlink /app/packages/core/node_modules ./packages/core/node_modules
-COPY --from=prod-deps --chown=flowlink:flowlink /app/apps/api/node_modules ./apps/api/node_modules
+COPY --from=prod-deps --chown=prooflink:prooflink /app/node_modules ./node_modules
+COPY --from=prod-deps --chown=prooflink:prooflink /app/packages/shared/node_modules ./packages/shared/node_modules
+COPY --from=prod-deps --chown=prooflink:prooflink /app/packages/core/node_modules ./packages/core/node_modules
+COPY --from=prod-deps --chown=prooflink:prooflink /app/apps/api/node_modules ./apps/api/node_modules
 
 # Copy build artifacts
-COPY --from=builder --chown=flowlink:flowlink /app/packages/shared/dist ./packages/shared/dist
-COPY --from=builder --chown=flowlink:flowlink /app/packages/shared/package.json ./packages/shared/
-COPY --from=builder --chown=flowlink:flowlink /app/packages/core/dist ./packages/core/dist
-COPY --from=builder --chown=flowlink:flowlink /app/packages/core/package.json ./packages/core/
-COPY --from=builder --chown=flowlink:flowlink /app/packages/sdk/dist ./packages/sdk/dist
-COPY --from=builder --chown=flowlink:flowlink /app/packages/sdk/package.json ./packages/sdk/
-COPY --from=builder --chown=flowlink:flowlink /app/apps/api/dist ./apps/api/dist
-COPY --from=builder --chown=flowlink:flowlink /app/apps/api/package.json ./apps/api/
-COPY --from=builder --chown=flowlink:flowlink /app/package.json ./
+COPY --from=builder --chown=prooflink:prooflink /app/packages/shared/dist ./packages/shared/dist
+COPY --from=builder --chown=prooflink:prooflink /app/packages/shared/package.json ./packages/shared/
+COPY --from=builder --chown=prooflink:prooflink /app/packages/core/dist ./packages/core/dist
+COPY --from=builder --chown=prooflink:prooflink /app/packages/core/package.json ./packages/core/
+COPY --from=builder --chown=prooflink:prooflink /app/packages/sdk/dist ./packages/sdk/dist
+COPY --from=builder --chown=prooflink:prooflink /app/packages/sdk/package.json ./packages/sdk/
+COPY --from=builder --chown=prooflink:prooflink /app/apps/api/dist ./apps/api/dist
+COPY --from=builder --chown=prooflink:prooflink /app/apps/api/package.json ./apps/api/
+COPY --from=builder --chown=prooflink:prooflink /app/package.json ./
 
-USER flowlink
+USER prooflink
 
 EXPOSE 3001
 

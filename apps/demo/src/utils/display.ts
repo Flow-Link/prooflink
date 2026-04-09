@@ -29,8 +29,8 @@ export function printBanner(): void {
 // Tag-based logging (matches demo script terminal output style)
 // ---------------------------------------------------------------------------
 
-export function flowlinkLog(message: string): void {
-  console.log(`${chalk.cyan.bold("[FlowLink]")} ${message}`);
+export function prooflinkLog(message: string): void {
+  console.log(`${chalk.cyan.bold("[ProofLink]")} ${message}`);
 }
 
 export function agentLog(message: string): void {
@@ -48,7 +48,7 @@ export function x402Log(message: string): void {
 export function statusCleared(label: string, address: string, timeMs: number, cached = false): void {
   const addr = truncateAddress(address);
   const cacheTag = cached ? chalk.gray(", cached") : "";
-  flowlinkLog(
+  prooflinkLog(
     `Screening ${label}: ${chalk.white(addr)} -> ${chalk.green.bold("CLEARED")} ${chalk.gray(`(${timeMs}ms${cacheTag})`)}`,
   );
 }
@@ -60,11 +60,11 @@ export function statusBlocked(
   matchInfo?: { list: string; entity: string; confidence: number },
 ): void {
   const addr = truncateAddress(address);
-  flowlinkLog(
+  prooflinkLog(
     `Screening ${label}: ${chalk.white(addr)} -> ${chalk.red.bold("BLOCKED")} ${chalk.gray(`(${timeMs}ms)`)}`,
   );
   if (matchInfo) {
-    flowlinkLog(
+    prooflinkLog(
       `Match: ${chalk.red(matchInfo.list)} | ${chalk.red(matchInfo.entity)} | Confidence: ${chalk.red(String(matchInfo.confidence))}`,
     );
   }
@@ -74,27 +74,27 @@ export function riskScore(score: number, threshold: number): void {
   const color = score < 30 ? chalk.green : score < 60 ? chalk.yellow : chalk.red;
   const level = score < 30 ? "LOW RISK" : score < 60 ? "MEDIUM RISK" : "HIGH RISK";
   const thresholdNote = score >= threshold ? ` ${chalk.red("EXCEEDS threshold")}` : "";
-  flowlinkLog(`AML risk score: ${color.bold(`${score}/100`)} ${chalk.gray(`(${level})`)}${thresholdNote}`);
+  prooflinkLog(`AML risk score: ${color.bold(`${score}/100`)} ${chalk.gray(`(${level})`)}${thresholdNote}`);
 }
 
 export function travelRuleStatus(required: boolean, amount?: number, threshold?: number): void {
   if (required) {
-    flowlinkLog(
+    prooflinkLog(
       `Travel Rule: ${chalk.yellow.bold("REQUIRED")} ${chalk.gray(`(amount $${amount?.toLocaleString()} above $${threshold?.toLocaleString()} threshold)`)}`,
     );
   } else {
-    flowlinkLog(
+    prooflinkLog(
       `Travel Rule: ${chalk.green("Not required")} ${chalk.gray(`(amount below $${threshold?.toLocaleString() ?? "3,000"} threshold)`)}`,
     );
   }
 }
 
 export function paymentApproved(): void {
-  flowlinkLog(`Payment ${chalk.green.bold("APPROVED")}. Settling via x402...`);
+  prooflinkLog(`Payment ${chalk.green.bold("APPROVED")}. Settling via x402...`);
 }
 
 export function paymentRejected(code: string): void {
-  flowlinkLog(`Payment ${chalk.red.bold("REJECTED")}. Compliance code: ${chalk.red(code)}`);
+  prooflinkLog(`Payment ${chalk.red.bold("REJECTED")}. Compliance code: ${chalk.red(code)}`);
 }
 
 // ---------------------------------------------------------------------------
@@ -265,7 +265,7 @@ export interface InvoiceDisplay {
 export function formatInvoice(invoice: InvoiceDisplay): void {
   console.log();
   console.log(chalk.cyan.bold("  ┌─────────────────────────────────────────────────────┐"));
-  console.log(chalk.cyan.bold("  │") + chalk.white.bold("       FlowLink Compliant Invoice                ") + chalk.cyan.bold("  │"));
+  console.log(chalk.cyan.bold("  │") + chalk.white.bold("       ProofLink Compliant Invoice                ") + chalk.cyan.bold("  │"));
   console.log(chalk.cyan.bold("  └─────────────────────────────────────────────────────┘"));
   console.log();
 
@@ -371,7 +371,7 @@ export async function simulateWithSpinner(
 }
 
 /**
- * Generate a random receipt ID in FlowLink format.
+ * Generate a random receipt ID in ProofLink format.
  */
 export function generateReceiptId(prefix = "pl"): string {
   const chars = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";

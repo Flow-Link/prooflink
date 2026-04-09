@@ -3,7 +3,7 @@ import type {
   PaymentRequirements,
   Logger,
 } from "../types.js";
-import type { FlowLinkX402Compliance } from "../middleware.js";
+import type { ProofLinkX402Compliance } from "../middleware.js";
 
 // ---------------------------------------------------------------------------
 // Express adapter types
@@ -32,7 +32,7 @@ export type ExpressNextFunction = (err?: unknown) => void;
 /** Options for the Express compliance middleware */
 export interface ExpressComplianceOptions {
   /** The compliance instance */
-  compliance: FlowLinkX402Compliance;
+  compliance: ProofLinkX402Compliance;
   /** Extract payment payload from Express request (default: req.body.paymentPayload) */
   extractPayload?: (req: ExpressRequest) => PaymentPayload | null;
   /** Extract payment requirements from Express request (default: req.body.requirements) */
@@ -52,11 +52,11 @@ export interface ExpressComplianceOptions {
  * @example
  * ```ts
  * import express from "express";
- * import { createFlowLinkCompliance } from "@flowlink/x402-compliance";
- * import { createExpressComplianceMiddleware } from "@flowlink/x402-compliance/adapters/express";
+ * import { createProofLinkCompliance } from "@prooflink/x402-compliance";
+ * import { createExpressComplianceMiddleware } from "@prooflink/x402-compliance/adapters/express";
  *
  * const app = express();
- * const compliance = createFlowLinkCompliance(config);
+ * const compliance = createProofLinkCompliance(config);
  *
  * app.use("/api/pay", createExpressComplianceMiddleware({ compliance }));
  * ```

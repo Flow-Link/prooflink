@@ -1,12 +1,12 @@
 name: Feature Request
-description: Suggest a new feature for FlowLink
+description: Suggest a new feature for ProofLink
 title: "[Feature]: "
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        Describe the feature you'd like to see in FlowLink.
+        Describe the feature you'd like to see in ProofLink.
 
   - type: dropdown
     id: package
@@ -14,14 +14,14 @@ body:
       label: Target Package
       description: Which package should this feature be added to?
       options:
-        - "@flowlink/core"
-        - "@flowlink/sdk"
-        - "@flowlink/shared"
-        - "@flowlink/x402-compliance"
-        - "@flowlink/mcp-server"
-        - "@flowlink/api"
-        - "@flowlink/dashboard"
-        - "@flowlink/contracts"
+        - "@prooflink/core"
+        - "@prooflink/sdk"
+        - "@prooflink/shared"
+        - "@prooflink/x402-compliance"
+        - "@prooflink/mcp-server"
+        - "@prooflink/api"
+        - "@prooflink/dashboard"
+        - "@prooflink/contracts"
         - "New package"
         - "Not sure"
     validations:

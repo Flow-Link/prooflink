@@ -5,6 +5,6 @@ export default defineConfig({
 	out: "./drizzle",
 	dialect: "postgresql",
 	dbCredentials: {
-		url: process.env["DATABASE_URL"] ?? "postgresql://flowlink:flowlink_dev@localhost:5432/flowlink",
+		url: process.env["DATABASE_URL"] ?? "postgresql://prooflink:prooflink_dev@localhost:5432/prooflink",
 	},
 });

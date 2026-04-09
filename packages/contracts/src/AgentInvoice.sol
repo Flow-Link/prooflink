@@ -8,7 +8,7 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {Types} from "./libraries/Types.sol";
 
 /// @title AgentInvoice
-/// @author FlowLink
+/// @author ProofLink
 /// @notice On-chain invoice anchoring and lifecycle management for agent-to-agent commerce.
 /// @dev Invoices are content-addressed (IPFS). On-chain storage is minimal: hashes,
 ///      amounts, parties, and state transitions. Uses UUPS proxy pattern.
@@ -19,7 +19,7 @@ contract AgentInvoice is Initializable, AccessControlUpgradeable, UUPSUpgradeabl
     // Roles
     // ──────────────────────────────────────────────
 
-    /// @notice Role for the FlowLinkFacilitator to mark invoices as paid/settled.
+    /// @notice Role for the ProofLinkFacilitator to mark invoices as paid/settled.
     bytes32 public constant FACILITATOR_ROLE = keccak256("FACILITATOR_ROLE");
 
     // ──────────────────────────────────────────────

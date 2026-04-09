@@ -13,7 +13,7 @@ const { mockScreenAddressFn, MockSanctionsScreener } = vi.hoisted(() => {
   return { mockScreenAddressFn, MockSanctionsScreener };
 });
 
-vi.mock("@flowlink/core", () => ({
+vi.mock("@prooflink/core", () => ({
   SanctionsScreener: MockSanctionsScreener,
   ChainalysisProvider: vi.fn().mockImplementation(() => ({})),
   TRMLabsProvider: vi.fn().mockImplementation(() => ({})),
@@ -260,7 +260,7 @@ describe("screenAddress", () => {
 
 // Grab the mocked loadConfig so we can assert on its call arguments.
 // Because vi.mock is hoisted, we import the mocked module after the mock block.
-import { loadConfig as _mockLoadConfig } from "@flowlink/core";
+import { loadConfig as _mockLoadConfig } from "@prooflink/core";
 const mockLoadConfig = _mockLoadConfig as ReturnType<typeof vi.fn>;
 
 describe("Sprint 2: getScreener failOpen — NODE_ENV-driven", () => {

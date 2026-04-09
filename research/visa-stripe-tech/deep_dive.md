@@ -1,5 +1,5 @@
 # TradFi Crypto/Blockchain/AI Payments: Deep Dive Research
-## Team Gamma Research — FlowLink Competitive & Strategic Intelligence
+## Team Gamma Research — ProofLink Competitive & Strategic Intelligence
 **Date:** March 20, 2026
 **Researcher:** Team Gamma
 **Scope:** Visa, Stripe, Mastercard, PayPal, JPMorgan, Swift, Circle — crypto, blockchain, AI agent payment initiatives
@@ -16,7 +16,7 @@
 7. [Circle / USDC: Open Payment Infrastructure Layer](#7-circle--usdc)
 8. [AI Agent Commerce: The Protocol Wars](#8-ai-agent-commerce)
 9. [Regulatory Landscape](#9-regulatory-landscape)
-10. [Synthesis: Threat & Opportunity Map for FlowLink](#10-synthesis-for-flowlink)
+10. [Synthesis: Threat & Opportunity Map for ProofLink](#10-synthesis-for-prooflink)
 
 ---
 
@@ -42,7 +42,7 @@ On March 3, 2026, Visa and Bridge announced expansion of their stablecoin-linked
 - Expanding to Europe, Asia Pacific, Africa, and the Middle East
 - Bridge-issued cards on Visa rails settle on-chain via Lead Bank on Solana
 
-**FlowLink Implication:** Visa is commoditizing USDC settlement as a bank-layer feature. FlowLink's invoice + compliance layer sits one abstraction above this — Visa provides the rail, FlowLink provides the trust/workflow/compliance orchestration on top of it.
+**ProofLink Implication:** Visa is commoditizing USDC settlement as a bank-layer feature. ProofLink's invoice + compliance layer sits one abstraction above this — Visa provides the rail, ProofLink provides the trust/workflow/compliance orchestration on top of it.
 
 ---
 
@@ -59,7 +59,7 @@ VTAP is Visa's API-driven platform enabling banks to issue and manage fiat-backe
 - **Target users:** Issuer banks, acquirer banks
 - **Regions:** North America, Asia Pacific, Europe, CEMEA, LAC
 
-**FlowLink Implication:** VTAP's smart-contract-triggered payment release is exactly the mechanism FlowLink needs for invoice escrow + conditional payment release. VTAP could be an integration target or a competitive reference architecture.
+**ProofLink Implication:** VTAP's smart-contract-triggered payment release is exactly the mechanism ProofLink needs for invoice escrow + conditional payment release. VTAP could be an integration target or a competitive reference architecture.
 
 ---
 
@@ -96,7 +96,7 @@ VIC is Visa's comprehensive AI agent commerce initiative:
 **Arc (Circle's L1) Partnership:**
 Visa is a design partner for Arc, Circle's new Layer 1 blockchain (currently in public testnet), positioning Visa inside Circle's next-generation stablecoin infrastructure from day one.
 
-**FlowLink Implication:** Visa's TAP is solving agent identity/trust at the network layer. FlowLink must implement a compatible agent authentication model. The Visa CLI demonstrates that card rails are being adapted for machine-initiated payments — FlowLink's stablecoin-native invoicing has a structural advantage here (no card rails needed for B2B).
+**ProofLink Implication:** Visa's TAP is solving agent identity/trust at the network layer. ProofLink must implement a compatible agent authentication model. The Visa CLI demonstrates that card rails are being adapted for machine-initiated payments — ProofLink's stablecoin-native invoicing has a structural advantage here (no card rails needed for B2B).
 
 ---
 
@@ -129,7 +129,7 @@ Bridge (co-founded by Coinbase/Square alumni) was the leading stablecoin infrast
 - Supported stablecoins: USDC, USDP, USDG
 - Supported networks: Ethereum, Solana, Polygon, Base
 
-**FlowLink Implication:** Bridge is the closest competitive analogue to FlowLink's infrastructure ambitions. Bridge + Stripe abstracts stablecoin rails for businesses — FlowLink must differentiate on: (1) agentic workflow + trust orchestration, (2) compliance layer (KYB/KYA), (3) invoice-native design vs. payment-primitive-first.
+**ProofLink Implication:** Bridge is the closest competitive analogue to ProofLink's infrastructure ambitions. Bridge + Stripe abstracts stablecoin rails for businesses — ProofLink must differentiate on: (1) agentic workflow + trust orchestration, (2) compliance layer (KYB/KYA), (3) invoice-native design vs. payment-primitive-first.
 
 ---
 
@@ -145,7 +145,7 @@ Tempo is a payments-focused Layer 1 blockchain incubated by Stripe and Paradigm:
 - **Early participants:** Visa, Nubank, Shopify, Klarna (testing global payouts, embedded finance, remittances)
 - **Mainnet partners:** Lightspark (Bitcoin Lightning), Visa (cards), Anthropic, OpenAI, Mastercard
 
-**FlowLink Implication:** Tempo is a neutral coordination layer for cross-chain B2B settlement. FlowLink could integrate Tempo as a settlement rail (especially given Visa's presence there) or monitor it as the emerging standard.
+**ProofLink Implication:** Tempo is a neutral coordination layer for cross-chain B2B settlement. ProofLink could integrate Tempo as a settlement rail (especially given Visa's presence there) or monitor it as the emerging standard.
 
 ---
 
@@ -190,7 +190,7 @@ Co-authored by Stripe and Tempo, MPP is the protocol for AI agent autonomous pay
 - Prospect Butcher Co.: agents ordering food in NYC
 - Programmatic Stripe Climate donations
 
-**FlowLink Implication:** MPP is the emerging de facto protocol for agentic payments. FlowLink **must** support MPP natively — it is becoming infrastructure, not a competitor. FlowLink's value-add is the trust/compliance/invoicing wrapper around MPP-initiated payment sessions.
+**ProofLink Implication:** MPP is the emerging de facto protocol for agentic payments. ProofLink **must** support MPP natively — it is becoming infrastructure, not a competitor. ProofLink's value-add is the trust/compliance/invoicing wrapper around MPP-initiated payment sessions.
 
 ---
 
@@ -202,7 +202,7 @@ Stripe unveiled what it calls "the world's first AI foundation model for payment
 - 80% reduction over 2 years vs. prior specialized models approach
 - Embedded in Stripe's fraud and risk infrastructure
 
-**FlowLink Implication:** Training a fraud/risk model requires Stripe-scale transaction data. FlowLink cannot replicate this and should not try — integrate Stripe's risk signals or partner with risk providers.
+**ProofLink Implication:** Training a fraud/risk model requires Stripe-scale transaction data. ProofLink cannot replicate this and should not try — integrate Stripe's risk signals or partner with risk providers.
 
 ---
 
@@ -239,7 +239,7 @@ BVNK is a London-based stablecoin infrastructure platform:
 
 **Strategic rationale:** Mastercard acquiring stablecoin infrastructure to directly compete with Stripe/Bridge's position. BVNK brings Mastercard on-chain capabilities comparable to what Bridge gave Stripe.
 
-**FlowLink Implication:** The Mastercard-BVNK deal mirrors Stripe-Bridge and signals that all major card networks are acquiring on-chain infrastructure. The window for independent stablecoin infrastructure plays is narrowing — FlowLink must differentiate on the trust/compliance/invoicing layer, not on raw payment rails.
+**ProofLink Implication:** The Mastercard-BVNK deal mirrors Stripe-Bridge and signals that all major card networks are acquiring on-chain infrastructure. The window for independent stablecoin infrastructure plays is narrowing — ProofLink must differentiate on the trust/compliance/invoicing layer, not on raw payment rails.
 
 ---
 
@@ -259,7 +259,7 @@ An open, standards-based trust layer for agentic commerce:
 - Open standard for cryptographically proving human intent behind agent actions
 - Designed to address the "Know Your Human" compliance challenge
 
-**FlowLink Implication:** Verifiable Intent is a direct design input for FlowLink's trust model. Every payment initiated by an agent on FlowLink's network should carry a Verifiable Intent attestation. This is the compliance bridge between human authorization and autonomous execution.
+**ProofLink Implication:** Verifiable Intent is a direct design input for ProofLink's trust model. Every payment initiated by an agent on ProofLink's network should carry a Verifiable Intent attestation. This is the compliance bridge between human authorization and autonomous execution.
 
 ---
 
@@ -281,7 +281,7 @@ An open, standards-based trust layer for agentic commerce:
 **PYUSDx Platform:**
 PayPal and MoonPay launched PYUSDx, a custom stablecoin issuance platform, mirroring Stripe's Open Issuance and Mastercard's moves.
 
-**FlowLink Implication:** PayPal's PYUSD at 70 markets validates consumer-facing stablecoin adoption. For B2B invoicing, PayPal is a potential integration point (accept PYUSD as invoice settlement currency) but not a direct competitor to FlowLink's trust/compliance layer.
+**ProofLink Implication:** PayPal's PYUSD at 70 markets validates consumer-facing stablecoin adoption. For B2B invoicing, PayPal is a potential integration point (accept PYUSD as invoice settlement currency) but not a direct competitor to ProofLink's trust/compliance layer.
 
 ---
 
@@ -317,7 +317,7 @@ Kinexys's flagship product for corporate treasuries:
 - JPM Coin (JPMD) going natively to the Canton Network
 - Phased integration with Digital Asset throughout 2026
 
-**FlowLink Implication:** Kinexys proves the enterprise treasury market wants programmable, conditional payment release (milestone-based, event-triggered). This is FlowLink's core invoice payment model at the enterprise B2B layer. Kinexys is a competitive but also potentially complementary player — enterprises using Kinexys for internal treasury may use FlowLink for vendor/supplier invoicing.
+**ProofLink Implication:** Kinexys proves the enterprise treasury market wants programmable, conditional payment release (milestone-based, event-triggered). This is ProofLink's core invoice payment model at the enterprise B2B layer. Kinexys is a competitive but also potentially complementary player — enterprises using Kinexys for internal treasury may use ProofLink for vendor/supplier invoicing.
 
 ---
 
@@ -339,7 +339,7 @@ Swift conducted experiments with **38 institutions** (central banks, commercial 
 - Second-phase sandbox explored digital trade, tokenized asset settlement, FX settlement
 - Finding: Swift's connector solution can simplify trade flows, unlock tokenized securities markets, enable efficient FX settlement
 
-**FlowLink Implication:** Swift is moving to support blockchain-native messages and tokenized settlement. This extends Swift's role (MT/MX messages) into the on-chain world. For FlowLink targeting enterprise cross-border B2B invoicing, Swift compatibility matters — especially for deals with banks that rely on Swift rails.
+**ProofLink Implication:** Swift is moving to support blockchain-native messages and tokenized settlement. This extends Swift's role (MT/MX messages) into the on-chain world. For ProofLink targeting enterprise cross-border B2B invoicing, Swift compatibility matters — especially for deals with banks that rely on Swift rails.
 
 ---
 
@@ -394,7 +394,7 @@ Launched early 2025 with 25+ design partners:
 - **Interop Labs acquisition:** Signed agreement (expected close early 2026) to accelerate CCTP and Arc
 - **Circle Alliance Program:** 1,065 members by December 2025
 
-**FlowLink Implication:** Circle is the foundational infrastructure layer. USDC + CCTP + CPN is the settlement substrate FlowLink should build on. Circle's regulatory posture (MiCA, GENIUS Act, OCC charter) is a compliance template. Arc with configurable privacy is particularly relevant for FlowLink's enterprise B2B use case where transaction confidentiality matters.
+**ProofLink Implication:** Circle is the foundational infrastructure layer. USDC + CCTP + CPN is the settlement substrate ProofLink should build on. Circle's regulatory posture (MiCA, GENIUS Act, OCC charter) is a compliance template. Arc with configurable privacy is particularly relevant for ProofLink's enterprise B2B use case where transaction confidentiality matters.
 
 ---
 
@@ -457,7 +457,7 @@ The core unsolved problem: how do payment systems verify that an AI agent acting
 - x402 daily volume: only ~$28K (much from testing) — narrative ahead of adoption
 - Enterprise: 90% of enterprises report bot management as a major challenge
 
-**FlowLink Implication:** The protocol layer is still being standardized — MPP, AP2, x402 are all early. FlowLink should implement MPP (Stripe-backed, broadest ecosystem) as its primary agent payment protocol with x402 compatibility. The KYA/Verifiable Intent stack is the compliance differentiator FlowLink must build.
+**ProofLink Implication:** The protocol layer is still being standardized — MPP, AP2, x402 are all early. ProofLink should implement MPP (Stripe-backed, broadest ecosystem) as its primary agent payment protocol with x402 compatibility. The KYA/Verifiable Intent stack is the compliance differentiator ProofLink must build.
 
 ---
 
@@ -486,7 +486,7 @@ The US's first federal stablecoin legislation. Key provisions:
 - Effective: earlier of 18 months post-enactment (~January 2027) OR 120 days after final regulations
 - FDIC began approval procedures for FDIC-supervised issuers in December 2025
 
-**FlowLink Implication:** The GENIUS Act creates a clear compliance path for US-domiciled stablecoin operations. FlowLink must ensure any stablecoin it uses in payment flows (USDC, USDB, etc.) is issued by a GENIUS Act-compliant issuer. This is table stakes for enterprise B2B trust.
+**ProofLink Implication:** The GENIUS Act creates a clear compliance path for US-domiciled stablecoin operations. ProofLink must ensure any stablecoin it uses in payment flows (USDC, USDB, etc.) is issued by a GENIUS Act-compliant issuer. This is table stakes for enterprise B2B trust.
 
 ---
 
@@ -517,7 +517,7 @@ The US's first federal stablecoin legislation. Key provisions:
 - Only major global issuer with both USDC (EMT) and EURC (EMT) MiCA-compliant
 - EURC is the largest euro-denominated stablecoin under MiCA
 
-**FlowLink Implication:** FlowLink must use MiCA-compliant stablecoins for EU operations (Circle's USDC/EURC are safe choices). Any FlowLink entity processing crypto payments for EU businesses must register as a CASP. The MiCA timeline creates an urgent compliance window.
+**ProofLink Implication:** ProofLink must use MiCA-compliant stablecoins for EU operations (Circle's USDC/EURC are safe choices). Any ProofLink entity processing crypto payments for EU businesses must register as a CASP. The MiCA timeline creates an urgent compliance window.
 
 ---
 
@@ -539,11 +539,11 @@ The US's first federal stablecoin legislation. Key provisions:
 - GENIUS Act: broader flexibility on reserves; US-only jurisdiction
 - Convergence trend: both frameworks align on transparency, reserve requirements, and consumer protection priority in insolvency
 
-**FlowLink Implication:** FlowLink's compliance engine must handle multi-jurisdictional requirements from day one. The matrix above defines the regulatory surface area. Circle's existing licenses across all major jurisdictions make USDC the path-of-least-resistance stablecoin for a compliant FlowLink MVP.
+**ProofLink Implication:** ProofLink's compliance engine must handle multi-jurisdictional requirements from day one. The matrix above defines the regulatory surface area. Circle's existing licenses across all major jurisdictions make USDC the path-of-least-resistance stablecoin for a compliant ProofLink MVP.
 
 ---
 
-## 10. Synthesis for FlowLink
+## 10. Synthesis for ProofLink
 
 ### 10.1 What the Market Is Building (and What's Missing)
 
@@ -564,25 +564,25 @@ The US's first federal stablecoin legislation. Key provisions:
 - **Agentic compliance orchestration:** When an AI agent pays an invoice, who is responsible for sanctions screening? AML checks? The compliance orchestration layer for multi-party agentic B2B transactions does not exist.
 - **Cross-protocol invoice portability:** An invoice on Stripe's rails, paid via MPP, settled on Tempo, with the payer using Kinexys — no standard links these together.
 
-### 10.2 FlowLink's Differentiated Position
+### 10.2 ProofLink's Differentiated Position
 
-FlowLink is not competing with Stripe, Visa, or Circle at the payment rail layer. FlowLink should position as the **agentic payment trust and compliance orchestration layer** that makes those rails work for B2B invoicing.
+ProofLink is not competing with Stripe, Visa, or Circle at the payment rail layer. ProofLink should position as the **agentic payment trust and compliance orchestration layer** that makes those rails work for B2B invoicing.
 
 **Core differentiation thesis:**
 
-1. **Invoice as a smart contract** — not a PDF. FlowLink encodes invoice terms (amount, conditions, milestones, dispute terms) as verifiable, machine-readable data. Agents can read, authorize, and execute against invoice contracts without human intervention on routine payments.
+1. **Invoice as a smart contract** — not a PDF. ProofLink encodes invoice terms (amount, conditions, milestones, dispute terms) as verifiable, machine-readable data. Agents can read, authorize, and execute against invoice contracts without human intervention on routine payments.
 
-2. **KYA-native compliance** — FlowLink implements Know Your Agent as a first-class feature. Every payment carries: (a) verified agent identity, (b) human authorization attestation (compatible with Mastercard/Google Verifiable Intent), (c) delegation scope proof.
+2. **KYA-native compliance** — ProofLink implements Know Your Agent as a first-class feature. Every payment carries: (a) verified agent identity, (b) human authorization attestation (compatible with Mastercard/Google Verifiable Intent), (c) delegation scope proof.
 
-3. **Multi-rail settlement** — FlowLink is payment rail agnostic. Settle via USDC on Solana (Visa settlement model), Tempo (Stripe's blockchain), CCTP (Circle), or Kinexys (JPMorgan) — FlowLink handles the compliance wrapper regardless of underlying rail.
+3. **Multi-rail settlement** — ProofLink is payment rail agnostic. Settle via USDC on Solana (Visa settlement model), Tempo (Stripe's blockchain), CCTP (Circle), or Kinexys (JPMorgan) — ProofLink handles the compliance wrapper regardless of underlying rail.
 
-4. **Regulatory compliance by default** — GENIUS Act + MiCA compliance baked into every transaction. Stablecoin flows use Circle USDC (compliant across all major jurisdictions). FlowLink's entity structure handles CASP requirements.
+4. **Regulatory compliance by default** — GENIUS Act + MiCA compliance baked into every transaction. Stablecoin flows use Circle USDC (compliant across all major jurisdictions). ProofLink's entity structure handles CASP requirements.
 
-5. **Audit-complete paper trail** — Every agent action on FlowLink generates a tamper-resistant audit log: who authorized, what was delegated, what was executed, on what rail, with what compliance checks completed.
+5. **Audit-complete paper trail** — Every agent action on ProofLink generates a tamper-resistant audit log: who authorized, what was delegated, what was executed, on what rail, with what compliance checks completed.
 
 ### 10.3 Specific Integration Targets
 
-Based on this research, FlowLink's integration roadmap should prioritize:
+Based on this research, ProofLink's integration roadmap should prioritize:
 
 | Integration | Why | Priority |
 |---|---|---|
@@ -597,17 +597,17 @@ Based on this research, FlowLink's integration roadmap should prioritize:
 | Swift blockchain ledger | Enterprise cross-border invoicing through traditional bank channels | P3 |
 | Circle CPN | Orchestration layer for licensed financial institution clients | P2 |
 
-### 10.4 Risk Map for FlowLink
+### 10.4 Risk Map for ProofLink
 
 | Risk | Description | Severity | Mitigation |
 |------|-------------|----------|------------|
 | Protocol fragmentation | MPP, AP2, x402 all competing; winner unclear | High | Implement MPP first (Stripe + Visa + OpenAI backing); monitor AP2 |
 | Incumbents vertically integrate | Stripe adds invoicing; Mastercard adds compliance; Visa adds trust | High | Build trust/compliance moat faster than they can ship; be the open standard |
-| GENIUS Act yield prohibition | Cannot offer yield on stablecoin balances | Medium | Compliance feature, not a bug — FlowLink's model is transaction fees, not yield |
+| GENIUS Act yield prohibition | Cannot offer yield on stablecoin balances | Medium | Compliance feature, not a bug — ProofLink's model is transaction fees, not yield |
 | MiCA CASP licensing cost | Operating in EU requires CASP license; time and capital intensive | Medium | Use Circle's EURC and partner with MiCA-licensed intermediaries initially |
 | Agent payment adoption gap | x402 at $28K/day volume; agentic commerce narrative ahead of reality | Medium | Build for B2B enterprise first (proven stablecoin demand: $226B/year); agentic is the 2027+ layer |
 | KYA standard wars | Multiple competing "Know Your Agent" frameworks | Low-Medium | Implement Verifiable Intent (Google+Mastercard backed); most likely to become regulatory standard |
-| Visa/Stripe direct competition | Both building "trust" layers for agent payments | High | FlowLink is the layer between their infrastructure; be the invoice-native orchestrator they can't build without changing their core product |
+| Visa/Stripe direct competition | Both building "trust" layers for agent payments | High | ProofLink is the layer between their infrastructure; be the invoice-native orchestrator they can't build without changing their core product |
 
 ---
 

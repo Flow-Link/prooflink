@@ -135,7 +135,7 @@ discovery.post(
 
 export const wellKnownAgent = new Hono();
 
-// GET /.well-known/agent.json — FlowLink platform Agent Card
+// GET /.well-known/agent.json — ProofLink platform Agent Card
 wellKnownAgent.get("/agent.json", (c) => {
   const card = buildPlatformAgentCard();
   return c.json(card);

@@ -1,6 +1,6 @@
-# FlowLink — Current State Analysis
+# ProofLink — Current State Analysis
 
-## Live Product (v0-flowlink.vercel.app)
+## Live Product (v0-prooflink.vercel.app)
 
 ### Positioning
 "The regulatory-grade trust layer that makes stablecoin payments safe for CFOs today and AI agents tomorrow."

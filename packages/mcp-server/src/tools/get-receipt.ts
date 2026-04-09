@@ -27,7 +27,7 @@ export function registerGetReceipt(server: McpServer): void {
         .string()
         .optional()
         .describe(
-          "FlowLink receipt ID from a prior check_sanctions, verify_kya, or create_compliant_invoice call.",
+          "ProofLink receipt ID from a prior check_sanctions, verify_kya, or create_compliant_invoice call.",
         ),
       include_raw_evidence: z
         .boolean()
@@ -70,7 +70,7 @@ export function registerGetReceipt(server: McpServer): void {
               check_type: "KYA_VERIFICATION" as const,
               result: "PASSED" as const,
               performed_at: now,
-              provider: "flowlink_erc8004",
+              provider: "prooflink_erc8004",
             },
             {
               check_type: "AML_MONITORING" as const,

@@ -2,7 +2,7 @@
 // TRM Labs — SanctionsProvider implementation
 // ---------------------------------------------------------------------------
 
-import type { SanctionsCheckResult, SanctionsList } from "@flowlink/shared";
+import type { SanctionsCheckResult, SanctionsList } from "@prooflink/shared";
 import { TRMClient, type TRMHttpClient } from "./client.js";
 import type { TRMConfig } from "./types.js";
 
@@ -10,7 +10,7 @@ import type { TRMConfig } from "./types.js";
  * Interface for sanctions screening providers.
  *
  * Defined here (not imported from core) to avoid hard dependency on
- * `@flowlink/core` — the integrations package should work standalone.
+ * `@prooflink/core` — the integrations package should work standalone.
  */
 export interface SanctionsProvider {
   screenAddress(
@@ -27,7 +27,7 @@ export interface SanctionsProvider {
  *
  * Usage:
  * ```ts
- * import { TRMSanctionsProvider } from "@flowlink/integrations/trm";
+ * import { TRMSanctionsProvider } from "@prooflink/integrations/trm";
  *
  * const provider = new TRMSanctionsProvider({
  *   apiKey: process.env.TRM_API_KEY!,
@@ -44,7 +44,7 @@ export class TRMSanctionsProvider implements SanctionsProvider {
 
   /**
    * Screen an address using TRM Labs and return a normalized
-   * `SanctionsCheckResult` compatible with `@flowlink/shared`.
+   * `SanctionsCheckResult` compatible with `@prooflink/shared`.
    */
   async screenAddress(
     address: string,

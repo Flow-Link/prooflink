@@ -95,7 +95,7 @@ interface DemoArgs {
 
 async function main(): Promise<void> {
   const argv = (await yargs(hideBin(process.argv))
-    .scriptName("flowlink-demo")
+    .scriptName("prooflink-demo")
     .usage("$0 [options]")
     .option("sanctions", {
       alias: "s",
@@ -235,8 +235,8 @@ function listScenarios(): void {
 
   console.log();
   console.log(chalk.gray("  Usage:"));
-  console.log(chalk.gray("    flowlink-demo --scenario <name>"));
-  console.log(chalk.gray("    flowlink-demo --interactive"));
+  console.log(chalk.gray("    prooflink-demo --scenario <name>"));
+  console.log(chalk.gray("    prooflink-demo --interactive"));
   console.log();
 }
 

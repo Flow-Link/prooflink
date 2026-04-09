@@ -1,7 +1,7 @@
 # Full-Stack TypeScript Engineer
 
 ## Role
-Build and maintain the FlowLink application layer: the Hono-based API server, Next.js dashboard, SDK packages, database schema, WebSocket streaming, and test infrastructure. Owns developer experience for FlowLink SDK consumers.
+Build and maintain the ProofLink application layer: the Hono-based API server, Next.js dashboard, SDK packages, database schema, WebSocket streaming, and test infrastructure. Owns developer experience for ProofLink SDK consumers.
 
 ---
 
@@ -54,7 +54,7 @@ Build and maintain the FlowLink application layer: the Hono-based API server, Ne
 
 ## Knowledge Domains
 
-### FlowLink API Architecture
+### ProofLink API Architecture
 - Hono app factory in `apps/api/src/app.ts` — separated from server start for testability; `createApp()` returns `Hono` instance
 - Global middleware order: `requestIdMiddleware` → `requestLoggerMiddleware` → `timing` → `secureHeaders` → CORS → routes
 - Auth-protected routes under `/v1/` and `/api/v1/`; public routes: `/health`, `/openapi`, `/dashboard`
@@ -75,20 +75,20 @@ Build and maintain the FlowLink application layer: the Hono-based API server, Ne
 - MCP SSE transport: `packages/mcp-server/src/transports/sse.ts` — separate SSE transport for MCP protocol over HTTP
 
 ### SDK Design
-- `packages/sdk/src/client.ts` — FlowLinkClient class; wraps all API calls with typed request/response
-- `packages/sdk/src/errors.ts` — typed error hierarchy: `FlowLinkError`, `ComplianceBlockedError`, `SanctionsMatchError`, `RateLimitError`
-- `packages/sdk/src/types.ts` — SDK-specific types; re-exports from `@flowlink/shared` where appropriate
-- SDK consumer pattern: `const client = new FlowLinkClient({ apiKey, baseUrl }); await client.compliance.check(intent)`
+- `packages/sdk/src/client.ts` — ProofLinkClient class; wraps all API calls with typed request/response
+- `packages/sdk/src/errors.ts` — typed error hierarchy: `ProofLinkError`, `ComplianceBlockedError`, `SanctionsMatchError`, `RateLimitError`
+- `packages/sdk/src/types.ts` — SDK-specific types; re-exports from `@prooflink/shared` where appropriate
+- SDK consumer pattern: `const client = new ProofLinkClient({ apiKey, baseUrl }); await client.compliance.check(intent)`
 
 ---
 
-## FlowLink-Specific Contributions
+## ProofLink-Specific Contributions
 
 ### Owns These Files
 - `apps/api/src/app.ts` — Hono app factory; all middleware registration; route mounting
 - `apps/api/src/routes/` — all API route handlers
 - `apps/dashboard/` — entire Next.js dashboard application
-- `packages/sdk/` — FlowLink TypeScript SDK
+- `packages/sdk/` — ProofLink TypeScript SDK
 - `packages/shared/` — shared types, validators, utilities; consumed by all packages
 - `packages/mcp-server/` — MCP server implementation
 - `apps/api/src/db/` — Drizzle schema and migrations
@@ -97,7 +97,7 @@ Build and maintain the FlowLink application layer: the Hono-based API server, Ne
 - Branded types throughout: `AgentId`, `DID`, `Address`, `CAIP2ChainId`, `ReceiptId`, `TxHash` — prevents string parameter confusion
 - Zod schemas co-located with TypeScript types in `packages/shared/src/types/` — `z.infer<typeof Schema>` generates the type
 - All API responses follow `{ success: boolean, data?: T, error?: { code: string, message: string } }` envelope
-- CORS origin validation supports wildcard subdomains: `*.flowlink.io` matches `api.flowlink.io`
+- CORS origin validation supports wildcard subdomains: `*.prooflink.io` matches `api.prooflink.io`
 - Request IDs flow from `requestIdMiddleware` through all downstream middleware and responses via `X-Request-ID` header
 
 ### Active Technical Debt

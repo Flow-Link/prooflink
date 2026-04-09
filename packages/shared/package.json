@@ -1,8 +1,8 @@
 {
-  "name": "@flowlink/shared",
+  "name": "@prooflink/shared",
   "version": "0.1.0",
   "type": "module",
-  "description": "Shared types, constants, and utilities for FlowLink",
+  "description": "Shared types, constants, and utilities for ProofLink",
   "license": "MIT",
   "exports": {
     ".": {

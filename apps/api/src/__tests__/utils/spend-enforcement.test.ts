@@ -134,7 +134,7 @@ describe("checkDelegationScope", () => {
     mockGetDb.mockReturnValue(buildDb(undefined) as ReturnType<typeof getDb>);
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:unknown",
+      "did:prooflink:agent:unknown",
       500,
       "USDC",
       "eip155:8453",
@@ -155,7 +155,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       9999,
       "USDC",
       "eip155:8453",
@@ -171,7 +171,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       9999,
       "USDC",
       "eip155:8453",
@@ -193,7 +193,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       150,
       "USDC",
       "eip155:8453",
@@ -214,7 +214,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       100,
       "USDC",
       "eip155:8453",
@@ -232,7 +232,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       500,
       "USDC",
       "eip155:8453",
@@ -250,7 +250,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       1_000_000,
       "USDC",
       "eip155:8453",
@@ -272,7 +272,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       50,
       "USDC",
       "eip155:8453",
@@ -292,7 +292,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       50,
       "USDC",
       "eip155:8453", // lowercase
@@ -310,7 +310,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       50,
       "USDC",
       "eip155:99999",
@@ -328,7 +328,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       50,
       "USDC",
       "eip155:8453",
@@ -350,7 +350,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       50,
       "ETH",
       "eip155:8453",
@@ -370,7 +370,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       50,
       "usdc", // lowercase
       "eip155:8453",
@@ -388,7 +388,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       50,
       "PEPE",
       "eip155:8453",
@@ -414,7 +414,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       50,
       "USDC",
       "eip155:8453",
@@ -435,7 +435,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       50,
       "USDC",
       "eip155:8453",
@@ -453,7 +453,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       50,
       "USDC",
       "eip155:8453",
@@ -477,7 +477,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       300,
       "USDC",
       "eip155:8453",
@@ -500,7 +500,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       300,
       "USDC",
       "eip155:8453",
@@ -519,7 +519,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       1_000_000,
       "USDC",
       "eip155:8453",
@@ -539,7 +539,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       9999,
       "USDC",
       "eip155:8453",
@@ -560,7 +560,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       50,
       "USDC",
       "eip155:8453",
@@ -587,7 +587,7 @@ describe("checkDelegationScope", () => {
 
     // Exceeds both limits — should fail on maxTransactionUsd first
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       999,
       "USDC",
       "eip155:8453",
@@ -615,7 +615,7 @@ describe("checkDelegationScope", () => {
     );
 
     const result = await checkDelegationScope(
-      "did:flowlink:agent:001",
+      "did:prooflink:agent:001",
       500,
       "USDC",
       "eip155:8453",

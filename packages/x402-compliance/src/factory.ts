@@ -1,12 +1,12 @@
-import type { FlowLinkConfig } from "./types.js";
-import { FlowLinkX402Compliance, type FlowLinkComplianceServices } from "./middleware.js";
+import type { ProofLinkConfig } from "./types.js";
+import { ProofLinkX402Compliance, type ProofLinkComplianceServices } from "./middleware.js";
 
 /**
- * Create a FlowLink x402 compliance instance.
+ * Create a ProofLink x402 compliance instance.
  *
  * @example
  * ```ts
- * const compliance = createFlowLinkCompliance({
+ * const compliance = createProofLinkCompliance({
  *   chainalysisApiKey: process.env.CHAINALYSIS_API_KEY!,
  *   policy: {
  *     sanctionsLists: ["OFAC_SDN", "EU", "UN"],
@@ -18,9 +18,9 @@ import { FlowLinkX402Compliance, type FlowLinkComplianceServices } from "./middl
  * compliance.register(server);
  * ```
  */
-export function createFlowLinkCompliance(
-  config: FlowLinkConfig,
-  services?: FlowLinkComplianceServices,
-): FlowLinkX402Compliance {
-  return new FlowLinkX402Compliance(config, services);
+export function createProofLinkCompliance(
+  config: ProofLinkConfig,
+  services?: ProofLinkComplianceServices,
+): ProofLinkX402Compliance {
+  return new ProofLinkX402Compliance(config, services);
 }

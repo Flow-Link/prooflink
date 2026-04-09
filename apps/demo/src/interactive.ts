@@ -9,7 +9,7 @@ import {
   printBanner,
   sectionHeader,
   stepHeader,
-  flowlinkLog,
+  prooflinkLog,
   statusCleared,
   statusBlocked,
   riskScore,
@@ -288,7 +288,7 @@ async function runCustomComplianceCheck(
   console.log(`  ${chalk.gray("Chain:")}    ${chalk.white(chainConfig.name)}`);
   console.log();
 
-  flowlinkLog("Intercepting compliance check...");
+  prooflinkLog("Intercepting compliance check...");
   await sleep(200);
 
   // Screen sender
@@ -371,7 +371,7 @@ async function runCustomComplianceCheck(
       {
         checkType: "AML_MONITORING",
         result: isBlocked ? "SKIPPED" : "PASSED",
-        provider: "FlowLink Engine",
+        provider: "ProofLink Engine",
         latencyMs: isBlocked ? 0 : 15,
       },
       {

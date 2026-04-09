@@ -53,8 +53,8 @@ const INVOICE_UUID = "550e8400-e29b-41d4-a716-446655440010";
 
 const sampleInvoice = {
   id: INVOICE_UUID,
-  issuerAgentDid: "did:flowlink:agent:seller",
-  recipientAgentDid: "did:flowlink:agent:buyer",
+  issuerAgentDid: "did:prooflink:agent:seller",
+  recipientAgentDid: "did:prooflink:agent:buyer",
   sellerWalletAddress: "0xSELLER123",
   buyerWalletAddress: "0xBUYER456",
   currency: "USDC",
@@ -73,11 +73,11 @@ function validCreateBody() {
   return {
     seller: {
       walletAddress: "0xSELLER123",
-      agentId: "did:flowlink:agent:seller",
+      agentId: "did:prooflink:agent:seller",
     },
     buyer: {
       walletAddress: "0xBUYER456",
-      agentId: "did:flowlink:agent:buyer",
+      agentId: "did:prooflink:agent:buyer",
     },
     lineItems: [
       { description: "API calls", quantity: 1000, unit: "call", unitPrice: 0.25, total: 250 },

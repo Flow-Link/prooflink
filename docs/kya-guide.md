@@ -1,6 +1,6 @@
 # Know Your Agent (KYA) Guide
 
-KYA is FlowLink's identity verification framework for AI agents participating in financial transactions. It extends traditional KYC/KYB concepts to autonomous software agents, establishing a trust layer that enables compliant agent-to-agent commerce.
+KYA is ProofLink's identity verification framework for AI agents participating in financial transactions. It extends traditional KYC/KYB concepts to autonomous software agents, establishing a trust layer that enables compliant agent-to-agent commerce.
 
 ## What is Know Your Agent?
 
@@ -22,12 +22,12 @@ Register an agent through the API or SDK. This creates the agent record and issu
 ### Via SDK
 
 ```ts
-import { FlowLinkClient } from "@flowlink/sdk";
+import { ProofLinkClient } from "@prooflink/sdk";
 
-const flowlink = new FlowLinkClient({ apiKey: process.env.FLOWLINK_API_KEY! });
+const prooflink = new ProofLinkClient({ apiKey: process.env.PROOFLINK_API_KEY! });
 
-const result = await flowlink.registerAgent({
-  agentDid: "did:flowlink:agent:my-data-processor",
+const result = await prooflink.registerAgent({
+  agentDid: "did:prooflink:agent:my-data-processor",
   agentType: "autonomous",
   controllingEntity: {
     name: "DataCo Inc",
@@ -59,7 +59,7 @@ See the [API Reference](./api-reference.md#issue-a-kya-credential) for the full 
 
 ### On-Chain Registration
 
-Register the agent on-chain via the `FlowLinkKYA` contract:
+Register the agent on-chain via the `ProofLinkKYA` contract:
 
 ```ts
 import { createWalletClient, http } from "viem";
@@ -74,8 +74,8 @@ const client = createWalletClient({
 });
 
 const txHash = await client.writeContract({
-  address: "0xFLOWLINK_KYA_ADDRESS",
-  abi: flowLinkKYAAbi,
+  address: "0xPROOFLINK_KYA_ADDRESS",
+  abi: proofLinkKYAAbi,
   functionName: "registerAgent",
   args: [
     "did:web:agent.acmecorp.com",       // agent DID
@@ -90,24 +90,24 @@ const txHash = await client.writeContract({
 
 ## KYA Credential Structure
 
-A KYA credential is a [W3C Verifiable Credential](https://www.w3.org/TR/vc-data-model/) with FlowLink-specific extensions. The canonical schema is defined in `@flowlink/shared` (`packages/shared/src/types/identity.ts`).
+A KYA credential is a [W3C Verifiable Credential](https://www.w3.org/TR/vc-data-model/) with ProofLink-specific extensions. The canonical schema is defined in `@prooflink/shared` (`packages/shared/src/types/identity.ts`).
 
 ```json
 {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://flowlink.io/credentials/kya/v1"
+    "https://prooflink.io/credentials/kya/v1"
   ],
   "type": ["VerifiableCredential", "KYACredential"],
   "id": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "issuer": {
-    "id": "did:flowlink:issuer",
-    "name": "FlowLink"
+    "id": "did:prooflink:issuer",
+    "name": "ProofLink"
   },
   "issuanceDate": "2026-03-21T12:00:00.000Z",
   "expirationDate": "2027-03-21T00:00:00.000Z",
   "credentialSubject": {
-    "id": "did:flowlink:agent:my-data-processor",
+    "id": "did:prooflink:agent:my-data-processor",
     "agentType": "autonomous",
     "controllingEntity": {
       "name": "DataCo Inc",
@@ -130,7 +130,7 @@ A KYA credential is a [W3C Verifiable Credential](https://www.w3.org/TR/vc-data-
   "proof": {
     "type": "EcdsaSecp256k1Signature2019",
     "created": "2026-03-21T12:00:00.000Z",
-    "verificationMethod": "did:flowlink:issuer#key-1",
+    "verificationMethod": "did:prooflink:issuer#key-1",
     "proofPurpose": "assertionMethod",
     "jws": "eyJhbGciOiJFUzI1NksiLC..."
   }
@@ -154,7 +154,7 @@ A KYA credential is a [W3C Verifiable Credential](https://www.w3.org/TR/vc-data-
 
 ## Agent Types
 
-FlowLink defines three agent autonomy levels, each with different compliance implications:
+ProofLink defines three agent autonomy levels, each with different compliance implications:
 
 | Type                | Description                                              | Compliance implications                     |
 |--------------------|----------------------------------------------------------|----------------------------------------------|
@@ -162,7 +162,7 @@ FlowLink defines three agent autonomy levels, each with different compliance imp
 | `semi-autonomous`  | Operates within guardrails. May request human approval for edge cases.      | Moderate delegation scope. Higher limits with human escalation. |
 | `human-supervised` | Every action requires human approval before execution.                       | Most flexible scope. Limits set by supervising human's authority. |
 
-Agent type is stored both off-chain (in the KYA credential) and on-chain (in the `FlowLinkKYA` contract):
+Agent type is stored both off-chain (in the KYA credential) and on-chain (in the `ProofLinkKYA` contract):
 
 ```solidity
 enum AgentType {
@@ -176,7 +176,7 @@ enum AgentType {
 
 ## Verification Flow
 
-When a compliance check encounters an agent DID, FlowLink verifies the agent through this pipeline:
+When a compliance check encounters an agent DID, ProofLink verifies the agent through this pipeline:
 
 ```
 Agent DID submitted
@@ -221,7 +221,7 @@ verified: true, trustScore: 0-100
 ### Verify via SDK
 
 ```ts
-const result = await flowlink.verifyAgent("did:flowlink:agent:my-data-processor");
+const result = await prooflink.verifyAgent("did:prooflink:agent:my-data-processor");
 
 if (result.verified) {
   console.log("Trust score:", result.trustScore);
@@ -237,7 +237,7 @@ if (result.verified) {
 KYA verification happens automatically as part of the compliance pipeline:
 
 ```ts
-import { ProofLinkEngine } from "@flowlink/core";
+import { ProofLinkEngine } from "@prooflink/core";
 
 const engine = new ProofLinkEngine(config);
 
@@ -260,8 +260,8 @@ Smart contracts can verify KYA status directly:
 
 ```ts
 const [isValid, credentialHash, validUntil] = await publicClient.readContract({
-  address: "0xFLOWLINK_KYA_ADDRESS",
-  abi: flowLinkKYAAbi,
+  address: "0xPROOFLINK_KYA_ADDRESS",
+  abi: proofLinkKYAAbi,
   functionName: "verifyKYA",
   args: ["0xAGENT_WALLET_ADDRESS"],
 });
@@ -291,8 +291,8 @@ interface DelegationScope {
 Delegation scopes are enforced at multiple layers:
 
 1. **Off-chain (KYAVerifier)**: Checks amount limits, jurisdiction restrictions, and delegation expiry before the transaction reaches the blockchain.
-2. **On-chain (FlowLinkKYA)**: The `AgentInfo` struct stores `maxTxValue` and `dailyLimit`, enforced at settlement time.
-3. **On-chain (FlowLinkFacilitator)**: The `_enforceCompliance` function checks daily spending limits and reverts if exceeded.
+2. **On-chain (ProofLinkKYA)**: The `AgentInfo` struct stores `maxTxValue` and `dailyLimit`, enforced at settlement time.
+3. **On-chain (ProofLinkFacilitator)**: The `_enforceCompliance` function checks daily spending limits and reverts if exceeded.
 
 ### Example: Restrictive scope (new agent)
 
@@ -344,7 +344,7 @@ interface IERC8004IdentityRegistry {
 
 ### Validation Registry
 
-When FlowLink issues a KYA credential, it writes a validation response to the ERC-8004 Validation Registry:
+When ProofLink issues a KYA credential, it writes a validation response to the ERC-8004 Validation Registry:
 
 ```solidity
 interface IERC8004ValidationRegistry {
@@ -358,13 +358,13 @@ interface IERC8004ValidationRegistry {
 }
 ```
 
-Any contract or protocol that reads ERC-8004 validation data can see FlowLink's KYA status for an agent without directly integrating with FlowLink's contracts.
+Any contract or protocol that reads ERC-8004 validation data can see ProofLink's KYA status for an agent without directly integrating with ProofLink's contracts.
 
 ### Linking an existing ERC-8004 agent
 
 ```ts
-await flowlink.registerAgent({
-  agentDid: "did:flowlink:agent:my-bot",
+await prooflink.registerAgent({
+  agentDid: "did:prooflink:agent:my-bot",
   agentType: "autonomous",
   controllingEntity: { name: "My Company", kybVerified: true },
   walletAddress: "0xAgentWallet",
@@ -395,7 +395,7 @@ The trust score is included in the `KYAVerificationResult` and propagated into c
 
 ## Credential Lifecycle
 
-KYA credentials follow a state machine managed by the `FlowLinkKYA` contract:
+KYA credentials follow a state machine managed by the `ProofLinkKYA` contract:
 
 ```
 ACTIVE --> SUSPENDED --> ACTIVE (reinstate)
@@ -427,11 +427,11 @@ When either party provides an `agentDID` in a compliance check, the pipeline aut
 5. Includes the KYA result in the compliance decision
 
 ```ts
-const decision = await flowlink.checkCompliance({
+const decision = await prooflink.checkCompliance({
   sender: {
     address: "0xAlice",
     chain: "base",
-    agentDID: "did:flowlink:agent:alice-bot",  // Triggers KYA verification
+    agentDID: "did:prooflink:agent:alice-bot",  // Triggers KYA verification
   },
   receiver: { address: "0xBob", chain: "base" },
   amount: "5000",

@@ -192,7 +192,7 @@ export type ComplianceDecision = z.infer<typeof ComplianceDecision>;
 
 // ---------------------------------------------------------------------------
 // ProofLink Receipt (full compliance + settlement evidence record)
-// Shared between @flowlink/x402-compliance, @flowlink/core, and apps/api.
+// Shared between @prooflink/x402-compliance, @prooflink/core, and apps/api.
 // ---------------------------------------------------------------------------
 
 export const ProofLinkReceipt = z.object({
@@ -214,7 +214,7 @@ export const ProofLinkReceipt = z.object({
 export type ProofLinkReceipt = z.infer<typeof ProofLinkReceipt>;
 
 // ---------------------------------------------------------------------------
-// Compliance Policy (used by @flowlink/x402-compliance config)
+// Compliance Policy (used by @prooflink/x402-compliance config)
 // ---------------------------------------------------------------------------
 
 export const CompliancePolicy = z.object({

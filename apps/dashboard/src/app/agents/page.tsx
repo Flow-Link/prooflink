@@ -221,7 +221,7 @@ export default function AgentsPage() {
                 <label htmlFor="agent-provider" className="text-sm font-medium">Provider</label>
                 <Input
                   id="agent-provider"
-                  placeholder="e.g., FlowLink"
+                  placeholder="e.g., ProofLink"
                   value={newAgent.provider}
                   onChange={(e) =>
                     setNewAgent((p) => ({ ...p, provider: e.target.value }))

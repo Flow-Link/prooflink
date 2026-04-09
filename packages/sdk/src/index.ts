@@ -1,13 +1,13 @@
 // Client
-export { FlowLinkClient } from "./client.js";
+export { ProofLinkClient } from "./client.js";
 
 // Errors
 export {
-  FlowLinkError,
-  FlowLinkAPIError,
-  FlowLinkValidationError,
-  FlowLinkTimeoutError,
-  FlowLinkNetworkError,
+  ProofLinkError,
+  ProofLinkAPIError,
+  ProofLinkValidationError,
+  ProofLinkTimeoutError,
+  ProofLinkNetworkError,
 } from "./errors.js";
 export type { ApiErrorBody } from "./errors.js";
 
@@ -21,7 +21,7 @@ export type {
   ComplianceCheckParams,
   ComplianceHistoryParams,
   CreateInvoiceParams,
-  FlowLinkClientConfig,
+  ProofLinkClientConfig,
   IssueKYAParams,
   ListInvoicesParams,
   PaginatedResponse,

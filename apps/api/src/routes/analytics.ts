@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { getDb } from "../db/index.js";
 import { complianceChecks, invoices } from "../db/schema.js";
+import type { AuthContext } from "../middleware/auth.js";
 import { validate } from "../middleware/validate.js";
 
 // ---------------------------------------------------------------------------
@@ -53,10 +54,12 @@ analytics.get("/volume", validate({ query: TimeRangeQuery }), async (c) => {
   const query = c.get("validatedQuery") as z.infer<typeof TimeRangeQuery>;
   const { from, to, granularity } = query;
   const truncInterval = toDateTrunc(granularity);
+  const auth = c.get("auth") as AuthContext | undefined;
 
   const db = getDb();
 
   const conditions = [];
+  if (auth?.apiKeyId) conditions.push(eq(invoices.apiKeyId, auth.apiKeyId));
   if (from) conditions.push(gte(invoices.createdAt, new Date(from)));
   if (to) conditions.push(lte(invoices.createdAt, new Date(to)));
 
@@ -93,10 +96,12 @@ analytics.get("/volume", validate({ query: TimeRangeQuery }), async (c) => {
 analytics.get("/compliance", validate({ query: TimeRangeQuery }), async (c) => {
   const query = c.get("validatedQuery") as z.infer<typeof TimeRangeQuery>;
   const { from, to } = query;
+  const auth = c.get("auth") as AuthContext | undefined;
 
   const db = getDb();
 
   const conditions = [];
+  if (auth?.apiKeyId) conditions.push(eq(complianceChecks.apiKeyId, auth.apiKeyId));
   if (from) conditions.push(gte(complianceChecks.createdAt, new Date(from)));
   if (to) conditions.push(lte(complianceChecks.createdAt, new Date(to)));
 
@@ -142,10 +147,12 @@ analytics.get("/compliance", validate({ query: TimeRangeQuery }), async (c) => {
 analytics.get("/risk", validate({ query: TimeRangeQuery }), async (c) => {
   const query = c.get("validatedQuery") as z.infer<typeof TimeRangeQuery>;
   const { from, to } = query;
+  const auth = c.get("auth") as AuthContext | undefined;
 
   const db = getDb();
 
   const conditions = [];
+  if (auth?.apiKeyId) conditions.push(eq(complianceChecks.apiKeyId, auth.apiKeyId));
   if (from) conditions.push(gte(complianceChecks.createdAt, new Date(from)));
   if (to) conditions.push(lte(complianceChecks.createdAt, new Date(to)));
 
@@ -206,10 +213,12 @@ analytics.get("/risk", validate({ query: TimeRangeQuery }), async (c) => {
 analytics.get("/agents", validate({ query: AgentsQuery }), async (c) => {
   const query = c.get("validatedQuery") as z.infer<typeof AgentsQuery>;
   const { limit, from, to } = query;
+  const auth = c.get("auth") as AuthContext | undefined;
 
   const db = getDb();
 
   const conditions = [];
+  if (auth?.apiKeyId) conditions.push(eq(invoices.apiKeyId, auth.apiKeyId));
   if (from) conditions.push(gte(invoices.createdAt, new Date(from)));
   if (to) conditions.push(lte(invoices.createdAt, new Date(to)));
 

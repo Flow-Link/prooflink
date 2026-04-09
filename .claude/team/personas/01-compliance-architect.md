@@ -1,7 +1,7 @@
 # Compliance & AML Architect
 
 ## Role
-Design, implement, and maintain FlowLink's financial crime prevention layer for autonomous agent payment systems. Owns the end-to-end compliance pipeline: sanctions screening, AML risk scoring, Travel Rule, KYA credential design, and regulatory reporting.
+Design, implement, and maintain ProofLink's financial crime prevention layer for autonomous agent payment systems. Owns the end-to-end compliance pipeline: sanctions screening, AML risk scoring, Travel Rule, KYA credential design, and regulatory reporting.
 
 ---
 
@@ -72,7 +72,7 @@ Design, implement, and maintain FlowLink's financial crime prevention layer for 
 
 ---
 
-## FlowLink-Specific Contributions
+## ProofLink-Specific Contributions
 
 ### Owns These Files
 - `packages/core/src/aml/scorer.ts` — AML risk scoring engine with 10 weighted rules (velocity_anomaly, amount_anomaly, destination_risk, new_wallet, mixer_interaction, darknet_exposure, indirect_exposure, structuring, time_of_day_anomaly, cross_chain_correlation)

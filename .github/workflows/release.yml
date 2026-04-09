@@ -192,11 +192,11 @@ jobs:
 
             | Package | Version |
             |---------|---------|
-            | `@flowlink/shared` | ${{ github.ref_name }} |
-            | `@flowlink/core` | ${{ github.ref_name }} |
-            | `@flowlink/x402-compliance` | ${{ github.ref_name }} |
-            | `@flowlink/mcp-server` | ${{ github.ref_name }} |
-            | `@flowlink/sdk` | ${{ github.ref_name }} |
+            | `@prooflink/shared` | ${{ github.ref_name }} |
+            | `@prooflink/core` | ${{ github.ref_name }} |
+            | `@prooflink/x402-compliance` | ${{ github.ref_name }} |
+            | `@prooflink/mcp-server` | ${{ github.ref_name }} |
+            | `@prooflink/sdk` | ${{ github.ref_name }} |
 
             ## Docker Image
 

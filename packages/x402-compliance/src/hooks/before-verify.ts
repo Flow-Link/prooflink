@@ -1,7 +1,7 @@
 import type {
   VerifyContext,
   BeforeHookResult,
-  FlowLinkConfig,
+  ProofLinkConfig,
   ScreeningResult,
   AmlScoreResult,
   KYACredential,
@@ -37,7 +37,7 @@ export interface KYARegistry {
 // ---------------------------------------------------------------------------
 
 export interface BeforeVerifyDeps {
-  config: FlowLinkConfig;
+  config: ProofLinkConfig;
   screener: SanctionsScreener;
   amlScorer: AmlScorer;
   kyaVerifier?: KYAVerifier;

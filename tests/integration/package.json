@@ -1,9 +1,9 @@
 {
-  "name": "@flowlink/integration-tests",
+  "name": "@prooflink/integration-tests",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "FlowLink integration test suite",
+  "description": "ProofLink integration test suite",
   "scripts": {
     "test": "vitest run --config vitest.config.ts",
     "test:watch": "vitest --config vitest.config.ts",

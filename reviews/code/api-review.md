@@ -1,4 +1,4 @@
-# FlowLink API/SDK/MCP Code Review
+# ProofLink API/SDK/MCP Code Review
 
 **Scope:** `apps/api/src/**/*.ts`, `packages/sdk/src/**/*.ts`, `packages/mcp-server/src/**/*.ts`
 **Reviewed:** 2026-03-21
@@ -112,7 +112,7 @@ Fix: Store a `kycVerified` boolean in the `agents` table (e.g., as part of `dele
 
 Every MCP compliance tool unconditionally returns approval. An AI agent calling `pay_with_compliance` with a sanctioned recipient wallet will receive `status: "COMPLETED"`. These are not behind a feature flag or a stub guard — they are the production code path.
 
-Fix: Either wire to the real FlowLink HTTP client (guarded by `FLOWLINK_API_KEY` being set), or return `isError: true` with code `INTERNAL_ERROR` and message `"Compliance engine not connected"` to fail closed rather than fail open.
+Fix: Either wire to the real ProofLink HTTP client (guarded by `PROOFLINK_API_KEY` being set), or return `isError: true` with code `INTERNAL_ERROR` and message `"Compliance engine not connected"` to fail closed rather than fail open.
 
 ---
 
@@ -166,11 +166,11 @@ Fix: After fetching `existing`, verify `existing.createdByOwnerId === auth.owner
 **File:** `apps/api/src/db/index.ts:18-19`
 
 ```ts
-user: process.env["DB_USER"] ?? "flowlink",
-password: process.env["DB_PASSWORD"] ?? "flowlink",
+user: process.env["DB_USER"] ?? "prooflink",
+password: process.env["DB_PASSWORD"] ?? "prooflink",
 ```
 
-Defaults to `flowlink`/`flowlink` silently. In a misconfigured production deployment this will connect to the DB with a known credential and log no warning.
+Defaults to `prooflink`/`prooflink` silently. In a misconfigured production deployment this will connect to the DB with a known credential and log no warning.
 
 Fix: Guard in production the same way `API_KEY_SECRET` is guarded in `auth.ts`:
 ```ts

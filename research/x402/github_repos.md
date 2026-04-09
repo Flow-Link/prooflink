@@ -2,7 +2,7 @@
 
 **Date:** 2026-03-20
 **Researcher:** Claude (Sonnet 4.6)
-**Purpose:** Comprehensive survey of x402 implementations, SDKs, tools, and ecosystem for FLOW-LINK integration research.
+**Purpose:** Comprehensive survey of x402 implementations, SDKs, tools, and ecosystem for prooflink integration research.
 
 ---
 
@@ -667,12 +667,12 @@ Search: https://crates.io/search?q=x402
 
 14. **Fragmentation risk**: 232+ repos with varying spec compliance. No formal conformance test suite observed.
 
-### Opportunities Relevant to FLOW-LINK
+### Opportunities Relevant to prooflink
 
 - x402 is the dominant standard for HTTP-native crypto micropayments, especially for AI agent commerce
 - The Python SDK (FastAPI support) and TypeScript middleware ecosystem are production-ready enough for integration
 - Self-hosted facilitator (x402-rs or second-state fork) is viable for avoiding Coinbase dependency
-- MCP integration is actively being standardized (SEP-2007) — relevant if FLOW-LINK serves MCP tools
+- MCP integration is actively being standardized (SEP-2007) — relevant if prooflink serves MCP tools
 - thirdweb facilitator covers 170+ EVM chains — useful for multi-chain support without running own facilitator
 - Permit2 proxy at `0x402085c248EeA27D92E8b30b2C58ed07f9E20001` can be reused on any EVM chain
 

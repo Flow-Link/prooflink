@@ -1,10 +1,10 @@
-# FlowLink — Final Quality Check
+# ProofLink — Final Quality Check
 **Reviewer:** Final Quality Review (Senior)
 **Date:** March 20, 2026
 **Documents reviewed:**
-- `/home/akash/PROJECTS/FLOW-LINK/strategy/pitch_deck_v2.md`
-- `/home/akash/PROJECTS/FLOW-LINK/reviews/strategy_review.md`
-- `/home/akash/PROJECTS/FLOW-LINK/EXECUTIVE_SUMMARY.md`
+- `/home/akash/PROJECTS/prooflink/strategy/pitch_deck_v2.md`
+- `/home/akash/PROJECTS/prooflink/reviews/strategy_review.md`
+- `/home/akash/PROJECTS/prooflink/EXECUTIVE_SUMMARY.md`
 
 ---
 
@@ -55,7 +55,7 @@ The deck does not falsely claim regulatory relationships. It explicitly states (
 Appendix A is a dedicated scenario analysis for A2A taking 3 years. The conclusion (H2H alone supports $2-3M ARR by Year 2) is credible and the agent economy is correctly reframed as upside, not a survival dependency.
 
 **Regulatory non-enforcement scenario:** RESOLVED.
-Appendix B covers this explicitly with four independent reasons FlowLink still creates value without regulatory mandate for agents.
+Appendix B covers this explicitly with four independent reasons ProofLink still creates value without regulatory mandate for agents.
 
 **Chainalysis vendor lock-in question:** RESOLVED.
 Appendix C answers this directly: free tier uses the public Chainalysis SDN API (no contract required), paid tiers use TRM Labs and ChainAware as primary sources. The dependency is eliminated as a kill risk.
@@ -131,8 +131,8 @@ $5M/month annualizes to $60M/year. $10M+ in the deck could mean annual or monthl
 
 ### Within pitch_deck_v2.md
 
-**Internal inconsistency 1: Slide 5 pricing for FlowLink.**
-The competitive matrix (Slide 5) shows FlowLink's pricing as "$499/mo + 15bps." This represents only the Business tier. A reader of Slide 5 without reading Slide 9 will not know about the Free, Developer, or Enterprise tiers, or the volume-tiered bps structure (30 bps Starter / 15 bps Growth / 5-10 bps Enterprise). A VC will flag this in due diligence as inconsistent. The matrix entry should show "$0-$2,000+/mo + 5-30bps" or link explicitly to Slide 9.
+**Internal inconsistency 1: Slide 5 pricing for ProofLink.**
+The competitive matrix (Slide 5) shows ProofLink's pricing as "$499/mo + 15bps." This represents only the Business tier. A reader of Slide 5 without reading Slide 9 will not know about the Free, Developer, or Enterprise tiers, or the volume-tiered bps structure (30 bps Starter / 15 bps Growth / 5-10 bps Enterprise). A VC will flag this in due diligence as inconsistent. The matrix entry should show "$0-$2,000+/mo + 5-30bps" or link explicitly to Slide 9.
 
 **Internal inconsistency 2: Month 12 volume target vs. Year 1 ARR.**
 Slide 9 (Unit Economics) models "$10M/month platform volume (Month 12 target)" generating "$40K-$55K/month" revenue, which annualizes to $480K-$660K ARR. Slide 4 (SOM) shows "$300K-$550K ARR" for Year 1. The unit economics model and the SOM range do not align — the model produces $480K-$660K while the SOM shows $300K-$550K. The $10M/month Month 12 assumption is also aggressive for a team starting from zero.

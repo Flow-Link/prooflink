@@ -14,7 +14,7 @@ import type {
   KYAVerificationResult,
   TravelRuleTransmitRequest,
   TravelRuleTransmitResult,
-  FlowLinkConfig,
+  ProofLinkConfig,
   CompliancePolicy,
   ComplianceEvent,
   X402ResourceServer,
@@ -150,9 +150,9 @@ export function createTestSettleResultContext(
 }
 
 /**
- * Generate a minimal test FlowLinkConfig.
+ * Generate a minimal test ProofLinkConfig.
  */
-export function createTestConfig(overrides: Partial<FlowLinkConfig> = {}): FlowLinkConfig {
+export function createTestConfig(overrides: Partial<ProofLinkConfig> = {}): ProofLinkConfig {
   return {
     chainalysisApiKey: "test-api-key-" + "x".repeat(32),
     policy: createTestPolicy(overrides.policy),

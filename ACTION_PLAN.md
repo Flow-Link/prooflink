@@ -1,4 +1,4 @@
-# FlowLink 90-Day Action Plan
+# ProofLink 90-Day Action Plan
 **Created:** 2026-03-20
 **Status:** Active execution plan
 **Owners:** Akash (A), Cofounder [NAME TBD] (C)
@@ -73,7 +73,7 @@ Plus subscription tiers for compliance-as-a-service features (KYA, Travel Rule, 
 - Business: $499/month (100K tx, full compliance stack, ProofLink receipts)
 - Enterprise: $2,000+/month (unlimited, custom rules, ERP integration, SLA)
 
-**Then:** Update product_strategy.md Section 7, pitch deck Slide 9, and funding_strategy.md SOM model to use the same numbers. Run the unit economics: at $10M/month volume (Growth tier, 15 bps), FlowLink generates $15K/month in transaction revenue. Add subscription revenue. Subtract Notabene + TRM + infra costs. Show gross margin.
+**Then:** Update product_strategy.md Section 7, pitch deck Slide 9, and funding_strategy.md SOM model to use the same numbers. Run the unit economics: at $10M/month volume (Growth tier, 15 bps), ProofLink generates $15K/month in transaction revenue. Add subscription revenue. Subtract Notabene + TRM + infra costs. Show gross margin.
 
 **Acceptance:** One pricing model appears identically in every document. Unit economics spreadsheet exists.
 
@@ -117,10 +117,10 @@ Action items:
   - Fenwick & West (crypto compliance)
   - A boutique like Collins Belton or Paradigm Ops (lower cost, crypto-native)
 - [ ] Send 1-page architecture summary explaining non-custodial design
-- [ ] Ask for written opinion on: (a) MSB classification risk under FinCEN, (b) VASP classification under MiCA, (c) whether FlowLink's middleware position triggers MTL requirements in any US state
+- [ ] Ask for written opinion on: (a) MSB classification risk under FinCEN, (b) VASP classification under MiCA, (c) whether ProofLink's middleware position triggers MTL requirements in any US state
 - [ ] Request the memo in a format suitable for sharing (redacted) with investors
 
-**Acceptance:** Written legal opinion from a qualified attorney stating FlowLink's non-custodial architecture does or does not trigger MSB/VASP classification. If it does trigger, the memo includes a remediation path.
+**Acceptance:** Written legal opinion from a qualified attorney stating ProofLink's non-custodial architecture does or does not trigger MSB/VASP classification. If it does trigger, the memo includes a remediation path.
 
 ---
 
@@ -150,7 +150,7 @@ Approach:
 **Dependency:** None
 **Deliverable:** Updated competitor analysis
 
-The strategy review flagged TRM Labs as the "sleeper threat" -- closer to FlowLink's architecture than Chainalysis. The research corpus has zero TRM Labs analysis.
+The strategy review flagged TRM Labs as the "sleeper threat" -- closer to ProofLink's architecture than Chainalysis. The research corpus has zero TRM Labs analysis.
 
 - [ ] Research TRM Labs product roadmap, pricing, API capabilities, investor base
 - [ ] Add TRM Labs row to feature matrix in `strategy/product_strategy.md` Section 3.1
@@ -163,7 +163,7 @@ The strategy review flagged TRM Labs as the "sleeper threat" -- closer to FlowLi
 
 ### W2-4: Prepare for ETHGlobal Cannes (April 3-5)
 **Owner:** A (build) + C (demo prep)
-**Dependency:** Existing v0 product at v0-flowlink.vercel.app
+**Dependency:** Existing v0 product at v0-prooflink.vercel.app
 **Deliverable:** Hackathon-ready compliance middleware demo
 
 Build targets (in priority order):
@@ -171,7 +171,7 @@ Build targets (in priority order):
 2. [ ] Self Protocol KYC proof verification for agent identity
 3. [ ] Live OFAC screening demo with real SDN address (Tornado Cash contract)
 4. [ ] Auto-generated compliance receipt (JSON + PDF)
-5. [ ] x402 payment flow: agent pays -> FlowLink screens -> approve/block -> receipt
+5. [ ] x402 payment flow: agent pays -> ProofLink screens -> approve/block -> receipt
 
 Prize targets: Circle track ($10K), Self Protocol track ($10K), World track ($20K if World ID added)
 
@@ -186,12 +186,12 @@ Demo script: Follow the 3-minute script from hackathon_strategy.md Part 5.
 ### W3-1: Ship x402 Compliance Middleware (MVP)
 **Owner:** A
 **Dependency:** W2-4 (hackathon builds feed into this)
-**Deliverable:** Open-source `flowlink-sdk` on GitHub + commercial ProofLink API
+**Deliverable:** Open-source `prooflink-sdk` on GitHub + commercial ProofLink API
 
 The hackathon builds (Cannes, Berlin) produce working integrations. Productize them:
 
 - [ ] Extract reusable middleware from hackathon code
-- [ ] Create `flowlink-sdk` npm package:
+- [ ] Create `prooflink-sdk` npm package:
   - `screenSanctions(address)` -- OFAC/EU/UN/HMT screening
   - `verifyKYA(agentDID)` -- ERC-8004 registry lookup + credential check
   - `checkTravelRule(originator, beneficiary, amount)` -- jurisdiction threshold check
@@ -202,14 +202,14 @@ The hackathon builds (Cannes, Berlin) produce working integrations. Productize t
 
 Open-source strategy: SDK wrapper is open (MIT license). ProofLink Engine API is commercial (API key required, free tier available).
 
-**Acceptance:** `flowlink-sdk` is published on npm and GitHub. ProofLink API is live on Base mainnet. 100+ transactions processed. API docs are published.
+**Acceptance:** `prooflink-sdk` is published on npm and GitHub. ProofLink API is live on Base mainnet. 100+ transactions processed. API docs are published.
 
 ---
 
 ### W3-2: Publish KYA Standard Draft on GitHub
 **Owner:** A (schema design) + C (documentation)
 **Dependency:** None
-**Deliverable:** `flowlink-kya-standard` GitHub repo with draft spec
+**Deliverable:** `prooflink-kya-standard` GitHub repo with draft spec
 
 Contents:
 - [ ] KYA Verifiable Credential schema (W3C VC format, as specified in product_strategy.md Section 5.3)
@@ -225,7 +225,7 @@ Contents:
 
 ---
 
-### W3-3: Create FlowLink MCP Server Prototype
+### W3-3: Create ProofLink MCP Server Prototype
 **Owner:** A
 **Dependency:** W3-1 (ProofLink API must be live)
 **Deliverable:** MCP server exposing compliance tools
@@ -254,7 +254,7 @@ Design the schema:
 ```
 {
   txHash: bytes32,
-  screenerAddress: address,       // FlowLink's attester
+  screenerAddress: address,       // ProofLink's attester
   sanctionsLists: string[],       // ["OFAC_SDN", "EU_CONSOLIDATED", "UN_CONSOLIDATED"]
   sanctionsResult: bool,          // true = cleared
   amlRiskScore: uint8,            // 0-100
@@ -281,14 +281,14 @@ Action items:
 - [ ] Commit schema hash on-chain with each attestation
 - [ ] Build receipt verification endpoint: given a receipt ID, return the full compliance proof
 
-**Acceptance:** EAS schema is deployed. At least 10 compliance receipts are issued as on-chain attestations. A third party can verify any receipt without contacting FlowLink.
+**Acceptance:** EAS schema is deployed. At least 10 compliance receipts are issued as on-chain attestations. A third party can verify any receipt without contacting ProofLink.
 
 ---
 
 ### W4-2: Enter Agentic Commerce Hackathon Berlin (April 10-12)
 **Owner:** A + C
 **Dependency:** W3-1 (x402 facilitator must work)
-**Deliverable:** FlowLink as production x402 facilitator for Algorand
+**Deliverable:** ProofLink as production x402 facilitator for Algorand
 
 Build targets:
 - [ ] x402 facilitator server routing through ProofLink Engine
@@ -296,7 +296,7 @@ Build targets:
 - [ ] Travel Rule compliance: automatic originator/beneficiary data transmission
 - [ ] Real-time screening dashboard
 
-**Acceptance:** Working demo showing Algorand x402 payment blocked/approved by FlowLink compliance middleware.
+**Acceptance:** Working demo showing Algorand x402 payment blocked/approved by ProofLink compliance middleware.
 
 ---
 
@@ -317,7 +317,7 @@ Approach:
 3. [ ] Offer: free compliance middleware for 3 months in exchange for feedback + logo rights + willingness to be named in deck
 4. [ ] Goal: 1 signed design partner LOI by Week 8
 
-**Acceptance:** 5+ conversations initiated. At least 2 companies actively testing FlowLink.
+**Acceptance:** 5+ conversations initiated. At least 2 companies actively testing ProofLink.
 
 ---
 
@@ -330,7 +330,7 @@ Approach:
 
 This is an async/online hackathon. Use it to refine the A2A compliance demo:
 - [ ] Two AI agents transacting via x402
-- [ ] Both agents call FlowLink MCP server for compliance checks before payment
+- [ ] Both agents call ProofLink MCP server for compliance checks before payment
 - [ ] Compliance receipts issued as EAS attestations
 - [ ] Show the full flow: agent negotiation -> compliance check -> payment -> receipt -> invoice
 
@@ -344,11 +344,11 @@ This is an async/online hackathon. Use it to refine the A2A compliance demo:
 **Deliverable:** Submitted application
 
 Requirements checklist:
-- [ ] FlowLink live on Base mainnet with 100+ transactions (from W3-1)
+- [ ] ProofLink live on Base mainnet with 100+ transactions (from W3-1)
 - [ ] Open-source GitHub repo with clean README
 - [ ] 2-minute video: problem statement, live demo, architecture, why Base
 - [ ] Pitch deck (updated with all fixes from Week 1-2)
-- [ ] Written description: "FlowLink is the compliance infrastructure that makes x402 safe for enterprise adoption"
+- [ ] Written description: "ProofLink is the compliance infrastructure that makes x402 safe for enterprise adoption"
 
 If the startup track deadline (March 9) has passed:
 - [ ] Contact Base team directly about late application or next cohort
@@ -362,12 +362,12 @@ If the startup track deadline (March 9) has passed:
 ### W6-1: Ship Developer Documentation
 **Owner:** A
 **Dependency:** W3-1, W3-2, W3-3 (all products must be functional)
-**Deliverable:** docs.flowlink.dev (or equivalent)
+**Deliverable:** docs.prooflink.dev (or equivalent)
 
 Contents:
 - [ ] Quick Start: screen your first transaction in 5 minutes
 - [ ] API Reference: OpenAPI spec for ProofLink API
-- [ ] SDK Reference: flowlink-sdk TypeScript documentation
+- [ ] SDK Reference: prooflink-sdk TypeScript documentation
 - [ ] MCP Server: how to add compliance to your AI agent
 - [ ] KYA Standard: specification + reference implementation guide
 - [ ] EAS Receipts: how to verify compliance attestations
@@ -399,7 +399,7 @@ Contents:
 
 The LOI should state:
 - Company name and what they do
-- They are evaluating/using FlowLink for compliance on stablecoin payments
+- They are evaluating/using ProofLink for compliance on stablecoin payments
 - They are willing to be referenced in investor materials
 - Timeline: 90-day pilot, no cost
 
@@ -414,7 +414,7 @@ The LOI should state:
 **Dependency:** All prior work
 **Deliverable:** Production-grade demo plan
 
-By ETHGlobal NYC, FlowLink should have:
+By ETHGlobal NYC, ProofLink should have:
 - 2+ months of live transaction data
 - At least one design partner
 - API documentation published
@@ -454,7 +454,7 @@ Slide-by-slide fixes from strategy review:
 | 15 (Vision) | End with acquisition narrative: "Mastercard paid $1.8B for BVNK. The next $1B+ acquisition goes to the company that owns agent payment compliance." |
 
 New slide to add:
-- **Unit economics slide** between Business Model and GTM: "At $10M/month volume, FlowLink generates $X in revenue. Cost of revenue: $Y. Gross margin: Z%."
+- **Unit economics slide** between Business Model and GTM: "At $10M/month volume, ProofLink generates $X in revenue. Cost of revenue: $Y. Gross margin: Z%."
 
 **Acceptance:** Deck has zero placeholders. Every number is sourced and internally consistent. The deck has been presented to 3 friendly/advisor audiences for feedback before any VC meeting.
 
@@ -511,10 +511,10 @@ New slide to add:
 **Dependency:** None
 **Deliverable:** Dedicated analysis document
 
-The research review flagged Skyfire as "the single most important missing competitive deep dive." Skyfire has a16z CSX backing, KYAPay protocol, and direct overlap with FlowLink's KYA positioning.
+The research review flagged Skyfire as "the single most important missing competitive deep dive." Skyfire has a16z CSX backing, KYAPay protocol, and direct overlap with ProofLink's KYA positioning.
 
 - [ ] Document Skyfire's product, pricing, technical architecture, investor base
-- [ ] Identify specific differentiation: FlowLink = compliance-specific, portable, cross-protocol. Skyfire = access-control, x402-only.
+- [ ] Identify specific differentiation: ProofLink = compliance-specific, portable, cross-protocol. Skyfire = access-control, x402-only.
 - [ ] Write the investor Q&A answer for "how are you different from Skyfire?"
 - [ ] Add to `research/competitors/` directory
 
@@ -534,7 +534,7 @@ The research review flagged Skyfire as "the single most important missing compet
 | "Why will Chainalysis keep selling you data at a price that lets you undercut them?" | Multi-vendor strategy, free OFAC API baseline, TRM Labs as alternative, ChainAware as fallback. We are distribution for their data, not competition. |
 | "What if ERC-8004 registry gets exploited?" | KYA credentials are one input, not sole input. Multi-factor: ERC-8004 + DID resolution + behavioral scoring. Registry exploit = credential revocation, not system failure. |
 | "Who at FATF/FinCEN have you spoken to?" | [Must have honest answer by Week 11. If no engagement: "We've published the KYA standard as an open spec and submitted it to W3C. Regulatory engagement is our Q3-Q4 priority, starting with a comment letter to FinCEN on agent payment classification."] |
-| "What stops Coinbase from adding compliance to AgentKit?" | FlowLink is cross-protocol (x402 + MPP + AP2 + ACP). Coinbase only covers x402. Coinbase's compliance covers Coinbase ecosystem; FlowLink covers everything else. The open KYA standard creates ecosystem lock-in Coinbase's proprietary solution cannot match. |
+| "What stops Coinbase from adding compliance to AgentKit?" | ProofLink is cross-protocol (x402 + MPP + AP2 + ACP). Coinbase only covers x402. Coinbase's compliance covers Coinbase ecosystem; ProofLink covers everything else. The open KYA standard creates ecosystem lock-in Coinbase's proprietary solution cannot match. |
 | "Why are you the people to build this?" | [Craft specific answer: Akash's ML/systems background at CERN/vLLM + Cofounder's Request Finance experience + compliance advisor's regulatory credentials = the team that understands both the protocol engineering and the compliance requirements] |
 
 **Acceptance:** Written, rehearsed answers for all 7 questions. Both founders can deliver each answer in under 60 seconds.
@@ -660,7 +660,7 @@ These are strategic items flagged by the reviews that should be addressed as cap
 |------|----------|------|
 | Stress-test: what if A2A is 3 years away, not 12 months? | High | Before first VC meeting. Write 1-page scenario showing H2H alone supports $2-3M ARR by Year 2. |
 | Skyfire competitive deep dive | High | W10-2 (scheduled above) |
-| Answer: "What if regulators DON'T enforce for agents?" | High | Before first VC meeting. Write the "FlowLink creates value even without enforcement" argument. |
+| Answer: "What if regulators DON'T enforce for agents?" | High | Before first VC meeting. Write the "ProofLink creates value even without enforcement" argument. |
 | Primary customer interviews (5-10) | Medium | Ongoing through W4-3 and W7-1 pipeline |
 | Singapore/UAE/HK regulatory research | Medium | Post-fundraise |
 | MoonPay Agents analysis | Low | Post-fundraise |

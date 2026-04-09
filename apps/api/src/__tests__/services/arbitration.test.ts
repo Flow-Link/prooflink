@@ -76,8 +76,8 @@ function makeDispute(overrides: Partial<Dispute> = {}): Dispute {
     escrowId: null,
     invoiceId: null,
     state: "ARBITRATION",
-    initiatorDid: "did:web:initiator.flowlink.io",
-    respondentDid: "did:web:respondent.flowlink.io",
+    initiatorDid: "did:web:initiator.prooflink.io",
+    respondentDid: "did:web:respondent.prooflink.io",
     reason: "Service not delivered",
     category: "NON_DELIVERY",
     evidence: [],
@@ -98,8 +98,8 @@ function makeEscrow(overrides: Partial<Escrow> = {}): Escrow {
     id: "escrow-uuid-1",
     escrowType: "SERVICE",
     state: "DISPUTED",
-    payerAgentDid: "did:web:payer.flowlink.io",
-    payeeAgentDid: "did:web:payee.flowlink.io",
+    payerAgentDid: "did:web:payer.prooflink.io",
+    payeeAgentDid: "did:web:payee.prooflink.io",
     payerWallet: "0xPayer000000000000000000000000000000000001",
     payeeWallet: "0xPayee000000000000000000000000000000000002",
     amount: "100",
@@ -124,7 +124,7 @@ function makeAgent(overrides: Partial<Agent> = {}): Agent {
   const now = new Date("2025-01-01T00:00:00.000Z");
   return {
     id: "agent-uuid-1",
-    agentDid: "did:web:initiator.flowlink.io",
+    agentDid: "did:web:initiator.prooflink.io",
     erc8004Id: null,
     erc8004Registry: null,
     name: "Test Agent",
@@ -286,7 +286,7 @@ describe("autoArbitrate — NON_DELIVERY", () => {
       deadline: pastDeadline,
       evidence: [
         {
-          submittedBy: "did:web:respondent.flowlink.io",
+          submittedBy: "did:web:respondent.prooflink.io",
           type: "delivery_proof",
           deliveryProof: true,
         },
@@ -461,8 +461,8 @@ describe("autoArbitrate — SERVICE_QUALITY", () => {
     const dispute = makeDispute({
       category: "SERVICE_QUALITY",
       evidence: [
-        { submittedBy: "did:web:initiator.flowlink.io", type: "complaint" },
-        { submittedBy: "did:web:respondent.flowlink.io", type: "refutation" },
+        { submittedBy: "did:web:initiator.prooflink.io", type: "complaint" },
+        { submittedBy: "did:web:respondent.prooflink.io", type: "refutation" },
       ],
     });
 
@@ -476,7 +476,7 @@ describe("autoArbitrate — SERVICE_QUALITY", () => {
   it("returns REQUIRES_HUMAN when only initiator submitted evidence", async () => {
     const dispute = makeDispute({
       category: "SERVICE_QUALITY",
-      evidence: [{ submittedBy: "did:web:initiator.flowlink.io", type: "complaint" }],
+      evidence: [{ submittedBy: "did:web:initiator.prooflink.io", type: "complaint" }],
     });
 
     setupSelectSequence([dispute]);

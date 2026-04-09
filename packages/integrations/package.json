@@ -1,8 +1,8 @@
 {
-  "name": "@flowlink/integrations",
+  "name": "@prooflink/integrations",
   "version": "0.1.0",
   "type": "module",
-  "description": "Optional external service integrations for FlowLink compliance infrastructure",
+  "description": "Optional external service integrations for ProofLink compliance infrastructure",
   "license": "MIT",
   "exports": {
     ".": {
@@ -41,19 +41,19 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "@flowlink/shared": "workspace:*",
+    "@prooflink/shared": "workspace:*",
     "zod": "^3.24.0"
   },
   "peerDependencies": {
-    "@flowlink/core": "workspace:*"
+    "@prooflink/core": "workspace:*"
   },
   "peerDependenciesMeta": {
-    "@flowlink/core": {
+    "@prooflink/core": {
       "optional": true
     }
   },
   "devDependencies": {
-    "@flowlink/core": "workspace:*",
+    "@prooflink/core": "workspace:*",
     "@types/node": "^22.10.0",
     "typescript": "^5.8.0",
     "vitest": "^3.0.0"

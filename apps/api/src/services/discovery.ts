@@ -7,7 +7,7 @@ import { agents } from "../db/schema.js";
 // Types
 // ---------------------------------------------------------------------------
 
-/** Google A2A-compatible Agent Card with FlowLink extensions */
+/** Google A2A-compatible Agent Card with ProofLink extensions */
 export interface AgentCard {
   name: string;
   description: string;
@@ -27,7 +27,7 @@ export interface AgentCard {
   security: Array<Record<string, string[]>>;
   skills: AgentSkill[];
   extensions: AgentCardExtension[];
-  "x-flowlink": FlowLinkExtension;
+  "x-prooflink": ProofLinkExtension;
 }
 
 interface SecurityScheme {
@@ -51,7 +51,7 @@ interface AgentCardExtension {
   data: Record<string, unknown>;
 }
 
-interface FlowLinkExtension {
+interface ProofLinkExtension {
   agentDid: string;
   complianceScore: number;
   kyaStatus: "VERIFIED" | "EXPIRED" | "UNVERIFIED";
@@ -91,7 +91,7 @@ export interface ExternalAgentCardImport {
 // Service Functions
 // ---------------------------------------------------------------------------
 
-const BASE_URL = process.env["FLOWLINK_BASE_URL"] ?? "https://api.flowlink.io";
+const BASE_URL = process.env["PROOFLINK_BASE_URL"] ?? "https://api.prooflink.io";
 
 /**
  * Compute KYA status from an agent record.
@@ -149,7 +149,7 @@ function inferSkills(agent: {
 }
 
 /**
- * Build an A2A-compatible Agent Card from a FlowLink agent DB record.
+ * Build an A2A-compatible Agent Card from a ProofLink agent DB record.
  */
 export async function buildAgentCard(agentDid: string): Promise<AgentCard | null> {
   const db = getDb();
@@ -174,7 +174,7 @@ export async function buildAgentCard(agentDid: string): Promise<AgentCard | null
 
   return {
     name: agent.name ?? agent.agentDid,
-    description: `FlowLink ${agent.agentType} agent operated by ${agent.controllingEntityName}`,
+    description: `ProofLink ${agent.agentType} agent operated by ${agent.controllingEntityName}`,
     url: `${BASE_URL}/v1/a2a/${encodeURIComponent(agent.agentDid)}`,
     provider: {
       organization: agent.controllingEntityName,
@@ -194,14 +194,14 @@ export async function buildAgentCard(agentDid: string): Promise<AgentCard | null
     skills: inferSkills(agent),
     extensions: [
       {
-        uri: "https://flowlink.io/extensions/compliance/v1",
+        uri: "https://prooflink.io/extensions/compliance/v1",
         data: {
           complianceScore: agent.complianceScore,
           kyaStatus,
         },
       },
     ],
-    "x-flowlink": {
+    "x-prooflink": {
       agentDid: agent.agentDid,
       complianceScore: agent.complianceScore,
       kyaStatus,
@@ -308,7 +308,7 @@ export async function searchAgents(query: SearchAgentsQuery): Promise<{
 
     return {
       name: agent.name ?? agent.agentDid,
-      description: `FlowLink ${agent.agentType} agent operated by ${agent.controllingEntityName}`,
+      description: `ProofLink ${agent.agentType} agent operated by ${agent.controllingEntityName}`,
       url: `${BASE_URL}/v1/a2a/${encodeURIComponent(agent.agentDid)}`,
       provider: {
         organization: agent.controllingEntityName,
@@ -328,11 +328,11 @@ export async function searchAgents(query: SearchAgentsQuery): Promise<{
       skills: inferSkills(agent),
       extensions: [
         {
-          uri: "https://flowlink.io/extensions/compliance/v1",
+          uri: "https://prooflink.io/extensions/compliance/v1",
           data: { complianceScore: agent.complianceScore, kyaStatus },
         },
       ],
-      "x-flowlink": {
+      "x-prooflink": {
         agentDid: agent.agentDid,
         complianceScore: agent.complianceScore,
         kyaStatus,
@@ -364,7 +364,7 @@ export async function searchAgents(query: SearchAgentsQuery): Promise<{
 }
 
 /**
- * Import an external A2A Agent Card into FlowLink's registry.
+ * Import an external A2A Agent Card into ProofLink's registry.
  * Extracts identity fields from the card and creates/updates the agent record.
  */
 export async function registerExternalAgent(
@@ -377,10 +377,10 @@ export async function registerExternalAgent(
   const name = typeof agentCard["name"] === "string" ? agentCard["name"] : "Unknown Agent";
   const url = typeof agentCard["url"] === "string" ? agentCard["url"] : sourceUrl ?? "";
 
-  // Try to extract DID from x-flowlink extension or generate from URL
-  const xFlowlink = agentCard["x-flowlink"] as Record<string, unknown> | undefined;
+  // Try to extract DID from x-prooflink extension or generate from URL
+  const xProoflink = agentCard["x-prooflink"] as Record<string, unknown> | undefined;
   const agentDid =
-    (typeof xFlowlink?.["agentDid"] === "string" ? xFlowlink["agentDid"] : null) ??
+    (typeof xProoflink?.["agentDid"] === "string" ? xProoflink["agentDid"] : null) ??
     `did:web:${new URL(url || "https://unknown.agent").hostname}`;
 
   const provider = agentCard["provider"] as Record<string, unknown> | undefined;
@@ -399,12 +399,12 @@ export async function registerExternalAgent(
   const now = new Date();
   const defaultExpiry = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1 year
 
-  // Extract chain/currency info from x-flowlink if available
-  const allowedChains = Array.isArray(xFlowlink?.["allowedChains"])
-    ? (xFlowlink["allowedChains"] as string[])
+  // Extract chain/currency info from x-prooflink if available
+  const allowedChains = Array.isArray(xProoflink?.["allowedChains"])
+    ? (xProoflink["allowedChains"] as string[])
     : [];
-  const allowedAssets = Array.isArray(xFlowlink?.["allowedAssets"])
-    ? (xFlowlink["allowedAssets"] as string[])
+  const allowedAssets = Array.isArray(xProoflink?.["allowedAssets"])
+    ? (xProoflink["allowedAssets"] as string[])
     : [];
 
   const delegationScope: Record<string, unknown> = {
@@ -437,8 +437,8 @@ export async function registerExternalAgent(
     .values({
       agentDid,
       name,
-      agentType: (typeof xFlowlink?.["agentType"] === "string"
-        ? xFlowlink["agentType"]
+      agentType: (typeof xProoflink?.["agentType"] === "string"
+        ? xProoflink["agentType"]
         : "autonomous") as "autonomous" | "semi-autonomous" | "human-supervised",
       walletAddress: "0x0000000000000000000000000000000000000000", // Placeholder for external agents
       controllingEntityName: orgName,
@@ -458,17 +458,17 @@ export async function registerExternalAgent(
 }
 
 /**
- * Build the FlowLink platform's own Agent Card (served at /.well-known/agent.json).
+ * Build the ProofLink platform's own Agent Card (served at /.well-known/agent.json).
  */
 export function buildPlatformAgentCard(): Record<string, unknown> {
   return {
-    name: "FlowLink",
+    name: "ProofLink",
     description:
       "Compliance-aware trust layer for agentic payments. Provides KYA identity, " +
       "sanctions screening, transaction compliance checks, and federated agent discovery.",
     url: `${BASE_URL}/v1/a2a`,
     provider: {
-      organization: "FlowLink",
+      organization: "ProofLink",
       url: BASE_URL,
     },
     version: "1.0.0",
@@ -523,7 +523,7 @@ export function buildPlatformAgentCard(): Record<string, unknown> {
     ],
     extensions: [
       {
-        uri: "https://flowlink.io/extensions/compliance/v1",
+        uri: "https://prooflink.io/extensions/compliance/v1",
         data: {
           supportedProtocols: ["x402", "erc-4337"],
           supportedChains: ["eip155:8453", "eip155:1", "eip155:42161"],
@@ -531,8 +531,8 @@ export function buildPlatformAgentCard(): Record<string, unknown> {
         },
       },
     ],
-    "x-flowlink": {
-      platformDid: "did:flowlink:platform",
+    "x-prooflink": {
+      platformDid: "did:prooflink:platform",
       registryVersion: "1.0.0",
       federationSupported: true,
     },

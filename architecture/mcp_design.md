@@ -1,4 +1,4 @@
-# FlowLink MCP Server Design
+# ProofLink MCP Server Design
 **Version:** 1.0
 **Date:** March 20, 2026
 **Status:** Architecture Design
@@ -7,14 +7,14 @@
 
 ## 1. Executive Summary
 
-FlowLink should expose its ProofLink compliance engine as an MCP (Model Context Protocol)
-server. This turns FlowLink from a product into infrastructure — any AI agent framework
-(LangChain, OpenAI Agents SDK, Vercel AI SDK, Claude, Gemini) can call FlowLink's
+ProofLink should expose its ProofLink compliance engine as an MCP (Model Context Protocol)
+server. This turns ProofLink from a product into infrastructure — any AI agent framework
+(LangChain, OpenAI Agents SDK, Vercel AI SDK, Claude, Gemini) can call ProofLink's
 compliance tools natively, with zero custom integration code.
 
 The strategic insight: Coinbase's Payments MCP handles *payment execution* (wallets,
 x402, onramps). There is no MCP server that handles *payment compliance* (sanctions
-screening, KYA, travel rule, AML). FlowLink fills this gap.
+screening, KYA, travel rule, AML). ProofLink fills this gap.
 
 ---
 
@@ -52,12 +52,12 @@ payment processor API exposed as MCP. India-focused. No crypto, no compliance.
 **Source:** https://www.flowhunt.io/mcp-servers/mcp-sanctions/
 
 Single tool: screen an entity against OFAC SDN, UN, and OFSI lists. Uses OFAC API.
-This is the closest existing analog to one FlowLink tool — but covers only one of
-FlowLink's six compliance capabilities and has no payment integration.
+This is the closest existing analog to one ProofLink tool — but covers only one of
+ProofLink's six compliance capabilities and has no payment integration.
 
 ### 2.5 Gap Analysis
 
-| Capability | Coinbase MCP | Paytm MCP | Sanctions MCP | FlowLink MCP |
+| Capability | Coinbase MCP | Paytm MCP | Sanctions MCP | ProofLink MCP |
 |------------|-------------|-----------|---------------|--------------|
 | Payment execution | YES | YES | NO | YES (via x402) |
 | Sanctions screening | NO | NO | Partial | YES (full lists) |
@@ -67,8 +67,8 @@ FlowLink's six compliance capabilities and has no payment integration.
 | Compliance receipts | NO | NO | NO | YES |
 | Crypto-native | YES | NO | NO | YES |
 
-**FlowLink's MCP server is the compliance layer that Coinbase's MCP server is missing.**
-The natural integration is: Coinbase Payments MCP (execution) + FlowLink MCP (compliance)
+**ProofLink's MCP server is the compliance layer that Coinbase's MCP server is missing.**
+The natural integration is: Coinbase Payments MCP (execution) + ProofLink MCP (compliance)
 = a complete, enterprise-grade agentic payment stack.
 
 ---
@@ -130,15 +130,15 @@ Servers MUST validate all inputs. For a compliance server, this is non-negotiabl
 - Reject malformed addresses before hitting screening APIs
 - Rate-limit per client to prevent enumeration attacks
 - Log all tool invocations for audit (the spec recommends this for clients too)
-- Require authentication headers (Bearer token per FlowLink API key)
+- Require authentication headers (Bearer token per ProofLink API key)
 
 ---
 
-## 4. FlowLink MCP Server: Tool Definitions
+## 4. ProofLink MCP Server: Tool Definitions
 
-Server name: `flowlink-compliance`
-Base URL: `https://mcp.flowlink.io/v1`
-Auth: Bearer token in `Authorization` header (per FlowLink API key)
+Server name: `prooflink-compliance`
+Base URL: `https://mcp.prooflink.io/v1`
+Auth: Bearer token in `Authorization` header (per ProofLink API key)
 
 ### 4.1 `check_sanctions`
 
@@ -288,7 +288,7 @@ Verify an AI agent's identity and compliance standing via ERC-8004 registry.
 {
   "name": "verify_kya",
   "title": "Know Your Agent Verification",
-  "description": "Verify an AI agent's identity, authorization, and compliance standing. Resolves ERC-8004 registry data, checks operator identity, spending authorization scope, and FlowLink validation score. Use before accepting payment from or delegating tasks to an unknown agent.",
+  "description": "Verify an AI agent's identity, authorization, and compliance standing. Resolves ERC-8004 registry data, checks operator identity, spending authorization scope, and ProofLink validation score. Use before accepting payment from or delegating tasks to an unknown agent.",
   "inputSchema": {
     "type": "object",
     "properties": {
@@ -318,13 +318,13 @@ Verify an AI agent's identity and compliance standing via ERC-8004 registry.
     "properties": {
       "verified": {
         "type": "boolean",
-        "description": "True if agent passes FlowLink KYA verification."
+        "description": "True if agent passes ProofLink KYA verification."
       },
       "trust_score": {
         "type": "number",
         "minimum": 0,
         "maximum": 100,
-        "description": "Composite trust score from ERC-8004 Reputation + FlowLink Validation Registry."
+        "description": "Composite trust score from ERC-8004 Reputation + ProofLink Validation Registry."
       },
       "agent_metadata": {
         "type": "object",
@@ -377,7 +377,7 @@ Generate a structured, compliance-stamped invoice for agent-rendered services.
 {
   "name": "create_compliant_invoice",
   "title": "Create Compliant Invoice",
-  "description": "Generate a machine-readable, compliance-stamped invoice for services rendered by or to an AI agent. Produces a JSON-LD invoice anchored on-chain with a FlowLink compliance stamp. Required for enterprise AP integration and regulatory audit trails. This is the missing link between x402 payment receipts and enterprise accounting systems.",
+  "description": "Generate a machine-readable, compliance-stamped invoice for services rendered by or to an AI agent. Produces a JSON-LD invoice anchored on-chain with a ProofLink compliance stamp. Required for enterprise AP integration and regulatory audit trails. This is the missing link between x402 payment receipts and enterprise accounting systems.",
   "inputSchema": {
     "type": "object",
     "properties": {
@@ -577,7 +577,7 @@ Retrieve a cryptographically-signed compliance proof for a completed transaction
       },
       "receipt_id": {
         "type": "string",
-        "description": "FlowLink receipt ID from a prior check_sanctions, verify_kya, or create_compliant_invoice call."
+        "description": "ProofLink receipt ID from a prior check_sanctions, verify_kya, or create_compliant_invoice call."
       },
       "include_raw_evidence": {
         "type": "boolean",
@@ -629,7 +629,7 @@ Retrieve a cryptographically-signed compliance proof for a completed transaction
       },
       "receipt_signature": {
         "type": "string",
-        "description": "EIP-712 signature of the receipt hash, signed by FlowLink's attestation key."
+        "description": "EIP-712 signature of the receipt hash, signed by ProofLink's attestation key."
       },
       "ipfs_cid": {
         "type": "string",
@@ -694,7 +694,7 @@ End-to-end compliant payment: runs all checks, then executes payment via x402.
       },
       "invoice_id": {
         "type": "string",
-        "description": "FlowLink invoice ID from create_compliant_invoice. Links payment to invoice."
+        "description": "ProofLink invoice ID from create_compliant_invoice. Links payment to invoice."
       },
       "require_kya": {
         "type": "boolean",
@@ -776,9 +776,9 @@ End-to-end compliant payment: runs all checks, then executes payment via x402.
     }
   },
   "serverInfo": {
-    "name": "flowlink-compliance",
+    "name": "prooflink-compliance",
     "version": "1.0.0",
-    "vendor": "FlowLink"
+    "vendor": "ProofLink"
   }
 }
 ```
@@ -787,19 +787,19 @@ End-to-end compliant payment: runs all checks, then executes payment via x402.
 
 Expose two transports:
 
-1. **HTTP Streamable** (production) — `https://mcp.flowlink.io/v1`
+1. **HTTP Streamable** (production) — `https://mcp.prooflink.io/v1`
    - Recommended for all remote integrations
    - Bearer token auth via `Authorization: Bearer fl_live_...` header
    - Rate limits: 100 req/min (free), 1000 req/min (paid), 10000 req/min (enterprise)
 
-2. **stdio** (local dev / Claude Desktop) — run via `npx @flowlink/mcp-server`
-   - Reads `FLOWLINK_API_KEY` from environment
+2. **stdio** (local dev / Claude Desktop) — run via `npx @prooflink/mcp-server`
+   - Reads `PROOFLINK_API_KEY` from environment
    - Same tool surface, calls cloud API
 
 ### 5.4 Reference Implementation Stack
 
 ```
-flowlink-mcp/
+prooflink-mcp/
 ├── src/
 │   ├── server.ts          # MCP server entrypoint (stdio + HTTP)
 │   ├── tools/
@@ -810,7 +810,7 @@ flowlink-mcp/
 │   │   ├── get-receipt.ts
 │   │   └── pay-with-compliance.ts
 │   ├── validators/        # Zod schemas matching inputSchema definitions
-│   └── prooflink-client.ts  # HTTP client to FlowLink REST API
+│   └── prooflink-client.ts  # HTTP client to ProofLink REST API
 ├── package.json
 └── README.md
 ```
@@ -834,9 +834,9 @@ from langchain_anthropic import ChatAnthropic
 
 async def run_compliant_payment_agent():
     async with MultiServerMCPClient({
-        "flowlink": {
+        "prooflink": {
             "transport": "http",
-            "url": "https://mcp.flowlink.io/v1",
+            "url": "https://mcp.prooflink.io/v1",
             "headers": {"Authorization": "Bearer fl_live_xxxxx"}
         },
         # Pair with Coinbase for execution
@@ -875,9 +875,9 @@ from agents.mcp import MCPServerSse, create_static_tool_filter
 
 async def main():
     async with MCPServerSse(
-        name="FlowLink Compliance",
+        name="ProofLink Compliance",
         params={
-            "url": "https://mcp.flowlink.io/v1/sse",
+            "url": "https://mcp.prooflink.io/v1/sse",
             "headers": {"Authorization": "Bearer fl_live_xxxxx"}
         },
         cache_tools_list=True,
@@ -885,7 +885,7 @@ async def main():
         tool_filter=create_static_tool_filter(
             allowed_tool_names=["check_sanctions", "verify_kya", "get_compliance_receipt"]
         )
-    ) as flowlink:
+    ) as prooflink:
         agent = Agent(
             name="Compliance Checker",
             instructions=(
@@ -893,7 +893,7 @@ async def main():
                 "screen the counterparty for sanctions and verify agent identity if applicable. "
                 "Always return a compliance receipt ID."
             ),
-            mcp_servers=[flowlink],
+            mcp_servers=[prooflink],
             mcp_config={"convert_schemas_to_strict": True}
         )
 
@@ -916,16 +916,16 @@ import { anthropic } from '@ai-sdk/anthropic';
 export async function POST(req: Request) {
   const { messages } = await req.json();
 
-  const flowlink = await createMCPClient({
+  const prooflink = await createMCPClient({
     transport: {
       type: 'http',
-      url: 'https://mcp.flowlink.io/v1',
-      headers: { Authorization: `Bearer ${process.env.FLOWLINK_API_KEY}` }
+      url: 'https://mcp.prooflink.io/v1',
+      headers: { Authorization: `Bearer ${process.env.PROOFLINK_API_KEY}` }
     }
   });
 
   // Load only specific tools (schema-typed for strict TypeScript)
-  const tools = await flowlink.tools({
+  const tools = await prooflink.tools({
     schemas: {
       check_sanctions: {
         inputSchema: z.object({
@@ -948,7 +948,7 @@ export async function POST(req: Request) {
     messages,
     tools,
     onFinish: async () => {
-      await flowlink.close();
+      await prooflink.close();
     }
   });
 
@@ -963,18 +963,18 @@ Zero-code integration for Claude Desktop users:
 ```json
 {
   "mcpServers": {
-    "flowlink-compliance": {
+    "prooflink-compliance": {
       "command": "npx",
-      "args": ["@flowlink/mcp-server"],
+      "args": ["@prooflink/mcp-server"],
       "env": {
-        "FLOWLINK_API_KEY": "fl_live_xxxxx"
+        "PROOFLINK_API_KEY": "fl_live_xxxxx"
       }
     }
   }
 }
 ```
 
-After restart, Claude Desktop exposes all 6 FlowLink tools natively. A CFO can ask:
+After restart, Claude Desktop exposes all 6 ProofLink tools natively. A CFO can ask:
 "Screen this wallet before we approve this vendor payment" — and Claude calls
 `check_sanctions` automatically.
 
@@ -1014,7 +1014,7 @@ Agent/LLM
 ```
 pay_with_compliance(recipient, amount, chain)
          │
-         │  [FlowLink server orchestrates internally]
+         │  [ProofLink server orchestrates internally]
          │
          ├─► ProofLink Engine: sanctions_screen(recipient.wallet_address)
          ├─► [if recipient.agent_id] ProofLink Engine: kya_verify(agent_id)
@@ -1023,12 +1023,12 @@ pay_with_compliance(recipient, amount, chain)
          └─► Receipt Issuer: generate_prooflink_receipt() → EAS.attest()
 ```
 
-### 7.3 Coinbase MCP + FlowLink MCP Integration Pattern
+### 7.3 Coinbase MCP + ProofLink MCP Integration Pattern
 
 ```
 Agent Framework (LangChain / OpenAI SDK / Vercel AI)
         │
-        ├─── FlowLink MCP ──────────────────────────────────────────────
+        ├─── ProofLink MCP ──────────────────────────────────────────────
         │    check_sanctions()    verify_kya()    get_compliance_receipt()
         │    create_compliant_invoice()    submit_travel_rule()
         │
@@ -1036,7 +1036,7 @@ Agent Framework (LangChain / OpenAI SDK / Vercel AI)
              wallet_balance()    send_x402_payment()    onramp_usdc()
 ```
 
-FlowLink handles the "is this legal?" question.
+ProofLink handles the "is this legal?" question.
 Coinbase handles the "how do I pay?" question.
 Together they form a complete agentic payment stack.
 
@@ -1044,7 +1044,7 @@ Together they form a complete agentic payment stack.
 
 ## 8. Differentiation vs. Existing MCP Servers
 
-| Feature | FlowLink MCP | Coinbase MCP | Sanctions MCP | Paytm MCP |
+| Feature | ProofLink MCP | Coinbase MCP | Sanctions MCP | Paytm MCP |
 |---------|-------------|-------------|---------------|-----------|
 | Sanctions screening (full 4 lists) | YES | NO | Partial | NO |
 | KYA / ERC-8004 agent verification | YES | NO | NO | NO |
@@ -1079,10 +1079,10 @@ Per-call pricing for pay-as-you-go:
 
 ### 9.2 Distribution
 
-1. **Claude Desktop users**: `npx @flowlink/mcp-server` — zero-friction adoption
-2. **npm registry**: `@flowlink/mcp-server` — developer self-service
+1. **Claude Desktop users**: `npx @prooflink/mcp-server` — zero-friction adoption
+2. **npm registry**: `@prooflink/mcp-server` — developer self-service
 3. **Smithery / mcp.run / PulseMCP**: List in MCP marketplaces
-4. **Coinbase CDP partnership**: Offer FlowLink as the recommended compliance layer
+4. **Coinbase CDP partnership**: Offer ProofLink as the recommended compliance layer
    alongside Payments MCP
 
 ---
@@ -1108,7 +1108,7 @@ Per-call pricing for pay-as-you-go:
 ### Compliance Risks
 
 4. **Liability for tool results**: If `check_sanctions` returns `cleared=true` and
-   the payment is later flagged, FlowLink needs clear ToS limiting liability. The
+   the payment is later flagged, ProofLink needs clear ToS limiting liability. The
    compliance receipt must document data source timestamps.
 
 5. **Travel Rule pre-transaction requirement**: Some jurisdictions (EU under MiCA,
@@ -1142,4 +1142,4 @@ Per-call pricing for pay-as-you-go:
 - [Vercel AI SDK MCP Tools](https://ai-sdk.dev/docs/ai-sdk-core/mcp-tools)
 - [Vercel AI SDK createMCPClient](https://ai-sdk.dev/docs/reference/ai-sdk-core/create-mcp-client)
 - [Coinbase Payments MCP Launch Blog](https://www.coinbase.com/developer-platform/discover/launches/payments-mcp)
-- [FlowLink Agent Economy Research](/home/akash/PROJECTS/FLOW-LINK/research/agentic-payments/agent_economy.md)
+- [ProofLink Agent Economy Research](/home/akash/PROJECTS/prooflink/research/agentic-payments/agent_economy.md)

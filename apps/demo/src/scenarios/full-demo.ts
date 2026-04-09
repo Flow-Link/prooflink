@@ -2,7 +2,7 @@ import chalk from "chalk";
 import oraImport from "ora";
 
 import {
-  flowlinkLog,
+  prooflinkLog,
   agentLog,
   x402Log,
   statusCleared,
@@ -46,7 +46,7 @@ export async function runFullDemo(): Promise<void> {
   const ora = oraImport;
   const demoStart = Date.now();
 
-  sectionHeader("FLOWLINK FULL DEMO");
+  sectionHeader("PROOFLINK FULL DEMO");
 
   console.log(chalk.gray("  The complete compliance pipeline for agentic payments."));
   console.log(chalk.gray("  This demo covers: invoice creation, sanctions screening,"));
@@ -78,7 +78,7 @@ export async function runFullDemo(): Promise<void> {
 
   await sleep(400);
 
-  flowlinkLog("Intercepting x402 payment...");
+  prooflinkLog("Intercepting x402 payment...");
   await sleep(200);
 
   // Screen sender (cached)
@@ -111,7 +111,7 @@ export async function runFullDemo(): Promise<void> {
   paymentRejected("SANCTIONS_HIT");
 
   const blockedReceiptId = generateReceiptId("pl");
-  flowlinkLog(`ProofLink receipt: ${chalk.white(blockedReceiptId)}`);
+  prooflinkLog(`ProofLink receipt: ${chalk.white(blockedReceiptId)}`);
 
   await sleep(300);
   agentLog(
@@ -195,7 +195,7 @@ export async function runFullDemo(): Promise<void> {
 
   stepHeader("\u{1F50D}", "Running compliance pipeline...");
 
-  flowlinkLog(`Invoice ${chalk.white("INV-2026-0042")} payment initiated`);
+  prooflinkLog(`Invoice ${chalk.white("INV-2026-0042")} payment initiated`);
   await sleep(200);
 
   // Screen sender (cached)
@@ -232,7 +232,7 @@ export async function runFullDemo(): Promise<void> {
   riskScore(8, 85);
 
   // Travel Rule
-  flowlinkLog(`Amount $45.00 below Travel Rule threshold ($3,000)`);
+  prooflinkLog(`Amount $45.00 below Travel Rule threshold ($3,000)`);
   travelRuleStatus(false, 45, 3000);
 
   // KYA
@@ -245,11 +245,11 @@ export async function runFullDemo(): Promise<void> {
   await sleep(kyaLatency + 100);
   spinnerKya.stop();
 
-  flowlinkLog(`KYA verification: ${chalk.white(AGENT_ID)}`);
-  flowlinkLog(`  Agent: ${chalk.white("inference-agent-v3")} | Type: ${chalk.white("semi-autonomous")}`);
-  flowlinkLog(`  Operator: ${chalk.white("Acme Corp")} ${chalk.gray("(LEI verified, sanctions cleared)")}`);
-  flowlinkLog(`  Trust score: ${chalk.green.bold("87/100")} | Spending: ${chalk.white("$150 < $10,000 limit")}`);
-  flowlinkLog(`  KYA status: ${chalk.green.bold("VERIFIED")}`);
+  prooflinkLog(`KYA verification: ${chalk.white(AGENT_ID)}`);
+  prooflinkLog(`  Agent: ${chalk.white("inference-agent-v3")} | Type: ${chalk.white("semi-autonomous")}`);
+  prooflinkLog(`  Operator: ${chalk.white("Acme Corp")} ${chalk.gray("(LEI verified, sanctions cleared)")}`);
+  prooflinkLog(`  Trust score: ${chalk.green.bold("87/100")} | Spending: ${chalk.white("$150 < $10,000 limit")}`);
+  prooflinkLog(`  KYA status: ${chalk.green.bold("VERIFIED")}`);
 
   await sleep(300);
 
@@ -288,11 +288,11 @@ export async function runFullDemo(): Promise<void> {
   await sleep(400);
   spinnerReceipt.stop();
 
-  flowlinkLog(`ProofLink receipt: ${chalk.white(receiptId)}`);
-  flowlinkLog(`Invoice ${chalk.white("INV-2026-0042")} marked ${chalk.green.bold("PAID")}`);
-  flowlinkLog(`EAS attestation: ${chalk.white(easUid.slice(0, 10) + "..." + easUid.slice(-4))}`);
-  flowlinkLog(`IPFS archive: ${chalk.white(ipfsCid.slice(0, 10) + "..." + ipfsCid.slice(-6))}`);
-  flowlinkLog(`ERP webhook fired: ${chalk.gray("quickbooks.acme.com/webhooks/invoices")}`);
+  prooflinkLog(`ProofLink receipt: ${chalk.white(receiptId)}`);
+  prooflinkLog(`Invoice ${chalk.white("INV-2026-0042")} marked ${chalk.green.bold("PAID")}`);
+  prooflinkLog(`EAS attestation: ${chalk.white(easUid.slice(0, 10) + "..." + easUid.slice(-4))}`);
+  prooflinkLog(`IPFS archive: ${chalk.white(ipfsCid.slice(0, 10) + "..." + ipfsCid.slice(-6))}`);
+  prooflinkLog(`ERP webhook fired: ${chalk.gray("quickbooks.acme.com/webhooks/invoices")}`);
 
   console.log();
   console.log(`  ${chalk.green.bold("\u{2705}")} ${chalk.green.bold("Payment complete. Full compliance pipeline executed.")}`);
@@ -320,9 +320,9 @@ export async function runFullDemo(): Promise<void> {
     checks: [
       { checkType: "SANCTIONS_SCREENING", result: "PASSED", provider: "Chainalysis KYT", latencyMs: senderLatency2 + receiverLatency },
       { checkType: "KYA_VERIFICATION", result: "PASSED", provider: "ERC-8004 Registry", latencyMs: kyaLatency },
-      { checkType: "AML_MONITORING", result: "PASSED", provider: "FlowLink Engine", latencyMs: amlLatency },
+      { checkType: "AML_MONITORING", result: "PASSED", provider: "ProofLink Engine", latencyMs: amlLatency },
       { checkType: "TRAVEL_RULE", result: "SKIPPED", provider: "N/A (below $3,000)", latencyMs: 0 },
-      { checkType: "INVOICE_VALIDATION", result: "PASSED", provider: "FlowLink Engine", latencyMs: 8 },
+      { checkType: "INVOICE_VALIDATION", result: "PASSED", provider: "ProofLink Engine", latencyMs: 8 },
     ],
     travelRuleStatus: "NOT_REQUIRED",
     easAttestationUid: easUid,
@@ -348,7 +348,7 @@ export async function runFullDemo(): Promise<void> {
   console.log(chalk.gray("  └──────────────────────────────────────────────────┘"));
   console.log();
 
-  console.log(chalk.white("  FlowLink registers hooks into the x402 ResourceServer lifecycle:"));
+  console.log(chalk.white("  ProofLink registers hooks into the x402 ResourceServer lifecycle:"));
   console.log();
   console.log(`  ${chalk.cyan("\u{25B6}")} ${chalk.white("Before verify:")}  sanctions screen + AML risk score`);
   console.log(`  ${chalk.cyan("\u{25B6}")} ${chalk.white("Before settle:")}  FATF Travel Rule (>$3,000)`);
@@ -368,7 +368,7 @@ export async function runFullDemo(): Promise<void> {
   const demoEnd = Date.now();
   const totalDemoMs = demoEnd - demoStart;
 
-  summaryBox("FlowLink Compliance Pipeline Results", [
+  summaryBox("ProofLink Compliance Pipeline Results", [
     { label: "Addresses screened", value: chalk.white("3 (1 blocked, 2 cleared)") },
     { label: "Sanctions lists", value: chalk.white("OFAC_SDN, EU, UN, HMT") },
     { label: "Payments processed", value: chalk.white("2 (1 rejected, 1 settled)") },
@@ -381,7 +381,7 @@ export async function runFullDemo(): Promise<void> {
   ]);
 
   console.log();
-  console.log(chalk.white.bold("  What FlowLink provides that nobody else does:"));
+  console.log(chalk.white.bold("  What ProofLink provides that nobody else does:"));
   console.log();
   console.log(`  ${chalk.green("\u{2713}")} Pre-payment sanctions enforcement (not post-hoc monitoring)`);
   console.log(`  ${chalk.green("\u{2713}")} Know Your Agent (KYA) via ERC-8004 identity resolution`);
@@ -395,12 +395,12 @@ export async function runFullDemo(): Promise<void> {
   console.log();
   console.log(
     chalk.white.bold(
-      '  "x402 delivers payments. FlowLink makes them legal.\n' +
+      '  "x402 delivers payments. ProofLink makes them legal.\n' +
         '   We are the trust layer the agentic economy does not know it needs yet."',
     ),
   );
   console.log();
-  console.log(chalk.gray("  Live at: ") + chalk.cyan.underline("https://v0-flowlink.vercel.app"));
-  console.log(chalk.gray("  GitHub:  ") + chalk.cyan.underline("https://github.com/flowlink-protocol/flowlink"));
+  console.log(chalk.gray("  Live at: ") + chalk.cyan.underline("https://v0-prooflink.vercel.app"));
+  console.log(chalk.gray("  GitHub:  ") + chalk.cyan.underline("https://github.com/prooflink-protocol/prooflink"));
   console.log();
 }

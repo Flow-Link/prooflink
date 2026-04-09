@@ -1,7 +1,7 @@
 import type {
   SettleResultContext,
   AfterHookResult,
-  FlowLinkConfig,
+  ProofLinkConfig,
   ProofLinkReceipt,
   PendingDecision,
   ComplianceEventHandler,
@@ -28,7 +28,7 @@ export interface InvoiceService {
 // ---------------------------------------------------------------------------
 
 export interface AfterSettleDeps {
-  config: FlowLinkConfig;
+  config: ProofLinkConfig;
   proofLinkService: ProofLinkService;
   invoiceService?: InvoiceService;
   pendingDecisions: Map<string, PendingDecision>;

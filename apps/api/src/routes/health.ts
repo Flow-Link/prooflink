@@ -5,7 +5,7 @@ import {
   httpCheck,
   customCheck,
   PrometheusExporter,
-} from "@flowlink/core";
+} from "@prooflink/core";
 
 import { getPool } from "../db/index.js";
 import { logger } from "../utils/logger.js";

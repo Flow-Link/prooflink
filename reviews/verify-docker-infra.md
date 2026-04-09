@@ -20,7 +20,7 @@
 ### Strengths
 - Multi-stage build correctly separates install/build/production concerns
 - Uses `dumb-init` as PID 1 (proper signal handling)
-- Non-root user `flowlink:1001` -- good security practice
+- Non-root user `prooflink:1001` -- good security practice
 - `HEALTHCHECK` directive baked into image (wget to `/health`)
 - `--frozen-lockfile` ensures reproducible installs
 - Only copies `dist/` and `package.json` into production stage (no source)
@@ -30,7 +30,7 @@
 
 | Severity | Issue | Details |
 |----------|-------|---------|
-| **Medium** | Dashboard not containerized for production | Dockerfile only builds `@flowlink/api`. Dashboard (Next.js) has no production Dockerfile or stage. Only available via `dev` profile in compose. |
+| **Medium** | Dashboard not containerized for production | Dockerfile only builds `@prooflink/api`. Dashboard (Next.js) has no production Dockerfile or stage. Only available via `dev` profile in compose. |
 | **Medium** | No `drizzle.config.ts` exists | Migration runner references `./drizzle` folder but no config file or migration SQL files exist yet. `drizzle-kit generate` has never been run. |
 | **Low** | pnpm version hardcoded in 3 stages | `pnpm@9.15.0` is repeated in stages 1, 2, 3. Could use a build ARG for DRY. |
 | **Low** | No `.dockerignore` for `pnpm-lock.yaml` changes | Not an issue per se, but any lockfile change invalidates the entire dep cache. Could use `--mount=type=cache` for pnpm store. |
@@ -57,7 +57,7 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
 
 | Service | Image/Build | Port | Profile | Health Check |
 |---------|-------------|------|---------|-------------|
-| `postgres` | postgres:16-alpine | 5432 | default | `pg_isready -U flowlink` |
+| `postgres` | postgres:16-alpine | 5432 | default | `pg_isready -U prooflink` |
 | `redis` | redis:7-alpine | 6379 | default | `redis-cli ping` |
 | `api` | Built from Dockerfile (target: production) | 3001 | default | wget `/health` |
 | `api-dev` | Built from Dockerfile (target: builder) | 3001 | `dev` | **None** |
@@ -67,7 +67,7 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
 - All 3 infrastructure services (postgres, redis, api) have health checks
 - `depends_on` with `condition: service_healthy` -- proper startup ordering
 - Named volumes for data persistence (`postgres_data`, `redis_data`)
-- Custom bridge network `flowlink` for service isolation
+- Custom bridge network `prooflink` for service isolation
 - Dev profile uses volume mounts for hot-reload (`./packages/*/src` mapped in)
 - Redis has sensible `maxmemory` (256mb) and eviction policy (`allkeys-lru`)
 - Ports are configurable via env vars with sane defaults
@@ -89,17 +89,17 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
 
 | Variable | docker-compose.yml | .env.example | Match? |
 |----------|-------------------|-------------|--------|
-| `DATABASE_URL` | Constructed inline (postgres://flowlink:...@postgres:5432/flowlink) | `postgresql://flowlink:flowlink_dev@localhost:5432/flowlink` | Consistent (host differs by design) |
+| `DATABASE_URL` | Constructed inline (postgres://prooflink:...@postgres:5432/prooflink) | `postgresql://prooflink:prooflink_dev@localhost:5432/prooflink` | Consistent (host differs by design) |
 | `REDIS_URL` | `redis://redis:6379` | `redis://localhost:6379` | Consistent |
 | `NODE_ENV` | `production` / `development` | Not in .env.example | OK -- set in compose |
 | `PORT` | `3001` | Not in .env.example | OK -- set in compose |
 | `CHAINALYSIS_API_KEY` | Not in compose | In .env.example | Passed via `env_file: .env` |
-| `FLOWLINK_API_KEY` | Not in compose | In .env.example | Passed via `env_file: .env` |
+| `PROOFLINK_API_KEY` | Not in compose | In .env.example | Passed via `env_file: .env` |
 | `BASE_RPC_URL` | Not in compose | In .env.example | Passed via `env_file: .env` |
 | `ETHEREUM_RPC_URL` | Not in compose | In .env.example | Passed via `env_file: .env` |
 | `EAS_CONTRACT_ADDRESS` | Not in compose | In .env.example | Passed via `env_file: .env` |
 | `PROOFLINK_REGISTRY_ADDRESS` | Not in compose | In .env.example | Passed via `env_file: .env` |
-| `POSTGRES_PASSWORD` | Default `flowlink_dev` | Not explicit | OK -- used in DATABASE_URL construction |
+| `POSTGRES_PASSWORD` | Default `prooflink_dev` | Not explicit | OK -- used in DATABASE_URL construction |
 
 **Verdict:** Environment variables are consistent. The `env_file` with `required: false` correctly passes optional keys without requiring them.
 
@@ -195,7 +195,7 @@ To make migrations work, you need:
 
 ```bash
 # 1. Clone and enter
-git clone <repo-url> && cd FLOW-LINK
+git clone <repo-url> && cd prooflink
 
 # 2. Create env file (optional -- defaults work)
 cp .env.example .env
@@ -214,7 +214,7 @@ curl http://localhost:3001/health
 
 ```bash
 # 1. Clone and enter
-git clone <repo-url> && cd FLOW-LINK
+git clone <repo-url> && cd prooflink
 
 # 2. Create env file
 cp .env.example .env
@@ -229,13 +229,13 @@ pnpm install
 pnpm build
 
 # 6. Run migrations (BLOCKED -- see below)
-pnpm --filter=@flowlink/api db:migrate
+pnpm --filter=@prooflink/api db:migrate
 
 # 7. Start API in dev mode
-pnpm --filter=@flowlink/api dev
+pnpm --filter=@prooflink/api dev
 
 # 8. (Optional) Start dashboard
-pnpm --filter=@flowlink/dashboard dev
+pnpm --filter=@prooflink/dashboard dev
 ```
 
 ### Option C: Docker Compose dev profile
@@ -261,7 +261,7 @@ export default defineConfig({
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL ?? "postgresql://flowlink:flowlink_dev@localhost:5432/flowlink",
+    url: process.env.DATABASE_URL ?? "postgresql://prooflink:prooflink_dev@localhost:5432/prooflink",
   },
 });
 EOF

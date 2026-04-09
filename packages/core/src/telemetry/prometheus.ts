@@ -76,7 +76,7 @@ export class PrometheusExporter {
   private readonly metrics = new Map<string, MetricState>();
 
   constructor() {
-    // Pre-register standard FlowLink metrics
+    // Pre-register standard ProofLink metrics
     this.registerCounter(
       "compliance_checks_total",
       "Total number of compliance checks performed",

@@ -1,7 +1,7 @@
 import {
-  FlowLinkAPIError,
-  FlowLinkNetworkError,
-  FlowLinkTimeoutError,
+  ProofLinkAPIError,
+  ProofLinkNetworkError,
+  ProofLinkTimeoutError,
   type ApiErrorBody,
 } from "./errors.js";
 
@@ -66,7 +66,7 @@ async function sleep(ms: number): Promise<void> {
 // ---------------------------------------------------------------------------
 
 /**
- * Thin HTTP transport for the FlowLink API.
+ * Thin HTTP transport for the ProofLink API.
  *
  * - Attaches the API-key header to every request.
  * - Automatically retries transient failures with exponential backoff.
@@ -153,12 +153,12 @@ export class HttpClient {
           err.name === "TimeoutError"
         ) {
           if (attempt < this.config.maxRetries) continue;
-          throw new FlowLinkTimeoutError(this.config.timeoutMs, url);
+          throw new ProofLinkTimeoutError(this.config.timeoutMs, url);
         }
 
         // Generic network error — retryable
         if (attempt < this.config.maxRetries) continue;
-        throw new FlowLinkNetworkError(
+        throw new ProofLinkNetworkError(
           `Network error after ${attempt + 1} attempt(s): ${String(err)}`,
           { cause: err },
         );
@@ -173,7 +173,7 @@ export class HttpClient {
       // Non-retryable failure
       if (!isRetryable(response.status)) {
         const body = await this.tryParseErrorBody(response);
-        throw new FlowLinkAPIError(response.status, body, response.headers);
+        throw new ProofLinkAPIError(response.status, body, response.headers);
       }
 
       // Retryable failure — respect Retry-After if present
@@ -184,7 +184,7 @@ export class HttpClient {
           await sleep(retryAfterSeconds * 1000);
         }
       }
-      lastError = new FlowLinkAPIError(
+      lastError = new ProofLinkAPIError(
         response.status,
         await this.tryParseErrorBody(response),
         response.headers,
@@ -192,8 +192,8 @@ export class HttpClient {
     }
 
     // All retries exhausted
-    if (lastError instanceof FlowLinkAPIError) throw lastError;
-    throw new FlowLinkNetworkError(
+    if (lastError instanceof ProofLinkAPIError) throw lastError;
+    throw new ProofLinkNetworkError(
       `Request failed after ${this.config.maxRetries + 1} attempt(s)`,
       { cause: lastError },
     );

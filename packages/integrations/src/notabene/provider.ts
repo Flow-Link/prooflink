@@ -1,25 +1,25 @@
 // ---------------------------------------------------------------------------
-// Notabene — TravelRuleProvider implementation for @flowlink/core
+// Notabene — TravelRuleProvider implementation for @prooflink/core
 // ---------------------------------------------------------------------------
 
-import type { TravelRuleData } from "@flowlink/shared";
+import type { TravelRuleData } from "@prooflink/shared";
 import type {
   IVMS101Message,
   TravelRuleProvider,
-} from "@flowlink/core";
+} from "@prooflink/core";
 import { NotabeneClient, type HttpClient } from "./client.js";
 import type { NotabeneConfig } from "./types.js";
 
 /**
  * Production-grade Travel Rule provider backed by the Notabene Gateway API.
  *
- * Implements `TravelRuleProvider` from `@flowlink/core` so it can be injected
+ * Implements `TravelRuleProvider` from `@prooflink/core` so it can be injected
  * into `TravelRuleChecker` and `ProofLinkEngine`.
  *
  * Usage:
  * ```ts
- * import { NotabeneTravelRuleProvider } from "@flowlink/integrations/notabene";
- * import { ProofLinkEngine, loadConfig } from "@flowlink/core";
+ * import { NotabeneTravelRuleProvider } from "@prooflink/integrations/notabene";
+ * import { ProofLinkEngine, loadConfig } from "@prooflink/core";
  *
  * const provider = new NotabeneTravelRuleProvider({
  *   apiKey: process.env.NOTABENE_API_KEY!,
@@ -38,7 +38,7 @@ export class NotabeneTravelRuleProvider implements TravelRuleProvider {
   /**
    * Transmit IVMS101 message via the Notabene Gateway API.
    *
-   * Adapts the `@flowlink/core` IVMS101Message format to the Notabene
+   * Adapts the `@prooflink/core` IVMS101Message format to the Notabene
    * transfer payload and returns the reference ID on success.
    */
   async transmit(

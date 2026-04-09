@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    /* FlowLink brand palette — matching landing page (blue-teal) */
+    /* ProofLink brand palette — matching landing page (blue-teal) */
     --brand-blue: 217 91% 60%;
     --brand-teal: 168 76% 36%;
     --brand-indigo: 226 70% 55%;
@@ -45,7 +45,7 @@
   }
 
   .dark {
-    /* FlowLink brand palette — blue-teal gradient theme */
+    /* ProofLink brand palette — blue-teal gradient theme */
     --brand-blue: 217 91% 65%;
     --brand-teal: 168 76% 42%;
     --brand-indigo: 226 70% 62%;

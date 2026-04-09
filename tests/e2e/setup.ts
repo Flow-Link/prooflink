@@ -1,5 +1,5 @@
 /**
- * E2E test infrastructure for FlowLink.
+ * E2E test infrastructure for ProofLink.
  *
  * Strategy: the API is a Hono app with no persistent server process.
  * Hono's `app.request()` method calls the handler in-process — same approach
@@ -113,13 +113,13 @@ export const TEST_BUYER_ADDRESS = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
 export const BASE_INVOICE_PAYLOAD = {
   seller: {
     walletAddress: TEST_SELLER_ADDRESS,
-    agentId: "did:flowlink:agent:seller-001",
+    agentId: "did:prooflink:agent:seller-001",
     legalName: "Acme Corp Compute",
   },
   buyer: {
     walletAddress: TEST_BUYER_ADDRESS,
-    agentId: "did:flowlink:agent:buyer-001",
-    legalName: "FlowLink Test Client",
+    agentId: "did:prooflink:agent:buyer-001",
+    legalName: "ProofLink Test Client",
   },
   lineItems: [
     {
@@ -151,8 +151,8 @@ export const BASE_COMPLIANCE_CHECK_PAYLOAD = {
 export function makeInvoiceRow(overrides: Record<string, unknown> = {}) {
   return {
     id: "550e8400-e29b-41d4-a716-446655440001",
-    issuerAgentDid: "did:flowlink:agent:seller-001",
-    recipientAgentDid: "did:flowlink:agent:buyer-001",
+    issuerAgentDid: "did:prooflink:agent:seller-001",
+    recipientAgentDid: "did:prooflink:agent:buyer-001",
     sellerWalletAddress: TEST_SELLER_ADDRESS,
     buyerWalletAddress: TEST_BUYER_ADDRESS,
     currency: "USDC",
@@ -207,7 +207,7 @@ export function makeAgentRow(overrides: Record<string, unknown> = {}) {
 
   return {
     id: "550e8400-e29b-41d4-a716-446655440004",
-    agentDid: "did:flowlink:agent:inference-v3",
+    agentDid: "did:prooflink:agent:inference-v3",
     name: "inference-agent-v3",
     agentType: "semi-autonomous",
     walletAddress: "0xAgentWallet1234567890abcdef1234567890ab",

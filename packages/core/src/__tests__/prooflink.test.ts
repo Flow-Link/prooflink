@@ -351,10 +351,10 @@ describe("ProofLinkEngine", () => {
       const kyaCredential = {
         "@context": [
           "https://www.w3.org/2018/credentials/v1",
-          "https://flowlink.io/kya/v1",
+          "https://prooflink.io/kya/v1",
         ],
         type: ["VerifiableCredential", "KYACredential"],
-        issuer: "did:web:flowlink.io",
+        issuer: "did:web:prooflink.io",
         issuanceDate: new Date().toISOString(),
         expirationDate: futureDate,
         credentialSubject: {
@@ -387,7 +387,7 @@ describe("ProofLinkEngine", () => {
       const expiredCredential = {
         "@context": ["https://www.w3.org/2018/credentials/v1"],
         type: ["VerifiableCredential", "KYACredential"],
-        issuer: "did:web:flowlink.io",
+        issuer: "did:web:prooflink.io",
         issuanceDate: new Date(Date.now() - 2_000).toISOString(),
         expirationDate: new Date(Date.now() - 1_000).toISOString(),
         credentialSubject: {

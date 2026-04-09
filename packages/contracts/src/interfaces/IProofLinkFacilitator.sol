@@ -3,9 +3,9 @@ pragma solidity ^0.8.25;
 
 import {Types} from "../libraries/Types.sol";
 
-/// @title IFlowLinkFacilitator
-/// @notice Interface for the FlowLink x402 compliance-gated facilitator.
-interface IFlowLinkFacilitator {
+/// @title IProofLinkFacilitator
+/// @notice Interface for the ProofLink x402 compliance-gated facilitator.
+interface IProofLinkFacilitator {
     // ──────────────────────────────────────────────
     // Events
     // ──────────────────────────────────────────────

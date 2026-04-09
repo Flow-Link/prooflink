@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// Typed Event Emitter for FlowLink
+// Typed Event Emitter for ProofLink
 // ---------------------------------------------------------------------------
 
 import { EventEmitter } from "node:events";
@@ -8,7 +8,7 @@ import type {
   AMLRiskScore,
   ComplianceDecision,
   SanctionsCheckResult,
-} from "@flowlink/shared";
+} from "@prooflink/shared";
 import type { TransactionContext } from "../aml/scorer.js";
 import type { ComplianceRequest } from "../engine/prooflink.js";
 
@@ -16,8 +16,8 @@ import type { ComplianceRequest } from "../engine/prooflink.js";
 // Event Map
 // ---------------------------------------------------------------------------
 
-/** All typed events emitted by the FlowLink engine. */
-export interface FlowLinkEvents {
+/** All typed events emitted by the ProofLink engine. */
+export interface ProofLinkEvents {
   "compliance:decision": {
     request: ComplianceRequest;
     decision: ComplianceDecision;
@@ -60,12 +60,12 @@ export interface FlowLinkEvents {
 // Type helpers
 // ---------------------------------------------------------------------------
 
-/** Valid event name from the FlowLinkEvents map. */
-export type FlowLinkEventName = keyof FlowLinkEvents;
+/** Valid event name from the ProofLinkEvents map. */
+export type ProofLinkEventName = keyof ProofLinkEvents;
 
 /** Listener callback type for a given event. */
-export type FlowLinkEventListener<K extends FlowLinkEventName> = (
-  payload: FlowLinkEvents[K],
+export type ProofLinkEventListener<K extends ProofLinkEventName> = (
+  payload: ProofLinkEvents[K],
 ) => void;
 
 // ---------------------------------------------------------------------------
@@ -76,10 +76,10 @@ export type FlowLinkEventListener<K extends FlowLinkEventName> = (
  * Type-safe event emitter wrapping Node.js EventEmitter.
  *
  * Provides compile-time enforcement of event names and payload shapes.
- * All FlowLink subsystems should use this instead of raw EventEmitter.
+ * All ProofLink subsystems should use this instead of raw EventEmitter.
  */
 export class TypedEventEmitter<
-  TEvents extends { [K in keyof TEvents]: unknown } = FlowLinkEvents,
+  TEvents extends { [K in keyof TEvents]: unknown } = ProofLinkEvents,
 > {
   private readonly ee = new EventEmitter();
 

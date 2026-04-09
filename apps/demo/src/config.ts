@@ -125,7 +125,7 @@ const CHAINS: Record<string, ChainConfig> = {
 // ---------------------------------------------------------------------------
 
 export const demoConfig: DemoConfig = {
-  apiUrl: process.env["FLOWLINK_API_URL"] ?? "https://api.flowlink.finance",
+  apiUrl: process.env["PROOFLINK_API_URL"] ?? "https://api.prooflink.finance",
   wallets: WALLETS,
   chains: CHAINS,
   defaults: {

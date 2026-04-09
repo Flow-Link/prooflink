@@ -1,7 +1,7 @@
 import type {
   SanctionsCheckResult,
   SanctionsList,
-} from "@flowlink/shared";
+} from "@prooflink/shared";
 import { LRUCache } from "../cache.js";
 import type { ProofLinkConfig } from "../config.js";
 import { isKnownSanctionedAddress } from "./lists.js";

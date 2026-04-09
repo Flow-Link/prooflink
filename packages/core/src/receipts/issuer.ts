@@ -4,7 +4,7 @@ import type {
   ComplianceDecision,
   ComplianceReceipt,
   TravelRuleStatus,
-} from "@flowlink/shared";
+} from "@prooflink/shared";
 import type { ProofLinkConfig } from "../config.js";
 
 // ---------------------------------------------------------------------------
@@ -24,7 +24,7 @@ const COMPLIANCE_RECEIPT_TYPES = {
 } as const;
 
 const COMPLIANCE_RECEIPT_DOMAIN = {
-  name: "FlowLink ProofLink",
+  name: "ProofLink ProofLink",
   version: "1",
   // chainId is set dynamically from config
 } as const;

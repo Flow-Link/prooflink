@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        FlowLink treats compliance concerns with the highest priority.
+        ProofLink treats compliance concerns with the highest priority.
         This template is for reporting issues related to regulatory compliance,
         KYC/AML, sanctions screening, or x402 protocol compliance.
 

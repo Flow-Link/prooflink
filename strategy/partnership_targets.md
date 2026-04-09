@@ -1,4 +1,4 @@
-# FlowLink Partnership Targets
+# ProofLink Partnership Targets
 **Last Updated:** 2026-03-20
 **Research Method:** Web search + page fetch, sources cited inline
 
@@ -11,7 +11,7 @@
 The Coinbase Partner Network is a vetted ecosystem for companies building end-to-end Coinbase-powered solutions. It is distinct from Coinbase Ventures (equity) — this is a go-to-market integration program.
 
 **Two partner tracks:**
-- **Technology Partners** — integrate Coinbase APIs directly into their platform for end-clients (FlowLink's fit)
+- **Technology Partners** — integrate Coinbase APIs directly into their platform for end-clients (ProofLink's fit)
 - **Consulting Partners** — build custom solutions for end-clients using Coinbase APIs
 
 **Benefits (confirmed):**
@@ -24,7 +24,7 @@ The Coinbase Partner Network is a vetted ecosystem for companies building end-to
 - Applications are open; there is no public waitlist
 - First cohort included: thirdweb, Fundraise Up, Mojito, Lazer Technologies, Bitwave, Crossmint
 
-**FlowLink's angle:** FlowLink fits the Technology Partner track. Lead with the compliance-first stablecoin payments narrative (Travel Rule + USDC + enterprise AR/AP). Bitwave is already in — FlowLink can position as the payment execution layer that feeds Bitwave's accounting.
+**ProofLink's angle:** ProofLink fits the Technology Partner track. Lead with the compliance-first stablecoin payments narrative (Travel Rule + USDC + enterprise AR/AP). Bitwave is already in — ProofLink can position as the payment execution layer that feeds Bitwave's accounting.
 
 ### Program: x402 Ecosystem Partner
 
@@ -38,7 +38,7 @@ x402 is Coinbase's open HTTP payment protocol (HTTP 402 revival). The x402 Found
 
 **Current notable x402 ecosystem partners:** Alchemy, AWS, Cloudflare, Stripe, thirdweb, 1Pay.ing, Primer
 
-**FlowLink's angle:** Apply as a Services/Endpoints partner — "FlowLink adds Travel Rule compliance and multi-currency settlement to x402 payment flows." This creates a technical hook where any API monetized via x402 can route through FlowLink for compliant settlement.
+**ProofLink's angle:** Apply as a Services/Endpoints partner — "ProofLink adds Travel Rule compliance and multi-currency settlement to x402 payment flows." This creates a technical hook where any API monetized via x402 can route through ProofLink for compliant settlement.
 
 ### Key Contacts to Identify
 
@@ -74,9 +74,9 @@ No specific named partnership lead was surfaced publicly for CDP. Recommended ap
 - Charles V. Senatore — former Head of Risk Oversight at Fidelity, former Co-Head of Global Compliance at Merrill Lynch, former Assistant U.S. Attorney
 - Rebecca Macieira-Kaufmann — 11+ years at Citigroup, risk/regulatory specialization
 
-### Notabene Flow — Direct FlowLink Overlap
+### Notabene Flow — Direct ProofLink Overlap
 
-Notabene Flow (launched September 29, 2025) is the "first open stablecoin payments platform built for businesses" built on the Transaction Authorization Protocol (TAP). This is Notabene moving into FlowLink's territory.
+Notabene Flow (launched September 29, 2025) is the "first open stablecoin payments platform built for businesses" built on the Transaction Authorization Protocol (TAP). This is Notabene moving into ProofLink's territory.
 
 **Notabene Flow founding partners (2025):** Bitso, Borderless.xyz, Dfns, Flutterwave, Gnosis, Monerium, Orbital, Portal, Walapay, Yellow Card, Zodia Custody
 
@@ -96,11 +96,11 @@ Notabene is actively hiring:
 
 **Two possible relationship postures:**
 
-**Option A — Integration Partner:** FlowLink integrates Notabene's Travel Rule API (as Fireblocks and Chainalysis have done). This fast-tracks compliance credibility. Contact: sales/BD channel at notabene.id, or direct outreach to Alice Nawfal (COO) via LinkedIn.
+**Option A — Integration Partner:** ProofLink integrates Notabene's Travel Rule API (as Fireblocks and Chainalysis have done). This fast-tracks compliance credibility. Contact: sales/BD channel at notabene.id, or direct outreach to Alice Nawfal (COO) via LinkedIn.
 
-**Option B — Compete Directly (Notabene Flow vs FlowLink):** Notabene Flow and FlowLink now have overlapping positioning. FlowLink's differentiator must be enterprise accounting integration + multi-currency fiat offramps + Big 4 audit trail. Notabene Flow is open-loop and protocol-layer; FlowLink is the business workflow layer on top.
+**Option B — Compete Directly (Notabene Flow vs ProofLink):** Notabene Flow and ProofLink now have overlapping positioning. ProofLink's differentiator must be enterprise accounting integration + multi-currency fiat offramps + Big 4 audit trail. Notabene Flow is open-loop and protocol-layer; ProofLink is the business workflow layer on top.
 
-**Recommendation:** Pursue Option A in the near term (integrate their Travel Rule API, get listed as a Notabene Flow partner), then differentiate on enterprise accounting, FX, and compliance reporting depth. Being a Notabene partner gives instant access to 2,000+ VASPs as potential FlowLink customers.
+**Recommendation:** Pursue Option A in the near term (integrate their Travel Rule API, get listed as a Notabene Flow partner), then differentiate on enterprise accounting, FX, and compliance reporting depth. Being a Notabene partner gives instant access to 2,000+ VASPs as potential ProofLink customers.
 
 **Outreach:** pelle@notabene.id / alice@notabene.id (format inferred from company; verify via LinkedIn or Hunter.io). Or contact via https://notabene.id/flow
 
@@ -121,7 +121,7 @@ Notabene is actively hiring:
 
 **Benefits:** Global ecosystem visibility, co-marketing, technical support access
 
-**FlowLink's fit:** Apply once MVP is live and processing USDC. Strong fit as a payment orchestration + compliance layer for USDC flows.
+**ProofLink's fit:** Apply once MVP is live and processing USDC. Strong fit as a payment orchestration + compliance layer for USDC flows.
 
 ### Program B: Circle Payments Network (CPN)
 
@@ -138,13 +138,13 @@ Notabene is actively hiring:
 **Key Circle Contact:**
 - **Nikhil Chandhok** — Chief Product & Technology Officer, Circle. Leads CPN product direction. LinkedIn: https://www.linkedin.com/in/chandhok/ (confirmed active)
 
-**FlowLink's angle for CPN:** Position as a "payment orchestration" node that helps CPN participants onboard enterprise clients who need Travel Rule compliance, multi-currency settlement, and accounting integration on top of raw USDC rails. Could join as a network participant enabling B2B payment flows for corporate treasury customers.
+**ProofLink's angle for CPN:** Position as a "payment orchestration" node that helps CPN participants onboard enterprise clients who need Travel Rule compliance, multi-currency settlement, and accounting integration on top of raw USDC rails. Could join as a network participant enabling B2B payment flows for corporate treasury customers.
 
 **Recommended sequence:**
 1. Apply to Circle Alliance Program now (once MVP live)
 2. Build CPN integration/technical readiness in parallel
 3. Pursue CPN membership after regulatory licensing/MSB registration is in place
-4. Use CPN partner list (BVNK, Yellow Card, Flutterwave, etc.) as FlowLink's first enterprise customer pipeline
+4. Use CPN partner list (BVNK, Yellow Card, Flutterwave, etc.) as ProofLink's first enterprise customer pipeline
 
 ---
 
@@ -155,7 +155,7 @@ Notabene is actively hiring:
 #### Michele Korver
 - **Current role:** Head of Regulatory, a16z Crypto (joined 2022)
 - **Former:** First-ever Chief Digital Currency Advisor at FinCEN (2021); 25+ years DOJ, Digital Currency Counsel at DOJ Criminal Division
-- **Status:** At a16z — not independently available. However, a16z crypto portfolio companies benefit from her guidance. If FlowLink raises from a16z, access follows.
+- **Status:** At a16z — not independently available. However, a16z crypto portfolio companies benefit from her guidance. If ProofLink raises from a16z, access follows.
 - **LinkedIn:** Findable via name search; she is publicly active in crypto policy circles
 
 #### Lesley Chavkin
@@ -166,7 +166,7 @@ Notabene is actively hiring:
 
 #### Charles V. Senatore (already on Notabene advisory board)
 - **Background:** Former Head of Risk Oversight at Fidelity, former Co-Head of Global Compliance at Merrill Lynch, former Assistant U.S. Attorney
-- **Conflict:** Currently advising Notabene — directly conflicted if FlowLink competes with Notabene Flow
+- **Conflict:** Currently advising Notabene — directly conflicted if ProofLink competes with Notabene Flow
 - **Action:** Do not pursue while Option A (Notabene integration) is active
 
 #### Yesha Yadav
@@ -174,7 +174,7 @@ Notabene is actively hiring:
 - **Former:** Member, CFTC Technology Advisory Committee (Vice-Chair, DLT Subcommittee)
 - **Expertise:** Crypto market regulation, crypto exchange design, crypto insolvencies, payments
 - **Status:** Academic — available for advisory/board roles; appeared at Consensus 2025 and State of Crypto Policy events
-- **Why:** Gives FlowLink a credible academic/regulatory voice for fundraising and regulatory conversations
+- **Why:** Gives ProofLink a credible academic/regulatory voice for fundraising and regulatory conversations
 - **Outreach:** Via Vanderbilt Law faculty page or conference speaking appearances
 
 #### Andrea Gacki
@@ -191,7 +191,7 @@ The compliance advisory talent pool for crypto is concentrated at a few law firm
 - **Perkins Coie** — dedicated blockchain legal group
 - **Kroll** — published "Crypto Comes of Age 2025" report; active in crypto compliance advisory
 
-**Advisory board compensation norm:** 0.1–0.25% equity (4-year vest, 1-year cliff) + nominal cash retainer ($12K–$25K/year). Target 2–3 advisors; emphasize that FlowLink is building the compliance infrastructure they wish existed.
+**Advisory board compensation norm:** 0.1–0.25% equity (4-year vest, 1-year cliff) + nominal cash retainer ($12K–$25K/year). Target 2–3 advisors; emphasize that ProofLink is building the compliance infrastructure they wish existed.
 
 ---
 
@@ -209,19 +209,19 @@ These companies are already using stablecoin infrastructure and Travel Rule tool
 
 | Company | Description | Why Target |
 |---------|-------------|------------|
-| **BVNK** | Stablecoin connector; customers include Worldpay, Deel, Flywire, Rapyd, Thunes; 226 new customers in 2025 | Enterprise customer base doing exactly the $5M+/month flows FlowLink targets |
+| **BVNK** | Stablecoin connector; customers include Worldpay, Deel, Flywire, Rapyd, Thunes; 226 new customers in 2025 | Enterprise customer base doing exactly the $5M+/month flows ProofLink targets |
 | **Yellow Card** | Africa-focused crypto/stablecoin payments | CPN + Notabene Flow partner; needs enterprise compliance layer |
 | **Flutterwave** | Pan-African payments; $3B+ valuation | On CPN; has enterprise B2B clients needing compliant stablecoin settlement |
 | **Conduit** | Cross-border stablecoin payments, bypasses correspondent banking | CPN partner; B2B focused |
-| **dLocal** | Emerging markets payments; public company | CPN partner; could add FlowLink as compliance/settlement module |
+| **dLocal** | Emerging markets payments; public company | CPN partner; could add ProofLink as compliance/settlement module |
 | **Zodia Markets / Zodia Custody** | Institutional crypto trading/custody (Standard Chartered subsidiary) | Notabene Flow + CPN; institutional-grade customers |
 | **OpenPayd** | Banking-as-a-service / stablecoin settlement | CPN partner; B2B enterprise clients |
 
 ### Tier 2: Request Finance Users Likely to Upgrade
 
-Request Finance processed $27.2M/month (December 2025), 88% stablecoins, with 5,572 payments/month. This is their median customer profile doing ~$1–5M/month. FlowLink targets the segment outgrowing Request Finance — likely ~$5M–$50M/month.
+Request Finance processed $27.2M/month (December 2025), 88% stablecoins, with 5,572 payments/month. This is their median customer profile doing ~$1–5M/month. ProofLink targets the segment outgrowing Request Finance — likely ~$5M–$50M/month.
 
-**Why they switch:** Request Finance lacks (a) built-in Travel Rule compliance, (b) real-time multi-currency settlement with FX, (c) ERP integration, (d) Big 4-auditable reporting. FlowLink addresses all four.
+**Why they switch:** Request Finance lacks (a) built-in Travel Rule compliance, (b) real-time multi-currency settlement with FX, (c) ERP integration, (d) Big 4-auditable reporting. ProofLink addresses all four.
 
 **How to reach them:** Request Finance publishes case studies (crypto-native companies, DAOs, web3 startups). Search their blog/press for customer names and target CFOs via LinkedIn.
 
@@ -246,7 +246,7 @@ These appear as customers/partners across Notabene + Circle CPN + BVNK simultane
 - **Yellow Card** (Africa): Notabene Flow founding partner + CPN design partner
 - **Flutterwave** (Africa): CPN design partner + Notabene Flow partner
 
-These three companies are building the infrastructure layer in high-growth corridors. Pitch FlowLink as the enterprise workflow layer their corporate clients need.
+These three companies are building the infrastructure layer in high-growth corridors. Pitch ProofLink as the enterprise workflow layer their corporate clients need.
 
 ---
 
@@ -254,7 +254,7 @@ These three companies are building the infrastructure layer in high-growth corri
 
 ### Why These Partnerships Matter
 
-Big 4 firms are the audit and advisory partners for every enterprise company FlowLink targets. A co-sell or referral relationship with any of these firms puts FlowLink in front of hundreds of CFOs and controllers who are asking "how do we handle stablecoin payments on our books?"
+Big 4 firms are the audit and advisory partners for every enterprise company ProofLink targets. A co-sell or referral relationship with any of these firms puts ProofLink in front of hundreds of CFOs and controllers who are asking "how do we handle stablecoin payments on our books?"
 
 ### Deloitte
 
@@ -266,7 +266,7 @@ Big 4 firms are the audit and advisory partners for every enterprise company Flo
 
 **Deloitte URL:** https://www.deloitte.com/us/en/what-we-do/capabilities/blockchain-digital-assets/services/blockchain-digital-assets-influencers.html
 
-**Outreach approach:** Rob Massey is the most public-facing; he speaks at crypto accounting conferences. Introduce FlowLink at events like Consensus, Money20/20, or SIFMA crypto sessions. Offer to co-author content on "enterprise stablecoin accounting controls."
+**Outreach approach:** Rob Massey is the most public-facing; he speaks at crypto accounting conferences. Introduce ProofLink at events like Consensus, Money20/20, or SIFMA crypto sessions. Offer to co-author content on "enterprise stablecoin accounting controls."
 
 ### EY (Ernst & Young)
 
@@ -275,9 +275,9 @@ Big 4 firms are the audit and advisory partners for every enterprise company Flo
 | **Amarjit Singh** | EMEIA Assurance Blockchain Leader |
 | **Global Blockchain Team** | Founded 2012; focuses on tokenization, assurance via EY Blockchain Analyzer |
 
-EY is leaning into stablecoin assurance and smart-contract audit. Their EY Blockchain Analyzer Reconciler is a direct complement to FlowLink's reconciliation layer.
+EY is leaning into stablecoin assurance and smart-contract audit. Their EY Blockchain Analyzer Reconciler is a direct complement to ProofLink's reconciliation layer.
 
-**Outreach approach:** EY's 2026 focus is "stablecoin payments, real-world asset tokenization, and enterprise crypto adoption." FlowLink fits all three. Target the US Digital Assets FS team directly.
+**Outreach approach:** EY's 2026 focus is "stablecoin payments, real-world asset tokenization, and enterprise crypto adoption." ProofLink fits all three. Target the US Digital Assets FS team directly.
 
 ### PwC
 
@@ -298,21 +298,21 @@ PwC explicitly said 2025 was a "crypto renaissance" and is scaling crypto servic
 | **David Jarczyk** | US Blockchain Tax Leader |
 | **Erich Braun** | US Blockchain Audit Leader |
 
-KPMG provides audit, tax, and advisory to miners, exchanges, stablecoin issuers, asset managers, custodians. Their client base maps directly to FlowLink's target customers.
+KPMG provides audit, tax, and advisory to miners, exchanges, stablecoin issuers, asset managers, custodians. Their client base maps directly to ProofLink's target customers.
 
-**Outreach approach:** Arun Ghosh is active on LinkedIn. Position FlowLink as the operational layer that makes their stablecoin audit work easier — "real-time audit trail, immutable on-chain records, reconciled to general ledger."
+**Outreach approach:** Arun Ghosh is active on LinkedIn. Position ProofLink as the operational layer that makes their stablecoin audit work easier — "real-time audit trail, immutable on-chain records, reconciled to general ledger."
 
 ### Mid-Tier: Grant Thornton
 
-Grant Thornton published "Crypto compliance in 2026" — they are actively building crypto advisory. Smaller enterprises (the $5–50M/month FlowLink target) are more likely to use Grant Thornton than Big 4. Easier to get a referral partnership with them.
+Grant Thornton published "Crypto compliance in 2026" — they are actively building crypto advisory. Smaller enterprises (the $5–50M/month ProofLink target) are more likely to use Grant Thornton than Big 4. Easier to get a referral partnership with them.
 
 ### Bitwave (Accounting Software — Partner, Not Competitor)
 
-Bitwave is the enterprise crypto accounting software (Coinbase Partner Network member). FlowLink and Bitwave are complementary:
+Bitwave is the enterprise crypto accounting software (Coinbase Partner Network member). ProofLink and Bitwave are complementary:
 - **Bitwave:** crypto accounting, subledger, tax reporting
-- **FlowLink:** payment execution, Travel Rule compliance, multi-currency settlement
+- **ProofLink:** payment execution, Travel Rule compliance, multi-currency settlement
 
-**Integration play:** FlowLink executes the payment and pushes clean transaction records to Bitwave's subledger. Co-sell to enterprise finance teams.
+**Integration play:** ProofLink executes the payment and pushes clean transaction records to Bitwave's subledger. Co-sell to enterprise finance teams.
 
 **Outreach:** Bitwave was an inaugural Coinbase Partner Network member — reach them via Coinbase partner events or direct LinkedIn outreach to their BD team.
 

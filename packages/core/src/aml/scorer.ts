@@ -1,4 +1,4 @@
-import type { AMLRiskFactor, AMLRiskScore } from "@flowlink/shared";
+import type { AMLRiskFactor, AMLRiskScore } from "@prooflink/shared";
 import type { ProofLinkConfig } from "../config.js";
 
 // ---------------------------------------------------------------------------

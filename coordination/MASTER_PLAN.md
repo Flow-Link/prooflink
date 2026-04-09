@@ -1,7 +1,7 @@
-# FlowLink Research & Strategy — Master Plan
+# ProofLink Research & Strategy — Master Plan
 
 ## Mission
-Build the definitive research base and product strategy for FlowLink — an agentic payment trust layer that is differentiated from everything currently in market.
+Build the definitive research base and product strategy for ProofLink — an agentic payment trust layer that is differentiated from everything currently in market.
 
 ## Research Phases
 
@@ -17,7 +17,7 @@ Build the definitive research base and product strategy for FlowLink — an agen
 - Identify what NO ONE is doing
 - Find the whitespace
 
-### Phase 3: FlowLink Product Strategy
+### Phase 3: ProofLink Product Strategy
 - Unique value proposition
 - Technical architecture
 - Go-to-market differentiation

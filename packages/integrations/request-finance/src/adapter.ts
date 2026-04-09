@@ -1,10 +1,10 @@
-import type { AgentInvoice, ComplianceStamp, InvoiceLineItem } from "@flowlink/shared/types";
+import type { AgentInvoice, ComplianceStamp, InvoiceLineItem } from "@prooflink/shared/types";
 import {
   type RequestNetworkInvoice,
   type RequestNetworkState,
   type RequestNetworkChain,
-  FLOWLINK_TO_RN_CHAIN,
-  RN_TO_FLOWLINK_CHAIN,
+  PROOFLINK_TO_RN_CHAIN,
+  RN_TO_PROOFLINK_CHAIN,
   STABLECOIN_ADDRESSES,
 } from "./types.js";
 
@@ -12,7 +12,7 @@ import {
 // State Mapping
 // ---------------------------------------------------------------------------
 
-const FLOWLINK_TO_RN_STATE: Record<string, RequestNetworkState> = {
+const PROOFLINK_TO_RN_STATE: Record<string, RequestNetworkState> = {
   DRAFT: "created",
   ISSUED: "created",
   PAID: "paid",
@@ -21,7 +21,7 @@ const FLOWLINK_TO_RN_STATE: Record<string, RequestNetworkState> = {
   CANCELLED: "canceled",
 };
 
-const RN_TO_FLOWLINK_STATE: Record<RequestNetworkState, string> = {
+const RN_TO_PROOFLINK_STATE: Record<RequestNetworkState, string> = {
   created: "ISSUED",
   accepted: "ISSUED",
   canceled: "CANCELLED",
@@ -51,8 +51,8 @@ export class AdapterError extends Error {
 
 export class RequestFinanceAdapter {
   /**
-   * Convert a FlowLink AgentInvoice to a Request Network invoice format.
-   * Used when publishing a FlowLink invoice to Request Network.
+   * Convert a ProofLink AgentInvoice to a Request Network invoice format.
+   * Used when publishing a ProofLink invoice to Request Network.
    */
   toRequestNetwork(invoice: AgentInvoice): RequestNetworkInvoice {
     const chain = this.resolveRNChain(invoice);
@@ -69,9 +69,9 @@ export class RequestFinanceAdapter {
     }));
 
     const contentData: RequestNetworkInvoice["contentData"] = {
-      reason: `FlowLink Invoice ${invoice.invoiceId}`,
-      createdWith: "FlowLink",
-      builderId: "flowlink-integration",
+      reason: `ProofLink Invoice ${invoice.invoiceId}`,
+      createdWith: "ProofLink",
+      builderId: "prooflink-integration",
       invoiceNumber: invoice.invoiceId,
       invoiceItems,
       ...(invoice.dueDate ? { dueDate: invoice.dueDate } : {}),
@@ -103,7 +103,7 @@ export class RequestFinanceAdapter {
 
     // Map compliance stamp to RN extension data
     if (invoice.complianceStamp) {
-      contentData.flowlinkCompliance =
+      contentData.prooflinkCompliance =
         this.complianceStampToExtension(invoice.complianceStamp);
     }
 
@@ -116,7 +116,7 @@ export class RequestFinanceAdapter {
     return {
       requestId: `fl-${invoice.invoiceId}`,
       version: "0.62.0",
-      state: FLOWLINK_TO_RN_STATE[invoice.state] ?? "created",
+      state: PROOFLINK_TO_RN_STATE[invoice.state] ?? "created",
       payee: {
         type: "ethereumAddress",
         value: invoice.seller.walletAddress,
@@ -141,11 +141,11 @@ export class RequestFinanceAdapter {
   }
 
   /**
-   * Convert a Request Network invoice to a FlowLink AgentInvoice.
-   * Used when ingesting an existing RN invoice into FlowLink for compliance.
+   * Convert a Request Network invoice to a ProofLink AgentInvoice.
+   * Used when ingesting an existing RN invoice into ProofLink for compliance.
    */
   fromRequestNetwork(rnInvoice: RequestNetworkInvoice): AgentInvoice {
-    const currency = this.resolveFlowLinkCurrency(rnInvoice);
+    const currency = this.resolveProofLinkCurrency(rnInvoice);
     const decimals = this.getDecimals(currency);
     const totalAmount = Number(rnInvoice.expectedAmount) / 10 ** decimals;
 
@@ -169,10 +169,10 @@ export class RequestFinanceAdapter {
 
     const now = new Date().toISOString();
     const createdAt = rnInvoice.creationDate ?? now;
-    const state = RN_TO_FLOWLINK_STATE[rnInvoice.state] ?? "ISSUED";
+    const state = RN_TO_PROOFLINK_STATE[rnInvoice.state] ?? "ISSUED";
 
-    // Extract compliance data if FlowLink previously attached it
-    const flCompliance = rnInvoice.contentData?.flowlinkCompliance;
+    // Extract compliance data if ProofLink previously attached it
+    const flCompliance = rnInvoice.contentData?.prooflinkCompliance;
     const complianceStamp = flCompliance
       ? this.extensionToComplianceStamp(flCompliance)
       : undefined;
@@ -180,7 +180,7 @@ export class RequestFinanceAdapter {
     return {
       "@context": [
         "https://schema.org",
-        "https://flowlink.io/invoices/v1",
+        "https://prooflink.io/invoices/v1",
       ],
       "@type": "Invoice",
       invoiceId: rnInvoice.contentData?.invoiceNumber ?? rnInvoice.requestId,
@@ -210,27 +210,27 @@ export class RequestFinanceAdapter {
   }
 
   /**
-   * Sync invoice state from Request Network to FlowLink.
-   * Returns the updated FlowLink state and whether it changed.
+   * Sync invoice state from Request Network to ProofLink.
+   * Returns the updated ProofLink state and whether it changed.
    */
   syncState(
-    currentFlowLinkState: string,
+    currentProofLinkState: string,
     rnState: RequestNetworkState,
   ): { newState: string; changed: boolean } {
-    const mapped = RN_TO_FLOWLINK_STATE[rnState] ?? currentFlowLinkState;
+    const mapped = RN_TO_PROOFLINK_STATE[rnState] ?? currentProofLinkState;
     return {
       newState: mapped,
-      changed: mapped !== currentFlowLinkState,
+      changed: mapped !== currentProofLinkState,
     };
   }
 
   /**
-   * Map a FlowLink ComplianceStamp to Request Network content extension data.
+   * Map a ProofLink ComplianceStamp to Request Network content extension data.
    */
   complianceStampToExtension(
     stamp: ComplianceStamp,
   ): NonNullable<
-    NonNullable<RequestNetworkInvoice["contentData"]>["flowlinkCompliance"]
+    NonNullable<RequestNetworkInvoice["contentData"]>["prooflinkCompliance"]
   > {
     return {
       proofLinkReceiptId: stamp.proofLinkReceiptId,
@@ -243,11 +243,11 @@ export class RequestFinanceAdapter {
   }
 
   /**
-   * Map Request Network compliance extension back to FlowLink ComplianceStamp.
+   * Map Request Network compliance extension back to ProofLink ComplianceStamp.
    */
   extensionToComplianceStamp(
     ext: NonNullable<
-      NonNullable<RequestNetworkInvoice["contentData"]>["flowlinkCompliance"]
+      NonNullable<RequestNetworkInvoice["contentData"]>["prooflinkCompliance"]
     >,
   ): ComplianceStamp | undefined {
     if (!ext.proofLinkReceiptId) return undefined;
@@ -269,7 +269,7 @@ export class RequestFinanceAdapter {
     // If payment proof has chain info, use it
     if (invoice.paymentProof?.chain) {
       const mapped =
-        FLOWLINK_TO_RN_CHAIN[invoice.paymentProof.chain];
+        PROOFLINK_TO_RN_CHAIN[invoice.paymentProof.chain];
       if (mapped) return mapped;
     }
     // Default to mainnet
@@ -283,7 +283,7 @@ export class RequestFinanceAdapter {
     return STABLECOIN_ADDRESSES[chain]?.[currency];
   }
 
-  private resolveFlowLinkCurrency(rnInvoice: RequestNetworkInvoice): string {
+  private resolveProofLinkCurrency(rnInvoice: RequestNetworkInvoice): string {
     if (rnInvoice.currency.type === "ISO4217") {
       return rnInvoice.currency.value; // USD, EUR, etc.
     }

@@ -11,12 +11,17 @@ function getConnectionConfig(): pg.PoolConfig {
     return { connectionString, max: 20 };
   }
 
+  const password = process.env["DB_PASSWORD"];
+  if (!password) {
+    throw new Error("DB_PASSWORD environment variable is required when DATABASE_URL is not set.");
+  }
+
   return {
     host: process.env["DB_HOST"] ?? "localhost",
     port: Number(process.env["DB_PORT"] ?? 5432),
-    database: process.env["DB_NAME"] ?? "flowlink",
-    user: process.env["DB_USER"] ?? "flowlink",
-    password: process.env["DB_PASSWORD"] ?? "flowlink",
+    database: process.env["DB_NAME"] ?? "prooflink",
+    user: process.env["DB_USER"] ?? "prooflink",
+    password,
     max: 20,
   };
 }

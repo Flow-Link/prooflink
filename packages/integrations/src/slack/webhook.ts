@@ -5,7 +5,7 @@
 import type {
   ComplianceDecision,
   SanctionsCheckResult,
-} from "@flowlink/shared";
+} from "@prooflink/shared";
 import type {
   SlackAttachment,
   SlackBlock,
@@ -85,7 +85,7 @@ function dividerBlock(): SlackBlock {
  *
  * Usage:
  * ```ts
- * import { SlackNotifier } from "@flowlink/integrations/slack";
+ * import { SlackNotifier } from "@prooflink/integrations/slack";
  *
  * const notifier = new SlackNotifier({
  *   webhookUrl: process.env.SLACK_WEBHOOK_URL!,
@@ -153,7 +153,7 @@ export class SlackNotifier {
       text: `Compliance Decision: ${decision.status}`,
       attachments: [attachment],
       channel: this.config.channel,
-      username: this.config.username ?? "FlowLink Compliance",
+      username: this.config.username ?? "ProofLink Compliance",
       icon_emoji: this.config.iconEmoji ?? ":shield:",
     });
   }
@@ -200,7 +200,7 @@ export class SlackNotifier {
       text: `SANCTIONS ALERT: ${matchCount} match(es) found`,
       attachments: [attachment],
       channel: this.config.channel,
-      username: this.config.username ?? "FlowLink Compliance",
+      username: this.config.username ?? "ProofLink Compliance",
       icon_emoji: this.config.iconEmoji ?? ":rotating_light:",
     });
   }
@@ -260,7 +260,7 @@ export class SlackNotifier {
       text: `ESCALATION: Receipt ${decision.receiptId} requires human review`,
       attachments: [attachment],
       channel: this.config.channel,
-      username: this.config.username ?? "FlowLink Compliance",
+      username: this.config.username ?? "ProofLink Compliance",
       icon_emoji: this.config.iconEmoji ?? ":warning:",
     });
   }

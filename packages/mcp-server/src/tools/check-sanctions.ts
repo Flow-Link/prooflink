@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { SupportedChain } from "@flowlink/shared";
+import { SupportedChain } from "@prooflink/shared";
 import { formatMcpError } from "../errors.js";
 import { sanctionsScreener, isKnownSanctionedAddress } from "../context.js";
 
@@ -90,7 +90,7 @@ export function registerCheckSanctions(server: McpServer): void {
         }>;
 
         if (params.address && params.chain) {
-          // Use the real SanctionsScreener from @flowlink/core
+          // Use the real SanctionsScreener from @prooflink/core
           const screenResult = await sanctionsScreener.screenAddress(
             params.address,
             params.chain,

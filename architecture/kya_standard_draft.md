@@ -1,7 +1,7 @@
 ---
 title: "KYA-1: Know Your Agent Verifiable Credential Standard"
 description: A W3C Verifiable Credential profile for establishing the identity, authorization, and compliance status of autonomous AI agents participating in financial transactions.
-author: FlowLink Contributors
+author: ProofLink Contributors
 status: Draft
 type: Standards Track
 category: Application
@@ -56,7 +56,7 @@ KYA-1 fills the gap between on-chain agent identity (ERC-8004) and regulatory co
 |------|-----------|
 | **Agent** | An autonomous software system registered on the ERC-8004 Identity Registry, identified by a unique `agentId` (ERC-721 token) |
 | **Principal** | The human or legal entity that controls, deploys, and is legally responsible for an agent's actions |
-| **KYA Issuer** | A trusted entity that verifies agent-principal relationships and issues KYA credentials (e.g., FlowLink, a licensed CASP, a compliance provider) |
+| **KYA Issuer** | A trusted entity that verifies agent-principal relationships and issues KYA credentials (e.g., ProofLink, a licensed CASP, a compliance provider) |
 | **Relying Party** | Any entity that consumes and verifies a KYA credential before transacting (e.g., a payment facilitator, a counterparty agent, a VASP) |
 | **Delegation Scope** | The set of constraints defining what an agent is authorized to do on behalf of its principal |
 | **Compliance Attestation** | A signed statement that specific regulatory checks (sanctions, AML) have been performed and passed |
@@ -70,7 +70,7 @@ The KYA-1 context extends the W3C Credentials v2 context and defines all KYA-spe
   "@context": {
     "@version": 1.1,
     "@protected": true,
-    "kya": "https://flowlink.dev/kya/v1#",
+    "kya": "https://prooflink.dev/kya/v1#",
     "erc8004": "https://eips.ethereum.org/EIPS/eip-8004#",
     "KYACredential": "kya:KYACredential",
     "KYAComplianceAttestation": "kya:KYAComplianceAttestation",
@@ -170,22 +170,22 @@ A KYA credential is a W3C Verifiable Credential v2.0 with the following structur
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://flowlink.dev/kya/v1"
+    "https://prooflink.dev/kya/v1"
   ],
   "id": "urn:uuid:3978344f-8596-4c3a-a978-8fcaba3903c5",
   "type": ["VerifiableCredential", "KYACredential"],
   "issuer": {
-    "id": "did:web:flowlink.dev",
-    "name": "FlowLink ProofLink Engine"
+    "id": "did:web:prooflink.dev",
+    "name": "ProofLink ProofLink Engine"
   },
   "validFrom": "2026-03-20T00:00:00Z",
   "validUntil": "2026-06-20T00:00:00Z",
   "credentialStatus": {
-    "id": "https://flowlink.dev/kya/status/3978344f",
+    "id": "https://prooflink.dev/kya/status/3978344f",
     "type": "BitstringStatusListEntry",
     "statusPurpose": "revocation",
     "statusListIndex": "94567",
-    "statusListCredential": "https://flowlink.dev/kya/status-list/1"
+    "statusListCredential": "https://prooflink.dev/kya/status-list/1"
   },
   "credentialSubject": {
     "id": "did:ethr:base:0xAgentWalletAddress",
@@ -241,7 +241,7 @@ A KYA credential is a W3C Verifiable Credential v2.0 with the following structur
     "type": "DataIntegrityProof",
     "cryptosuite": "ecdsa-jcs-2019",
     "created": "2026-03-20T14:35:00Z",
-    "verificationMethod": "did:web:flowlink.dev#key-1",
+    "verificationMethod": "did:web:prooflink.dev#key-1",
     "proofPurpose": "assertionMethod",
     "proofValue": "z3FXQjecWufY46yg7e..."
   }
@@ -337,14 +337,14 @@ Relying Party receives KYA credential (e.g., in x402 payment header)
     |
     v
 Step 1: SCHEMA VALIDATION
-    - Verify @context includes "https://flowlink.dev/kya/v1"
+    - Verify @context includes "https://prooflink.dev/kya/v1"
     - Verify type includes "KYACredential"
     - Verify all REQUIRED fields are present
     - Verify validFrom <= now <= validUntil
     |
     v
 Step 2: PROOF VERIFICATION
-    - Resolve issuer DID (did:web:flowlink.dev)
+    - Resolve issuer DID (did:web:prooflink.dev)
     - Retrieve issuer's public key from DID Document
     - Verify DataIntegrityProof signature over the credential
     - Verify proofPurpose is "assertionMethod"
@@ -566,13 +566,13 @@ The InterVASP Messaging Standard 101 (IVMS101) defines the data format for Trave
 ### 5.3 Travel Rule Data Exchange Flow
 
 ```
-Agent A (originator) presents KYA credential to FlowLink
+Agent A (originator) presents KYA credential to ProofLink
     |
     v
-FlowLink extracts IVMS101-compatible originator data from KYA
+ProofLink extracts IVMS101-compatible originator data from KYA
     |
     v
-FlowLink transmits to counterparty VASP via Notabene Gateway
+ProofLink transmits to counterparty VASP via Notabene Gateway
 (or direct protocol: TRISA, Sygna, TRP)
     |
     v
@@ -959,7 +959,7 @@ KYA-1 uses only existing extension points: ERC-8004 metadata keys, W3C VC contex
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://flowlink.dev/kya/v1"
+    "https://prooflink.dev/kya/v1"
   ],
   "id": "urn:uuid:00000000-0000-0000-0000-000000000001",
   "type": ["VerifiableCredential", "KYACredential"],
@@ -1058,7 +1058,7 @@ Copyright and related rights waived via [CC0 1.0 Universal](https://creativecomm
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://flowlink.dev/kya/v1/schema.json",
+  "$id": "https://prooflink.dev/kya/v1/schema.json",
   "title": "KYA Credential Subject Schema",
   "type": "object",
   "required": [

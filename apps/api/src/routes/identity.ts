@@ -4,6 +4,8 @@ import { z } from "zod";
 
 import { getDb } from "../db/index.js";
 import { agents } from "../db/schema.js";
+import type { AuthContext } from "../middleware/auth.js";
+import { requireScope } from "../middleware/auth.js";
 import { validate } from "../middleware/validate.js";
 import { issueKYACredential, verifyCredentialSignature } from "../services/kya-issuer.js";
 import { KYACredentialSubjectSchema, KYAVerifiableCredentialSchema } from "../services/kya-schema.js";
@@ -102,16 +104,21 @@ const ListAgentsQuery = z.object({
 const identity = new Hono();
 
 // POST /v1/identity/verify -- Verify agent KYA
-identity.post("/verify", validate({ body: VerifyAgentRequest }), async (c) => {
+identity.post("/verify", requireScope("write"), validate({ body: VerifyAgentRequest }), async (c) => {
   const parsed = c.get("validatedBody") as VerifyAgentRequest;
+  const auth = c.get("auth") as AuthContext | undefined;
 
   const db = getDb();
 
-  // Look up agent by agentDid (using agentId as DID identifier)
+  // Look up agent by agentDid (using agentId as DID identifier), scoped by tenant
+  const conditions = [eq(agents.agentDid, parsed.agentId)];
+  if (auth?.apiKeyId) {
+    conditions.push(eq(agents.apiKeyId, auth.apiKeyId));
+  }
   const [agent] = await db
     .select()
     .from(agents)
-    .where(eq(agents.agentDid, parsed.agentId))
+    .where(and(...conditions))
     .limit(1);
 
   if (!agent) {
@@ -161,10 +168,14 @@ identity.get("/agents", validate({ query: ListAgentsQuery }), async (c) => {
   const query = c.get("validatedQuery") as z.infer<typeof ListAgentsQuery>;
   const { page, limit, agentType, isActive } = query;
   const offset = (page - 1) * limit;
+  const auth = c.get("auth") as AuthContext | undefined;
 
   const db = getDb();
 
   const conditions = [];
+  if (auth?.apiKeyId) {
+    conditions.push(eq(agents.apiKeyId, auth.apiKeyId));
+  }
   if (agentType) {
     conditions.push(eq(agents.agentType, agentType));
   }
@@ -226,12 +237,17 @@ identity.get("/agents", validate({ query: ListAgentsQuery }), async (c) => {
 // NOTE: Must be registered AFTER all static GET routes (e.g., /agents) to avoid shadowing them.
 identity.get("/:agentId", validate({ params: AgentIdParams }), async (c) => {
   const { agentId } = c.get("validatedParams") as z.infer<typeof AgentIdParams>;
+  const auth = c.get("auth") as AuthContext | undefined;
   const db = getDb();
 
+  const conditions = [eq(agents.agentDid, agentId)];
+  if (auth?.apiKeyId) {
+    conditions.push(eq(agents.apiKeyId, auth.apiKeyId));
+  }
   const [agent] = await db
     .select()
     .from(agents)
-    .where(eq(agents.agentDid, agentId))
+    .where(and(...conditions))
     .limit(1);
 
   if (!agent) {
@@ -270,8 +286,9 @@ identity.get("/:agentId", validate({ params: AgentIdParams }), async (c) => {
 });
 
 // POST /v1/identity/kya/issue -- Issue KYA credential
-identity.post("/kya/issue", validate({ body: IssueKYARequest }), async (c) => {
+identity.post("/kya/issue", requireScope("write"), validate({ body: IssueKYARequest }), async (c) => {
   const parsed = c.get("validatedBody") as IssueKYARequest;
+  const auth = c.get("auth") as AuthContext | undefined;
 
   const db = getDb();
 
@@ -281,10 +298,14 @@ identity.post("/kya/issue", validate({ body: IssueKYARequest }), async (c) => {
   const defaultComplianceScore = 80;
 
   // Look up existing agent to preserve compliance score on re-issue
+  const existingConditions = [eq(agents.agentDid, parsed.agentDid)];
+  if (auth?.apiKeyId) {
+    existingConditions.push(eq(agents.apiKeyId, auth.apiKeyId));
+  }
   const [existingAgent] = await db
     .select({ complianceScore: agents.complianceScore })
     .from(agents)
-    .where(eq(agents.agentDid, parsed.agentDid))
+    .where(and(...existingConditions))
     .limit(1);
 
   const [agent] = await db
@@ -302,6 +323,7 @@ identity.post("/kya/issue", validate({ body: IssueKYARequest }), async (c) => {
       isActive: true,
       validatedAt: now,
       expiresAt,
+      apiKeyId: auth?.apiKeyId,
     })
     .onConflictDoUpdate({
       target: agents.agentDid,
@@ -331,13 +353,13 @@ identity.post("/kya/issue", validate({ body: IssueKYARequest }), async (c) => {
   const credential = {
     "@context": [
       "https://www.w3.org/2018/credentials/v1",
-      "https://flowlink.io/credentials/kya/v1",
+      "https://prooflink.io/credentials/kya/v1",
     ],
     type: ["VerifiableCredential", "KYACredential"],
     id: `urn:uuid:${agent.id}`,
     issuer: {
-      id: "did:flowlink:issuer",
-      name: "FlowLink",
+      id: "did:prooflink:issuer",
+      name: "ProofLink",
     },
     issuanceDate: now.toISOString(),
     expirationDate: expiresAt.toISOString(),
@@ -353,7 +375,7 @@ identity.post("/kya/issue", validate({ body: IssueKYARequest }), async (c) => {
     proof: {
       type: "EcdsaSecp256k1Signature2019",
       created: now.toISOString(),
-      verificationMethod: "did:flowlink:issuer#key-1",
+      verificationMethod: "did:prooflink:issuer#key-1",
       proofPurpose: "assertionMethod",
       jws: "placeholder-signature",
     },
@@ -394,17 +416,22 @@ identity.post("/kya/issue", validate({ body: IssueKYARequest }), async (c) => {
 });
 
 // POST /v1/identity/agents -- Register a new agent
-identity.post("/agents", validate({ body: RegisterAgentRequest }), async (c) => {
+identity.post("/agents", requireScope("write"), validate({ body: RegisterAgentRequest }), async (c) => {
   const parsed = c.get("validatedBody") as RegisterAgentRequest;
+  const auth = c.get("auth") as AuthContext | undefined;
 
   const db = getDb();
   const now = new Date();
   const expiresAt = new Date(parsed.delegationScope.expiresAt);
 
+  const existingConditions = [eq(agents.agentDid, parsed.agentDid)];
+  if (auth?.apiKeyId) {
+    existingConditions.push(eq(agents.apiKeyId, auth.apiKeyId));
+  }
   const [existing] = await db
     .select({ id: agents.id })
     .from(agents)
-    .where(eq(agents.agentDid, parsed.agentDid))
+    .where(and(...existingConditions))
     .limit(1);
 
   if (existing) {
@@ -434,6 +461,7 @@ identity.post("/agents", validate({ body: RegisterAgentRequest }), async (c) => 
       isActive: true,
       validatedAt: now,
       expiresAt,
+      apiKeyId: auth?.apiKeyId,
     })
     .returning();
 
@@ -485,17 +513,23 @@ identity.post("/agents", validate({ body: RegisterAgentRequest }), async (c) => 
 // PUT /v1/identity/agents/:id/delegation -- Update delegation scope
 identity.put(
   "/agents/:id/delegation",
+  requireScope("write"),
   validate({ params: AgentUuidParams, body: UpdateDelegationRequest }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof AgentUuidParams>;
     const updates = c.get("validatedBody") as UpdateDelegationRequest;
+    const auth = c.get("auth") as AuthContext | undefined;
 
     const db = getDb();
 
+    const conditions = [eq(agents.id, id)];
+    if (auth?.apiKeyId) {
+      conditions.push(eq(agents.apiKeyId, auth.apiKeyId));
+    }
     const [existing] = await db
       .select()
       .from(agents)
-      .where(eq(agents.id, id))
+      .where(and(...conditions))
       .limit(1);
 
     if (!existing) {
@@ -594,9 +628,11 @@ type IssueCredentialRequest = z.infer<typeof IssueCredentialRequest>;
 
 identity.post(
   "/credentials/issue",
+  requireScope("write"),
   validate({ body: IssueCredentialRequest }),
   async (c) => {
     const parsed = c.get("validatedBody") as IssueCredentialRequest;
+    const auth = c.get("auth") as AuthContext | undefined;
 
     let issued;
     try {
@@ -638,6 +674,7 @@ identity.post(
         isActive: true,
         validatedAt: now,
         expiresAt,
+        apiKeyId: auth?.apiKeyId,
       })
       .onConflictDoUpdate({
         target: agents.agentDid,
@@ -683,6 +720,7 @@ type VerifyCredentialRequest = z.infer<typeof VerifyCredentialRequest>;
 
 identity.post(
   "/credentials/verify",
+  requireScope("write"),
   validate({ body: VerifyCredentialRequest }),
   async (c) => {
     const parsed = c.get("validatedBody") as VerifyCredentialRequest;
@@ -788,15 +826,20 @@ identity.get(
   validate({ params: AgentDidParams }),
   async (c) => {
     const { did } = c.get("validatedParams") as z.infer<typeof AgentDidParams>;
+    const auth = c.get("auth") as AuthContext | undefined;
 
     // DID may be URL-encoded (colons replaced with %3A)
     const decodedDid = decodeURIComponent(did);
 
     const db = getDb();
+    const credConditions = [eq(agents.agentDid, decodedDid)];
+    if (auth?.apiKeyId) {
+      credConditions.push(eq(agents.apiKeyId, auth.apiKeyId));
+    }
     const [agent] = await db
       .select()
       .from(agents)
-      .where(eq(agents.agentDid, decodedDid))
+      .where(and(...credConditions))
       .limit(1);
 
     if (!agent) {
@@ -853,6 +896,7 @@ type SelectiveVerifyRequest = z.infer<typeof SelectiveVerifyRequest>;
 
 identity.post(
   "/credentials/selective-verify",
+  requireScope("write"),
   validate({ body: SelectiveVerifyRequest }),
   async (c) => {
     const parsed = c.get("validatedBody") as SelectiveVerifyRequest;

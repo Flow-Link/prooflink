@@ -1,19 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { RequestFinanceAdapter } from "../adapter.js";
-import type { AgentInvoice } from "@flowlink/shared/types";
+import type { AgentInvoice } from "@prooflink/shared/types";
 import type { RequestNetworkInvoice } from "../types.js";
 
 // ---------------------------------------------------------------------------
 // Fixtures
 // ---------------------------------------------------------------------------
 
-function makeFlowLinkInvoice(
+function makeProofLinkInvoice(
   overrides?: Partial<AgentInvoice>,
 ): AgentInvoice {
   return {
     "@context": [
       "https://schema.org",
-      "https://flowlink.io/invoices/v1",
+      "https://prooflink.io/invoices/v1",
     ],
     "@type": "Invoice",
     invoiceId: "fl-inv-001",
@@ -108,7 +108,7 @@ function makeRNInvoice(
       buyerInfo: {
         businessName: "DeFi Protocol DAO",
       },
-      flowlinkCompliance: {
+      prooflinkCompliance: {
         proofLinkReceiptId: "receipt-xyz-456",
         complianceStatus: "verified",
         sanctionsCleared: true,
@@ -129,12 +129,12 @@ describe("RequestFinanceAdapter", () => {
   const adapter = new RequestFinanceAdapter();
 
   // -----------------------------------------------------------------------
-  // FlowLink → Request Network
+  // ProofLink → Request Network
   // -----------------------------------------------------------------------
 
   describe("toRequestNetwork", () => {
-    it("should convert a FlowLink invoice to RN format", () => {
-      const fl = makeFlowLinkInvoice();
+    it("should convert a ProofLink invoice to RN format", () => {
+      const fl = makeProofLinkInvoice();
       const rn = adapter.toRequestNetwork(fl);
 
       expect(rn.requestId).toBe("fl-fl-inv-001");
@@ -149,7 +149,7 @@ describe("RequestFinanceAdapter", () => {
     });
 
     it("should include line items in contentData", () => {
-      const fl = makeFlowLinkInvoice();
+      const fl = makeProofLinkInvoice();
       const rn = adapter.toRequestNetwork(fl);
 
       expect(rn.contentData?.invoiceItems).toHaveLength(2);
@@ -159,25 +159,25 @@ describe("RequestFinanceAdapter", () => {
       expect(rn.contentData?.invoiceItems?.[0]?.quantity).toBe(1000);
     });
 
-    it("should map compliance stamp to flowlinkCompliance extension", () => {
-      const fl = makeFlowLinkInvoice();
+    it("should map compliance stamp to prooflinkCompliance extension", () => {
+      const fl = makeProofLinkInvoice();
       const rn = adapter.toRequestNetwork(fl);
 
-      expect(rn.contentData?.flowlinkCompliance).toBeDefined();
+      expect(rn.contentData?.prooflinkCompliance).toBeDefined();
       expect(
-        rn.contentData?.flowlinkCompliance?.proofLinkReceiptId,
+        rn.contentData?.prooflinkCompliance?.proofLinkReceiptId,
       ).toBe("receipt-abc-123");
-      expect(rn.contentData?.flowlinkCompliance?.sanctionsCleared).toBe(
+      expect(rn.contentData?.prooflinkCompliance?.sanctionsCleared).toBe(
         true,
       );
-      expect(rn.contentData?.flowlinkCompliance?.amlRiskScore).toBe(12);
+      expect(rn.contentData?.prooflinkCompliance?.amlRiskScore).toBe(12);
       expect(
-        rn.contentData?.flowlinkCompliance?.easAttestationUid,
+        rn.contentData?.prooflinkCompliance?.easAttestationUid,
       ).toBe("0xeas123");
     });
 
     it("should include seller and buyer info", () => {
-      const fl = makeFlowLinkInvoice();
+      const fl = makeProofLinkInvoice();
       const rn = adapter.toRequestNetwork(fl);
 
       expect(rn.contentData?.sellerInfo?.businessName).toBe("Agent Corp");
@@ -198,26 +198,26 @@ describe("RequestFinanceAdapter", () => {
 
       for (const [flState, rnState] of states) {
         const rn = adapter.toRequestNetwork(
-          makeFlowLinkInvoice({ state: flState }),
+          makeProofLinkInvoice({ state: flState }),
         );
         expect(rn.state).toBe(rnState);
       }
     });
 
     it("should handle invoice without compliance stamp", () => {
-      const fl = makeFlowLinkInvoice({ complianceStamp: undefined });
+      const fl = makeProofLinkInvoice({ complianceStamp: undefined });
       const rn = adapter.toRequestNetwork(fl);
 
-      expect(rn.contentData?.flowlinkCompliance).toBeUndefined();
+      expect(rn.contentData?.prooflinkCompliance).toBeUndefined();
     });
   });
 
   // -----------------------------------------------------------------------
-  // Request Network → FlowLink
+  // Request Network → ProofLink
   // -----------------------------------------------------------------------
 
   describe("fromRequestNetwork", () => {
-    it("should convert an RN invoice to FlowLink format", () => {
+    it("should convert an RN invoice to ProofLink format", () => {
       const rn = makeRNInvoice();
       const fl = adapter.fromRequestNetwork(rn);
 
@@ -242,7 +242,7 @@ describe("RequestFinanceAdapter", () => {
       expect(fl.lineItems[0].unitPrice).toBe(150); // 15000 cents / 100
     });
 
-    it("should extract compliance stamp from flowlinkCompliance", () => {
+    it("should extract compliance stamp from prooflinkCompliance", () => {
       const rn = makeRNInvoice();
       const fl = adapter.fromRequestNetwork(rn);
 
@@ -308,8 +308,8 @@ describe("RequestFinanceAdapter", () => {
   // -----------------------------------------------------------------------
 
   describe("round-trip conversion", () => {
-    it("should preserve key fields through FlowLink → RN → FlowLink", () => {
-      const original = makeFlowLinkInvoice();
+    it("should preserve key fields through ProofLink → RN → ProofLink", () => {
+      const original = makeProofLinkInvoice();
       const rn = adapter.toRequestNetwork(original);
       const roundTripped = adapter.fromRequestNetwork(rn);
 
@@ -334,7 +334,7 @@ describe("RequestFinanceAdapter", () => {
       );
     });
 
-    it("should preserve key fields through RN → FlowLink → RN", () => {
+    it("should preserve key fields through RN → ProofLink → RN", () => {
       const original = makeRNInvoice();
       const fl = adapter.fromRequestNetwork(original);
       const roundTripped = adapter.toRequestNetwork(fl);

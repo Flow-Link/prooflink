@@ -6,7 +6,7 @@ export function registerGetComplianceMetrics(server: McpServer): void {
   server.tool(
     "get_compliance_metrics",
     [
-      "Get system health and compliance metrics for the FlowLink compliance pipeline.",
+      "Get system health and compliance metrics for the ProofLink compliance pipeline.",
       "Returns aggregated statistics on screening volume, pass/fail rates, latency,",
       "Travel Rule submissions, and agent verifications.",
       "",

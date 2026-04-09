@@ -17,6 +17,7 @@ import {
   BarChart3,
   Menu,
   X,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
@@ -114,7 +115,7 @@ function Sidebar({
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-teal-600 shadow-lg shadow-blue-500/25">
               <Zap className="h-5 w-5 text-white" />
             </div>
-            <span className="text-lg font-bold tracking-tight gradient-text">FlowLink</span>
+            <span className="text-lg font-bold tracking-tight gradient-text">ProofLink</span>
           </div>
           <button onClick={onMobileClose} className="p-2 text-muted-foreground hover:text-foreground" aria-label="Close menu">
             <X className="h-5 w-5" />
@@ -143,6 +144,18 @@ function Sidebar({
             );
           })}
         </nav>
+        <div className="border-t border-border/40 p-3">
+          <button
+            onClick={() => {
+              localStorage.removeItem("prooflink_api_key");
+              window.location.reload();
+            }}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-red-500/10 hover:text-red-400 transition-colors"
+          >
+            <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span>Disconnect</span>
+          </button>
+        </div>
       </aside>
     </>
   );
@@ -167,7 +180,7 @@ function SidebarContent({
         {!collapsed && (
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold tracking-tight gradient-text">
-              FlowLink
+              ProofLink
             </span>
             <span className="rounded-full bg-blue-500/15 border border-blue-500/25 px-1.5 py-0.5 text-[10px] font-semibold text-blue-400 uppercase tracking-wider">
               Beta
@@ -233,8 +246,20 @@ function SidebarContent({
         </div>
       )}
 
-      {/* Collapse toggle */}
-      <div className="border-t border-border/40 p-3">
+      {/* Disconnect + Collapse toggle */}
+      <div className="border-t border-border/40 p-3 space-y-1">
+        <button
+          onClick={() => {
+            localStorage.removeItem("prooflink_api_key");
+            window.location.reload();
+          }}
+          aria-label="Disconnect"
+          title={collapsed ? "Disconnect" : undefined}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-red-500/10 hover:text-red-400 transition-colors"
+        >
+          <LogOut className="h-4 w-4 shrink-0" aria-hidden="true" />
+          {!collapsed && <span>Disconnect</span>}
+        </button>
         <button
           onClick={() => onCollapsedChange(!collapsed)}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -287,7 +312,7 @@ export function SidebarLayout({ children }: { children: ReactNode }) {
               <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-blue-500 to-teal-600">
                 <Zap className="h-4 w-4 text-white" />
               </div>
-              <span className="text-sm font-bold gradient-text">FlowLink</span>
+              <span className="text-sm font-bold gradient-text">ProofLink</span>
             </div>
           </div>
           <Header />

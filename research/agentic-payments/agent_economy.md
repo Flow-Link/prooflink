@@ -1,7 +1,7 @@
 # The AI Agent Economy: Infrastructure, Protocols, and the Missing Stack
 **Research Date:** March 20, 2026
 **Scope:** Agent infrastructure, identity, payment rails, invoicing, real commerce examples, infrastructure gaps
-**Context:** FlowLink positioning as regulatory-grade trust layer for stablecoin + agentic payments
+**Context:** ProofLink positioning as regulatory-grade trust layer for stablecoin + agentic payments
 
 ---
 
@@ -137,7 +137,7 @@ ERC-8004 defines three lightweight on-chain registries:
 - "Cannot cryptographically guarantee that advertised capabilities are functional and non-malicious"
 - Validator incentives and slashing are out-of-scope, managed by external validation protocols
 
-**FlowLink context:** The product claims 49K+ agents registered. ERC-8004 is the standard for this registration. FlowLink's KYA capability maps directly onto the Validation Registry.
+**ProofLink context:** The product claims 49K+ agents registered. ERC-8004 is the standard for this registration. ProofLink's KYA capability maps directly onto the Validation Registry.
 
 ---
 
@@ -406,9 +406,9 @@ From primary research (Sifted, Everest Group, SAP, AWS sources):
 
 ---
 
-## 8. Top 5 Infrastructure Gaps FlowLink Could Fill
+## 8. Top 5 Infrastructure Gaps ProofLink Could Fill
 
-These are ranked by: (a) size of gap, (b) alignment with FlowLink's existing compliance-first positioning, and (c) defensibility.
+These are ranked by: (a) size of gap, (b) alignment with ProofLink's existing compliance-first positioning, and (c) defensibility.
 
 ---
 
@@ -416,9 +416,9 @@ These are ranked by: (a) size of gap, (b) alignment with FlowLink's existing com
 
 **The problem:** Visa TAP, Mastercard Agent Pay, AP2, x402, and MPP each have their own (or no) compliance approach. An enterprise using multiple protocols faces fragmented, non-interoperable compliance stacks. OFAC screening, FATF Travel Rule, and AML monitoring don't exist natively in any of these protocols.
 
-**Why FlowLink:** FlowLink's ProofLink Engine already does real-time sanctions screening (OFAC, EU, UN, HMT), KYC/KYA, FATF Travel Rule, and AML. The gap is making this a middleware layer that sits between any agent payment protocol and settlement — a "compliance router" that every transaction passes through regardless of which protocol initiated it.
+**Why ProofLink:** ProofLink's ProofLink Engine already does real-time sanctions screening (OFAC, EU, UN, HMT), KYC/KYA, FATF Travel Rule, and AML. The gap is making this a middleware layer that sits between any agent payment protocol and settlement — a "compliance router" that every transaction passes through regardless of which protocol initiated it.
 
-**Defensibility:** First mover with regulatory credibility. Compliance cannot be bolted on later; it must be infrastructure. The ERC-8004 reference already positions FlowLink in the identity/trust stack.
+**Defensibility:** First mover with regulatory credibility. Compliance cannot be bolted on later; it must be infrastructure. The ERC-8004 reference already positions ProofLink in the identity/trust stack.
 
 ---
 
@@ -426,9 +426,9 @@ These are ranked by: (a) size of gap, (b) alignment with FlowLink's existing com
 
 **The problem:** KnowYourAgent.xyz is a $299/month SaaS. ERC-8004 is a smart contract. Neither is an embeddable SDK or open standard that payment protocols can natively call. There is no KYA layer that Visa, Mastercard, and Coinbase can all point to as their agent trust infrastructure.
 
-**Why FlowLink:** The H2H → H2A → A2A roadmap explicitly includes KYA. FlowLink could publish KYA as an open standard (similar to how Cloudflare published Web Bot Auth) while operating the verification infrastructure. This creates both a standards-setting position and a recurring revenue moat.
+**Why ProofLink:** The H2H → H2A → A2A roadmap explicitly includes KYA. ProofLink could publish KYA as an open standard (similar to how Cloudflare published Web Bot Auth) while operating the verification infrastructure. This creates both a standards-setting position and a recurring revenue moat.
 
-**Defensibility:** Standards win. If FlowLink authors the KYA standard that gets adopted by AP2 and x402, every agent transaction in those ecosystems touches FlowLink infrastructure.
+**Defensibility:** Standards win. If ProofLink authors the KYA standard that gets adopted by AP2 and x402, every agent transaction in those ecosystems touches ProofLink infrastructure.
 
 ---
 
@@ -436,9 +436,9 @@ These are ranked by: (a) size of gap, (b) alignment with FlowLink's existing com
 
 **The problem:** No machine-readable format exists for what an AI agent invoiced, to whom, for what services, at what rate, with what proof of work completed. ERC-8183 is a payment escrow primitive. x402 payment signatures prove money moved. Neither is an invoice. Enterprise AP systems cannot process agent payments without structured invoice data.
 
-**Why FlowLink:** FlowLink sits at the intersection of payment initiation and compliance verification. Adding an invoice layer (generate, transmit, store, verify, and archive agent invoices with cryptographic work proofs) closes the loop between "agent paid" and "CFO approved."
+**Why ProofLink:** ProofLink sits at the intersection of payment initiation and compliance verification. Adding an invoice layer (generate, transmit, store, verify, and archive agent invoices with cryptographic work proofs) closes the loop between "agent paid" and "CFO approved."
 
-**Specific form:** A JSON-LD schema for agent invoices: `{agentId (ERC-8004), serviceDescription, units, rate, paymentProof (x402 txHash or MPP session), workProof (ERC-8183 evaluator attestation), complianceStamp (FlowLink ProofLink)}`. Optionally anchored on-chain for tamper-proofing.
+**Specific form:** A JSON-LD schema for agent invoices: `{agentId (ERC-8004), serviceDescription, units, rate, paymentProof (x402 txHash or MPP session), workProof (ERC-8183 evaluator attestation), complianceStamp (ProofLink ProofLink)}`. Optionally anchored on-chain for tamper-proofing.
 
 **Market size:** $120T+ in global B2B payments annually, with 39% of enterprise invoices currently containing errors.
 
@@ -448,9 +448,9 @@ These are ranked by: (a) size of gap, (b) alignment with FlowLink's existing com
 
 **The problem:** When an autonomous agent transaction goes wrong (unauthorized spend, service not delivered, fraud), there is no automated dispute mechanism. ERC-8183's evaluator is a trusted third party — not decentralized, not scalable, not enterprise-grade. Chargebacks for agent transactions are handled manually (or not at all).
 
-**Why FlowLink:** A compliance-first platform that already verifies transaction legitimacy at origination is naturally positioned to adjudicate disputes. FlowLink could offer a dispute oracle service: when a dispute is filed, it replays the transaction trail (identity attestations, spending authorizations, work proofs, payment records) and produces a signed adjudication.
+**Why ProofLink:** A compliance-first platform that already verifies transaction legitimacy at origination is naturally positioned to adjudicate disputes. ProofLink could offer a dispute oracle service: when a dispute is filed, it replays the transaction trail (identity attestations, spending authorizations, work proofs, payment records) and produces a signed adjudication.
 
-**Technical form:** A smart contract dispute module compatible with ERC-8183 hooks. The FlowLink ProofLink audit trail becomes the evidentiary record. Integrates with Kleros or UMA for decentralized arbitration fallback.
+**Technical form:** A smart contract dispute module compatible with ERC-8183 hooks. The ProofLink ProofLink audit trail becomes the evidentiary record. Integrates with Kleros or UMA for decentralized arbitration fallback.
 
 ---
 
@@ -458,9 +458,9 @@ These are ranked by: (a) size of gap, (b) alignment with FlowLink's existing com
 
 **The problem:** Agents pay and receive in USDC/stablecoins on Base/Solana. Enterprise AP systems pay and receive in USD/EUR via ACH/SWIFT/SEPA. The bridge between these worlds (crypto rails + fiat settlement + compliance + ERP posting) does not exist as a single integrated product.
 
-**Why FlowLink:** This is the hardest gap to fill but the highest-value one. FlowLink's compliance infrastructure is table stakes for any enterprise that wants to use crypto rails. Adding: (a) USDC → bank account off-ramp, (b) bank account → USDC on-ramp for paying agents, (c) automatic GL coding and ERP posting, (d) tax documentation per jurisdiction, would make FlowLink the only enterprise-grade bridge between the agent economy and traditional finance.
+**Why ProofLink:** This is the hardest gap to fill but the highest-value one. ProofLink's compliance infrastructure is table stakes for any enterprise that wants to use crypto rails. Adding: (a) USDC → bank account off-ramp, (b) bank account → USDC on-ramp for paying agents, (c) automatic GL coding and ERP posting, (d) tax documentation per jurisdiction, would make ProofLink the only enterprise-grade bridge between the agent economy and traditional finance.
 
-**Competitive moat:** This requires both regulatory licensing (money transmission) and technical integration with ERP systems. The compliance-first positioning makes FlowLink more credible than crypto-native competitors for enterprise procurement.
+**Competitive moat:** This requires both regulatory licensing (money transmission) and technical integration with ERP systems. The compliance-first positioning makes ProofLink more credible than crypto-native competitors for enterprise procurement.
 
 ---
 

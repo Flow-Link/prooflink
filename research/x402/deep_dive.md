@@ -3,7 +3,7 @@
 **Team:** Alpha
 **Date:** 2026-03-20
 **Status:** Complete
-**Relevance:** Core transport protocol for agentic payments; FlowLink sits as compliance/trust layer on top
+**Relevance:** Core transport protocol for agentic payments; ProofLink sits as compliance/trust layer on top
 
 ---
 
@@ -28,7 +28,7 @@
 17. [Adoption Metrics](#17-adoption-metrics)
 18. [GitHub Ecosystem Map](#18-github-ecosystem-map)
 19. [Related Standards & RFCs](#19-related-standards--rfcs)
-20. [Implications for FlowLink](#20-implications-for-flowlink)
+20. [Implications for ProofLink](#20-implications-for-prooflink)
 
 ---
 
@@ -869,15 +869,15 @@ x402 itself is **not an IETF RFC** and has not been submitted to a standards bod
 
 ---
 
-## 20. Implications for FlowLink
+## 20. Implications for ProofLink
 
-FlowLink's positioning — "regulatory-grade trust layer for stablecoin payments, safe for CFOs today and AI agents tomorrow" — maps directly onto the gap x402 explicitly does not fill.
+ProofLink's positioning — "regulatory-grade trust layer for stablecoin payments, safe for CFOs today and AI agents tomorrow" — maps directly onto the gap x402 explicitly does not fill.
 
-### Where x402 Stops and FlowLink Starts
+### Where x402 Stops and ProofLink Starts
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        FLOWLINK'S LAYER                         │
+│                        PROOFLINK'S LAYER                         │
 │  KYC/KYA  │  OFAC/Sanctions  │  AML Monitoring  │  Invoicing  │
 │  Travel Rule │  Audit Trails  │  Risk Scoring   │  Reporting  │
 └──────────────────────────┬──────────────────────────────────────┘
@@ -894,54 +894,54 @@ FlowLink's positioning — "regulatory-grade trust layer for stablecoin payments
 ### Specific Integration Opportunities
 
 **1. Compliance-Enriched Facilitator**
-FlowLink can operate as an x402 facilitator that embeds compliance checks in the verification step. Before settling any transaction, run OFAC/UN/EU/HMT screening on both `from` and `payTo` addresses. This is what AnChain.AI does as an MCP plugin. FlowLink can do it as a native facilitator service — making compliance a first-class citizen, not an afterthought.
+ProofLink can operate as an x402 facilitator that embeds compliance checks in the verification step. Before settling any transaction, run OFAC/UN/EU/HMT screening on both `from` and `payTo` addresses. This is what AnChain.AI does as an MCP plugin. ProofLink can do it as a native facilitator service — making compliance a first-class citizen, not an afterthought.
 
 Architecture:
 ```
-Client → x402 /verify → FlowLink (OFAC + KYT + risk score) → settle → blockchain
+Client → x402 /verify → ProofLink (OFAC + KYT + risk score) → settle → blockchain
 ```
 
 **2. Structured Invoice Generation**
-x402 settlement returns a transaction hash. That's a receipt primitive but not an invoice. FlowLink can wrap x402 payments in structured invoicing:
+x402 settlement returns a transaction hash. That's a receipt primitive but not an invoice. ProofLink can wrap x402 payments in structured invoicing:
 - Assign invoice IDs, line items, cost center codes
 - Generate PDF/XML invoices (for CFOs)
 - Map blockchain receipts to enterprise ERP formats (NetSuite, SAP)
 - Enable tax computation and jurisdiction-aware invoice generation
 
 **3. AML Transaction Monitoring for Agent Wallets**
-Agent wallets are high-frequency, low-value transaction sources — exactly the pattern that triggers AML false positives in traditional systems. FlowLink can provide:
+Agent wallets are high-frequency, low-value transaction sources — exactly the pattern that triggers AML false positives in traditional systems. ProofLink can provide:
 - Baseline behavioral profiling for agent wallets
 - Anomaly detection when spending patterns deviate
 - SAR (Suspicious Activity Report) automation when thresholds trigger
 - Agent spending limits as a compliance control
 
 **4. FATF Travel Rule for x402**
-The FATF Travel Rule requires VASPs to transmit beneficiary/originator data for transactions above thresholds. x402 by default transmits: payer address, recipient address, amount, timestamp. FlowLink can:
+The FATF Travel Rule requires VASPs to transmit beneficiary/originator data for transactions above thresholds. x402 by default transmits: payer address, recipient address, amount, timestamp. ProofLink can:
 - Enrich this with identity data (KYC records for known wallets)
 - Transmit Travel Rule packets to counterparty VASPs
 - Handle the ≥$3K threshold logic automatically
 
 **5. ERC-8004 Agent Identity Integration**
-x402 has no concept of agent identity. ERC-8004 provides it. FlowLink can:
+x402 has no concept of agent identity. ERC-8004 provides it. ProofLink can:
 - Validate that a transacting agent has a valid AgentID
 - Check agent reputation score before allowing payment to settle
 - Log agent payment history for audit purposes
 - Enforce spending limits per agent identity
 
 **6. Human-in-the-Loop for High-Value Transactions**
-Cloudflare's x402 SDK already supports optional human confirmation before payment execution. FlowLink can formalize this: define thresholds above which an autonomous agent payment requires human approval workflow, with full audit trail of the approval.
+Cloudflare's x402 SDK already supports optional human confirmation before payment execution. ProofLink can formalize this: define thresholds above which an autonomous agent payment requires human approval workflow, with full audit trail of the approval.
 
 **7. The ProofLink Engine as x402 Middleware**
-FlowLink's existing ProofLink Engine (real-time sanctions screening, KYC/KYA, Travel Rule, AML monitoring) can be exposed as:
-- An x402 facilitator (servers point their facilitatorUrl at FlowLink)
+ProofLink's existing ProofLink Engine (real-time sanctions screening, KYC/KYA, Travel Rule, AML monitoring) can be exposed as:
+- An x402 facilitator (servers point their facilitatorUrl at ProofLink)
 - An MCP compliance plugin (agents run compliance checks via MCP tool before paying)
 - A webhook middleware (post-settlement compliance audit)
 
 ### Competitive Differentiation
 
-x402's dominant facilitator (Coinbase CDP) runs basic OFAC checks. This is table stakes. FlowLink's differentiation is the **full enterprise compliance stack**:
+x402's dominant facilitator (Coinbase CDP) runs basic OFAC checks. This is table stakes. ProofLink's differentiation is the **full enterprise compliance stack**:
 
-| Feature | Coinbase CDP | AnChain.AI MCP | FlowLink |
+| Feature | Coinbase CDP | AnChain.AI MCP | ProofLink |
 |---------|-------------|----------------|---------|
 | OFAC screening | Yes (basic) | Yes | Yes |
 | FATF Travel Rule | No | No | Yes |
@@ -954,17 +954,17 @@ x402's dominant facilitator (Coinbase CDP) runs basic OFAC checks. This is table
 
 ### Go-to-Market Path via x402
 
-FlowLink's roadmap (H2H → H2A → A2A) aligns perfectly with x402's trajectory:
-- **Today (H2H)**: FlowLink compliance layer for businesses making stablecoin payments (non-x402 flow, direct USDC payments)
-- **Q3 2026 (H2A)**: FlowLink as x402 facilitator + compliance layer; developers point x402 middleware at FlowLink endpoint
-- **Q1 2027 (A2A)**: FlowLink as the compliance and invoicing infrastructure for all agent-to-agent x402 payments
+ProofLink's roadmap (H2H → H2A → A2A) aligns perfectly with x402's trajectory:
+- **Today (H2H)**: ProofLink compliance layer for businesses making stablecoin payments (non-x402 flow, direct USDC payments)
+- **Q3 2026 (H2A)**: ProofLink as x402 facilitator + compliance layer; developers point x402 middleware at ProofLink endpoint
+- **Q1 2027 (A2A)**: ProofLink as the compliance and invoicing infrastructure for all agent-to-agent x402 payments
 
-The timing is ideal: x402 is hitting mainstream enterprise adoption (Stripe, Google, AWS all in) exactly when FlowLink needs to be the compliance answer enterprises require to use it.
+The timing is ideal: x402 is hitting mainstream enterprise adoption (Stripe, Google, AWS all in) exactly when ProofLink needs to be the compliance answer enterprises require to use it.
 
 ### Critical Risk: x402 May Not Be The Winner
-ACP (OpenAI + Stripe) is designed for full commerce lifecycle including refunds and disputes. AP2 (Google) includes compliance mandates natively. If either protocol displaces x402, FlowLink needs to be protocol-agnostic — offering compliance infrastructure as a middleware/facilitator for any agentic payment protocol, not just x402.
+ACP (OpenAI + Stripe) is designed for full commerce lifecycle including refunds and disputes. AP2 (Google) includes compliance mandates natively. If either protocol displaces x402, ProofLink needs to be protocol-agnostic — offering compliance infrastructure as a middleware/facilitator for any agentic payment protocol, not just x402.
 
-FlowLink should position as the **compliance rail** that any agentic payment protocol plugs into, not as an x402-specific product.
+ProofLink should position as the **compliance rail** that any agentic payment protocol plugs into, not as an x402-specific product.
 
 ---
 
@@ -976,7 +976,7 @@ x402 is the first serious attempt to make HTTP 402 a working payment primitive. 
 - V2 extends to multi-chain, multi-rail (including fiat ACH/SEPA)
 - World ID adds human identity to agent payments
 
-The protocol's explicit non-scope — compliance, invoicing, audit trails, refunds, identity — is exactly FlowLink's value proposition. x402 is infrastructure. FlowLink is the trust and compliance layer that makes x402 safe for regulated enterprises to adopt.
+The protocol's explicit non-scope — compliance, invoicing, audit trails, refunds, identity — is exactly ProofLink's value proposition. x402 is infrastructure. ProofLink is the trust and compliance layer that makes x402 safe for regulated enterprises to adopt.
 
 The fastest path to relevance: **operate as a compliance-enriched x402 facilitator** that enterprises point at instead of Coinbase CDP.
 

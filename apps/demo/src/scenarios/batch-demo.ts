@@ -3,7 +3,7 @@ import oraImport from "ora";
 import Table from "cli-table3";
 
 import {
-  flowlinkLog,
+  prooflinkLog,
   sectionHeader,
   stepHeader,
   timingDisplay,
@@ -81,9 +81,9 @@ export async function runBatchDemo(): Promise<void> {
   addresses.splice(pos1, 0, SANCTIONED_ENTRIES[0]!.address);
   addresses.splice(pos2, 0, SANCTIONED_ENTRIES[1]!.address);
 
-  flowlinkLog(`Generated ${chalk.white("48")} random clean addresses`);
-  flowlinkLog(`Injected ${chalk.red("2")} known OFAC SDN addresses`);
-  flowlinkLog(`Total batch: ${chalk.white.bold("50")} addresses`);
+  prooflinkLog(`Generated ${chalk.white("48")} random clean addresses`);
+  prooflinkLog(`Injected ${chalk.red("2")} known OFAC SDN addresses`);
+  prooflinkLog(`Total batch: ${chalk.white.bold("50")} addresses`);
   console.log();
 
   console.log(chalk.gray("  Sanctioned addresses hidden at:"));
@@ -142,7 +142,7 @@ export async function runBatchDemo(): Promise<void> {
   const batchMs = batchEnd - batchStart;
   spinner.stop();
 
-  flowlinkLog(`Batch screening ${chalk.green.bold("COMPLETE")} ${chalk.gray(`(${batchMs}ms wall-clock)`)}`);
+  prooflinkLog(`Batch screening ${chalk.green.bold("COMPLETE")} ${chalk.gray(`(${batchMs}ms wall-clock)`)}`);
 
   reporter.addEvent({
     type: "batch",

@@ -1,18 +1,18 @@
 // ---------------------------------------------------------------------------
-// @flowlink/x402-compliance — barrel exports
+// @prooflink/x402-compliance — barrel exports
 // ---------------------------------------------------------------------------
 
 // Main class and factory
-export { FlowLinkX402Compliance } from "./middleware.js";
-export type { FlowLinkComplianceServices } from "./middleware.js";
+export { ProofLinkX402Compliance } from "./middleware.js";
+export type { ProofLinkComplianceServices } from "./middleware.js";
 
 // Factory function
-export { createFlowLinkCompliance } from "./factory.js";
+export { createProofLinkCompliance } from "./factory.js";
 
 // Types
 export type {
   // Config
-  FlowLinkConfig,
+  ProofLinkConfig,
   CompliancePolicy,
   NotabeneConfig,
   RedisConfig,
@@ -114,7 +114,7 @@ export { createAfterSettleHook } from "./hooks/after-settle.js";
 export type { ProofLinkService, InvoiceService } from "./hooks/after-settle.js";
 
 // Extension
-export { createFlowLinkExtension } from "./extension.js";
+export { createProofLinkExtension } from "./extension.js";
 
 // Testing utilities
 export {

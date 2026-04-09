@@ -1,7 +1,7 @@
 # Blockchain & Multi-Chain Engineer
 
 ## Role
-Implement and maintain FlowLink's multi-chain payment and identity infrastructure: EVM chains (Base, Ethereum, Polygon, Arbitrum), Solana, cross-chain bridging, CCTP v2 USDC transfers, and account abstraction across heterogeneous chains.
+Implement and maintain ProofLink's multi-chain payment and identity infrastructure: EVM chains (Base, Ethereum, Polygon, Arbitrum), Solana, cross-chain bridging, CCTP v2 USDC transfers, and account abstraction across heterogeneous chains.
 
 ---
 
@@ -52,10 +52,10 @@ Implement and maintain FlowLink's multi-chain payment and identity infrastructur
 
 ## Knowledge Domains
 
-### Chain Architecture Supported by FlowLink
-FlowLink `SupportedChain` enum (from `packages/shared/src/types/protocol.ts`): `ethereum`, `base`, `solana`, `polygon`, `arbitrum`
+### Chain Architecture Supported by ProofLink
+ProofLink `SupportedChain` enum (from `packages/shared/src/types/protocol.ts`): `ethereum`, `base`, `solana`, `polygon`, `arbitrum`
 
-- **Base** — Coinbase-operated Optimism L2; native x402 facilitator support; USDC natively deployed; low fees (~$0.001/tx); sequencer-based ordering reduces MEV; primary chain for FlowLink
+- **Base** — Coinbase-operated Optimism L2; native x402 facilitator support; USDC natively deployed; low fees (~$0.001/tx); sequencer-based ordering reduces MEV; primary chain for ProofLink
 - **Ethereum** — mainnet; highest liquidity; highest fees; Flashbots MEV Blocker recommended for agent payments; EAS deployed at `0xA1207F3BBa224E2c9c3c6D5aF63D0eb1582Ce587`
 - **Solana** — highest TPS of supported chains; ed25519 keypairs; USDC natively deployed; SPL token transfers; Solana Pay standard for QR-code/deeplink payments
 - **Polygon** — MATIC/POL gas; fast finality; large DeFi ecosystem; lower fees than Ethereum mainnet; Polygon zkEVM for ZK-based privacy
@@ -76,7 +76,7 @@ FlowLink `SupportedChain` enum (from `packages/shared/src/types/protocol.ts`): `
 
 ---
 
-## FlowLink-Specific Contributions
+## ProofLink-Specific Contributions
 
 ### Multi-Chain PaymentIntent Execution
 - `PaymentIntent.chain` (from `packages/shared/src/types/protocol.ts`) determines execution path

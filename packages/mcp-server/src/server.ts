@@ -22,13 +22,13 @@ import { registerAgentsResource } from "./resources/registered-agents.js";
 // Transports
 import { createSSETransport, type SSETransportOptions, type SSETransportHandle } from "./transports/sse.js";
 
-export interface FlowLinkMCPHandle {
+export interface ProofLinkMCPHandle {
   server: McpServer;
   start: () => Promise<void>;
   close: () => Promise<void>;
 }
 
-export interface FlowLinkMCPOptions {
+export interface ProofLinkMCPOptions {
   /** Use SSE transport instead of stdio. */
   transport?: "stdio" | "sse";
   /** SSE transport options (only used when transport is "sse"). */
@@ -36,14 +36,14 @@ export interface FlowLinkMCPOptions {
 }
 
 /**
- * Creates and configures the FlowLink MCP compliance server
+ * Creates and configures the ProofLink MCP compliance server
  * with all tools and resources registered.
  */
-export async function createFlowLinkMCPServer(
-  options: FlowLinkMCPOptions = {},
-): Promise<FlowLinkMCPHandle> {
+export async function createProofLinkMCPServer(
+  options: ProofLinkMCPOptions = {},
+): Promise<ProofLinkMCPHandle> {
   const server = new McpServer({
-    name: "flowlink-compliance",
+    name: "prooflink-compliance",
     version: "1.0.0",
   });
 
@@ -89,7 +89,7 @@ export async function createFlowLinkMCPServer(
     async start() {
       await server.connect(transport);
       process.stderr.write(
-        "[flowlink-mcp] Server started on stdio transport\n",
+        "[prooflink-mcp] Server started on stdio transport\n",
       );
     },
     async close() {

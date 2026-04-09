@@ -1,4 +1,4 @@
-# FlowLink Master Gap List
+# ProofLink Master Gap List
 **Synthesized from 25 specialized research agents | March 2026**
 
 ---
@@ -7,9 +7,9 @@
 
 Agent-to-agent (A2A) transactions represent a fundamentally new transaction type that existing financial infrastructure was not designed to handle. In 2025-2026, a rich but fragmented ecosystem of payment protocols emerged — x402, AP2, ACP, MPP, Skyfire, Nevermined, ERC-8183, and others — each solving narrow slices of the problem. None delivers a complete stack. The result is that any agent wanting to transact autonomously must stitch together incompatible identity systems, payment rails, compliance layers, and communication protocols with no interoperability guarantee between them. Lightspeed Venture Partners estimated this creates a $19 trillion coordination problem. Chainalysis documented a 500% year-over-year increase in AI-enabled crypto financial crime. The infrastructure is being built, but the integration layer — trust, compliance, and auditability across the full agent lifecycle — is almost entirely absent.
 
-The compliance and regulatory dimension is uniquely dangerous for 2026. FATF's updated Travel Rule guidance does not address non-human originators. FinCEN's SAR FAQ (October 2025) has no guidance on autonomous transaction reporting. The EU MiCA framework classifies agent wallets as CASP-adjacent but sets no agent-specific KYC/AML threshold. The SEC and CFTC have issued no guidance on whether agent-initiated trades trigger broker-dealer registration. Regulators are watching; enforcement actions against platforms enabling unchecked agent payments are a near-term risk. Any platform positioned as infrastructure for agent payments — like FlowLink — faces a compliance cliff that no existing vendor fully addresses.
+The compliance and regulatory dimension is uniquely dangerous for 2026. FATF's updated Travel Rule guidance does not address non-human originators. FinCEN's SAR FAQ (October 2025) has no guidance on autonomous transaction reporting. The EU MiCA framework classifies agent wallets as CASP-adjacent but sets no agent-specific KYC/AML threshold. The SEC and CFTC have issued no guidance on whether agent-initiated trades trigger broker-dealer registration. Regulators are watching; enforcement actions against platforms enabling unchecked agent payments are a near-term risk. Any platform positioned as infrastructure for agent payments — like ProofLink — faces a compliance cliff that no existing vendor fully addresses.
 
-At the developer experience layer, the tooling is better but still immature. Coinbase AgentKit, the GOAT SDK, Skyfire KYAPay, and Coinbase's x402 facilitator all exist but are protocol-specific. There is no protocol-agnostic abstraction layer, no multi-agent payment simulation environment, no chaos engineering framework adapted for agent economies, and no production-grade observability standard for agent financial flows. OpenTelemetry's GenAI semantic conventions are still in draft; the OWASP Agent Observability Standard has published requirements but no canonical wire format. The window to establish FlowLink as the integration layer and trust backbone for the agentic economy is open, but narrowing.
+At the developer experience layer, the tooling is better but still immature. Coinbase AgentKit, the GOAT SDK, Skyfire KYAPay, and Coinbase's x402 facilitator all exist but are protocol-specific. There is no protocol-agnostic abstraction layer, no multi-agent payment simulation environment, no chaos engineering framework adapted for agent economies, and no production-grade observability standard for agent financial flows. OpenTelemetry's GenAI semantic conventions are still in draft; the OWASP Agent Observability Standard has published requirements but no canonical wire format. The window to establish ProofLink as the integration layer and trust backbone for the agentic economy is open, but narrowing.
 
 ---
 
@@ -17,7 +17,7 @@ At the developer experience layer, the tooling is better but still immature. Coi
 
 ### Category A: Payment Infrastructure
 
-| # | Gap Name | Severity | Description | Agents Reporting | FlowLink Relevance |
+| # | Gap Name | Severity | Description | Agents Reporting | ProofLink Relevance |
 |---|----------|----------|-------------|------------------|--------------------|
 | A1 | x402 Atomicity Gap | Critical | x402 has no guarantee that a service provider delivers after payment; pay-before-serve with no escrow | a73a814a, a528d085 | High |
 | A2 | x402 Refund/Chargeback Mechanism Absent | Critical | Protocol has zero native refund, dispute, or chargeback path; once paid, no recovery | a73a814a, a528d085 | High |
@@ -39,7 +39,7 @@ At the developer experience layer, the tooling is better but still immature. Coi
 
 ### Category B: Agent Identity and Trust
 
-| # | Gap Name | Severity | Description | Agents Reporting | FlowLink Relevance |
+| # | Gap Name | Severity | Description | Agents Reporting | ProofLink Relevance |
 |---|----------|----------|-------------|------------------|--------------------|
 | B1 | W3C DID Has No Agent-Specific Semantics | Critical | DID v1.0/v1.1 has no verificationMethod for ML model attestation, autonomous authorization, or agent lifecycle | af5260352, aa0a5d2b | High |
 | B2 | No Standard for A2A Credential Presentation | Critical | Agents cannot present verifiable credentials to each other; no standard protocol for trust bootstrapping | af5260352, ac49dfd4 | High |
@@ -56,7 +56,7 @@ At the developer experience layer, the tooling is better but still immature. Coi
 
 ### Category C: Compliance and Regulation
 
-| # | Gap Name | Severity | Description | Agents Reporting | FlowLink Relevance |
+| # | Gap Name | Severity | Description | Agents Reporting | ProofLink Relevance |
 |---|----------|----------|-------------|------------------|--------------------|
 | C1 | FATF Travel Rule Has No Non-Human Originator Guidance | Critical | Travel Rule assumes human originators/beneficiaries; AI agents are undefined entities under FATF R.16 | a87d3259, a84a6877 | High |
 | C2 | AML Screening Cannot Handle Agent Transaction Velocity | Critical | Traditional rule-based AML cannot screen thousands of agent micro-transactions per second | a87d3259, a01428786 | High |
@@ -75,7 +75,7 @@ At the developer experience layer, the tooling is better but still immature. Coi
 
 ### Category D: Security
 
-| # | Gap Name | Severity | Description | Agents Reporting | FlowLink Relevance |
+| # | Gap Name | Severity | Description | Agents Reporting | ProofLink Relevance |
 |---|----------|----------|-------------|------------------|--------------------|
 | D1 | MEV Extraction from Agent Transactions | Critical | Agents broadcasting transactions to public mempools are front-run and sandwich attacked; no agent-specific MEV protection | a2a6beb2, afae8aab | High |
 | D2 | Oracle Manipulation Affecting Agent Decisions | Critical | Price oracles manipulated by flash loans cause agents to trade at incorrect prices; no manipulation detection | a2a6beb2, afae8aab | High |
@@ -94,7 +94,7 @@ At the developer experience layer, the tooling is better but still immature. Coi
 
 ### Category E: Communication and Discovery
 
-| # | Gap Name | Severity | Description | Agents Reporting | FlowLink Relevance |
+| # | Gap Name | Severity | Description | Agents Reporting | ProofLink Relevance |
 |---|----------|----------|-------------|------------------|--------------------|
 | E1 | No Universal, Interoperable Agent Discovery Layer | Critical | A2A, ANP, ACP, XMTP, MCP each have their own discovery; no cross-protocol agent search standard | aa52b898, ac49dfd4 | High |
 | E2 | Agent Card Capability Schema Has No Typed I/O Specification | High | Google's Agent Cards describe capabilities in free text with no machine-readable schema for service contracting | aa52b898, ac49dfd4 | High |
@@ -111,7 +111,7 @@ At the developer experience layer, the tooling is better but still immature. Coi
 
 ### Category F: Economic Models
 
-| # | Gap Name | Severity | Description | Agents Reporting | FlowLink Relevance |
+| # | Gap Name | Severity | Description | Agents Reporting | ProofLink Relevance |
 |---|----------|----------|-------------|------------------|--------------------|
 | F1 | No Native Price Discovery Layer for Agent Services | Critical | Agents set prices unilaterally with no market mechanism; no AMM, auction, or oracle for service pricing | aa381cc0 | High |
 | F2 | Dynamic / Congestion-Aware Pricing Does Not Exist | High | API pricing is static; no EIP-1559-style dynamic pricing based on agent demand/congestion | aa381cc0 | High |
@@ -128,7 +128,7 @@ At the developer experience layer, the tooling is better but still immature. Coi
 
 ### Category G: DeFi Integration
 
-| # | Gap Name | Severity | Description | Agents Reporting | FlowLink Relevance |
+| # | Gap Name | Severity | Description | Agents Reporting | ProofLink Relevance |
 |---|----------|----------|-------------|------------------|--------------------|
 | G1 | Autonomous Agent DeFi Interaction Has No Compliance Layer | Critical | Agents can interact with DeFi protocols without any KYC, sanctions screening, or reporting hooks | afae8aab, a84a6877 | High |
 | G2 | MEV Protection for Agent DeFi Transactions — Unintegrated | High | Flashbots/MEV Blocker exist but are not integrated into any agent SDK; agents are routinely front-run | afae8aab, a2a6beb2 | High |
@@ -145,7 +145,7 @@ At the developer experience layer, the tooling is better but still immature. Coi
 
 ### Category H: Developer Experience
 
-| # | Gap Name | Severity | Description | Agents Reporting | FlowLink Relevance |
+| # | Gap Name | Severity | Description | Agents Reporting | ProofLink Relevance |
 |---|----------|----------|-------------|------------------|--------------------|
 | H1 | No Protocol-Agnostic Payment Abstraction Layer | Critical | Coinbase AgentKit, GOAT SDK, Brian API are each protocol-specific; no SDK abstracts across x402, AP2, ACP | aa7d79bb, a2ec5665 | High |
 | H2 | No Multi-Agent Payment Simulation Environment | Critical | No local testnet faithfully simulates multi-agent economic flows, failure modes, or adversarial agents | a2ec5665, aa7d79bb | High |
@@ -164,7 +164,7 @@ At the developer experience layer, the tooling is better but still immature. Coi
 
 ### Category I: Cross-Chain
 
-| # | Gap Name | Severity | Description | Agents Reporting | FlowLink Relevance |
+| # | Gap Name | Severity | Description | Agents Reporting | ProofLink Relevance |
 |---|----------|----------|-------------|------------------|--------------------|
 | I1 | No Agent-Optimized Bridge | High | All current bridges (LayerZero, Axelar, Wormhole) require human-compatible UX and have 2-30 minute finality | af69447f | High |
 | I2 | Cross-Chain AML Provenance Break at Bridge Exit | Critical | Compliance trail is severed when funds cross a bridge; receiving-chain compliance sees new funds, not provenance | af69447f, a87d3259 | High |
@@ -181,7 +181,7 @@ At the developer experience layer, the tooling is better but still immature. Coi
 
 ### Category J: Governance and Legal
 
-| # | Gap Name | Severity | Description | Agents Reporting | FlowLink Relevance |
+| # | Gap Name | Severity | Description | Agents Reporting | ProofLink Relevance |
 |---|----------|----------|-------------|------------------|--------------------|
 | J1 | Liability Attribution for Agent Transactions Has No Legal Framework | Critical | When an agent causes a loss, no legal framework allocates liability among: model provider, agent operator, platform, user | a84a6877, aa0a5d2b, a70661423 | High |
 | J2 | No Native Dispute Layer in Any Agent Payment Protocol | Critical | x402, AP2, ACP, and Skyfire all lack dispute resolution; off-chain arbitration has no standard trigger | a70661423 | High |
@@ -198,13 +198,13 @@ At the developer experience layer, the tooling is better but still immature. Coi
 
 ## 3. TOP 25 HIGHEST-PRIORITY GAPS
 
-Ranked by combined severity (Critical=3, High=2, Medium=1) x FlowLink Relevance (High=3, Medium=2, Low=1). Score = severity_points x relevance_points.
+Ranked by combined severity (Critical=3, High=2, Medium=1) x ProofLink Relevance (High=3, Medium=2, Low=1). Score = severity_points x relevance_points.
 
 | Rank | Gap ID | Gap Name | Score | Category | Rationale |
 |------|--------|----------|-------|----------|-----------|
-| 1 | B9 | KYA (Know Your Agent) Standard Undefined | 9 | Identity | Core FlowLink differentiator; no competitor has solved it; regulatory pressure building in every jurisdiction |
-| 2 | C4 | No Behavioral AML Baseline for Agents | 9 | Compliance | FlowLink's current risk score is literally `Math.random()` in the dashboard path; direct regulatory liability |
-| 3 | A1 | x402 Atomicity Gap | 9 | Payments | FlowLink's primary payment rail has no delivery guarantee; every paid transaction is a trust bet with no backstop |
+| 1 | B9 | KYA (Know Your Agent) Standard Undefined | 9 | Identity | Core ProofLink differentiator; no competitor has solved it; regulatory pressure building in every jurisdiction |
+| 2 | C4 | No Behavioral AML Baseline for Agents | 9 | Compliance | ProofLink's current risk score is literally `Math.random()` in the dashboard path; direct regulatory liability |
+| 3 | A1 | x402 Atomicity Gap | 9 | Payments | ProofLink's primary payment rail has no delivery guarantee; every paid transaction is a trust bet with no backstop |
 | 4 | A2 | x402 Refund/Chargeback Mechanism Absent | 9 | Payments | Zero recovery path for failed agent services destroys enterprise adoption and creates platform liability |
 | 5 | A3 | x402 KYC/AML Blind Spot | 9 | Payments | USDC transfers with zero sanctions screening; one sanctioned-entity transaction triggers regulatory exposure |
 | 6 | D3 | Prompt Injection as Key Custody Bypass | 9 | Security | No spending control survives adversarial prompts; existential security vulnerability for all agent wallets |
@@ -212,17 +212,17 @@ Ranked by combined severity (Critical=3, High=2, Medium=1) x FlowLink Relevance 
 | 8 | J1 | Liability Attribution Has No Legal Framework | 9 | Legal | Platform operator faces direct liability for any agent-caused loss with zero legal clarity or precedent |
 | 9 | J2 | No Native Dispute Layer in Agent Payment Protocols | 9 | Legal | Without dispute resolution, enterprise customers cannot accept agent payment outcomes; deals will not close |
 | 10 | C1 | FATF Travel Rule No Non-Human Originator Guidance | 9 | Compliance | Every USDC transfer by an agent potentially violates Travel Rule as currently interpreted in most jurisdictions |
-| 11 | C8 | Money Transmission Laws — No Agent Carve-Out | 9 | Compliance | FlowLink could be classified as an unlicensed money transmitter in most US states under current interpretation |
-| 12 | H1 | No Protocol-Agnostic Payment Abstraction Layer | 9 | DevEx | FlowLink SDK is x402-only today; multi-protocol support is table stakes for enterprise customers |
+| 11 | C8 | Money Transmission Laws — No Agent Carve-Out | 9 | Compliance | ProofLink could be classified as an unlicensed money transmitter in most US states under current interpretation |
+| 12 | H1 | No Protocol-Agnostic Payment Abstraction Layer | 9 | DevEx | ProofLink SDK is x402-only today; multi-protocol support is table stakes for enterprise customers |
 | 13 | H7 | No Transaction Rollback / Saga Pattern | 9 | DevEx | Multi-step agent workflows fail with stranded funds and no compensation path; data loss is permanent |
 | 14 | A14 | Payment-Execution Atomicity Broken in All Protocols | 9 | Payments | No protocol guarantees atomic payment-plus-service-delivery; partial execution is the norm, not the exception |
-| 15 | A15 | Protocol Fragmentation — No Neutral Clearinghouse | 9 | Payments | Ecosystem lock-in prevents FlowLink from serving multi-protocol enterprise customers at scale |
-| 16 | B5 | Payment Identity and Credential Identity Siloed | 9 | Identity | FlowLink cannot cryptographically prove that the agent paying is who they claim to be |
+| 15 | A15 | Protocol Fragmentation — No Neutral Clearinghouse | 9 | Payments | Ecosystem lock-in prevents ProofLink from serving multi-protocol enterprise customers at scale |
+| 16 | B5 | Payment Identity and Credential Identity Siloed | 9 | Identity | ProofLink cannot cryptographically prove that the agent paying is who they claim to be |
 | 17 | C2 | AML Screening Cannot Handle Agent Velocity | 9 | Compliance | TRM/Chainalysis latency is 100-500ms; 1000 micropayments/second overwhelms all existing screening systems |
 | 18 | D1 | MEV Extraction from Agent Transactions | 9 | Security | Agents broadcasting to public mempools are harvested by searchers; all DeFi integrations are currently unsafe |
 | 19 | D12 | No Spend Policy Enforcement Pre-Transaction | 9 | Security | Application-layer policies are easily circumvented; protocol-layer pre-transaction enforcement does not exist |
-| 20 | I2 | Cross-Chain AML Provenance Break at Bridge Exit | 9 | Cross-Chain | FlowLink's multi-chain ambitions break compliance continuity at every bridge crossing |
-| 21 | I3 | Cross-Chain Agent Identity Has No Standard | 9 | Cross-Chain | A FlowLink-registered agent has no portable identity when it crosses to Solana or a non-EVM chain |
+| 20 | I2 | Cross-Chain AML Provenance Break at Bridge Exit | 9 | Cross-Chain | ProofLink's multi-chain ambitions break compliance continuity at every bridge crossing |
+| 21 | I3 | Cross-Chain Agent Identity Has No Standard | 9 | Cross-Chain | A ProofLink-registered agent has no portable identity when it crosses to Solana or a non-EVM chain |
 | 22 | C11 | Privacy vs. Compliance Tension Unresolved | 9 | Compliance | Cannot simultaneously satisfy GDPR-level privacy and AML disclosure requirements; no selective disclosure standard |
 | 23 | J6 | Refund Handling in Crypto Agent Payments Broken | 9 | Legal | Crypto irreversibility means every service failure is a permanent loss; no protocol has a credit mechanism |
 | 24 | G1 | Agent DeFi Interaction Has No Compliance Layer | 9 | DeFi | Every agent DeFi action is an unscreened transaction; unaddressed regulatory exposure compounds over time |
@@ -232,7 +232,7 @@ Ranked by combined severity (Critical=3, High=2, Medium=1) x FlowLink Relevance 
 
 ## 4. PERSONA RECOMMENDATIONS
 
-Based on the 25-agent gap analysis, these 10 expert personas are required to build FlowLink:
+Based on the 25-agent gap analysis, these 10 expert personas are required to build ProofLink:
 
 ---
 
@@ -240,7 +240,7 @@ Based on the 25-agent gap analysis, these 10 expert personas are required to bui
 
 **Primary Gaps Addressed:** A1, A2, A7, A14, A15, H7
 
-Gaps A1-A15 (x402 atomicity, refunds, streaming, multi-agent delegation, protocol fragmentation) require deep protocol engineering expertise. This person has shipped production payment protocols, understands transaction atomicity at the protocol level, and has read the x402, AP2, and ERC-8183 specs in full. They will design FlowLink's payment abstraction layer, the escrow/dispute primitives, and the saga orchestration pattern that no existing protocol provides.
+Gaps A1-A15 (x402 atomicity, refunds, streaming, multi-agent delegation, protocol fragmentation) require deep protocol engineering expertise. This person has shipped production payment protocols, understands transaction atomicity at the protocol level, and has read the x402, AP2, and ERC-8183 specs in full. They will design ProofLink's payment abstraction layer, the escrow/dispute primitives, and the saga orchestration pattern that no existing protocol provides.
 
 **Background:** 5+ years building payment protocols; experience with Lightning, Superfluid, or Stripe at internals level; has contributed to an EIP or open payment standard. Understands the difference between settlement finality and payment acknowledgment; knows why 2-phase commit is not enough for cross-chain systems.
 
@@ -250,7 +250,7 @@ Gaps A1-A15 (x402 atomicity, refunds, streaming, multi-agent delegation, protoco
 
 **Primary Gaps Addressed:** C1-C12, B9
 
-The compliance architect must design a KYA framework, behavioral AML baselines, SAR automation, and Travel Rule compliance that works at agent transaction velocity. No existing vendor solves this at scale. FlowLink must build it or risk regulatory shutdown. This is the highest-risk gap cluster for the business.
+The compliance architect must design a KYA framework, behavioral AML baselines, SAR automation, and Travel Rule compliance that works at agent transaction velocity. No existing vendor solves this at scale. ProofLink must build it or risk regulatory shutdown. This is the highest-risk gap cluster for the business.
 
 **Background:** Former BSA Officer or FinTech compliance lead; experience at Chainalysis, TRM Labs, or a crypto-forward bank; understands FinCEN SAR/CTR requirements, FATF R.16, and MiCA at implementation depth; has integrated at least one AML screening API in production; understands velocity-based typology rules.
 
@@ -270,7 +270,7 @@ Gaps B1-B10 (DID semantics for agents, credential presentation, revocation, KYA 
 
 **Primary Gaps Addressed:** D1-D12, G3
 
-Gaps D1-D12 (MEV, oracle manipulation, prompt injection, key management, authorization bypass, flash loan attack surface) define a unique threat model combining smart contract security, LLM adversarial attacks, and traditional key custody. No single security domain covers this; FlowLink needs a generalist who spans all three.
+Gaps D1-D12 (MEV, oracle manipulation, prompt injection, key management, authorization bypass, flash loan attack surface) define a unique threat model combining smart contract security, LLM adversarial attacks, and traditional key custody. No single security domain covers this; ProofLink needs a generalist who spans all three.
 
 **Background:** Smart contract auditor (Certora, Trail of Bits, or equivalent) with additional experience in LLM red-teaming (prompt injection, jailbreak hardening, tool-call spoofing); has reviewed MPC wallet implementations; understands account abstraction security (ERC-4337 griefing attacks, paymaster exploits, bundler manipulation).
 
@@ -290,7 +290,7 @@ Gaps H7 (saga patterns), A14 (payment-execution atomicity), G10 (cross-chain ato
 
 **Primary Gaps Addressed:** J1-J10, C6-C8, C11
 
-Gaps J1-J10 and C6-C8 represent existential legal risks: money transmission classification, SEC/CFTC jurisdiction, liability attribution for agent-caused losses, and FINRA 2026 guidance. FlowLink needs legal counsel who can advise on US and EU regulatory strategy proactively, not reactively respond to enforcement.
+Gaps J1-J10 and C6-C8 represent existential legal risks: money transmission classification, SEC/CFTC jurisdiction, liability attribution for agent-caused losses, and FINRA 2026 guidance. ProofLink needs legal counsel who can advise on US and EU regulatory strategy proactively, not reactively respond to enforcement.
 
 **Background:** Attorney with fintech/crypto regulatory background; experience at a crypto-native firm (Coinbase, Circle, a16z crypto) or a regulator (SEC, CFTC, or FinCEN alumni); familiar with the Bank Secrecy Act, EU MiCA implementation, FATF Travel Rule, and emerging AI liability frameworks (EU AI Act, US state-level agent liability statutes).
 
@@ -310,7 +310,7 @@ Gaps G1-G10 (Uniswap/Aave integration with compliance hooks, MEV protection, fla
 
 **Primary Gaps Addressed:** H1-H12, a01428786 research domain
 
-Gaps H1-H12 (SDK abstraction, simulation environments, observability, metered billing, chaos engineering) define the developer experience that determines FlowLink's adoption velocity. OpenTelemetry for agent financial flows, sub-second billing granularity, and multi-agent test harnesses are all platform infrastructure problems requiring a senior engineering specialization.
+Gaps H1-H12 (SDK abstraction, simulation environments, observability, metered billing, chaos engineering) define the developer experience that determines ProofLink's adoption velocity. OpenTelemetry for agent financial flows, sub-second billing granularity, and multi-agent test harnesses are all platform infrastructure problems requiring a senior engineering specialization.
 
 **Background:** Has built observability infrastructure at scale (OTel, Prometheus, Grafana, Honeycomb); experience with cost attribution systems (FinOps) and billing metering internals (Stripe Meter or AWS Cost Explorer); interested in the intersection of financial systems and distributed tracing; has contributed to an open-source observability project.
 
@@ -342,7 +342,7 @@ Gaps F1-F10 (price discovery, dynamic pricing, subscription models, usage-based 
 |---------|----------------|-----------------|
 | a01428786f85d4d55 | Observability, Monitoring & Auditing | 10 structured gaps: trace correlation, anomaly detection, SAR automation, OTel coverage |
 | a0744c7e58061f9a7 | Protocol Landscape (Skyfire, x402, AP2, ACP, Olas, Fetch.ai, Biconomy, etc.) | Full map of 12+ protocols with per-project gap analysis |
-| a2a6beb21c9529f4a | Security (MEV, front-running, oracle manipulation, prompt injection) | 8 threat categories with FlowLink code-level evidence |
+| a2a6beb21c9529f4a | Security (MEV, front-running, oracle manipulation, prompt injection) | 8 threat categories with ProofLink code-level evidence |
 | a2ec5665c3d6597b8 | Testing, Simulation & Sandboxing | 8 gaps: simulator, testnet, formal verification, chaos engineering, AML adversarial modeling |
 | a4f36cb7cebb1f404 | L2/Rollup Infrastructure (Base, Arbitrum, Optimism, app-chains) | L2 fee volatility, appchain economics, data availability gaps |
 | a528d085c26a24128 | Ethereum Infrastructure (ERC-4337, EIP-7702, account abstraction) | ERC-4337 limitations, EOA migration friction, UserOp cost analysis |

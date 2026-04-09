@@ -7,7 +7,8 @@ import {
   WEBHOOK_EVENT_TYPES,
   isValidEventType,
   type WebhookEventType,
-} from "@flowlink/core";
+} from "@prooflink/core";
+import { requireScope } from "../middleware/auth.js";
 import { validate } from "../middleware/validate.js";
 
 // ---------------------------------------------------------------------------
@@ -63,7 +64,7 @@ function validateEventTypes(events: string[]): string[] {
 const webhookRoutes = new Hono();
 
 // POST /v1/webhooks -- Register a webhook
-webhookRoutes.post("/", validate({ body: RegisterWebhookRequest }), async (c) => {
+webhookRoutes.post("/", requireScope("write"), validate({ body: RegisterWebhookRequest }), async (c) => {
   const parsed = c.get("validatedBody") as z.infer<typeof RegisterWebhookRequest>;
 
   // Validate event types
@@ -119,7 +120,7 @@ webhookRoutes.get("/", (c) => {
 });
 
 // DELETE /v1/webhooks/:id -- Remove a webhook
-webhookRoutes.delete("/:id", validate({ params: WebhookIdParams }), (c) => {
+webhookRoutes.delete("/:id", requireScope("write"), validate({ params: WebhookIdParams }), (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof WebhookIdParams>;
 
   const mgr = getWebhookManager();
@@ -137,6 +138,7 @@ webhookRoutes.delete("/:id", validate({ params: WebhookIdParams }), (c) => {
 // PUT /v1/webhooks/:id -- Update a webhook
 webhookRoutes.put(
   "/:id",
+  requireScope("write"),
   validate({ params: WebhookIdParams, body: UpdateWebhookRequest }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof WebhookIdParams>;
@@ -194,7 +196,7 @@ webhookRoutes.put(
 );
 
 // POST /v1/webhooks/:id/test -- Send a test event
-webhookRoutes.post("/:id/test", validate({ params: WebhookIdParams }), async (c) => {
+webhookRoutes.post("/:id/test", requireScope("write"), validate({ params: WebhookIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof WebhookIdParams>;
 
   const mgr = getWebhookManager();
@@ -209,7 +211,7 @@ webhookRoutes.post("/:id/test", validate({ params: WebhookIdParams }), async (c)
   // Dispatch a test event
   const records = await mgr.dispatch("compliance.check.passed", {
     test: true,
-    message: "This is a test webhook delivery from FlowLink.",
+    message: "This is a test webhook delivery from ProofLink.",
     webhookId: id,
   });
 

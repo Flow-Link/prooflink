@@ -1,4 +1,4 @@
-# FlowLink Market Research: Deep Dive
+# ProofLink Market Research: Deep Dive
 **Compiled:** March 20, 2026
 **Purpose:** Funding pitch market intelligence
 **Scope:** Crypto payments, AI agent economy, regulatory landscape, investment trends, hackathon landscape
@@ -21,7 +21,7 @@
 
 ### 1.2 Stablecoin Transaction Volume — The Real Story
 
-Stablecoin transactions are the single most important market signal for FlowLink's pitch:
+Stablecoin transactions are the single most important market signal for ProofLink's pitch:
 
 - **$33 trillion** in total stablecoin transaction volume in 2025 — up **72% year-over-year** (Artemis Analytics)
 - USDC led with **$18.3T**, USDT recorded **$13.3T**
@@ -59,7 +59,7 @@ Global cross-border payment flows exceed **$150 trillion annually**. Middlemen s
 | Agentic AI market by 2034 (Precedence Research) | $199.05B |
 | 2026 AI agents share of total VC | 33% of all VC funding |
 
-**Why this matters for FlowLink:** AI agents cannot open bank accounts. They need programmable, non-custodial payment infrastructure. This is FlowLink's adjacent market — the "agents need rails" narrative.
+**Why this matters for ProofLink:** AI agents cannot open bank accounts. They need programmable, non-custodial payment infrastructure. This is ProofLink's adjacent market — the "agents need rails" narrative.
 
 ---
 
@@ -131,7 +131,7 @@ Direct from VC commentary:
   - Issuers under $10B may use state-level regimes (must be "substantially similar" to federal)
 - Foreign issuers may operate in the US under comparable foreign regulation
 
-**Impact for FlowLink:** The GENIUS Act means stablecoin payments are now regulated financial instruments — businesses need compliant invoicing and payments infrastructure that reflects this. FlowLink's compliance layer becomes mandatory infrastructure, not optional.
+**Impact for ProofLink:** The GENIUS Act means stablecoin payments are now regulated financial instruments — businesses need compliant invoicing and payments infrastructure that reflects this. ProofLink's compliance layer becomes mandatory infrastructure, not optional.
 
 ### 3.2 MiCA (EU) — Fully Live as of December 2024
 
@@ -142,7 +142,7 @@ Direct from VC commentary:
 - Requirements: 1:1 reserve backing, authorization before public offering, regular audits, transparency reporting
 - Algorithmic stablecoins effectively prohibited
 
-**Impact for FlowLink:** Any crypto payment business serving EU customers needs MiCA compliance embedded in its product. FlowLink can position the compliance layer as MiCA-ready out of the box.
+**Impact for ProofLink:** Any crypto payment business serving EU customers needs MiCA compliance embedded in its product. ProofLink can position the compliance layer as MiCA-ready out of the box.
 
 ### 3.3 FATF Travel Rule — Global Expansion
 
@@ -153,7 +153,7 @@ Direct from VC commentary:
 - UK: enforcing since September 2023
 - ~59% of jurisdictions with laws have yet to issue enforcement actions — **enforcement wave is coming**
 
-**Impact for FlowLink:** Travel Rule compliance is non-negotiable for any B2B crypto payment flow. Retroactively adding Travel Rule to existing infrastructure is extremely hard. FlowLink building it native from day one is a structural moat.
+**Impact for ProofLink:** Travel Rule compliance is non-negotiable for any B2B crypto payment flow. Retroactively adding Travel Rule to existing infrastructure is extremely hard. ProofLink building it native from day one is a structural moat.
 
 ### 3.4 Compliance as Competitive Moat — The Core Thesis
 
@@ -161,7 +161,7 @@ Direct from VC commentary:
 
 > "Businesses that invest in robust compliance infrastructure today will be best positioned to capitalize on the cryptocurrency industry's continued growth."
 
-The RegTech market itself is growing from $19.72B (2025) to **$100.63B by 2033** at 22.6% CAGR. FlowLink addresses both the crypto payments market AND the compliance infrastructure market simultaneously.
+The RegTech market itself is growing from $19.72B (2025) to **$100.63B by 2033** at 22.6% CAGR. ProofLink addresses both the crypto payments market AND the compliance infrastructure market simultaneously.
 
 **Seven major economies** have now mandated full reserve backing, licensed issuers, and guaranteed redemption rights: US, EU, UK, Singapore, Hong Kong, UAE, Japan.
 
@@ -213,7 +213,7 @@ A new category has emerged in 2025-2026: **payment rails for autonomous AI agent
 - **EIP-7702** live with Ethereum Pectra upgrade (May 7, 2025): EOAs can temporarily execute smart contract code — batch transactions and sponsored gas for existing wallet addresses
 - Vast majority of UserOperations use paymasters — tens of millions in gas fees sponsored
 
-**Impact for FlowLink:** Account abstraction enables gasless transactions for payers — dramatically improving UX for B2B crypto invoicing. FlowLink can sponsor gas or use paymasters to make the experience feel like traditional SaaS.
+**Impact for ProofLink:** Account abstraction enables gasless transactions for payers — dramatically improving UX for B2B crypto invoicing. ProofLink can sponsor gas or use paymasters to make the experience feel like traditional SaaS.
 
 ### 4.4 Cross-Chain Interoperability — Infrastructure Solidifying
 
@@ -398,7 +398,7 @@ A new category has emerged in 2025-2026: **payment rails for autonomous AI agent
 
 ### 8.1 Direct Competitors (Crypto Invoicing/B2B Payments)
 
-| Company | Focus | Weakness vs FlowLink |
+| Company | Focus | Weakness vs ProofLink |
 |---|---|---|
 | **Request Finance** | Crypto invoicing, 100+ currencies | Limited compliance, no AI agent support, invoice-centric only |
 | **BVNK** | Enterprise B2B stablecoin payments | ACQUIRED by Mastercard Mar 2026 — validates the space |
@@ -409,24 +409,24 @@ A new category has emerged in 2025-2026: **payment rails for autonomous AI agent
 
 ### 8.2 Infrastructure Players (Enablers, not Competitors)
 
-- **x402 (Coinbase):** Payment protocol FlowLink can build ON
+- **x402 (Coinbase):** Payment protocol ProofLink can build ON
 - **CCIP (Chainlink):** Cross-chain settlement layer
-- **Circle USDC:** Stablecoin FlowLink settles in
+- **Circle USDC:** Stablecoin ProofLink settles in
 - **Fireblocks:** Institutional custody (potential partner)
 - **Sumsub/TRM Labs:** KYC/AML data providers (potential integrations)
 
 ---
 
-## 9. KEY STRATEGIC INSIGHTS FOR FLOWLINK
+## 9. KEY STRATEGIC INSIGHTS FOR PROOFLINK
 
 ### Insight 1: The Acquisition Exit is Proven and Recent
-Mastercard's $1.8B acquisition of BVNK (March 17, 2026 — **3 days ago**) is the clearest signal the market can send. BVNK processed $30B annualized volume, raised only $90M total, and exited at a 22x capital efficiency multiple. The acquirers are Mastercard, Stripe (Bridge, $1.1B), and the buyers of the next one will be Visa, JPMorgan, or PayPal. Build FlowLink as acquisition-ready infrastructure.
+Mastercard's $1.8B acquisition of BVNK (March 17, 2026 — **3 days ago**) is the clearest signal the market can send. BVNK processed $30B annualized volume, raised only $90M total, and exited at a 22x capital efficiency multiple. The acquirers are Mastercard, Stripe (Bridge, $1.1B), and the buyers of the next one will be Visa, JPMorgan, or PayPal. Build ProofLink as acquisition-ready infrastructure.
 
 ### Insight 2: Compliance Is the Moat, Not the Burden
-Every crypto payment startup that ignored compliance is either shutting down or scrambling to retrofit it. The GENIUS Act, MiCA, and FATF Travel Rule are creating mandatory compliance demand that will lock in compliant platforms for years. FlowLink should lead with compliance as the primary product feature, not a footnote.
+Every crypto payment startup that ignored compliance is either shutting down or scrambling to retrofit it. The GENIUS Act, MiCA, and FATF Travel Rule are creating mandatory compliance demand that will lock in compliant platforms for years. ProofLink should lead with compliance as the primary product feature, not a footnote.
 
 ### Insight 3: AI Agent Payments Is a Greenfield Market
-The x402 hackathon had 324 builders and 275,000 on-chain transactions in a weekend. Google, Coinbase, and Stripe are racing to own the AI agent payments protocol layer. FlowLink should position as the **business-facing** layer on top of these rails — handling invoicing, compliance, multi-currency, and reconciliation for businesses that have AI agents as clients or use AI agents as vendors.
+The x402 hackathon had 324 builders and 275,000 on-chain transactions in a weekend. Google, Coinbase, and Stripe are racing to own the AI agent payments protocol layer. ProofLink should position as the **business-facing** layer on top of these rails — handling invoicing, compliance, multi-currency, and reconciliation for businesses that have AI agents as clients or use AI agents as vendors.
 
 ### Insight 4: The Timing Is Perfect (But the Window Is Narrow)
 - GENIUS Act signed: July 2025 — regulatory clarity in the US is NOW
@@ -452,13 +452,13 @@ The hottest hackathon tracks right now are all x402-related. ETHGlobal, Coinbase
 - Partner protocol depth (x402, AP2, CDP Wallet)
 - Implementation quality and feasibility
 
-FlowLink should enter these tracks with a working demo showing: an AI agent invoicing a business client, the business approving + paying via x402, with automatic Travel Rule compliance and on-chain reconciliation. This is a winning demo in every current hackathon.
+ProofLink should enter these tracks with a working demo showing: an AI agent invoicing a business client, the business approving + paying via x402, with automatic Travel Rule compliance and on-chain reconciliation. This is a winning demo in every current hackathon.
 
 ### Insight 7: VCs Want Infrastructure + Revenue
-The 2026 VC lens: "How does this generate cash flows?" FlowLink's answer is transaction fees (basis points on volume) + compliance-as-a-service subscription + white-label licensing. All three are proven revenue models in this space (BVNK, NOWPayments, BitPay all use variants). Frame FlowLink's revenue model as "Stripe for compliant B2B crypto payments" — Stripe's fee model is universally understood by VCs.
+The 2026 VC lens: "How does this generate cash flows?" ProofLink's answer is transaction fees (basis points on volume) + compliance-as-a-service subscription + white-label licensing. All three are proven revenue models in this space (BVNK, NOWPayments, BitPay all use variants). Frame ProofLink's revenue model as "Stripe for compliant B2B crypto payments" — Stripe's fee model is universally understood by VCs.
 
 ### Insight 8: The "Invisible Stablecoin" is the End State
-Bridge's rise: "invisible stablecoin payments" — merchants see only their Stripe dashboard while Bridge handles the complexity underneath. This is the product vision FlowLink should aspire to: businesses manage invoices, payments, and compliance through FlowLink's UI; the stablecoin rails are completely abstracted away.
+Bridge's rise: "invisible stablecoin payments" — merchants see only their Stripe dashboard while Bridge handles the complexity underneath. This is the product vision ProofLink should aspire to: businesses manage invoices, payments, and compliance through ProofLink's UI; the stablecoin rails are completely abstracted away.
 
 ---
 

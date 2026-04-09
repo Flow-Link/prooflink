@@ -159,7 +159,7 @@ const BASE_COMPLIANCE = {
   sender: {
     address: TEST_BUYER_ADDRESS,
     chain: "eip155:8453",
-    agentDID: "did:flowlink:agent:spend-test-001",
+    agentDID: "did:prooflink:agent:spend-test-001",
   },
   receiver: { address: TEST_SELLER_ADDRESS, chain: "eip155:8453" },
   amount: "100.00",
@@ -282,7 +282,7 @@ describe("E2E: Spend Enforcement — Delegation Scope", () => {
 
   describe("allowedChains enforcement", () => {
     it("should REJECT a transaction on eip155:1 (Ethereum) when only eip155:8453 (Base) is allowed", async () => {
-      const agentDid = "did:flowlink:agent:chain-test-002";
+      const agentDid = "did:prooflink:agent:chain-test-002";
       const agent = makeAgentRow({
         agentDid,
         delegationScope: {
@@ -451,12 +451,12 @@ describe("E2E: Spend Enforcement — Delegation Scope", () => {
         body: JSON.stringify({
           seller: {
             walletAddress: TEST_SELLER_ADDRESS,
-            agentId: "did:flowlink:agent:seller-001",
+            agentId: "did:prooflink:agent:seller-001",
             legalName: "Acme Corp",
           },
           buyer: {
             walletAddress: TEST_BUYER_ADDRESS,
-            agentId: "did:flowlink:agent:buyer-001",
+            agentId: "did:prooflink:agent:buyer-001",
             legalName: "Test Client",
           },
           lineItems: [

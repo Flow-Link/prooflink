@@ -1,4 +1,4 @@
-# FlowLink Unit Economics & Cost Model
+# ProofLink Unit Economics & Cost Model
 **Version:** 1.0
 **Date:** March 20, 2026
 **Classification:** Internal / Investor-Ready
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-FlowLink operates a compliance middleware business where the per-transaction cost of compliance APIs is denominated in fractions of a cent, but the revenue per transaction scales linearly with deal size. At a $50,000 B2B invoice processed at 15 bps, FlowLink earns $75 against ~$0.07 in COGS — a gross margin exceeding 99%. The economics are structurally similar to Stripe's: infrastructure cost is near-zero per transaction once fixed costs are covered, and the critical challenge is volume ramp, not unit-level profitability.
+ProofLink operates a compliance middleware business where the per-transaction cost of compliance APIs is denominated in fractions of a cent, but the revenue per transaction scales linearly with deal size. At a $50,000 B2B invoice processed at 15 bps, ProofLink earns $75 against ~$0.07 in COGS — a gross margin exceeding 99%. The economics are structurally similar to Stripe's: infrastructure cost is near-zero per transaction once fixed costs are covered, and the critical challenge is volume ramp, not unit-level profitability.
 
 The model below is built on real API pricing where available and clearly labeled estimates where not. All compliance API providers (Chainalysis, TRM Labs, Elliptic, Notabene) use opaque enterprise pricing — estimates are derived from published ranges, third-party intelligence, and back-calculated from known revenue/volume figures.
 
@@ -32,13 +32,13 @@ The model below is built on real API pricing where available and clearly labeled
 - Valuation: $2.5B (2024), down from $8.6B peak (2022)
 - Implied ACV: ~$10K per seat baseline; enterprise contracts start ~$150K
 
-**Implied per-transaction cost for FlowLink:**
+**Implied per-transaction cost for ProofLink:**
 - Free tier (OFAC SDN only): **$0.000/tx**
 - If purchasing Address Screening at $150K/yr for 10M tx/yr: **$0.015/tx** (ESTIMATE)
 - If purchasing KYT at $250K/yr for 10M tx/yr: **$0.025/tx** (ESTIMATE)
 - At high volume (50M tx/yr) same $250K contract: **$0.005/tx** (ESTIMATE)
 
-**FlowLink strategy:** Use free SDN API for free/developer tiers. Upgrade to full Address Screening when a B2B customer requires it, charging the enterprise-tier subscription to absorb the fixed cost.
+**ProofLink strategy:** Use free SDN API for free/developer tiers. Upgrade to full Address Screening when a B2B customer requires it, charging the enterprise-tier subscription to absorb the fixed cost.
 
 ---
 
@@ -54,12 +54,12 @@ The model below is built on real API pricing where available and clearly labeled
 
 **Key data point (Vendr):** Average TRM Labs contract value approximately $693K/year. Maximum observed: ~$1.39M/year.
 
-**Implied per-transaction cost for FlowLink:**
+**Implied per-transaction cost for ProofLink:**
 - At $100K/yr contract, 5M tx/yr: **$0.020/tx** (ESTIMATE)
 - At $200K/yr contract, 10M tx/yr: **$0.020/tx** (ESTIMATE)
 - At $200K/yr contract, 50M tx/yr: **$0.004/tx** (ESTIMATE)
 
-**Assessment:** TRM Labs is priced for large exchanges and financial institutions. For FlowLink at early stage, TRM is a future integration at Growth/Enterprise tier. ChainAware is the practical early-stage alternative.
+**Assessment:** TRM Labs is priced for large exchanges and financial institutions. For ProofLink at early stage, TRM is a future integration at Growth/Enterprise tier. ChainAware is the practical early-stage alternative.
 
 ---
 
@@ -73,7 +73,7 @@ The model below is built on real API pricing where available and clearly labeled
 | Discovery (transaction monitoring) | Enterprise contract | $150K–$500K+/yr | Custom |
 | Navigator (cross-asset investigations) | Enterprise contract | $100K+/yr | Additional module |
 
-**Assessment:** Elliptic is the most expensive tier. Not relevant to FlowLink's cost stack at any near-term volume. Listed for completeness as a competitive data point.
+**Assessment:** Elliptic is the most expensive tier. Not relevant to ProofLink's cost stack at any near-term volume. Listed for completeness as a competitive data point.
 
 ---
 
@@ -91,7 +91,7 @@ The model below is built on real API pricing where available and clearly labeled
 - Enterprise pricing: $24K–$56K/year range (average ~$45K/yr per Vendr data)
 - **Notabene Flow** (launched September 2025): Stablecoin payment platform with Travel Rule compliance built in — positioned as a direct overlay on VASP operations
 
-**Implied per-transaction cost for FlowLink:**
+**Implied per-transaction cost for ProofLink:**
 - Free tier (receive only / low outbound): **$0.000/tx**
 - At $45K/yr, 2M tx/yr: **$0.023/tx** (ESTIMATE)
 - At $45K/yr, 10M tx/yr: **$0.005/tx** (ESTIMATE)
@@ -114,12 +114,12 @@ The model below is built on real API pricing where available and clearly labeled
 
 **Key claim (ChainAware blog):** "70–75% of MiCA DeFi compliance requirements at approximately 1% of the cost of Chainalysis." If Chainalysis is $250K/yr, ChainAware is ~$2,500/yr. This maps to their "minutes to integrate, no minimum commitment" positioning.
 
-**Implied per-transaction cost for FlowLink (ESTIMATE):**
+**Implied per-transaction cost for ProofLink (ESTIMATE):**
 - At $500/month ($6K/yr), 100K tx/month: **$0.005/tx**
 - At $500/month, 1M tx/month: **$0.0005/tx**
 - At $2K/month, 5M tx/month: **$0.0004/tx**
 
-**FlowLink strategy:** ChainAware is the correct default AML provider for Developer and Business tiers (low cost, API-first, MiCA-compliant, no minimum). Upgrade to TRM Labs for Enterprise tier customers requiring deeper forensics.
+**ProofLink strategy:** ChainAware is the correct default AML provider for Developer and Business tiers (low cost, API-first, MiCA-compliant, no minimum). Upgrade to TRM Labs for Enterprise tier customers requiring deeper forensics.
 
 ---
 
@@ -151,7 +151,7 @@ The model below is built on real API pricing where available and clearly labeled
 **Alchemy PAYG translation (key data):**
 - 1 request = ~25 CUs average
 - Cost per request = 25 CUs × $0.45/M CUs = **$0.00001125 per RPC call**
-- FlowLink needs ~3–5 RPC calls per compliance check (balance check, tx submission, receipt anchoring)
+- ProofLink needs ~3–5 RPC calls per compliance check (balance check, tx submission, receipt anchoring)
 - **Infrastructure cost per tx (RPC): ~$0.00005–$0.0001** (ESTIMATE, well under $0.001)
 
 **At scale (10M tx/month):**
@@ -174,7 +174,7 @@ The model below is built on real API pricing where available and clearly labeled
 | Pinata | Enterprise | Custom | Custom | Custom | Negotiated |
 | Filebase | Usage-based | Pay-as-you-go | Pay-as-you-go | $0.005/GB/month | $0.005/GB |
 
-**FlowLink compliance receipt size estimate:**
+**ProofLink compliance receipt size estimate:**
 - Each ProofLink receipt (JSON-LD with identity hashes, check results, metadata): ~2–5 KB
 - At 1M tx/month: 1M × 4 KB = 4 GB/month storage
 - At 10M tx/month: 40 GB/month storage
@@ -253,7 +253,7 @@ IPFS cost is negligible at all realistic volume levels.
 
 ### 3.1 Full Compliance Stack Cost Per Transaction (DETAILED)
 
-The following table shows the cost FlowLink incurs per transaction for each compliance action, at three volume levels. All compliance API costs are ESTIMATES derived from published ranges and back-calculation.
+The following table shows the cost ProofLink incurs per transaction for each compliance action, at three volume levels. All compliance API costs are ESTIMATES derived from published ranges and back-calculation.
 
 | Compliance Action | Provider | Cost at 100K tx/mo | Cost at 1M tx/mo | Cost at 10M tx/mo | Label |
 |-------------------|----------|-------------------|-----------------|------------------|-------|
@@ -263,7 +263,7 @@ The following table shows the cost FlowLink incurs per transaction for each comp
 | AML risk scoring (enterprise tier) | TRM Labs (~$200K/yr) | $0.16667 | $0.01667 | $0.00167 | ESTIMATE |
 | Travel Rule transmission | Notabene (enterprise ~$45K/yr) | $0.03750 | $0.00375 | $0.00038 | ESTIMATE |
 | Travel Rule (free tier) | Notabene Free | $0.00000 | $0.00000 | $0.00000 | REAL (free) |
-| KYA credential verification | FlowLink own registry (compute only) | $0.00001 | $0.00001 | $0.00001 | ESTIMATE |
+| KYA credential verification | ProofLink own registry (compute only) | $0.00001 | $0.00001 | $0.00001 | ESTIMATE |
 | IPFS receipt anchoring | Pinata ($20/mo) | $0.00020 | $0.00002 | $0.00000 | REAL |
 | Base RPC calls | Alchemy PAYG | $0.00030 | $0.00006 | $0.00001 | REAL |
 | AWS compute | Lambda + API GW | $0.00010 | $0.00001 | $0.00001 | REAL |
@@ -282,7 +282,7 @@ The following table shows the cost FlowLink incurs per transaction for each comp
 
 ### 3.2 Cost Architecture: Fixed vs. Variable
 
-FlowLink's cost structure is predominantly **fixed cost** with **very low variable cost**.
+ProofLink's cost structure is predominantly **fixed cost** with **very low variable cost**.
 
 | Cost Category | Fixed Monthly | Variable per tx | Break-even Volume |
 |---------------|--------------|----------------|-------------------|
@@ -294,7 +294,7 @@ FlowLink's cost structure is predominantly **fixed cost** with **very low variab
 | IPFS | $20 | $0 | — |
 | **Total fixed COGS (full stack)** | **~$16,920/month** | **~$0.00007/tx** | **At 1M tx/mo: $0.017/tx** |
 
-The implication: FlowLink's gross margin improves dramatically with volume because fixed compliance API costs are spread across more transactions. This is the classic SaaS "negative variable cost" dynamic.
+The implication: ProofLink's gross margin improves dramatically with volume because fixed compliance API costs are spread across more transactions. This is the classic SaaS "negative variable cost" dynamic.
 
 ---
 
@@ -336,7 +336,7 @@ The implication: FlowLink's gross margin improves dramatically with volume becau
 | Item | Value |
 |------|-------|
 | Invoice size | $50,000 |
-| FlowLink fee (15 bps) | $75.00 |
+| ProofLink fee (15 bps) | $75.00 |
 | Compliance COGS (Business stack, 1M tx/mo volume) | $0.017 |
 | Infrastructure COGS | $0.001 |
 | **Total COGS per transaction** | **$0.018** |
@@ -348,7 +348,7 @@ The implication: FlowLink's gross margin improves dramatically with volume becau
 | Item | Value |
 |------|-------|
 | Invoice size | $5,000 |
-| FlowLink fee (30 bps) | $15.00 |
+| ProofLink fee (30 bps) | $15.00 |
 | Subscription revenue allocation | $99/month / 5,000 tx = $0.0198/tx blended |
 | Compliance COGS (Developer stack, 100K tx/mo) | $0.006 |
 | Infrastructure COGS | $0.001 |
@@ -361,7 +361,7 @@ The implication: FlowLink's gross margin improves dramatically with volume becau
 | Item | Value |
 |------|-------|
 | Invoice size | $500,000 |
-| FlowLink fee (7 bps) | $350.00 |
+| ProofLink fee (7 bps) | $350.00 |
 | Enterprise subscription allocation | $2,000/month / 50,000 tx = $0.04/tx |
 | Compliance COGS (Enterprise stack, 10M tx/mo) | $0.003 |
 | Infrastructure COGS | $0.0001 |
@@ -395,7 +395,7 @@ The implication: FlowLink's gross margin improves dramatically with volume becau
 - Stripe gross margin: ~40% (they hold funds, have fraud exposure, card network fees)
 - Chainalysis gross margin: ~70–75% (SaaS + professional services mix)
 - Pure SaaS benchmarks: 70–80% median; top-quartile 80%+
-- **FlowLink structural advantage:** No funds custody, no card network fees, compliance APIs are fixed cost → gross margin structurally higher than any comparable
+- **ProofLink structural advantage:** No funds custody, no card network fees, compliance APIs are fixed cost → gross margin structurally higher than any comparable
 
 ---
 
@@ -405,7 +405,7 @@ The implication: FlowLink's gross margin improves dramatically with volume becau
 
 | Company | Entry Price | Transaction Fee | Volume-Based | Compliance Included | Agent Support |
 |---------|------------|----------------|-------------|--------------------|--------------|
-| **FlowLink** | Free / $99/mo | 5–30 bps | Yes | Native, pre-payment | Yes (KYA) |
+| **ProofLink** | Free / $99/mo | 5–30 bps | Yes | Native, pre-payment | Yes (KYA) |
 | **Request Finance** | $600/month | 0.40–0.70% overage | Yes | None | None |
 | **Chainalysis KYT** | $150K–$500K/yr | N/A (monitoring only) | No | Post-hoc AML | None |
 | **TRM Labs** | $100K–$1.4M/yr | N/A (intelligence only) | No | Post-hoc | None |
@@ -420,22 +420,22 @@ The implication: FlowLink's gross margin improves dramatically with volume becau
 
 **Request Finance (closest direct competitor):**
 - Pricing: $600/month Basic, $9,000/month Premium
-- Transaction fees: 0.70% overage (Basic), 0.40% (Pro) — **4.7x more expensive than FlowLink's 15 bps Growth tier**
+- Transaction fees: 0.70% overage (Basic), 0.40% (Pro) — **4.7x more expensive than ProofLink's 15 bps Growth tier**
 - Revenue model: $27.2M processed in December 2025 alone; 5,572 payments = avg ~$4,877/payment
-- Implied Request Finance fee per avg payment: $4,877 × 0.001 (capped at $2) = **$2.00** flat (their old model) vs. FlowLink 30 bps on $4,877 = **$14.63**
+- Implied Request Finance fee per avg payment: $4,877 × 0.001 (capped at $2) = **$2.00** flat (their old model) vs. ProofLink 30 bps on $4,877 = **$14.63**
 - **New Request Finance pricing (current):** $600/month with 0.70% overage = at $500K/month volume, they earn $600 + ($500K × 0.70%) = $600 + $3,500 = **$4,100/month**
-- At same volume, FlowLink Growth tier earns: $500K × 0.15% = **$750/month** (pure tx fee) + subscriptions
+- At same volume, ProofLink Growth tier earns: $500K × 0.15% = **$750/month** (pure tx fee) + subscriptions
 
 **BVNK implied economics (back-calculated from public data):**
 - Revenue: ~$40M (2024); $104.5M (2025 estimated)
 - Volume: $10B annualized (Dec 2024); $30B annualized (2025)
 - Implied take rate: $104.5M / $30B = **34.8 bps** in 2025 (blended, all revenue streams)
 - Pure transaction fee portion: Likely 10–20 bps; balance from FX, conversion, custody fees
-- Comparison: FlowLink's 15 bps Growth tier is at the low end of BVNK's range — appropriate for compliance-only, non-custodial positioning
+- Comparison: ProofLink's 15 bps Growth tier is at the low end of BVNK's range — appropriate for compliance-only, non-custodial positioning
 
 **Notabene (Travel Rule only):**
 - Average enterprise contract: $24K–$56K/year
-- FlowLink pays Notabene wholesale; charges customers the subscription that absorbs this
+- ProofLink pays Notabene wholesale; charges customers the subscription that absorbs this
 - At $45K/year paid to Notabene, and $499/month Business tier ($5,988/year) from 10 customers: $59,880 revenue covers $45K Notabene cost with 25% margin on this line alone
 - The subscription model converts Notabene's fixed cost into a recurring revenue stream
 
@@ -728,9 +728,9 @@ Unit economics break even at any non-zero transaction. The challenge is customer
 | Stablecoin infrastructure | 15x–25x ARR | High growth; strategic premium |
 | Payment infrastructure | 10x–20x ARR | Volume-dependent |
 | Crypto analytics | 10x–15x ARR | Chainalysis at ~13x |
-| **FlowLink target** | **15x–22x ARR** | Compliance + payments hybrid |
+| **ProofLink target** | **15x–22x ARR** | Compliance + payments hybrid |
 
-**Implied FlowLink valuation at milestones:**
+**Implied ProofLink valuation at milestones:**
 
 | ARR Milestone | Multiple | Implied Valuation |
 |--------------|---------|-----------------|
@@ -761,7 +761,7 @@ Unit economics break even at any non-zero transaction. The challenge is customer
 | B2B average invoice size lower than $25K | Medium | High | Target mid-market (≥$10M cross-border payables) explicitly; avoid freelancer market |
 | Transaction fee compression (market moves to 5 bps) | Low (3yr) | Medium | Subscription revenue provides floor; KYA revenue grows independently |
 | Enterprise sales cycle >9 months | High | Medium | Lead with developer tier (low-friction entry), convert upward |
-| Customers use FlowLink for compliance receipts but execute payments elsewhere | Medium | Medium | ProofLink receipt requires FlowLink to be in the payment path — architectural lock-in |
+| Customers use ProofLink for compliance receipts but execute payments elsewhere | Medium | Medium | ProofLink receipt requires ProofLink to be in the payment path — architectural lock-in |
 
 ### 11.3 Market Risks
 
@@ -788,7 +788,7 @@ Unit economics break even at any non-zero transaction. The challenge is customer
 | **Year 3 ARR target** | **$59.7M** | A2A + H2A blended |
 | **BVNK comparable take rate** | **~13–35 bps blended** | REAL (back-calculated) |
 | **Request Finance take rate** | **~10 bps effective** | REAL (back-calculated) |
-| **FlowLink pricing vs. Request Finance** | **~5x cheaper on bps** | Growth tier (15 bps) vs. RF (0.70% overage) |
+| **ProofLink pricing vs. Request Finance** | **~5x cheaper on bps** | Growth tier (15 bps) vs. RF (0.70% overage) |
 | **Series A target valuation** | **$20M (at $1M ARR)** | 20x ARR at compliance SaaS multiples |
 | **Exit scenario (comparable to BVNK)** | **$1.2–1.8B** | At $60–100M ARR |
 
@@ -850,4 +850,4 @@ Unit economics break even at any non-zero transaction. The challenge is customer
 
 *Financial model prepared March 20, 2026*
 *All estimates labeled. Real data sourced from primary publications and fetched pricing pages.*
-*This document should be updated quarterly as API providers update pricing and as FlowLink reaches volume milestones.*
+*This document should be updated quarterly as API providers update pricing and as ProofLink reaches volume milestones.*

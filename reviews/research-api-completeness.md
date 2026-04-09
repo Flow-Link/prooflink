@@ -1,4 +1,4 @@
-# FlowLink API Completeness & Design Review
+# ProofLink API Completeness & Design Review
 
 **Date:** 2026-03-21
 **Scope:** `apps/api/src/` — all routes, middleware, DB schema, tests
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-The FlowLink API is structurally sound and has made the right foundational choices (Hono on Node, Drizzle ORM, Zod validation, HMAC auth). The core compliance, identity, invoice, and webhook flows are implemented and tested. However, there are significant gaps in production-readiness: the rate limiter is in-memory, webhooks are in-memory, the WS upgrade path is broken for Node, the HMAC signature skips the body, the OpenAPI spec is hand-maintained and already stale, the audit log table exists but has no routes, and critical resources (API key management, payments, wallet management, user management) have zero routes.
+The ProofLink API is structurally sound and has made the right foundational choices (Hono on Node, Drizzle ORM, Zod validation, HMAC auth). The core compliance, identity, invoice, and webhook flows are implemented and tested. However, there are significant gaps in production-readiness: the rate limiter is in-memory, webhooks are in-memory, the WS upgrade path is broken for Node, the HMAC signature skips the body, the OpenAPI spec is hand-maintained and already stale, the audit log table exists but has no routes, and critical resources (API key management, payments, wallet management, user management) have zero routes.
 
 ---
 
@@ -274,7 +274,7 @@ GET    /v1/audit-log/:id         # single entry
 ### P1 — Required for MVP
 
 **Payment Tracking** (`/v1/payments`)
-FlowLink's core value proposition is agentic payments. There is no payment record, no link between a compliance receipt and an on-chain transaction, and no payment status tracking. The `invoices.onChainTxHash` field exists but there is no way to record or query it:
+ProofLink's core value proposition is agentic payments. There is no payment record, no link between a compliance receipt and an on-chain transaction, and no payment status tracking. The `invoices.onChainTxHash` field exists but there is no way to record or query it:
 ```
 POST   /v1/payments              # record a payment (invoice + tx hash)
 GET    /v1/payments/:id

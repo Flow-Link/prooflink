@@ -90,9 +90,9 @@ describe("Webhook delivery — register and dispatch", () => {
     const [, init] = mockFetch.mock.calls[0]!;
     expect(init.method).toBe("POST");
     expect(init.headers["Content-Type"]).toBe("application/json");
-    expect(init.headers["X-FlowLink-Signature"]).toBeTruthy();
-    expect(init.headers["X-FlowLink-Event"]).toBe("compliance.check.passed");
-    expect(init.headers["X-FlowLink-Delivery"]).toBeTruthy();
+    expect(init.headers["X-ProofLink-Signature"]).toBeTruthy();
+    expect(init.headers["X-ProofLink-Event"]).toBe("compliance.check.passed");
+    expect(init.headers["X-ProofLink-Delivery"]).toBeTruthy();
   });
 
   it("dispatch_sends_the_event_payload_as_json_body", async () => {
@@ -206,7 +206,7 @@ describe("Webhook delivery — signature verification", () => {
 
     const capturingFetch = vi.fn().mockImplementation((_url: string, init: RequestInit) => {
       capturedPayload = init.body as string;
-      capturedSignature = (init.headers as Record<string, string>)["X-FlowLink-Signature"] ?? "";
+      capturedSignature = (init.headers as Record<string, string>)["X-ProofLink-Signature"] ?? "";
       return Promise.resolve(makeOkResponse());
     });
 

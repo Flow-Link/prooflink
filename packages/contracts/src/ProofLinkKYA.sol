@@ -8,13 +8,13 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {IERC8004IdentityRegistry, IERC8004ValidationRegistry} from "./interfaces/IERC8004.sol";
 import {Types} from "./libraries/Types.sol";
 
-/// @title FlowLinkKYA
-/// @author FlowLink
+/// @title ProofLinkKYA
+/// @author ProofLink
 /// @notice KYA (Know Your Agent) credential management contract.
 ///         Issues, verifies, and revokes KYA credentials for AI agents.
 /// @dev Integrates with ERC-8004 Identity Registry via its validation interface.
 ///      Uses UUPS proxy pattern for upgradeability.
-contract FlowLinkKYA is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
+contract ProofLinkKYA is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
     // ──────────────────────────────────────────────
     // Roles
     // ──────────────────────────────────────────────
@@ -128,7 +128,7 @@ contract FlowLinkKYA is Initializable, AccessControlUpgradeable, UUPSUpgradeable
         _disableInitializers();
     }
 
-    /// @notice Initialize the FlowLinkKYA contract.
+    /// @notice Initialize the ProofLinkKYA contract.
     /// @param identityRegistry_ ERC-8004 Identity Registry address.
     /// @param validationRegistry_ ERC-8004 Validation Registry address.
     /// @param admin Initial admin address.
@@ -187,7 +187,7 @@ contract FlowLinkKYA is Initializable, AccessControlUpgradeable, UUPSUpgradeable
 
         // Write validation response to ERC-8004 if registry is set
         if (address(validationRegistry) != address(0)) {
-            bytes32 requestHash = keccak256(abi.encodePacked(agentWallet, "flowlink-kya"));
+            bytes32 requestHash = keccak256(abi.encodePacked(agentWallet, "prooflink-kya"));
             validationRegistry.validationResponse(
                 requestHash,
                 defaultValidationScore,

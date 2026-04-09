@@ -1064,7 +1064,7 @@ describe("InvoiceParty", () => {
   it("parses with all optional fields", () => {
     const party = InvoiceParty.parse({
       walletAddress: "0xSeller",
-      agentId: "did:flowlink:agent:seller",
+      agentId: "did:prooflink:agent:seller",
       legalName: "Acme Corp",
       taxId: "US-123456789",
     });
@@ -1478,7 +1478,7 @@ describe("WebhookConfig", () => {
   function makeWebhookConfig(overrides = {}) {
     return {
       id: "wh_001",
-      url: "https://example.com/webhooks/flowlink",
+      url: "https://example.com/webhooks/prooflink",
       secret: "supersecret1234567890",
       events: ["compliance.check.completed"],
       createdAt: nowIso(),

@@ -1,25 +1,25 @@
 # Quick Start
 
-Get up and running with FlowLink in under 5 minutes.
+Get up and running with ProofLink in under 5 minutes.
 
 ## Install
 
 ```bash
-npm install @flowlink/sdk
+npm install @prooflink/sdk
 ```
 
 ## Initialize the client
 
 ```ts
-import { FlowLinkClient } from "@flowlink/sdk";
+import { ProofLinkClient } from "@prooflink/sdk";
 
-const flowlink = new FlowLinkClient({ apiKey: "fl_live_your_api_key" });
+const prooflink = new ProofLinkClient({ apiKey: "fl_live_your_api_key" });
 ```
 
 | Option       | Default                          | Description                          |
 |-------------|----------------------------------|--------------------------------------|
-| `apiKey`    | --                               | Your FlowLink API key (required)     |
-| `baseUrl`   | `https://api.flowlink.io/v1`     | Override for self-hosted deployments |
+| `apiKey`    | --                               | Your ProofLink API key (required)     |
+| `baseUrl`   | `https://api.prooflink.io/v1`     | Override for self-hosted deployments |
 | `timeoutMs` | `30000`                          | Request timeout in milliseconds      |
 | `maxRetries`| `3`                              | Auto-retries on transient errors     |
 
@@ -30,7 +30,7 @@ const flowlink = new FlowLinkClient({ apiKey: "fl_live_your_api_key" });
 Check a wallet against OFAC, EU, UN, and HMT sanctions lists.
 
 ```ts
-const result = await flowlink.screenAddress("0x742d35Cc6634C0532925a3b844Bc9e7595f2bD68", "base");
+const result = await prooflink.screenAddress("0x742d35Cc6634C0532925a3b844Bc9e7595f2bD68", "base");
 console.log(result.matched); // false
 ```
 
@@ -41,7 +41,7 @@ console.log(result.matched); // false
 Run sanctions screening, AML scoring, travel-rule transmission, and jurisdictional checks in one call.
 
 ```ts
-const decision = await flowlink.checkCompliance({
+const decision = await prooflink.checkCompliance({
   senderAddress: "0xAlice",
   recipientAddress: "0xBob",
   amount: 5000,
@@ -59,10 +59,10 @@ console.log(decision.riskScore); // 12
 Generate a compliance-stamped invoice for agent-to-agent services.
 
 ```ts
-const invoice = await flowlink.createInvoice({
+const invoice = await prooflink.createInvoice({
   seller: {
     walletAddress: "0xAlice",
-    agentId: "did:flowlink:agent:data-processor",
+    agentId: "did:prooflink:agent:data-processor",
     legalName: "DataCo AI",
   },
   buyer: {
@@ -93,24 +93,24 @@ console.log(invoice.state); // "DRAFT"
 End-to-end example: verify the counterparty, run compliance, create an invoice, and transition it through settlement.
 
 ```ts
-import { FlowLinkClient } from "@flowlink/sdk";
+import { ProofLinkClient } from "@prooflink/sdk";
 
-const flowlink = new FlowLinkClient({ apiKey: process.env.FLOWLINK_API_KEY! });
+const prooflink = new ProofLinkClient({ apiKey: process.env.PROOFLINK_API_KEY! });
 
 // 1. Screen the recipient
-const screen = await flowlink.screenAddress("0xBob", "base");
+const screen = await prooflink.screenAddress("0xBob", "base");
 if (screen.matched) {
   throw new Error(`Recipient sanctioned: ${JSON.stringify(screen.matchDetails)}`);
 }
 
 // 2. Verify the agent (if counterparty is an AI agent)
-const verification = await flowlink.verifyAgent("did:flowlink:agent:bob-bot");
+const verification = await prooflink.verifyAgent("did:prooflink:agent:bob-bot");
 if (!verification.verified) {
   throw new Error("Agent KYA verification failed");
 }
 
 // 3. Run full compliance check
-const decision = await flowlink.checkCompliance({
+const decision = await prooflink.checkCompliance({
   senderAddress: "0xAlice",
   recipientAddress: "0xBob",
   amount: 5000,
@@ -122,9 +122,9 @@ if (decision.status === "REJECTED") {
 }
 
 // 4. Create the invoice
-const invoice = await flowlink.createInvoice({
-  seller: { walletAddress: "0xAlice", agentId: "did:flowlink:agent:alice-bot" },
-  buyer: { walletAddress: "0xBob", agentId: "did:flowlink:agent:bob-bot" },
+const invoice = await prooflink.createInvoice({
+  seller: { walletAddress: "0xAlice", agentId: "did:prooflink:agent:alice-bot" },
+  buyer: { walletAddress: "0xBob", agentId: "did:prooflink:agent:bob-bot" },
   lineItems: [
     { description: "GPU compute - 2 hours", quantity: 2, unitPrice: 2500, total: 5000, serviceCategory: "compute" },
   ],
@@ -134,13 +134,13 @@ const invoice = await flowlink.createInvoice({
 });
 
 // 5. Issue -> Pay -> Settle
-await flowlink.updateInvoiceState(invoice.id, "ISSUED");
+await prooflink.updateInvoiceState(invoice.id, "ISSUED");
 // ... execute payment via x402 ...
-await flowlink.updateInvoiceState(invoice.id, "PAID");
-await flowlink.updateInvoiceState(invoice.id, "SETTLED");
+await prooflink.updateInvoiceState(invoice.id, "PAID");
+await prooflink.updateInvoiceState(invoice.id, "SETTLED");
 
 // 6. Retrieve the compliance receipt
-const receipt = await flowlink.getReceipt(decision.receiptId);
+const receipt = await prooflink.getReceipt(decision.receiptId);
 console.log("ProofLink hash:", receipt.receiptHash);
 ```
 

@@ -3,10 +3,10 @@ import type {
   ComplianceDecision,
   ComplianceReceipt,
   SanctionsList,
-} from "@flowlink/shared/types";
+} from "@prooflink/shared/types";
 
 // ---------------------------------------------------------------------------
-// Re-exports from @flowlink/shared
+// Re-exports from @prooflink/shared
 // ---------------------------------------------------------------------------
 
 export type {
@@ -19,7 +19,7 @@ export type {
   CheckPerformed,
   ComplianceCheckType,
   ComplianceCheckResult,
-} from "@flowlink/shared/types";
+} from "@prooflink/shared/types";
 
 // ---------------------------------------------------------------------------
 // x402 SDK compatible types (defined inline — no @x402/core dependency)
@@ -155,7 +155,7 @@ export interface ResourceServerExtension {
 }
 
 // ---------------------------------------------------------------------------
-// FlowLink Compliance Config
+// ProofLink Compliance Config
 // ---------------------------------------------------------------------------
 
 export const CompliancePolicySchema = z.object({
@@ -296,10 +296,10 @@ export const RateLimitTierSchema = z.object({
 export type RateLimitTier = z.infer<typeof RateLimitTierSchema>;
 
 // ---------------------------------------------------------------------------
-// Enhanced FlowLink Config
+// Enhanced ProofLink Config
 // ---------------------------------------------------------------------------
 
-export const FlowLinkConfigSchema = z.object({
+export const ProofLinkConfigSchema = z.object({
   chainalysisApiKey: z.string().min(1),
   notabene: NotabeneConfigSchema.optional(),
   redis: RedisConfigSchema.optional(),
@@ -314,7 +314,7 @@ export const FlowLinkConfigSchema = z.object({
 });
 
 /** Full configuration object — `logger` and `metrics` are not validated by zod */
-export interface FlowLinkConfig extends z.infer<typeof FlowLinkConfigSchema> {
+export interface ProofLinkConfig extends z.infer<typeof ProofLinkConfigSchema> {
   logger?: Logger;
   metrics?: MetricsCollector;
 }
@@ -491,7 +491,7 @@ export type AdapterNextFunction = () => Promise<void> | void;
 /** Options for framework adapters */
 export interface ComplianceAdapterOptions {
   /** The compliance instance to use */
-  compliance: import("./middleware.js").FlowLinkX402Compliance;
+  compliance: import("./middleware.js").ProofLinkX402Compliance;
   /** Extract payment payload from the request (framework-specific) */
   extractPayload?: (req: AdapterRequest) => PaymentPayload | null;
   /** Extract payment requirements from the request (framework-specific) */

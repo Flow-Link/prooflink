@@ -8,14 +8,14 @@ import type {
   SanctionsCheckResult,
   TravelRuleData,
   TravelRuleStatus,
-} from "@flowlink/shared";
+} from "@prooflink/shared";
 import { AMLScorer, type ScoringRule, type TransactionContext } from "../aml/scorer.js";
 import { LRUCache } from "../cache.js";
 import type { ProofLinkConfig } from "../config.js";
 import {
-  type FlowLinkEvents,
-  type FlowLinkEventListener,
-  type FlowLinkEventName,
+  type ProofLinkEvents,
+  type ProofLinkEventListener,
+  type ProofLinkEventName,
   TypedEventEmitter,
 } from "../events/emitter.js";
 import {
@@ -24,7 +24,7 @@ import {
   type VerifiableCredential,
 } from "../identity/kya-verifier.js";
 import {
-  type FlowLinkPlugin,
+  type ProofLinkPlugin,
   type PluginContext,
   type PluginDecisionContext,
   PluginManager,
@@ -68,8 +68,7 @@ export interface ComplianceRequest {
   txHash?: string;
 }
 
-// Re-export FlowLinkEvents as ProofLinkEvents for backward compat
-export type { FlowLinkEvents, FlowLinkEvents as ProofLinkEvents };
+export type { ProofLinkEvents };
 
 // ---------------------------------------------------------------------------
 // Batch processing
@@ -110,7 +109,7 @@ export class ProofLinkEngine {
   private readonly receiptIssuer: ReceiptIssuer;
   private readonly metrics: ComplianceMetrics;
   private readonly pluginManager: PluginManager;
-  private readonly events: TypedEventEmitter<FlowLinkEvents>;
+  private readonly events: TypedEventEmitter<ProofLinkEvents>;
 
   constructor(
     config: ProofLinkConfig,
@@ -122,7 +121,7 @@ export class ProofLinkEngine {
       amlRules?: ScoringRule[];
     },
   ) {
-    this.events = new TypedEventEmitter<FlowLinkEvents>();
+    this.events = new TypedEventEmitter<ProofLinkEvents>();
     this.config = config;
     this.sanctionsScreener = new SanctionsScreener(config, {
       providers: options?.sanctionsProviders,
@@ -146,7 +145,7 @@ export class ProofLinkEngine {
   /**
    * Register a plugin to extend engine behavior.
    */
-  async registerPlugin(plugin: FlowLinkPlugin): Promise<void> {
+  async registerPlugin(plugin: ProofLinkPlugin): Promise<void> {
     await this.pluginManager.registerPlugin(plugin);
   }
 
@@ -160,7 +159,7 @@ export class ProofLinkEngine {
   /**
    * Get all registered plugins.
    */
-  getPlugins(): ReadonlyArray<FlowLinkPlugin> {
+  getPlugins(): ReadonlyArray<ProofLinkPlugin> {
     return this.pluginManager.getPlugins();
   }
 
@@ -169,33 +168,33 @@ export class ProofLinkEngine {
   // -------------------------------------------------------------------------
 
   /**
-   * Register a listener for a typed FlowLink event.
+   * Register a listener for a typed ProofLink event.
    */
-  on<K extends FlowLinkEventName>(
+  on<K extends ProofLinkEventName>(
     event: K,
-    listener: FlowLinkEventListener<K>,
+    listener: ProofLinkEventListener<K>,
   ): this {
     this.events.on(event, listener);
     return this;
   }
 
   /**
-   * Register a one-time listener for a typed FlowLink event.
+   * Register a one-time listener for a typed ProofLink event.
    */
-  once<K extends FlowLinkEventName>(
+  once<K extends ProofLinkEventName>(
     event: K,
-    listener: FlowLinkEventListener<K>,
+    listener: ProofLinkEventListener<K>,
   ): this {
     this.events.once(event, listener);
     return this;
   }
 
   /**
-   * Remove a listener for a typed FlowLink event.
+   * Remove a listener for a typed ProofLink event.
    */
-  off<K extends FlowLinkEventName>(
+  off<K extends ProofLinkEventName>(
     event: K,
-    listener: FlowLinkEventListener<K>,
+    listener: ProofLinkEventListener<K>,
   ): this {
     this.events.off(event, listener);
     return this;
@@ -292,7 +291,7 @@ export class ProofLinkEngine {
           checkType: "KYA_VERIFICATION",
           result: kyaResult.verified ? "PASSED" : "FAILED",
           performedAt: new Date().toISOString(),
-          provider: "flowlink_kya",
+          provider: "prooflink_kya",
           detail: kyaResult.verified
             ? `Agent ${kyaResult.agentDid} verified`
             : `KYA failed: ${kyaResult.errors.join("; ")}`,
@@ -316,7 +315,7 @@ export class ProofLinkEngine {
           checkType: "KYA_VERIFICATION",
           result: this.config.failOpen ? "SKIPPED" : "FAILED",
           performedAt: new Date().toISOString(),
-          provider: "flowlink_kya",
+          provider: "prooflink_kya",
           detail: `KYA error: ${error instanceof Error ? error.message : String(error)}`,
         });
         if (!this.config.failOpen) {
@@ -399,7 +398,7 @@ export class ProofLinkEngine {
       checkType: "AML_MONITORING",
       result: amlScore.exceeds ? "FAILED" : "PASSED",
       performedAt: amlScore.evaluatedAt,
-      provider: "flowlink_aml",
+      provider: "prooflink_aml",
       detail: `Score ${amlScore.score}/${amlScore.threshold} — ${amlScore.factors.map((f) => `${f.factor}: ${f.detail}`).join("; ")}`,
     });
 
@@ -442,7 +441,7 @@ export class ProofLinkEngine {
         performedAt: new Date().toISOString(),
         provider: travelRuleResult.referenceId
           ? `notabene:${travelRuleResult.referenceId}`
-          : "flowlink_travel_rule",
+          : "prooflink_travel_rule",
         detail: travelRuleResult.required
           ? `Required by ${travelRuleResult.triggeringJurisdiction} (threshold $${travelRuleResult.thresholdUsd}): ${travelRuleResult.status}`
           : `Not required (below $${travelRuleResult.thresholdUsd} threshold)`,
@@ -558,7 +557,7 @@ export class ProofLinkEngine {
                 checkType: "AML_MONITORING",
                 result: "FAILED",
                 performedAt: new Date().toISOString(),
-                provider: "flowlink_batch",
+                provider: "prooflink_batch",
                 detail: `Batch processing error: ${error instanceof Error ? error.message : String(error)}`,
               },
             ],
@@ -777,7 +776,7 @@ export class ProofLinkEngine {
       checkType: "JURISDICTIONAL_RULES",
       result: errors.length === 0 ? "PASSED" : "FAILED",
       performedAt: now,
-      provider: "flowlink_jurisdiction",
+      provider: "prooflink_jurisdiction",
       detail:
         errors.length === 0
           ? "All jurisdictional rules passed"

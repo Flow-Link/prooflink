@@ -81,16 +81,16 @@ No test files exist anywhere in `apps/dashboard/`. For a demo this is acceptable
 
 ## Files Modified
 
-- `/home/akash/PROJECTS/FLOW-LINK/apps/dashboard/src/app/layout.tsx`
-- `/home/akash/PROJECTS/FLOW-LINK/apps/dashboard/src/components/layout/sidebar.tsx`
-- `/home/akash/PROJECTS/FLOW-LINK/apps/dashboard/src/components/layout/header.tsx`
-- `/home/akash/PROJECTS/FLOW-LINK/apps/dashboard/src/components/charts/volume-chart.tsx`
-- `/home/akash/PROJECTS/FLOW-LINK/apps/dashboard/src/app/page.tsx`
-- `/home/akash/PROJECTS/FLOW-LINK/apps/dashboard/src/app/compliance/page.tsx`
-- `/home/akash/PROJECTS/FLOW-LINK/apps/dashboard/src/app/compliance/[id]/page.tsx`
-- `/home/akash/PROJECTS/FLOW-LINK/apps/dashboard/src/app/agents/page.tsx`
-- `/home/akash/PROJECTS/FLOW-LINK/apps/dashboard/src/app/api-keys/page.tsx`
-- `/home/akash/PROJECTS/FLOW-LINK/apps/dashboard/src/app/invoices/page.tsx`
-- `/home/akash/PROJECTS/FLOW-LINK/apps/dashboard/src/app/invoices/new/page.tsx`
-- `/home/akash/PROJECTS/FLOW-LINK/apps/dashboard/src/app/screen/page.tsx`
-- `/home/akash/PROJECTS/FLOW-LINK/apps/dashboard/src/lib/api.ts`
+- `/home/akash/PROJECTS/prooflink/apps/dashboard/src/app/layout.tsx`
+- `/home/akash/PROJECTS/prooflink/apps/dashboard/src/components/layout/sidebar.tsx`
+- `/home/akash/PROJECTS/prooflink/apps/dashboard/src/components/layout/header.tsx`
+- `/home/akash/PROJECTS/prooflink/apps/dashboard/src/components/charts/volume-chart.tsx`
+- `/home/akash/PROJECTS/prooflink/apps/dashboard/src/app/page.tsx`
+- `/home/akash/PROJECTS/prooflink/apps/dashboard/src/app/compliance/page.tsx`
+- `/home/akash/PROJECTS/prooflink/apps/dashboard/src/app/compliance/[id]/page.tsx`
+- `/home/akash/PROJECTS/prooflink/apps/dashboard/src/app/agents/page.tsx`
+- `/home/akash/PROJECTS/prooflink/apps/dashboard/src/app/api-keys/page.tsx`
+- `/home/akash/PROJECTS/prooflink/apps/dashboard/src/app/invoices/page.tsx`
+- `/home/akash/PROJECTS/prooflink/apps/dashboard/src/app/invoices/new/page.tsx`
+- `/home/akash/PROJECTS/prooflink/apps/dashboard/src/app/screen/page.tsx`
+- `/home/akash/PROJECTS/prooflink/apps/dashboard/src/lib/api.ts`

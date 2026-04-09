@@ -1,7 +1,7 @@
 {
-  "name": "@flowlink/contracts",
+  "name": "@prooflink/contracts",
   "version": "0.1.0",
-  "description": "FlowLink Solidity smart contracts — compliance receipts, KYA, invoices, and x402 facilitator",
+  "description": "ProofLink Solidity smart contracts — compliance receipts, KYA, invoices, and x402 facilitator",
   "license": "MIT",
   "scripts": {
     "build": "forge build",

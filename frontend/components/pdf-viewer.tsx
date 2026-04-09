@@ -14,7 +14,7 @@ interface PDFViewerProps {
   pdfUrl?: string
 }
 
-export function PDFViewer({ isOpen, onClose, pdfUrl = '/FlowLink_Transaction_Receipt.pdf' }: PDFViewerProps) {
+export function PDFViewer({ isOpen, onClose, pdfUrl = '/ProofLink_Transaction_Receipt.pdf' }: PDFViewerProps) {
   const [numPages, setNumPages] = useState<number>(0)
   const [pageNumber, setPageNumber] = useState<number>(1)
   const [scale, setScale] = useState<number>(1.2)

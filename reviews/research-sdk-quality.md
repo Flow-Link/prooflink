@@ -11,7 +11,7 @@
 
 ### Usability
 
-The client is clean and immediately usable. The constructor validates `apiKey` at construction time and throws `FlowLinkValidationError` with a `field` property, which is the right pattern. The JSDoc example on the class is minimal but correct. Defaults (30s timeout, 3 retries, production base URL) are sensible.
+The client is clean and immediately usable. The constructor validates `apiKey` at construction time and throws `ProofLinkValidationError` with a `field` property, which is the right pattern. The JSDoc example on the class is minimal but correct. Defaults (30s timeout, 3 retries, production base URL) are sensible.
 
 Each public method has a JSDoc describing its contract, the state transitions it targets, and which shared type it returns. This is a solid baseline.
 
@@ -40,9 +40,9 @@ The SDK's `registerAgent()` posts to `/identity/kya/issue` (line 258 of `client.
 The SDK's `registerAgent()` maps `AgentRegistration` to `/identity/kya/issue`, meaning the `name` field (required by the real registration endpoint) is absent from `AgentRegistration` in `types.ts:201`. This is a shape mismatch against the actual API.
 
 **Evidence:**
-- `/home/akash/PROJECTS/FLOW-LINK/packages/sdk/src/client.ts` line 258
-- `/home/akash/PROJECTS/FLOW-LINK/apps/api/src/routes/identity.ts` lines 52–71 (RegisterAgentRequest schema requires `name`)
-- `/home/akash/PROJECTS/FLOW-LINK/packages/sdk/src/types.ts` lines 201–222 (AgentRegistration has no `name` field)
+- `/home/akash/PROJECTS/prooflink/packages/sdk/src/client.ts` line 258
+- `/home/akash/PROJECTS/prooflink/apps/api/src/routes/identity.ts` lines 52–71 (RegisterAgentRequest schema requires `name`)
+- `/home/akash/PROJECTS/prooflink/packages/sdk/src/types.ts` lines 201–222 (AgentRegistration has no `name` field)
 
 ---
 
@@ -50,11 +50,11 @@ The SDK's `registerAgent()` maps `AgentRegistration` to `/identity/kya/issue`, m
 
 ### Coverage — Strong
 
-`packages/sdk/src/types.ts` and `packages/sdk/src/index.ts` re-export ~40 types from `@flowlink/shared`. The pattern (import from shared, re-export from sdk) is correct for a bundled SDK. Consumers only need to import from `@flowlink/sdk`, not from `@flowlink/shared` directly.
+`packages/sdk/src/types.ts` and `packages/sdk/src/index.ts` re-export ~40 types from `@prooflink/shared`. The pattern (import from shared, re-export from sdk) is correct for a bundled SDK. Consumers only need to import from `@prooflink/sdk`, not from `@prooflink/shared` directly.
 
 ### Gaps
 
-Types that exist in `@flowlink/shared` but are **not re-exported** from the SDK:
+Types that exist in `@prooflink/shared` but are **not re-exported** from the SDK:
 - `APIKey`, `APIKeyScope`, `RateLimitInfo`, `APISuccessResponse`, `APIErrorDetail`, `APIErrorResponse` — from `types/api.ts`. Relevant once webhook and analytics methods are added.
 - `WebhookConfig`, `WebhookEvent`, `WebhookSubscription`, `WebhookDelivery`, `WebhookDeliveryStatus`, `WebhookEventType` — the entire webhook namespace.
 - `AnalyticsDashboard`, `VolumeStats`, `RiskDistribution`, `ComplianceBreakdown`, `TimePeriod`, `RiskBucket` — the entire analytics namespace.
@@ -76,10 +76,10 @@ The SDK defines `PaginatedResponse<T>` with shape `{ items: T[], pagination: { p
 The SDK's `PaginatedResponse` shape matches the API's actual `items` field but not `pageSize` vs `limit`. The shared `PaginatedResponse` (a Zod schema) uses `data` as the array key, matching neither the SDK's `items` nor the API's `items`.
 
 **Evidence:**
-- `/home/akash/PROJECTS/FLOW-LINK/packages/sdk/src/types.ts` lines 81–89
-- `/home/akash/PROJECTS/FLOW-LINK/packages/shared/src/types/api.ts` lines 15–30
-- `/home/akash/PROJECTS/FLOW-LINK/apps/api/src/routes/compliance.ts` lines 410–425 (`pageSize`)
-- `/home/akash/PROJECTS/FLOW-LINK/apps/api/src/routes/invoices.ts` line 263 (`limit` — inconsistently uses `limit` while compliance uses `pageSize`)
+- `/home/akash/PROJECTS/prooflink/packages/sdk/src/types.ts` lines 81–89
+- `/home/akash/PROJECTS/prooflink/packages/shared/src/types/api.ts` lines 15–30
+- `/home/akash/PROJECTS/prooflink/apps/api/src/routes/compliance.ts` lines 410–425 (`pageSize`)
+- `/home/akash/PROJECTS/prooflink/apps/api/src/routes/invoices.ts` line 263 (`limit` — inconsistently uses `limit` while compliance uses `pageSize`)
 
 ---
 
@@ -87,29 +87,29 @@ The SDK's `PaginatedResponse` shape matches the API's actual `items` field but n
 
 ### Hierarchy — Good
 
-Four specialized error classes extend `FlowLinkError`:
-- `FlowLinkAPIError(status, body, headers)` — preserves HTTP status code, parsed error body, and full response headers. The `headers` field enables consumers to read `X-Request-ID`, `Retry-After`, or rate limit headers from the thrown error.
-- `FlowLinkValidationError(message, field?)` — pre-flight client-side validation with optional field name. Field name is exposed as a public property and is JSON-serializable.
-- `FlowLinkTimeoutError(timeoutMs, url)` — structured timeout with duration and URL for observability.
-- `FlowLinkNetworkError(message, cause?)` — wraps underlying `TypeError` or similar via `ErrorOptions.cause`.
+Four specialized error classes extend `ProofLinkError`:
+- `ProofLinkAPIError(status, body, headers)` — preserves HTTP status code, parsed error body, and full response headers. The `headers` field enables consumers to read `X-Request-ID`, `Retry-After`, or rate limit headers from the thrown error.
+- `ProofLinkValidationError(message, field?)` — pre-flight client-side validation with optional field name. Field name is exposed as a public property and is JSON-serializable.
+- `ProofLinkTimeoutError(timeoutMs, url)` — structured timeout with duration and URL for observability.
+- `ProofLinkNetworkError(message, cause?)` — wraps underlying `TypeError` or similar via `ErrorOptions.cause`.
 
 All classes correctly set `this.name`, which is the pattern needed for `instanceof` checks to work correctly across module boundaries in ESM.
 
 ### Missing: Request ID
 
-`FlowLinkAPIError` stores `headers: Headers` but there is no convenience getter for the request ID (`X-Request-ID` or similar). Stripe's SDK provides `error.requestId` as a first-class field. Without this, callers must write `err.headers.get("x-request-id")`, which is not obvious and requires knowing the header name.
+`ProofLinkAPIError` stores `headers: Headers` but there is no convenience getter for the request ID (`X-Request-ID` or similar). Stripe's SDK provides `error.requestId` as a first-class field. Without this, callers must write `err.headers.get("x-request-id")`, which is not obvious and requires knowing the header name.
 
 ### Missing: Error Code Bridging
 
-The SDK's `ApiErrorBody.code` is typed as `string`, not as `ErrorCode` from `@flowlink/shared`. Callers cannot do exhaustive pattern matching on error codes without importing the shared enum separately. The shared package has `ErrorCode` with 30+ named codes. These should be linked.
+The SDK's `ApiErrorBody.code` is typed as `string`, not as `ErrorCode` from `@prooflink/shared`. Callers cannot do exhaustive pattern matching on error codes without importing the shared enum separately. The shared package has `ErrorCode` with 30+ named codes. These should be linked.
 
 ### Missing: Rate-limit Error
 
-`FlowLinkAPIError` is thrown on 429 responses, but there is no specialized `FlowLinkRateLimitError` subclass that exposes a parsed `retryAfterSeconds` field. The `Retry-After` header is read by the HTTP client for automatic backoff, but if retries are exhausted, the caller receives a generic `FlowLinkAPIError` with `status === 429` and must manually parse `headers.get("Retry-After")`. The shared package has a `RateLimitError` with `retryAfterSeconds` already (shared/src/errors.ts:322) but it is not exposed through the SDK error hierarchy.
+`ProofLinkAPIError` is thrown on 429 responses, but there is no specialized `ProofLinkRateLimitError` subclass that exposes a parsed `retryAfterSeconds` field. The `Retry-After` header is read by the HTTP client for automatic backoff, but if retries are exhausted, the caller receives a generic `ProofLinkAPIError` with `status === 429` and must manually parse `headers.get("Retry-After")`. The shared package has a `RateLimitError` with `retryAfterSeconds` already (shared/src/errors.ts:322) but it is not exposed through the SDK error hierarchy.
 
 **Evidence:**
-- `/home/akash/PROJECTS/FLOW-LINK/packages/sdk/src/errors.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/shared/src/errors.ts` lines 322–338
+- `/home/akash/PROJECTS/prooflink/packages/sdk/src/errors.ts`
+- `/home/akash/PROJECTS/prooflink/packages/shared/src/errors.ts` lines 322–338
 
 ---
 
@@ -122,7 +122,7 @@ Retryable status codes: `{408, 429, 500, 502, 503, 504}`. This is a well-establi
 - Respects `Retry-After` header on 429 (integer seconds, numeric parsing).
 - Rebuilds `AbortSignal.timeout()` per attempt so each attempt gets a fresh timeout.
 - Distinguishes `DOMException { name: "TimeoutError" }` from generic network errors.
-- Stores the most recent `FlowLinkAPIError` and re-throws it when retries are exhausted.
+- Stores the most recent `ProofLinkAPIError` and re-throws it when retries are exhausted.
 
 The jitter calculation (`base + Math.random() * base * 0.25`) can slightly exceed the 8s cap when `base === 8000` because `jitter` up to 2000ms is added before the outer `Math.min`. The outer cap corrects this, so actual behavior is correct, but the comment "capped at 8s" is slightly misleading — the cap is applied after jitter, not before.
 
@@ -135,7 +135,7 @@ There is no hook point for consumers to inject custom headers (e.g. `X-Idempoten
 The `Retry-After` header can be either an integer (seconds) or an HTTP date string (`Thu, 21 Mar 2026 12:00:00 GMT`). The current implementation handles only the integer case (`Number(retryAfterHeader)`). If the server responds with a date-format `Retry-After`, `Number("Thu, 21 Mar 2026...")` returns `NaN` and the header is silently ignored, reverting to exponential backoff.
 
 **Evidence:**
-- `/home/akash/PROJECTS/FLOW-LINK/packages/sdk/src/http.ts` lines 52–58 (backoff), 180–186 (Retry-After parsing)
+- `/home/akash/PROJECTS/prooflink/packages/sdk/src/http.ts` lines 52–58 (backoff), 180–186 (Retry-After parsing)
 
 ### Missing: Idempotency Key Support
 
@@ -147,7 +147,7 @@ POST and PATCH requests that create or mutate records (create invoice, register 
 
 The SDK has `PaginationParams` and `PaginatedResponse<T>` types, and list methods (`listInvoices`, `listAgents`, `getComplianceHistory`) accept pagination params. However:
 
-**No auto-pagination / async iterator.** Stripe's SDK provides `autoPagingEach()` and `autoPagingToArray()`. Coinbase's SDK yields pages as async iterables. The FlowLink SDK requires callers to write their own page loop:
+**No auto-pagination / async iterator.** Stripe's SDK provides `autoPagingEach()` and `autoPagingToArray()`. Coinbase's SDK yields pages as async iterables. The ProofLink SDK requires callers to write their own page loop:
 
 ```ts
 // Current approach — caller manages pagination manually
@@ -173,7 +173,7 @@ The API exposes a WebSocket endpoint at `GET /v1/ws` (`apps/api/src/routes/ws.ts
 - Heartbeat ping/pong
 - 8 event types: compliance checks, sanctions alerts, invoices, receipt anchoring
 
-**The SDK has no WebSocket client.** There is no `FlowLinkStreamClient`, `client.events.subscribe()`, or any WebSocket abstraction. Consumers must implement raw WebSocket handling including reconnect, heartbeat responses, JSON parsing, and event routing themselves. This is a significant DX gap for real-time compliance monitoring use cases.
+**The SDK has no WebSocket client.** There is no `ProofLinkStreamClient`, `client.events.subscribe()`, or any WebSocket abstraction. Consumers must implement raw WebSocket handling including reconnect, heartbeat responses, JSON parsing, and event routing themselves. This is a significant DX gap for real-time compliance monitoring use cases.
 
 ---
 
@@ -191,27 +191,27 @@ The absence of builder patterns is acceptable at early stage, but the absence of
 
 ## 8. Tree-Shakeability
 
-The SDK is structured as a single `FlowLinkClient` class in a single `client.ts` file. All methods are loaded together. For frontend/browser use:
+The SDK is structured as a single `ProofLinkClient` class in a single `client.ts` file. All methods are loaded together. For frontend/browser use:
 
 - The `HttpClient` is exported separately from `index.ts`, which is good — advanced users can compose their own transport.
 - `isolatedModules: true` is set in `tsconfig.base.json`, ensuring type-only imports compile correctly.
 - The package uses `"type": "module"` and ESM-only exports (no `require` / CommonJS path in `package.json:exports`). This is correct for tree-shaking.
-- However, because all API methods live on a single class, importing `FlowLinkClient` always pulls in all domain modules. There is no way to import only the compliance methods without the invoice and identity methods. For a browser bundle where only compliance is needed, this means unnecessary code.
-- `@flowlink/shared` re-exports its entire surface via `export * from "./types/index.js"` in `index.ts`. This means importing from `@flowlink/shared` in any SDK module loads all type definitions (analytics, MCP, plugin, webhook) even if only compliance types are used.
+- However, because all API methods live on a single class, importing `ProofLinkClient` always pulls in all domain modules. There is no way to import only the compliance methods without the invoice and identity methods. For a browser bundle where only compliance is needed, this means unnecessary code.
+- `@prooflink/shared` re-exports its entire surface via `export * from "./types/index.js"` in `index.ts`. This means importing from `@prooflink/shared` in any SDK module loads all type definitions (analytics, MCP, plugin, webhook) even if only compliance types are used.
 
-For a compliance-only frontend micro-bundle, the optimal pattern would be sub-path exports on the SDK (e.g., `@flowlink/sdk/compliance`), which currently does not exist.
+For a compliance-only frontend micro-bundle, the optimal pattern would be sub-path exports on the SDK (e.g., `@prooflink/sdk/compliance`), which currently does not exist.
 
 **Evidence:**
-- `/home/akash/PROJECTS/FLOW-LINK/packages/sdk/package.json` — single export entry `.`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/shared/src/index.ts` — glob re-exports
+- `/home/akash/PROJECTS/prooflink/packages/sdk/package.json` — single export entry `.`
+- `/home/akash/PROJECTS/prooflink/packages/shared/src/index.ts` — glob re-exports
 
 ---
 
 ## 9. Comparison with Industry-Standard SDKs
 
-### Stripe SDK Patterns Missing from FlowLink SDK
+### Stripe SDK Patterns Missing from ProofLink SDK
 
-| Pattern | Stripe | FlowLink SDK | Gap |
+| Pattern | Stripe | ProofLink SDK | Gap |
 |---|---|---|---|
 | Per-call options (idempotency, timeout, API key override) | `stripe.method(params, opts)` | Not supported | Add `RequestOptions` as second arg |
 | Auto-pagination | `autoPagingEach()` / `autoPagingToArray()` | Manual | Add async iterator |
@@ -223,7 +223,7 @@ For a compliance-only frontend micro-bundle, the optimal pattern would be sub-pa
 
 ### Coinbase CDP SDK Patterns Missing
 
-| Pattern | Coinbase CDP | FlowLink SDK | Gap |
+| Pattern | Coinbase CDP | ProofLink SDK | Gap |
 |---|---|---|---|
 | Async iterator for pages | `for await (const page of list)` | Not supported | Add |
 | Sub-path imports by domain | `@coinbase/cdp-sdk/payments` | Not supported | Add package exports |
@@ -232,7 +232,7 @@ For a compliance-only frontend micro-bundle, the optimal pattern would be sub-pa
 
 ### Key Missing Pattern: Webhook Signature Verification
 
-Both Stripe and Coinbase expose webhook verification as a first-class SDK method. For FlowLink, consumers receiving webhook events (15 event types, defined in `shared/src/types/webhook.ts`) need to verify HMAC-SHA256 signatures. The `WebhookManager` in `@flowlink/core` handles delivery signing, but there is no SDK-level `FlowLinkClient.webhooks.verify(payload, signature, secret)` method. Without this, any consumer building a webhook receiver must implement raw crypto themselves, or import from `@flowlink/core` (which is a server-side package not suitable for browser use).
+Both Stripe and Coinbase expose webhook verification as a first-class SDK method. For ProofLink, consumers receiving webhook events (15 event types, defined in `shared/src/types/webhook.ts`) need to verify HMAC-SHA256 signatures. The `WebhookManager` in `@prooflink/core` handles delivery signing, but there is no SDK-level `ProofLinkClient.webhooks.verify(payload, signature, secret)` method. Without this, any consumer building a webhook receiver must implement raw crypto themselves, or import from `@prooflink/core` (which is a server-side package not suitable for browser use).
 
 ---
 
@@ -293,17 +293,17 @@ Notable quality: `parseAmount` uses BigInt arithmetic (not floating-point) and `
 
 ### Error Hierarchy — Rich and Well-Structured
 
-`shared/src/errors.ts` provides 14 specialized error classes, all extending `FlowLinkError` with a structured `ErrorCode`, HTTP `statusCode`, and typed `details` object. `toJSON()` is implemented for structured logging. There are two deprecated aliases (`SanctionsMatchError`, `AuthenticationError`) with `@deprecated` JSDoc.
+`shared/src/errors.ts` provides 14 specialized error classes, all extending `ProofLinkError` with a structured `ErrorCode`, HTTP `statusCode`, and typed `details` object. `toJSON()` is implemented for structured logging. There are two deprecated aliases (`SanctionsMatchError`, `AuthenticationError`) with `@deprecated` JSDoc.
 
-**Inconsistency:** The shared `FlowLinkError` (server-side) and the SDK's `FlowLinkError` (client-side) are **different classes** with different constructors:
-- Shared: `FlowLinkError(message, code: ErrorCode, statusCode: number, details: Record)`
-- SDK: `FlowLinkError(message, options?: ErrorOptions)`
+**Inconsistency:** The shared `ProofLinkError` (server-side) and the SDK's `ProofLinkError` (client-side) are **different classes** with different constructors:
+- Shared: `ProofLinkError(message, code: ErrorCode, statusCode: number, details: Record)`
+- SDK: `ProofLinkError(message, options?: ErrorOptions)`
 
-If a consumer imports both `@flowlink/sdk` and `@flowlink/shared` (e.g. in a server-side Node.js integration), `instanceof FlowLinkError` checks from different packages will **not** cross-match — the two classes are distinct despite the same name. This is a known ESM dual-package hazard. There is no shared base class or `[Symbol.for('FlowLinkError')]` brand check to bridge them.
+If a consumer imports both `@prooflink/sdk` and `@prooflink/shared` (e.g. in a server-side Node.js integration), `instanceof ProofLinkError` checks from different packages will **not** cross-match — the two classes are distinct despite the same name. This is a known ESM dual-package hazard. There is no shared base class or `[Symbol.for('ProofLinkError')]` brand check to bridge them.
 
 **Evidence:**
-- `/home/akash/PROJECTS/FLOW-LINK/packages/shared/src/errors.ts` lines 67–99
-- `/home/akash/PROJECTS/FLOW-LINK/packages/sdk/src/errors.ts` lines 10–15
+- `/home/akash/PROJECTS/prooflink/packages/shared/src/errors.ts` lines 67–99
+- `/home/akash/PROJECTS/prooflink/packages/sdk/src/errors.ts` lines 10–15
 
 ---
 
@@ -331,13 +331,13 @@ If a consumer imports both `@flowlink/sdk` and `@flowlink/shared` (e.g. in a ser
 9. **No idempotency key support** — create/mutate operations are not safely retryable by callers
 10. **No request interceptors** — cannot inject correlation IDs or custom telemetry
 11. **`Retry-After` date format not handled** — silently falls back to exponential backoff
-12. **`FlowLinkAPIError` missing `requestId` first-class field**
-13. **No specialized `FlowLinkRateLimitError`** — callers must detect 429 and manually parse headers
+12. **`ProofLinkAPIError` missing `requestId` first-class field**
+13. **No specialized `ProofLinkRateLimitError`** — callers must detect 429 and manually parse headers
 14. **No per-call options** — cannot override timeout or API key per request
 
 ### P3 — Architecture and Maintenance
 
-15. **Dual `FlowLinkError` classes** (sdk vs shared) will cause `instanceof` failures in server-side code that imports both packages
+15. **Dual `ProofLinkError` classes** (sdk vs shared) will cause `instanceof` failures in server-side code that imports both packages
 16. **Zero-address EAS schema UIDs and contract addresses exported as constants** — no guard preventing production use with undeployed contracts
 17. **No CLI or OpenAPI-based code generation** — as the API grows, hand-maintaining the SDK becomes a maintenance liability
 18. **No sub-path exports on SDK** — cannot tree-shake for browser/compliance-only bundles

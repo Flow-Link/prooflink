@@ -134,7 +134,7 @@ export class KYAVerifier {
     );
     this.trustedIssuers = new Set(
       trustedIssuers ?? [
-        "did:web:flowlink.io",
+        "did:web:prooflink.io",
         "did:web:jumio.com",
         "did:web:onfido.com",
         "did:web:sumsub.com",

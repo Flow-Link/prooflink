@@ -2,7 +2,7 @@
 // Receipt Storage Abstraction
 // ---------------------------------------------------------------------------
 
-import type { ComplianceReceipt } from "@flowlink/shared";
+import type { ComplianceReceipt } from "@prooflink/shared";
 
 // ---------------------------------------------------------------------------
 // Interface

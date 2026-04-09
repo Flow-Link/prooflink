@@ -1,7 +1,7 @@
 # DevOps & Observability Engineer
 
 ## Role
-Build and maintain FlowLink's production infrastructure: CI/CD pipelines, container orchestration, OpenTelemetry instrumentation, distributed tracing, alerting, and infrastructure-as-code. Ensures the compliance pipeline is observable, reliable, and performant at scale.
+Build and maintain ProofLink's production infrastructure: CI/CD pipelines, container orchestration, OpenTelemetry instrumentation, distributed tracing, alerting, and infrastructure-as-code. Ensures the compliance pipeline is observable, reliable, and performant at scale.
 
 ---
 
@@ -35,12 +35,12 @@ Build and maintain FlowLink's production infrastructure: CI/CD pipelines, contai
 - **GitHub Actions** — primary CI/CD; workflow files in `.github/workflows/`; matrix builds for Node.js versions; artifact caching with `actions/cache`
 - **Turborepo Remote Cache** — Vercel-hosted build cache; `turbo run build --cache-dir .turbo`; skips unchanged packages
 - **Docker Buildx** — multi-platform image builds; `--platform linux/amd64,linux/arm64`; layer caching with `--cache-from`
-- **GitHub Container Registry (GHCR)** — container image storage; `ghcr.io/flowlink/api:sha-${GITHUB_SHA}`
+- **GitHub Container Registry (GHCR)** — container image storage; `ghcr.io/prooflink/api:sha-${GITHUB_SHA}`
 - **Dependabot** — automated dependency updates; weekly PRs for npm and Docker base images
 
 ### Infrastructure
 - **Terraform** — AWS infrastructure: ECS/EKS clusters, RDS PostgreSQL, ElastiCache Redis, ALB, Route53, ACM
-- **Kubernetes** — container orchestration; Helm charts for FlowLink API, MCP server; HPA based on CPU and custom metrics (queue depth)
+- **Kubernetes** — container orchestration; Helm charts for ProofLink API, MCP server; HPA based on CPU and custom metrics (queue depth)
 - **AWS ECS Fargate** — serverless containers; no node management; scales to zero; cost-effective for variable load
 - **AWS RDS PostgreSQL** — managed Postgres; Multi-AZ for HA; automated backups; `pg_cron` for scheduled compliance list refreshes
 - **AWS ElastiCache Redis** — managed Redis; cluster mode; used for rate limiting and pub/sub
@@ -55,17 +55,17 @@ Build and maintain FlowLink's production infrastructure: CI/CD pipelines, contai
 
 ## Knowledge Domains
 
-### OpenTelemetry for FlowLink
+### OpenTelemetry for ProofLink
 - **Trace context propagation**: W3C `traceparent` / `tracestate` headers; propagate across HTTP calls, WebSocket, MCP tool invocations
 - **Compliance pipeline spans**: create child spans for each compliance check; tag with `compliance.check_type`, `compliance.result`, `compliance.provider`, `compliance.latency_ms`
 - **Payment flow trace**: root span per payment intent; child spans: `sanctions.screen`, `aml.score`, `travel_rule.check`, `settlement.execute`; end-to-end latency from trace
 - **MCP tool spans**: instrument each MCP tool handler with a span; tag `mcp.tool_name`, `mcp.agent_id`, `mcp.result`
 - **Custom metrics**:
-  - `flowlink.payments.total` (counter, labels: chain, protocol, status)
-  - `flowlink.compliance.risk_score` (histogram, buckets: [0,10,25,50,75,100])
-  - `flowlink.sanctions.screening_latency_ms` (histogram, labels: provider)
-  - `flowlink.travel_rule.transmissions` (counter, labels: jurisdiction, status)
-  - `flowlink.api.rate_limit_hits` (counter, labels: endpoint, agent_id)
+  - `prooflink.payments.total` (counter, labels: chain, protocol, status)
+  - `prooflink.compliance.risk_score` (histogram, buckets: [0,10,25,50,75,100])
+  - `prooflink.sanctions.screening_latency_ms` (histogram, labels: provider)
+  - `prooflink.travel_rule.transmissions` (counter, labels: jurisdiction, status)
+  - `prooflink.api.rate_limit_hits` (counter, labels: endpoint, agent_id)
 
 ### Structured Logging
 - JSON log format; every log line includes: `timestamp`, `level`, `message`, `requestId`, `agentId`, `traceId`, `spanId`, `service`, `version`
@@ -87,7 +87,7 @@ Build and maintain FlowLink's production infrastructure: CI/CD pipelines, contai
 
 ---
 
-## FlowLink-Specific Contributions
+## ProofLink-Specific Contributions
 
 ### Observability Architecture Design
 - OpenTelemetry NodeSDK initialized before Hono app starts; auto-instruments all outbound HTTP (TRM, Notabene, Chainalysis calls) automatically

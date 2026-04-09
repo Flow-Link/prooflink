@@ -1,24 +1,24 @@
 import type {
   ComplianceCheckType,
   TravelRuleData,
-} from "@flowlink/shared/types";
+} from "@prooflink/shared/types";
 import type {
   InvoiceCurrency,
   InvoiceLineItem,
   InvoiceParty,
   InvoiceState,
-} from "@flowlink/shared/types";
+} from "@prooflink/shared/types";
 import type {
   AgentType,
   DelegationScope,
-} from "@flowlink/shared/types";
+} from "@prooflink/shared/types";
 import type {
   SupportedChain,
   SupportedToken,
-} from "@flowlink/shared/types";
+} from "@prooflink/shared/types";
 
 // ---------------------------------------------------------------------------
-// Re-exports from @flowlink/shared for consumer convenience
+// Re-exports from @prooflink/shared for consumer convenience
 // ---------------------------------------------------------------------------
 
 export type {
@@ -63,7 +63,7 @@ export type {
   SettlementStatus,
   SupportedChain,
   SupportedToken,
-} from "@flowlink/shared/types";
+} from "@prooflink/shared/types";
 
 // ---------------------------------------------------------------------------
 // Pagination
@@ -92,7 +92,7 @@ export interface PaginatedResponse<T> {
 // Compliance
 // ---------------------------------------------------------------------------
 
-/** Parameters for {@link FlowLinkClient.checkCompliance}. */
+/** Parameters for {@link ProofLinkClient.checkCompliance}. */
 export interface ComplianceCheckParams {
   sender: {
     address: string;
@@ -109,14 +109,14 @@ export interface ComplianceCheckParams {
   protocol?: string;
 }
 
-/** Parameters for {@link FlowLinkClient.screenAddress}. */
+/** Parameters for {@link ProofLinkClient.screenAddress}. */
 export interface ScreenAddressParams {
   address: string;
   chain: string;
   entityName?: string;
 }
 
-/** Parameters for {@link FlowLinkClient.calculateRiskScore}. */
+/** Parameters for {@link ProofLinkClient.calculateRiskScore}. */
 export interface TransactionContext {
   senderAddress: string;
   receiverAddress: string;
@@ -137,7 +137,7 @@ export interface TravelRuleResult {
   provider: string;
 }
 
-/** Parameters for {@link FlowLinkClient.getComplianceHistory}. */
+/** Parameters for {@link ProofLinkClient.getComplianceHistory}. */
 export interface ComplianceHistoryParams extends PaginationParams {
   /** Filter by status. */
   status?: "APPROVED" | "REJECTED" | "ESCALATED";
@@ -151,7 +151,7 @@ export interface ComplianceHistoryParams extends PaginationParams {
 // Invoices
 // ---------------------------------------------------------------------------
 
-/** Parameters for {@link FlowLinkClient.createInvoice}. */
+/** Parameters for {@link ProofLinkClient.createInvoice}. */
 export interface CreateInvoiceParams {
   seller: {
     agentId?: string;
@@ -177,7 +177,7 @@ export interface CreateInvoiceParams {
   dueDate?: string;
 }
 
-/** Parameters for {@link FlowLinkClient.listInvoices}. */
+/** Parameters for {@link ProofLinkClient.listInvoices}. */
 export interface ListInvoicesParams extends PaginationParams {
   /** Filter by invoice state. */
   state?: InvoiceState;
@@ -197,7 +197,7 @@ export interface ListInvoicesParams extends PaginationParams {
 // Identity / KYA
 // ---------------------------------------------------------------------------
 
-/** Parameters for {@link FlowLinkClient.registerAgent}. */
+/** Parameters for {@link ProofLinkClient.registerAgent}. */
 export interface AgentRegistration {
   agentDid: string;
   agentType: AgentType;
@@ -221,7 +221,7 @@ export interface AgentRegistration {
   erc8004TokenId?: string;
 }
 
-/** Parameters for {@link FlowLinkClient.issueKYA}. */
+/** Parameters for {@link ProofLinkClient.issueKYA}. */
 export interface IssueKYAParams {
   agentId: string;
   agentType: AgentType;
@@ -242,11 +242,11 @@ export interface IssueKYAParams {
 // SDK configuration
 // ---------------------------------------------------------------------------
 
-/** Configuration for the FlowLink client. */
-export interface FlowLinkClientConfig {
-  /** Your FlowLink API key. */
+/** Configuration for the ProofLink client. */
+export interface ProofLinkClientConfig {
+  /** Your ProofLink API key. */
   apiKey: string;
-  /** Override the default API base URL (default: https://api.flowlink.io/v1). */
+  /** Override the default API base URL (default: https://api.prooflink.io/v1). */
   baseUrl?: string;
   /** Request timeout in milliseconds (default: 30_000). */
   timeout?: number;

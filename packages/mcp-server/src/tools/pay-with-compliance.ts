@@ -21,7 +21,7 @@ export function registerPayWithCompliance(server: McpServer): void {
       "",
       "NOTE: Payment execution (step 4) and Travel Rule submission (step 3) are SIMULATED.",
       "These require external service integrations (x402 payment rails, Notabene/Sygna Bridge).",
-      "Sanctions screening and KYA verification use real @flowlink/core engines.",
+      "Sanctions screening and KYA verification use real @prooflink/core engines.",
       "",
       "Example usage:",
       "  pay_with_compliance({",
@@ -73,7 +73,7 @@ export function registerPayWithCompliance(server: McpServer): void {
         .string()
         .optional()
         .describe(
-          "FlowLink invoice ID from create_compliant_invoice. Links payment to invoice.",
+          "ProofLink invoice ID from create_compliant_invoice. Links payment to invoice.",
         ),
       require_kya: z
         .boolean()
@@ -98,7 +98,7 @@ export function registerPayWithCompliance(server: McpServer): void {
           travel_rule_required: params.amount.value >= TRAVEL_RULE_THRESHOLD_USD,
         };
 
-        // Step 1: Real sanctions screening via @flowlink/core
+        // Step 1: Real sanctions screening via @prooflink/core
         const screenResult = await sanctionsScreener.screenAddress(
           params.recipient.wallet_address,
           params.chain,

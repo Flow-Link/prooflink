@@ -1,8 +1,8 @@
-# FlowLink — Performance & Scalability Research Report
+# ProofLink — Performance & Scalability Research Report
 
 **Date**: 2026-03-21
 **Analyst**: Research Agent (claude-sonnet-4-6)
-**Scope**: Full codebase audit of `/home/akash/PROJECTS/FLOW-LINK`
+**Scope**: Full codebase audit of `/home/akash/PROJECTS/prooflink`
 
 ---
 

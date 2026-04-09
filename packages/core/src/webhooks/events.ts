@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// Webhook Event Types — all event types emitted by FlowLink
+// Webhook Event Types — all event types emitted by ProofLink
 // ---------------------------------------------------------------------------
 
 /** All webhook event types supported by the system. */

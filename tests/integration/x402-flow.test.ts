@@ -1,7 +1,7 @@
 /**
  * Integration tests: x402 compliance middleware (packages/x402-compliance)
  *
- * Tests FlowLinkX402Compliance hooks end-to-end:
+ * Tests ProofLinkX402Compliance hooks end-to-end:
  *   - onBeforeVerify (sanctions + AML + KYA)
  *   - onBeforeSettle (re-screen + Travel Rule)
  *   - onAfterSettle (ProofLink receipt generation)
@@ -11,7 +11,7 @@
  */
 
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
-import { FlowLinkX402Compliance } from "../../packages/x402-compliance/src/middleware.js";
+import { ProofLinkX402Compliance } from "../../packages/x402-compliance/src/middleware.js";
 import type { ComplianceEvent } from "../../packages/x402-compliance/src/types.js";
 import {
   makeX402Config,
@@ -32,7 +32,7 @@ import {
   AGENT_ADDRESS,
 } from "./setup.js";
 
-let compliance: FlowLinkX402Compliance;
+let compliance: ProofLinkX402Compliance;
 
 afterEach(() => {
   compliance?.destroy();
@@ -50,7 +50,7 @@ describe("x402 — full happy-path flow", () => {
     const proofLinkService = createMockProofLinkService();
     const events: ComplianceEvent[] = [];
 
-    compliance = new FlowLinkX402Compliance(makeX402Config(), {
+    compliance = new ProofLinkX402Compliance(makeX402Config(), {
       screener,
       amlScorer,
       proofLinkService,
@@ -79,7 +79,7 @@ describe("x402 — full happy-path flow", () => {
   test("full_flow_emits_expected_compliance_events", async () => {
     // Arrange
     const events: ComplianceEvent[] = [];
-    compliance = new FlowLinkX402Compliance(makeX402Config(), {
+    compliance = new ProofLinkX402Compliance(makeX402Config(), {
       screener: createMockScreener(),
       amlScorer: createMockAmlScorer(10),
       proofLinkService: createMockProofLinkService(),
@@ -114,7 +114,7 @@ describe("x402 — full happy-path flow", () => {
 describe("x402 — sanctions screening", () => {
   test("payment_to_sanctioned_sender_aborts_with_structured_reason", async () => {
     // Arrange
-    compliance = new FlowLinkX402Compliance(makeX402Config(), {
+    compliance = new ProofLinkX402Compliance(makeX402Config(), {
       screener: createMockScreener(MOCK_SANCTIONED_ADDRESS),
       amlScorer: createMockAmlScorer(10),
     });
@@ -149,7 +149,7 @@ describe("x402 — sanctions screening", () => {
 
   test("payment_to_sanctioned_receiver_aborts_with_structured_reason", async () => {
     // Arrange
-    compliance = new FlowLinkX402Compliance(makeX402Config(), {
+    compliance = new ProofLinkX402Compliance(makeX402Config(), {
       screener: createMockScreener(MOCK_SANCTIONED_ADDRESS),
       amlScorer: createMockAmlScorer(10),
     });
@@ -171,7 +171,7 @@ describe("x402 — sanctions screening", () => {
   test("blocklisted_sender_aborts_before_any_screener_call", async () => {
     // Arrange
     const screener = createMockScreener();
-    compliance = new FlowLinkX402Compliance(
+    compliance = new ProofLinkX402Compliance(
       makeX402Config({ policy: { sanctionsLists: ["OFAC_SDN"], maxRiskScore: 70, travelRuleThresholdUsd: 3000, blocklist: [CLEAN_SENDER] } }),
       { screener },
     );
@@ -195,7 +195,7 @@ describe("x402 — sanctions screening", () => {
     // Arrange
     const screener = createMockScreener();
     const amlScorer = createMockAmlScorer(10);
-    compliance = new FlowLinkX402Compliance(makeX402Config(), { screener, amlScorer });
+    compliance = new ProofLinkX402Compliance(makeX402Config(), { screener, amlScorer });
 
     const payload = makePaymentPayload();
     const requirements = makePaymentRequirements();
@@ -221,7 +221,7 @@ describe("x402 — Travel Rule", () => {
     const screener = createMockScreener();
     const amlScorer = createMockAmlScorer(10);
 
-    compliance = new FlowLinkX402Compliance(
+    compliance = new ProofLinkX402Compliance(
       makeX402Config({ notabene: { apiKey: "test-key", vaspDID: "did:ethr:0x123" } }),
       { screener, amlScorer, travelRuleService, priceConverter },
     );
@@ -249,7 +249,7 @@ describe("x402 — Travel Rule", () => {
     const travelRuleService = createMockTravelRuleService(true);
     const priceConverter = createMockPriceConverter(0.01);
 
-    compliance = new FlowLinkX402Compliance(
+    compliance = new ProofLinkX402Compliance(
       makeX402Config({ notabene: { apiKey: "test-key", vaspDID: "did:ethr:0x123" } }),
       {
         screener: createMockScreener(),
@@ -275,7 +275,7 @@ describe("x402 — Travel Rule", () => {
     const travelRuleService = createMockTravelRuleService(false);
     const priceConverter = createMockPriceConverter(5000);
 
-    compliance = new FlowLinkX402Compliance(
+    compliance = new ProofLinkX402Compliance(
       makeX402Config({ notabene: { apiKey: "test-key", vaspDID: "did:ethr:0x123" } }),
       {
         screener: createMockScreener(),
@@ -309,7 +309,7 @@ describe("x402 — afterSettle hook", () => {
   test("afterSettle_hook_generates_prooflink_receipt", async () => {
     // Arrange
     const proofLinkService = createMockProofLinkService();
-    compliance = new FlowLinkX402Compliance(makeX402Config(), {
+    compliance = new ProofLinkX402Compliance(makeX402Config(), {
       screener: createMockScreener(),
       amlScorer: createMockAmlScorer(10),
       proofLinkService,
@@ -341,7 +341,7 @@ describe("x402 — afterSettle hook", () => {
   test("afterSettle_skips_receipt_when_no_pending_decision", async () => {
     // Arrange — afterSettle without a preceding verify
     const proofLinkService = createMockProofLinkService();
-    compliance = new FlowLinkX402Compliance(makeX402Config(), { proofLinkService });
+    compliance = new ProofLinkX402Compliance(makeX402Config(), { proofLinkService });
 
     // Act — call afterSettle without running beforeVerify first
     await compliance.onAfterSettle({
@@ -357,7 +357,7 @@ describe("x402 — afterSettle hook", () => {
   test("afterSettle_triggers_eas_attestation_when_eas_config_present", async () => {
     // Arrange
     const proofLinkService = createMockProofLinkService();
-    compliance = new FlowLinkX402Compliance(
+    compliance = new ProofLinkX402Compliance(
       makeX402Config({
         eas: { schemaUid: "0xschema123", privateKey: "0xprivkey", rpcUrl: "https://rpc.example.com" },
       }),
@@ -390,7 +390,7 @@ describe("x402 — afterSettle hook", () => {
   test("invoice_generated_after_settlement_when_invoice_service_configured", async () => {
     // Arrange
     const invoiceService = createMockInvoiceService();
-    compliance = new FlowLinkX402Compliance(makeX402Config(), {
+    compliance = new ProofLinkX402Compliance(makeX402Config(), {
       screener: createMockScreener(),
       amlScorer: createMockAmlScorer(10),
       proofLinkService: createMockProofLinkService(),
@@ -424,7 +424,7 @@ describe("x402 — afterSettle hook", () => {
 describe("x402 — extension enrichment", () => {
   test("extension_enriches_402_response_with_compliance_info", async () => {
     // Arrange
-    compliance = new FlowLinkX402Compliance(
+    compliance = new ProofLinkX402Compliance(
       makeX402Config({
         policy: { sanctionsLists: ["OFAC_SDN", "EU", "UN"], maxRiskScore: 70, travelRuleThresholdUsd: 3000 },
       }),
@@ -443,7 +443,7 @@ describe("x402 — extension enrichment", () => {
     // Assert
     expect(enriched).toEqual({
       complianceRequired: true,
-      provider: "flowlink",
+      provider: "prooflink",
       version: expect.any(String),
       sanctionsLists: ["OFAC_SDN", "EU", "UN"],
       travelRuleThresholdUsd: 3000,
@@ -454,7 +454,7 @@ describe("x402 — extension enrichment", () => {
   test("extension_enriches_settlement_response_with_prooflink_hash", async () => {
     // Arrange
     const proofLinkService = createMockProofLinkService();
-    compliance = new FlowLinkX402Compliance(makeX402Config(), {
+    compliance = new ProofLinkX402Compliance(makeX402Config(), {
       screener: createMockScreener(),
       amlScorer: createMockAmlScorer(10),
       proofLinkService,
@@ -483,14 +483,14 @@ describe("x402 — extension enrichment", () => {
     // Assert
     expect(enriched).toEqual({
       complianceVerified: true,
-      provider: "flowlink",
+      provider: "prooflink",
       proofLinkHash: expect.stringMatching(/^0x/),
     });
   });
 
   test("register_attaches_all_hooks_and_extension_to_server", () => {
     // Arrange
-    compliance = new FlowLinkX402Compliance(makeX402Config());
+    compliance = new ProofLinkX402Compliance(makeX402Config());
     const server = createMockX402Server();
 
     // Act
@@ -501,7 +501,7 @@ describe("x402 — extension enrichment", () => {
     expect(server.onBeforeSettle).toHaveBeenCalledOnce();
     expect(server.onAfterSettle).toHaveBeenCalledOnce();
     expect(server.registerExtension).toHaveBeenCalledOnce();
-    expect(server.extensions[0]?.key).toBe("flowlink");
+    expect(server.extensions[0]?.key).toBe("prooflink");
   });
 });
 
@@ -515,7 +515,7 @@ describe("x402 — KYA verification", () => {
     const kyaRegistry = createMockKYARegistry(AGENT_ADDRESS);
     const kyaVerifier = createMockKYAVerifier(true);
 
-    compliance = new FlowLinkX402Compliance(makeX402Config(), {
+    compliance = new ProofLinkX402Compliance(makeX402Config(), {
       screener: createMockScreener(),
       amlScorer: createMockAmlScorer(10),
       kyaRegistry,
@@ -553,7 +553,7 @@ describe("x402 — KYA verification", () => {
     const kyaRegistry = createMockKYARegistry(AGENT_ADDRESS);
     const kyaVerifier = createMockKYAVerifier(false, false);
 
-    compliance = new FlowLinkX402Compliance(makeX402Config(), {
+    compliance = new ProofLinkX402Compliance(makeX402Config(), {
       screener: createMockScreener(),
       amlScorer: createMockAmlScorer(10),
       kyaRegistry,
@@ -593,7 +593,7 @@ describe("x402 — KYA verification", () => {
     const kyaRegistry = createMockKYARegistry(AGENT_ADDRESS);
     const kyaVerifier = createMockKYAVerifier(false, true);
 
-    compliance = new FlowLinkX402Compliance(makeX402Config(), {
+    compliance = new ProofLinkX402Compliance(makeX402Config(), {
       screener: createMockScreener(),
       amlScorer: createMockAmlScorer(10),
       kyaRegistry,
@@ -633,7 +633,7 @@ describe("x402 — KYA verification", () => {
     const kyaRegistry = createMockKYARegistry(AGENT_ADDRESS);
     const kyaVerifier = createMockKYAVerifier(true);
 
-    compliance = new FlowLinkX402Compliance(makeX402Config(), {
+    compliance = new ProofLinkX402Compliance(makeX402Config(), {
       screener: createMockScreener(),
       amlScorer: createMockAmlScorer(10),
       kyaRegistry,
@@ -659,7 +659,7 @@ describe("x402 — KYA verification", () => {
 describe("x402 — AML risk scoring", () => {
   test("high_risk_score_aborts_before_verify", async () => {
     // Arrange — score 85 > threshold 70
-    compliance = new FlowLinkX402Compliance(makeX402Config(), {
+    compliance = new ProofLinkX402Compliance(makeX402Config(), {
       screener: createMockScreener(),
       amlScorer: createMockAmlScorer(85),
     });
@@ -680,7 +680,7 @@ describe("x402 — AML risk scoring", () => {
 
   test("acceptable_risk_score_passes_before_verify", async () => {
     // Arrange — score 50 < threshold 70
-    compliance = new FlowLinkX402Compliance(makeX402Config(), {
+    compliance = new ProofLinkX402Compliance(makeX402Config(), {
       screener: createMockScreener(),
       amlScorer: createMockAmlScorer(50),
     });
@@ -703,7 +703,7 @@ describe("x402 — AML risk scoring", () => {
 describe("x402 — event subscription", () => {
   test("on_handler_can_be_unsubscribed", async () => {
     // Arrange
-    compliance = new FlowLinkX402Compliance(makeX402Config());
+    compliance = new ProofLinkX402Compliance(makeX402Config());
     const handler = vi.fn();
     const unsub = compliance.on(handler);
 

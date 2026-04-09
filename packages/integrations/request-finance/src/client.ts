@@ -32,7 +32,7 @@ export class RequestNetworkClientError extends Error {
  * - Fetching invoice data from IPFS
  *
  * In production, this would use `@requestnetwork/request-client.js`.
- * This wrapper provides a clean interface that FlowLink controls,
+ * This wrapper provides a clean interface that ProofLink controls,
  * decoupling from upstream SDK breaking changes.
  */
 export class RequestNetworkClient {

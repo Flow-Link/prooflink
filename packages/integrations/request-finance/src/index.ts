@@ -17,7 +17,7 @@ export type {
   PaymentDetectionEvent,
 } from "./types.js";
 export {
-  FLOWLINK_TO_RN_CHAIN,
-  RN_TO_FLOWLINK_CHAIN,
+  PROOFLINK_TO_RN_CHAIN,
+  RN_TO_PROOFLINK_CHAIN,
   STABLECOIN_ADDRESSES,
 } from "./types.js";

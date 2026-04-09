@@ -3,7 +3,7 @@ import type {
   PaymentRequirements,
   Logger,
 } from "../types.js";
-import type { FlowLinkX402Compliance } from "../middleware.js";
+import type { ProofLinkX402Compliance } from "../middleware.js";
 
 // ---------------------------------------------------------------------------
 // Hono adapter types
@@ -34,7 +34,7 @@ export type HonoNextFunction = () => Promise<void>;
 /** Options for the Hono compliance middleware */
 export interface HonoComplianceOptions {
   /** The compliance instance */
-  compliance: FlowLinkX402Compliance;
+  compliance: ProofLinkX402Compliance;
   /** Extract payment payload from Hono context */
   extractPayload?: (ctx: HonoContext) => Promise<PaymentPayload | null>;
   /** Extract payment requirements from Hono context */
@@ -53,11 +53,11 @@ export interface HonoComplianceOptions {
  * @example
  * ```ts
  * import { Hono } from "hono";
- * import { createFlowLinkCompliance } from "@flowlink/x402-compliance";
- * import { createHonoComplianceMiddleware } from "@flowlink/x402-compliance/adapters/hono";
+ * import { createProofLinkCompliance } from "@prooflink/x402-compliance";
+ * import { createHonoComplianceMiddleware } from "@prooflink/x402-compliance/adapters/hono";
  *
  * const app = new Hono();
- * const compliance = createFlowLinkCompliance(config);
+ * const compliance = createProofLinkCompliance(config);
  *
  * app.use("/api/pay/*", createHonoComplianceMiddleware({ compliance }));
  * ```

@@ -59,7 +59,7 @@ function seedDefaults(): void {
   const agents: RegisteredAgent[] = [
     {
       agentId: "agent_001",
-      did: "did:flowlink:agent_001",
+      did: "did:prooflink:agent_001",
       name: "PaymentBot-v2",
       type: "semi-autonomous",
       walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f2bD68",
@@ -84,7 +84,7 @@ function seedDefaults(): void {
     },
     {
       agentId: "agent_002",
-      did: "did:flowlink:agent_002",
+      did: "did:prooflink:agent_002",
       name: "DataPurchaser",
       type: "autonomous",
       walletAddress: "0x1234567890abcdef1234567890abcdef12345678",

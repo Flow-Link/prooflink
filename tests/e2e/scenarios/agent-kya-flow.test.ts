@@ -90,7 +90,7 @@ vi.mock("../../../apps/api/src/middleware/rate-limit.js", () => ({
 // Fixtures
 // ---------------------------------------------------------------------------
 
-const TEST_AGENT_DID = "did:flowlink:agent:inference-v3";
+const TEST_AGENT_DID = "did:prooflink:agent:inference-v3";
 const TEST_AGENT_WALLET = "0xAgentWallet1234567890abcdef1234567890ab";
 
 function futureDate(yearsAhead = 1): string {
@@ -167,7 +167,7 @@ describe("E2E: Agent KYA Flow", () => {
       expect(credential["@context"]).toContain("https://www.w3.org/2018/credentials/v1");
       expect(credential.type).toContain("VerifiableCredential");
       expect(credential.type).toContain("KYACredential");
-      expect(credential.issuer.id).toBe("did:flowlink:issuer");
+      expect(credential.issuer.id).toBe("did:prooflink:issuer");
       expect(credential.issuanceDate).toBeTruthy();
       expect(credential.expirationDate).toBeTruthy();
     });
@@ -442,7 +442,7 @@ describe("E2E: Agent KYA Flow", () => {
       const res = await app.request("/api/v1/identity/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ agentId: "did:flowlink:agent:does-not-exist" }),
+        body: JSON.stringify({ agentId: "did:prooflink:agent:does-not-exist" }),
       });
 
       // 200 soft-miss, not a 404 hard error
@@ -574,7 +574,7 @@ describe("E2E: Agent KYA Flow", () => {
       });
 
       const res = await app.request(
-        "/api/v1/identity/did:flowlink:agent:ghost",
+        "/api/v1/identity/did:prooflink:agent:ghost",
       );
 
       expect(res.status).toBe(404);

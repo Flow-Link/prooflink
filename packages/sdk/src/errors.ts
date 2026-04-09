@@ -3,18 +3,18 @@
 // ---------------------------------------------------------------------------
 
 /**
- * Base error class for all FlowLink SDK errors.
+ * Base error class for all ProofLink SDK errors.
  *
- * Consumers can catch `FlowLinkError` to handle any SDK-originated error.
+ * Consumers can catch `ProofLinkError` to handle any SDK-originated error.
  */
-export class FlowLinkError extends Error {
+export class ProofLinkError extends Error {
   constructor(message: string, options?: ErrorOptions) {
     super(message, options);
-    this.name = "FlowLinkError";
+    this.name = "ProofLinkError";
   }
 }
 
-/** Structured error body returned by the FlowLink API. */
+/** Structured error body returned by the ProofLink API. */
 export interface ApiErrorBody {
   code: string;
   message: string;
@@ -22,11 +22,11 @@ export interface ApiErrorBody {
 }
 
 /**
- * Thrown when the FlowLink API returns a non-2xx HTTP response.
+ * Thrown when the ProofLink API returns a non-2xx HTTP response.
  *
  * Includes the parsed error body when the response was valid JSON.
  */
-export class FlowLinkAPIError extends FlowLinkError {
+export class ProofLinkAPIError extends ProofLinkError {
   constructor(
     public readonly status: number,
     public readonly body: ApiErrorBody | null,
@@ -34,7 +34,7 @@ export class FlowLinkAPIError extends FlowLinkError {
   ) {
     const msg = body?.message ?? `API request failed with status ${status}`;
     super(msg);
-    this.name = "FlowLinkAPIError";
+    this.name = "ProofLinkAPIError";
   }
 }
 
@@ -42,26 +42,26 @@ export class FlowLinkAPIError extends FlowLinkError {
  * Thrown when request parameters fail client-side validation
  * before a network call is made.
  */
-export class FlowLinkValidationError extends FlowLinkError {
+export class ProofLinkValidationError extends ProofLinkError {
   constructor(
     message: string,
     public readonly field?: string,
   ) {
     super(message);
-    this.name = "FlowLinkValidationError";
+    this.name = "ProofLinkValidationError";
   }
 }
 
 /**
  * Thrown when a request exceeds the configured timeout.
  */
-export class FlowLinkTimeoutError extends FlowLinkError {
+export class ProofLinkTimeoutError extends ProofLinkError {
   constructor(
     public readonly timeoutMs: number,
     public readonly url: string,
   ) {
     super(`Request to ${url} timed out after ${timeoutMs}ms`);
-    this.name = "FlowLinkTimeoutError";
+    this.name = "ProofLinkTimeoutError";
   }
 }
 
@@ -69,9 +69,9 @@ export class FlowLinkTimeoutError extends FlowLinkError {
  * Thrown on network-level failures (DNS resolution, connection refused, etc.)
  * after all retry attempts are exhausted.
  */
-export class FlowLinkNetworkError extends FlowLinkError {
+export class ProofLinkNetworkError extends ProofLinkError {
   constructor(message: string, options?: ErrorOptions) {
     super(message, options);
-    this.name = "FlowLinkNetworkError";
+    this.name = "ProofLinkNetworkError";
   }
 }

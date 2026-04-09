@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SidebarLayout } from "@/components/layout/sidebar";
+import { AuthGate } from "@/components/auth-gate";
 import { Providers } from "./providers";
 
 const inter = Inter({
@@ -12,13 +13,13 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "FlowLink Dashboard",
-    template: "%s | FlowLink",
+    default: "ProofLink Dashboard",
+    template: "%s | ProofLink",
   },
   description:
     "Compliance-as-infrastructure for stablecoin and AI agent payments. Monitor transactions, manage policies, and review compliance in real time.",
-  applicationName: "FlowLink",
-  keywords: ["compliance", "stablecoin", "payments", "AI agents", "FlowLink"],
+  applicationName: "ProofLink",
+  keywords: ["compliance", "stablecoin", "payments", "AI agents", "ProofLink"],
   icons: {
     icon: "/favicon.ico",
     apple: "/apple-touch-icon.png",
@@ -45,7 +46,9 @@ export default function RootLayout({
         className={`${inter.variable} font-sans antialiased`}
       >
         <Providers>
-          <SidebarLayout>{children}</SidebarLayout>
+          <AuthGate>
+            <SidebarLayout>{children}</SidebarLayout>
+          </AuthGate>
         </Providers>
       </body>
     </html>

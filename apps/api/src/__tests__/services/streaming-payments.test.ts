@@ -90,8 +90,8 @@ function makeStream(overrides: Partial<PaymentStream> = {}): PaymentStream {
   const now = new Date("2025-01-01T00:00:00.000Z");
   return {
     id: "stream-uuid-1",
-    payerDid: "did:web:payer.flowlink.io",
-    payeeDid: "did:web:payee.flowlink.io",
+    payerDid: "did:web:payer.prooflink.io",
+    payeeDid: "did:web:payee.prooflink.io",
     model: "PER_REQUEST",
     ratePerUnit: "1.0",
     unit: "request",
@@ -110,8 +110,8 @@ function makeStream(overrides: Partial<PaymentStream> = {}): PaymentStream {
 
 function makeCreateParams() {
   return {
-    payerDid: "did:web:payer.flowlink.io",
-    payeeDid: "did:web:payee.flowlink.io",
+    payerDid: "did:web:payer.prooflink.io",
+    payeeDid: "did:web:payee.prooflink.io",
     model: "PER_REQUEST" as const,
     ratePerUnit: "1.0",
     unit: "request",

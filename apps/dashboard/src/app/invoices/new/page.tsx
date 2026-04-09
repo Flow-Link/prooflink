@@ -427,7 +427,7 @@ export default function NewInvoicePage() {
               <div className="flex items-start justify-between mb-8">
                 <div>
                   <h2 className="text-xl font-bold gradient-text mb-1">
-                    FlowLink Invoice
+                    ProofLink Invoice
                   </h2>
                   <p className="text-xs text-muted-foreground">
                     Invoice #{" "}
@@ -449,7 +449,7 @@ export default function NewInvoicePage() {
               <div className="grid grid-cols-2 gap-6 mb-8">
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">From</p>
-                  <p className="text-sm font-medium">FlowLink Dashboard</p>
+                  <p className="text-sm font-medium">ProofLink Dashboard</p>
                   <p className="text-xs text-muted-foreground font-mono mt-0.5">
                     {form.walletAddress
                       ? `${form.walletAddress.slice(0, 10)}...${form.walletAddress.slice(-6)}`
@@ -531,7 +531,7 @@ export default function NewInvoicePage() {
                 <Shield className="h-4 w-4 text-blue-400 mt-0.5 shrink-0" />
                 <p className="text-xs text-muted-foreground">
                   This invoice will be automatically compliance-checked via
-                  FlowLink&apos;s x402 protocol before delivery. The recipient
+                  ProofLink&apos;s x402 protocol before delivery. The recipient
                   address will be screened against OFAC sanctions lists and risk
                   scoring.
                 </p>

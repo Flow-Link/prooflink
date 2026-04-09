@@ -4,9 +4,9 @@ pragma solidity ^0.8.25;
 import {Test, console2} from "forge-std/Test.sol";
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
-import {FlowLinkFacilitator} from "../src/FlowLinkFacilitator.sol";
+import {ProofLinkFacilitator} from "../src/ProofLinkFacilitator.sol";
 import {ProofLinkRegistry} from "../src/ProofLinkRegistry.sol";
-import {FlowLinkKYA} from "../src/FlowLinkKYA.sol";
+import {ProofLinkKYA} from "../src/ProofLinkKYA.sol";
 import {Types} from "../src/libraries/Types.sol";
 import {
     IEAS,
@@ -83,10 +83,10 @@ contract MockValidationRegistry2 is IERC8004ValidationRegistry {
     function validationResponse(bytes32, uint256, string calldata, bytes32, string calldata) external {}
 }
 
-contract FlowLinkFacilitatorTest is Test {
-    FlowLinkFacilitator public facilitator;
+contract ProofLinkFacilitatorTest is Test {
+    ProofLinkFacilitator public facilitator;
     ProofLinkRegistry public registry;
-    FlowLinkKYA public kya;
+    ProofLinkKYA public kya;
     MockEAS2 public mockEAS;
 
     address public admin = makeAddr("admin");
@@ -113,20 +113,20 @@ contract FlowLinkFacilitatorTest is Test {
         vm.prank(admin);
         registry.registerSchema();
 
-        // Deploy FlowLinkKYA via proxy
-        FlowLinkKYA kyaImpl = new FlowLinkKYA();
+        // Deploy ProofLinkKYA via proxy
+        ProofLinkKYA kyaImpl = new ProofLinkKYA();
         bytes memory kyaInit = abi.encodeCall(
-            FlowLinkKYA.initialize, (address(mockIdentityRegistry), address(mockValidationRegistry), admin)
+            ProofLinkKYA.initialize, (address(mockIdentityRegistry), address(mockValidationRegistry), admin)
         );
         ERC1967Proxy kyaProxy = new ERC1967Proxy(address(kyaImpl), kyaInit);
-        kya = FlowLinkKYA(address(kyaProxy));
+        kya = ProofLinkKYA(address(kyaProxy));
 
-        // Deploy FlowLinkFacilitator via proxy
-        FlowLinkFacilitator facImpl = new FlowLinkFacilitator();
+        // Deploy ProofLinkFacilitator via proxy
+        ProofLinkFacilitator facImpl = new ProofLinkFacilitator();
         bytes memory facInit =
-            abi.encodeCall(FlowLinkFacilitator.initialize, (address(registry), address(kya), admin));
+            abi.encodeCall(ProofLinkFacilitator.initialize, (address(registry), address(kya), admin));
         ERC1967Proxy facProxy = new ERC1967Proxy(address(facImpl), facInit);
-        facilitator = FlowLinkFacilitator(address(facProxy));
+        facilitator = ProofLinkFacilitator(address(facProxy));
 
         // Grant roles
         vm.startPrank(admin);
@@ -259,7 +259,7 @@ contract FlowLinkFacilitatorTest is Test {
 
         vm.prank(settler);
         vm.expectEmit(false, true, true, false);
-        emit FlowLinkFacilitator.PaymentSettled(bytes32(0), payer, payee, token, 1_000_000_000, keccak256("receipt-1"));
+        emit ProofLinkFacilitator.PaymentSettled(bytes32(0), payer, payee, token, 1_000_000_000, keccak256("receipt-1"));
         facilitator.settle(payload, compliance);
     }
 
@@ -275,7 +275,7 @@ contract FlowLinkFacilitatorTest is Test {
         payload.paymentHash = keccak256("payment2");
 
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.NonceAlreadyUsed.selector);
+        vm.expectRevert(ProofLinkFacilitator.NonceAlreadyUsed.selector);
         facilitator.settle(payload, compliance2);
     }
 
@@ -286,7 +286,7 @@ contract FlowLinkFacilitatorTest is Test {
         Types.ComplianceAttestation memory compliance = _makeCompliance(keccak256("receipt-1"));
 
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.DeadlineExpired.selector);
+        vm.expectRevert(ProofLinkFacilitator.DeadlineExpired.selector);
         facilitator.settle(payload, compliance);
     }
 
@@ -296,7 +296,7 @@ contract FlowLinkFacilitatorTest is Test {
         compliance.sanctionsFlags = 0x010F; // OFAC match
 
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.SanctionsHit.selector);
+        vm.expectRevert(ProofLinkFacilitator.SanctionsHit.selector);
         facilitator.settle(payload, compliance);
     }
 
@@ -306,7 +306,7 @@ contract FlowLinkFacilitatorTest is Test {
         compliance.riskScore = 75;
 
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.RiskScoreTooHigh.selector);
+        vm.expectRevert(ProofLinkFacilitator.RiskScoreTooHigh.selector);
         facilitator.settle(payload, compliance);
     }
 
@@ -325,7 +325,7 @@ contract FlowLinkFacilitatorTest is Test {
         Types.ComplianceAttestation memory compliance = _makeCompliance(keccak256("receipt-1"));
 
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.ZeroAmount.selector);
+        vm.expectRevert(ProofLinkFacilitator.ZeroAmount.selector);
         facilitator.settle(payload, compliance);
     }
 
@@ -356,7 +356,7 @@ contract FlowLinkFacilitatorTest is Test {
         vm.prank(settler);
         // Should emit event but not revert
         vm.expectEmit(true, true, false, false);
-        emit FlowLinkFacilitator.ComplianceCheckFailed(payer, payee, 1_000_000_000, "SANCTIONS_HIT");
+        emit ProofLinkFacilitator.ComplianceCheckFailed(payer, payee, 1_000_000_000, "SANCTIONS_HIT");
         facilitator.settle(payload, compliance);
     }
 
@@ -373,7 +373,7 @@ contract FlowLinkFacilitatorTest is Test {
         Types.ComplianceAttestation memory compliance = _makeCompliance(keccak256("receipt-1"));
 
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.SpendingLimitExceeded.selector);
+        vm.expectRevert(ProofLinkFacilitator.SpendingLimitExceeded.selector);
         facilitator.settle(payload, compliance);
     }
 
@@ -393,7 +393,7 @@ contract FlowLinkFacilitatorTest is Test {
         Types.ComplianceAttestation memory compliance2 = _makeCompliance(keccak256("receipt-2"));
 
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.SpendingLimitExceeded.selector);
+        vm.expectRevert(ProofLinkFacilitator.SpendingLimitExceeded.selector);
         facilitator.settle(payload2, compliance2);
     }
 
@@ -442,7 +442,7 @@ contract FlowLinkFacilitatorTest is Test {
         compliance.kyaVerified = true;
 
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.KYAVerificationFailed.selector);
+        vm.expectRevert(ProofLinkFacilitator.KYAVerificationFailed.selector);
         facilitator.settle(payload, compliance);
     }
 
@@ -468,7 +468,7 @@ contract FlowLinkFacilitatorTest is Test {
 
     function test_setRiskThreshold_revert_tooHigh() public {
         vm.prank(admin);
-        vm.expectRevert(FlowLinkFacilitator.InvalidRiskThreshold.selector);
+        vm.expectRevert(ProofLinkFacilitator.InvalidRiskThreshold.selector);
         facilitator.setRiskThreshold(101);
     }
 
@@ -485,7 +485,7 @@ contract FlowLinkFacilitatorTest is Test {
     }
 
     function test_getSettlement_revert_notFound() public {
-        vm.expectRevert(FlowLinkFacilitator.SettlementNotFound.selector);
+        vm.expectRevert(ProofLinkFacilitator.SettlementNotFound.selector);
         facilitator.getSettlement(keccak256("nonexistent"));
     }
 
@@ -515,7 +515,7 @@ contract FlowLinkFacilitatorTest is Test {
 
         vm.prank(settler);
         vm.expectEmit(true, true, false, true);
-        emit FlowLinkFacilitator.PaymentFacilitated(payer, payee, 1_000_000_000, receiptHash);
+        emit ProofLinkFacilitator.PaymentFacilitated(payer, payee, 1_000_000_000, receiptHash);
         facilitator.facilitate(payer, payee, 1_000_000_000, receiptHash);
     }
 
@@ -523,7 +523,7 @@ contract FlowLinkFacilitatorTest is Test {
         bytes32 receiptHash = keccak256("nonexistent-receipt");
 
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.SanctionsHit.selector);
+        vm.expectRevert(ProofLinkFacilitator.SanctionsHit.selector);
         facilitator.facilitate(payer, payee, 1_000_000_000, receiptHash);
     }
 
@@ -536,7 +536,7 @@ contract FlowLinkFacilitatorTest is Test {
         registry.revoke(receiptHash);
 
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.SanctionsHit.selector);
+        vm.expectRevert(ProofLinkFacilitator.SanctionsHit.selector);
         facilitator.facilitate(payer, payee, 1_000_000_000, receiptHash);
     }
 
@@ -548,7 +548,7 @@ contract FlowLinkFacilitatorTest is Test {
         registry.attest(receiptHash, payer, payee, 1_000_000_000, "base", 1);
 
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.SanctionsHit.selector);
+        vm.expectRevert(ProofLinkFacilitator.SanctionsHit.selector);
         facilitator.facilitate(payer, payee, 1_000_000_000, receiptHash);
     }
 
@@ -557,7 +557,7 @@ contract FlowLinkFacilitatorTest is Test {
         _attestInRegistry(receiptHash);
 
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.ZeroAddress.selector);
+        vm.expectRevert(ProofLinkFacilitator.ZeroAddress.selector);
         facilitator.facilitate(address(0), payee, 1_000_000_000, receiptHash);
     }
 
@@ -566,7 +566,7 @@ contract FlowLinkFacilitatorTest is Test {
         _attestInRegistry(receiptHash);
 
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.ZeroAmount.selector);
+        vm.expectRevert(ProofLinkFacilitator.ZeroAmount.selector);
         facilitator.facilitate(payer, payee, 0, receiptHash);
     }
 
@@ -599,7 +599,7 @@ contract FlowLinkFacilitatorTest is Test {
 
         vm.prank(settler);
         vm.expectEmit(true, true, false, true);
-        emit FlowLinkFacilitator.PaymentBlocked(payer, payee, 1_000_000_000, "ATTESTATION_INVALID");
+        emit ProofLinkFacilitator.PaymentBlocked(payer, payee, 1_000_000_000, "ATTESTATION_INVALID");
         bool success = facilitator.facilitate(payer, payee, 1_000_000_000, receiptHash);
         assertFalse(success);
     }
@@ -612,7 +612,7 @@ contract FlowLinkFacilitatorTest is Test {
         facilitator.setSpendingLimit(payer, 500_000_000); // 500 USDC
 
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.SpendingLimitExceeded.selector);
+        vm.expectRevert(ProofLinkFacilitator.SpendingLimitExceeded.selector);
         facilitator.facilitate(payer, payee, 600_000_000, receiptHash);
     }
 
@@ -627,7 +627,7 @@ contract FlowLinkFacilitatorTest is Test {
         uint256 hugeAmount = uint256(type(uint128).max) + 1;
 
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.AmountExceedsUint128Max.selector);
+        vm.expectRevert(ProofLinkFacilitator.AmountExceedsUint128Max.selector);
         facilitator.facilitate(payer, payee, hugeAmount, receiptHash);
     }
 
@@ -646,7 +646,7 @@ contract FlowLinkFacilitatorTest is Test {
 
         // Second: 600 USDC (total 1600 > 1500)
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.SpendingLimitExceeded.selector);
+        vm.expectRevert(ProofLinkFacilitator.SpendingLimitExceeded.selector);
         facilitator.facilitate(payer, payee, 600_000_000, receiptHash2);
     }
 
@@ -686,7 +686,7 @@ contract FlowLinkFacilitatorTest is Test {
 
         // 4. Subsequent facilitation fails
         vm.prank(settler);
-        vm.expectRevert(FlowLinkFacilitator.SanctionsHit.selector);
+        vm.expectRevert(ProofLinkFacilitator.SanctionsHit.selector);
         facilitator.facilitate(payer, payee, 500_000_000, receiptHash);
     }
 
@@ -707,7 +707,7 @@ contract FlowLinkFacilitatorTest is Test {
 
     function test_setContractAddresses_revert_zeroAddress() public {
         vm.prank(admin);
-        vm.expectRevert(FlowLinkFacilitator.ZeroAddress.selector);
+        vm.expectRevert(ProofLinkFacilitator.ZeroAddress.selector);
         facilitator.setContractAddresses(address(0), makeAddr("kya"));
     }
 
@@ -724,14 +724,14 @@ contract FlowLinkFacilitatorTest is Test {
     function test_setFailMode_emitsEvent() public {
         vm.prank(admin);
         vm.expectEmit(false, false, false, true);
-        emit FlowLinkFacilitator.FailModeChanged(false);
+        emit ProofLinkFacilitator.FailModeChanged(false);
         facilitator.setFailMode(false);
     }
 
     function test_setSpendingLimit_emitsEvent() public {
         vm.prank(admin);
         vm.expectEmit(true, false, false, true);
-        emit FlowLinkFacilitator.SpendingLimitSet(payer, 1_000_000_000);
+        emit ProofLinkFacilitator.SpendingLimitSet(payer, 1_000_000_000);
         facilitator.setSpendingLimit(payer, 1_000_000_000);
     }
 

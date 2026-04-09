@@ -354,7 +354,7 @@ describe("Auth Middleware", () => {
               {
                 id: "key-uuid-004",
                 ownerId: "owner-001",
-                scopes: ["read"],
+                scopes: ["write"],
                 rateLimitPerMinute: 60,
                 isActive: true,
                 expiresAt: null,

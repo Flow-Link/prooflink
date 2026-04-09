@@ -18,7 +18,7 @@ import {ISchemaRegistry} from "./interfaces/IEAS.sol";
 import {Types} from "./libraries/Types.sol";
 
 /// @title ProofLinkRegistry
-/// @author FlowLink
+/// @author ProofLink
 /// @notice EAS-integrated compliance receipt registry. Anchors cryptographically
 ///         signed compliance receipts on-chain as Ethereum Attestation Service attestations.
 /// @dev Uses UUPS proxy pattern. Each receipt maps a payment transaction to its

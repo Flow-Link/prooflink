@@ -113,7 +113,7 @@ describe("sha3_256Stub", () => {
 describe("domainSeparatorHashOffChain", () => {
   it("returns a 64-char hex hash", () => {
     const hash = domainSeparatorHashOffChain(
-      "FlowLink",
+      "ProofLink",
       "1",
       8453,
       "0xabcdef1234567890abcdef1234567890abcdef12",
@@ -124,7 +124,7 @@ describe("domainSeparatorHashOffChain", () => {
 
   it("is deterministic", () => {
     const args = [
-      "FlowLink",
+      "ProofLink",
       "1",
       8453,
       "0xabcdef1234567890abcdef1234567890abcdef12",
@@ -136,7 +136,7 @@ describe("domainSeparatorHashOffChain", () => {
 
   it("differs when name changes", () => {
     const base = domainSeparatorHashOffChain(
-      "FlowLink",
+      "ProofLink",
       "1",
       1,
       "0x1234567890abcdef1234567890abcdef12345678",
@@ -152,13 +152,13 @@ describe("domainSeparatorHashOffChain", () => {
 
   it("differs when version changes", () => {
     const v1 = domainSeparatorHashOffChain(
-      "FlowLink",
+      "ProofLink",
       "1",
       1,
       "0x1234567890abcdef1234567890abcdef12345678",
     );
     const v2 = domainSeparatorHashOffChain(
-      "FlowLink",
+      "ProofLink",
       "2",
       1,
       "0x1234567890abcdef1234567890abcdef12345678",

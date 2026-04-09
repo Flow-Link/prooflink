@@ -16,7 +16,7 @@ import type {
   EASReader,
   EASSigner,
 } from "../types.js";
-import type { ComplianceReceipt } from "@flowlink/shared";
+import type { ComplianceReceipt } from "@prooflink/shared";
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -542,7 +542,7 @@ describe("buildSanctionsFlags", () => {
         checkType: "AML_MONITORING",
         result: "PASSED",
         performedAt: "2026-01-01T00:00:00Z",
-        provider: "flowlink",
+        provider: "prooflink",
       },
     ];
     expect(buildSanctionsFlags(checks)).toBe(0);
@@ -619,7 +619,7 @@ describe("schema constants", () => {
     expect(PROOFLINK_SCHEMA_DEFINITION.length).toBeGreaterThan(0);
   });
 
-  it("PROOFLINK_SCHEMA_NAME contains FlowLink", () => {
-    expect(PROOFLINK_SCHEMA_NAME).toContain("FlowLink");
+  it("PROOFLINK_SCHEMA_NAME contains ProofLink", () => {
+    expect(PROOFLINK_SCHEMA_NAME).toContain("ProofLink");
   });
 });

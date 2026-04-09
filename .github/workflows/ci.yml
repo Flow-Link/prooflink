@@ -88,13 +88,13 @@ jobs:
       - run: pnpm build
 
       - name: Test shared
-        run: pnpm --filter=@flowlink/shared test -- --coverage
+        run: pnpm --filter=@prooflink/shared test -- --coverage
 
       - name: Test core
-        run: pnpm --filter=@flowlink/core test -- --coverage
+        run: pnpm --filter=@prooflink/core test -- --coverage
 
       - name: Test SDK
-        run: pnpm --filter=@flowlink/sdk test -- --coverage
+        run: pnpm --filter=@prooflink/sdk test -- --coverage
 
       - name: Upload coverage
         if: always()
@@ -114,13 +114,13 @@ jobs:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_USER: flowlink
-          POSTGRES_PASSWORD: flowlink_test
-          POSTGRES_DB: flowlink_test
+          POSTGRES_USER: prooflink
+          POSTGRES_PASSWORD: prooflink_test
+          POSTGRES_DB: prooflink_test
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U flowlink"
+          --health-cmd "pg_isready -U prooflink"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -134,7 +134,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      DATABASE_URL: postgresql://flowlink:flowlink_test@localhost:5432/flowlink_test
+      DATABASE_URL: postgresql://prooflink:prooflink_test@localhost:5432/prooflink_test
       REDIS_URL: redis://localhost:6379
     steps:
       - uses: actions/checkout@v4
@@ -160,7 +160,7 @@ jobs:
       - run: pnpm build
 
       - name: Run integration tests
-        run: pnpm --filter=@flowlink/api test -- --coverage
+        run: pnpm --filter=@prooflink/api test -- --coverage
 
       - name: Upload coverage
         if: always()

@@ -2,7 +2,7 @@ import chalk from "chalk";
 import oraImport from "ora";
 
 import {
-  flowlinkLog,
+  prooflinkLog,
   statusCleared,
   statusBlocked,
   riskScore,
@@ -38,7 +38,7 @@ export async function runSanctionsDemo(): Promise<void> {
   console.log(
     chalk.gray(
       "  Demonstrating real-time OFAC sanctions screening against known addresses.\n" +
-        "  FlowLink screens every address before payment settlement.\n",
+        "  ProofLink screens every address before payment settlement.\n",
     ),
   );
 
@@ -67,12 +67,12 @@ export async function runSanctionsDemo(): Promise<void> {
     entity: "Tornado Cash Deployer",
     confidence: 0.99,
   });
-  flowlinkLog(
+  prooflinkLog(
     `Payment ${chalk.red.bold("REJECTED")}. Compliance code: ${chalk.red("SANCTIONS_HIT")}`,
   );
 
   const blockedReceiptId = generateReceiptId("scr");
-  flowlinkLog(`ProofLink receipt: ${chalk.white(blockedReceiptId)}`);
+  prooflinkLog(`ProofLink receipt: ${chalk.white(blockedReceiptId)}`);
 
   console.log();
   timingDisplay("Screening latency", blockedLatency);
@@ -92,7 +92,7 @@ export async function runSanctionsDemo(): Promise<void> {
       {
         checkType: "AML_MONITORING",
         result: "SKIPPED",
-        provider: "FlowLink Engine",
+        provider: "ProofLink Engine",
         latencyMs: 0,
       },
       {
@@ -135,7 +135,7 @@ export async function runSanctionsDemo(): Promise<void> {
   riskScore(2, 85);
 
   const clearReceiptId = generateReceiptId("scr");
-  flowlinkLog(`ProofLink receipt: ${chalk.white(clearReceiptId)}`);
+  prooflinkLog(`ProofLink receipt: ${chalk.white(clearReceiptId)}`);
 
   console.log();
   timingDisplay("Screening latency", clearedLatency);
@@ -155,7 +155,7 @@ export async function runSanctionsDemo(): Promise<void> {
       {
         checkType: "AML_MONITORING",
         result: "PASSED",
-        provider: "FlowLink Engine",
+        provider: "ProofLink Engine",
         latencyMs: 12,
       },
     ],
@@ -186,7 +186,7 @@ export async function runSanctionsDemo(): Promise<void> {
   console.log();
   console.log(
     chalk.gray(
-      '  "Every x402 payment that moves without FlowLink is a compliance liability\n' +
+      '  "Every x402 payment that moves without ProofLink is a compliance liability\n' +
         '   waiting to become a headline."',
     ),
   );

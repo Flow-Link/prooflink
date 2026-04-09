@@ -1,6 +1,6 @@
 # Request Finance Integration
 
-FlowLink bridges the gap between AI agent payments and enterprise accounts payable by integrating with [Request Finance](https://www.request.finance/) and the [Request Network](https://request.network/). This guide covers how to add compliance checks to Request Network payments, convert between invoice formats, and set up the compliance bridge.
+ProofLink bridges the gap between AI agent payments and enterprise accounts payable by integrating with [Request Finance](https://www.request.finance/) and the [Request Network](https://request.network/). This guide covers how to add compliance checks to Request Network payments, convert between invoice formats, and set up the compliance bridge.
 
 ## How it works
 
@@ -8,7 +8,7 @@ FlowLink bridges the gap between AI agent payments and enterprise accounts payab
 AI Agent (x402/MCP)
       |
       v
-  FlowLink API  ------>  Compliance Pipeline
+  ProofLink API  ------>  Compliance Pipeline
       |                   (sanctions, AML, travel rule)
       v
   Invoice created  ---->  Request Network
@@ -18,10 +18,10 @@ AI Agent (x402/MCP)
                           (enterprise AP/AR dashboard)
 ```
 
-FlowLink acts as a compliance layer between agent-initiated payments and Request Finance:
+ProofLink acts as a compliance layer between agent-initiated payments and Request Finance:
 
-1. **Agent creates invoice** via FlowLink (SDK or MCP tool)
-2. **FlowLink runs compliance** on both parties
+1. **Agent creates invoice** via ProofLink (SDK or MCP tool)
+2. **ProofLink runs compliance** on both parties
 3. **Invoice is published** to the Request Network in ERC-20 format
 4. **Payment is executed** via x402 or direct transfer
 5. **Settlement is recorded** on Request Finance for enterprise reporting
@@ -33,19 +33,19 @@ FlowLink acts as a compliance layer between agent-initiated payments and Request
 ### Install dependencies
 
 ```bash
-npm install @flowlink/sdk @requestnetwork/request-client.js @requestnetwork/payment-processor
+npm install @prooflink/sdk @requestnetwork/request-client.js @requestnetwork/payment-processor
 ```
 
 ### Screen before creating a Request
 
 ```ts
-import { FlowLinkClient } from "@flowlink/sdk";
+import { ProofLinkClient } from "@prooflink/sdk";
 import { RequestNetwork, Types } from "@requestnetwork/request-client.js";
 
-const flowlink = new FlowLinkClient({ apiKey: process.env.FLOWLINK_API_KEY! });
+const prooflink = new ProofLinkClient({ apiKey: process.env.PROOFLINK_API_KEY! });
 
 // 1. Run compliance check before creating the request
-const decision = await flowlink.checkCompliance({
+const decision = await prooflink.checkCompliance({
   senderAddress: "0xBuyer",
   recipientAddress: "0xSeller",
   amount: 5000,
@@ -57,8 +57,8 @@ if (decision.status === "REJECTED") {
   throw new Error(`Compliance rejected: risk ${decision.riskScore}`);
 }
 
-// 2. Create invoice in FlowLink (with compliance receipt)
-const invoice = await flowlink.createInvoice({
+// 2. Create invoice in ProofLink (with compliance receipt)
+const invoice = await prooflink.createInvoice({
   seller: { walletAddress: "0xSeller", legalName: "DataCo AI" },
   buyer: { walletAddress: "0xBuyer", legalName: "Acme Corp" },
   lineItems: [
@@ -87,28 +87,28 @@ const request = await requestClient.createRequest({
   },
   contentData: {
     reason: "API calls - 10k requests",
-    flowlinkInvoiceId: invoice.id,
-    flowlinkReceiptId: decision.receiptId,
+    prooflinkInvoiceId: invoice.id,
+    prooflinkReceiptId: decision.receiptId,
     complianceStatus: decision.status,
   },
   signer: { type: Types.Identity.TYPE.ETHEREUM_ADDRESS, value: "0xBuyer" },
 });
 ```
 
-The `contentData.flowlinkInvoiceId` and `contentData.flowlinkReceiptId` fields link the Request Network invoice to the FlowLink compliance record, creating an auditable chain.
+The `contentData.prooflinkInvoiceId` and `contentData.prooflinkReceiptId` fields link the Request Network invoice to the ProofLink compliance record, creating an auditable chain.
 
 ---
 
 ## Invoice format conversion
 
-FlowLink invoices use a JSON structure optimized for agent-to-agent commerce. Convert between FlowLink and Request Network formats.
+ProofLink invoices use a JSON structure optimized for agent-to-agent commerce. Convert between ProofLink and Request Network formats.
 
-### FlowLink to Request Network
+### ProofLink to Request Network
 
 ```ts
-import type { CreateInvoiceParams } from "@flowlink/sdk";
+import type { CreateInvoiceParams } from "@prooflink/sdk";
 
-function toRequestNetworkInvoice(flowlinkInvoice: {
+function toRequestNetworkInvoice(prooflinkInvoice: {
   id: string;
   sellerWalletAddress: string;
   buyerWalletAddress: string;
@@ -120,22 +120,22 @@ function toRequestNetworkInvoice(flowlinkInvoice: {
     requestInfo: {
       currency: {
         type: "ERC20" as const,
-        value: getCurrencyAddress(flowlinkInvoice.currency),
+        value: getCurrencyAddress(prooflinkInvoice.currency),
         network: "base",
       },
-      expectedAmount: toSmallestUnit(flowlinkInvoice.totalAmount, flowlinkInvoice.currency),
-      payee: { type: "ethereumAddress" as const, value: flowlinkInvoice.sellerWalletAddress },
-      payer: { type: "ethereumAddress" as const, value: flowlinkInvoice.buyerWalletAddress },
+      expectedAmount: toSmallestUnit(prooflinkInvoice.totalAmount, prooflinkInvoice.currency),
+      payee: { type: "ethereumAddress" as const, value: prooflinkInvoice.sellerWalletAddress },
+      payer: { type: "ethereumAddress" as const, value: prooflinkInvoice.buyerWalletAddress },
     },
     contentData: {
-      invoiceItems: flowlinkInvoice.lineItems.map((item) => ({
+      invoiceItems: prooflinkInvoice.lineItems.map((item) => ({
         name: item.description,
         quantity: item.quantity,
         unitPrice: String(item.unitPrice * 1e8), // Request uses 8 decimals for content
-        currency: flowlinkInvoice.currency,
+        currency: prooflinkInvoice.currency,
         tax: { type: "percentage", amount: "0" },
       })),
-      flowlinkInvoiceId: flowlinkInvoice.id,
+      prooflinkInvoiceId: prooflinkInvoice.id,
       meta: { format: "rnf_invoice", version: "0.0.3" },
     },
   };
@@ -155,10 +155,10 @@ function toSmallestUnit(amount: string, currency: string): string {
 }
 ```
 
-### Request Network to FlowLink
+### Request Network to ProofLink
 
 ```ts
-function toFlowLinkInvoice(request: {
+function toProofLinkInvoice(request: {
   requestId: string;
   payee: { value: string };
   payer: { value: string };
@@ -196,13 +196,13 @@ function getSymbol(address: string): string {
 
 ## Compliance bridge setup
 
-The compliance bridge watches for new Request Network invoices and automatically runs FlowLink compliance checks.
+The compliance bridge watches for new Request Network invoices and automatically runs ProofLink compliance checks.
 
 ```ts
-import { FlowLinkClient } from "@flowlink/sdk";
+import { ProofLinkClient } from "@prooflink/sdk";
 import { RequestNetwork } from "@requestnetwork/request-client.js";
 
-const flowlink = new FlowLinkClient({ apiKey: process.env.FLOWLINK_API_KEY! });
+const prooflink = new ProofLinkClient({ apiKey: process.env.PROOFLINK_API_KEY! });
 const requestClient = new RequestNetwork({
   nodeConnectionConfig: { baseURL: "https://gnosis.gateway.request.network/" },
 });
@@ -212,13 +212,13 @@ async function processNewRequest(requestId: string) {
   const data = request.getData();
 
   // Skip if already compliance-checked
-  if (data.contentData?.flowlinkReceiptId) {
+  if (data.contentData?.prooflinkReceiptId) {
     console.log(`Request ${requestId} already has compliance receipt`);
     return;
   }
 
   // Run compliance check
-  const decision = await flowlink.checkCompliance({
+  const decision = await prooflink.checkCompliance({
     senderAddress: data.payer?.value ?? "",
     recipientAddress: data.payee?.value ?? "",
     amount: Number(data.expectedAmount) / 1e6, // assumes 6-decimal stablecoin
@@ -226,8 +226,8 @@ async function processNewRequest(requestId: string) {
     chain: "base",
   });
 
-  // Create mirror invoice in FlowLink
-  const invoice = await flowlink.createInvoice({
+  // Create mirror invoice in ProofLink
+  const invoice = await prooflink.createInvoice({
     seller: { walletAddress: data.payee?.value ?? "" },
     buyer: { walletAddress: data.payer?.value ?? "" },
     lineItems: [
@@ -243,7 +243,7 @@ async function processNewRequest(requestId: string) {
   });
 
   console.log(`Compliance ${decision.status} for request ${requestId}`);
-  console.log(`FlowLink invoice: ${invoice.id}, receipt: ${decision.receiptId}`);
+  console.log(`ProofLink invoice: ${invoice.id}, receipt: ${decision.receiptId}`);
 
   return { decision, invoice };
 }
@@ -251,14 +251,14 @@ async function processNewRequest(requestId: string) {
 
 ### Webhook integration
 
-If you use Request Finance's webhook notifications, add FlowLink compliance as a middleware:
+If you use Request Finance's webhook notifications, add ProofLink compliance as a middleware:
 
 ```ts
 import express from "express";
-import { FlowLinkClient } from "@flowlink/sdk";
+import { ProofLinkClient } from "@prooflink/sdk";
 
 const app = express();
-const flowlink = new FlowLinkClient({ apiKey: process.env.FLOWLINK_API_KEY! });
+const prooflink = new ProofLinkClient({ apiKey: process.env.PROOFLINK_API_KEY! });
 
 app.post("/webhooks/request-finance", express.json(), async (req, res) => {
   const { requestId, event } = req.body;
@@ -303,7 +303,7 @@ app.post("/webhooks/request-finance", express.json(), async (req, res) => {
               +----------------+----------------+
               |                                 |
      +--------v----------+           +----------v--------+
-     | FlowLink API      |           | x402 Payments     |
+     | ProofLink API      |           | x402 Payments     |
      | - Sanctions        |           | - Stablecoin      |
      | - AML scoring      |           |   settlement      |
      | - Travel rule      |           | - ProofLink       |

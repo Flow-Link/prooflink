@@ -1,23 +1,23 @@
 # MCP Integration Guide
 
-FlowLink ships an MCP (Model Context Protocol) server that gives AI agents six compliance tools for sanctions screening, identity verification, invoicing, Travel Rule submission, compliant payments, and receipt retrieval.
+ProofLink ships an MCP (Model Context Protocol) server that gives AI agents six compliance tools for sanctions screening, identity verification, invoicing, Travel Rule submission, compliant payments, and receipt retrieval.
 
 ## What is MCP?
 
 [Model Context Protocol](https://modelcontextprotocol.io/) is an open standard for connecting AI models to external tools and data. MCP servers expose tools that AI agents (Claude, GPT, LangChain, custom agents) can discover and invoke through a standard interface.
 
-FlowLink's MCP server (`@flowlink/mcp-server`) makes compliance an ambient tool call -- agents can screen addresses, verify counterparties, and execute compliant payments without any compliance code in your application.
+ProofLink's MCP server (`@prooflink/mcp-server`) makes compliance an ambient tool call -- agents can screen addresses, verify counterparties, and execute compliant payments without any compliance code in your application.
 
 ## Install
 
 ```bash
-npm install -g @flowlink/mcp-server
+npm install -g @prooflink/mcp-server
 ```
 
 Or run directly:
 
 ```bash
-FLOWLINK_API_KEY=fl_live_xxx npx @flowlink/mcp-server
+PROOFLINK_API_KEY=fl_live_xxx npx @prooflink/mcp-server
 ```
 
 ---
@@ -31,11 +31,11 @@ Add to `~/.claude/claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "flowlink-compliance": {
+    "prooflink-compliance": {
       "command": "npx",
-      "args": ["@flowlink/mcp-server"],
+      "args": ["@prooflink/mcp-server"],
       "env": {
-        "FLOWLINK_API_KEY": "fl_live_your_api_key"
+        "PROOFLINK_API_KEY": "fl_live_your_api_key"
       }
     }
   }
@@ -51,11 +51,11 @@ Add to your project's `.mcp.json`:
 ```json
 {
   "mcpServers": {
-    "flowlink-compliance": {
+    "prooflink-compliance": {
       "command": "npx",
-      "args": ["@flowlink/mcp-server"],
+      "args": ["@prooflink/mcp-server"],
       "env": {
-        "FLOWLINK_API_KEY": "fl_live_your_api_key"
+        "PROOFLINK_API_KEY": "fl_live_your_api_key"
       }
     }
   }
@@ -70,8 +70,8 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 
 const transport = new StdioClientTransport({
   command: "npx",
-  args: ["@flowlink/mcp-server"],
-  env: { FLOWLINK_API_KEY: "fl_live_your_api_key" },
+  args: ["@prooflink/mcp-server"],
+  env: { PROOFLINK_API_KEY: "fl_live_your_api_key" },
 });
 
 const client = new Client({ name: "my-agent", version: "1.0.0" });
@@ -94,18 +94,18 @@ const result = await client.callTool({
 
 ### OpenAI / GPT Integration
 
-Use the MCP client SDK to bridge FlowLink tools into GPT function calling:
+Use the MCP client SDK to bridge ProofLink tools into GPT function calling:
 
 ```ts
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import OpenAI from "openai";
 
-// Connect to FlowLink MCP server
+// Connect to ProofLink MCP server
 const transport = new StdioClientTransport({
   command: "npx",
-  args: ["@flowlink/mcp-server"],
-  env: { FLOWLINK_API_KEY: process.env.FLOWLINK_API_KEY! },
+  args: ["@prooflink/mcp-server"],
+  env: { PROOFLINK_API_KEY: process.env.PROOFLINK_API_KEY! },
 });
 const mcpClient = new Client({ name: "gpt-agent", version: "1.0.0" });
 await mcpClient.connect(transport);
@@ -275,7 +275,7 @@ End-to-end compliant stablecoin payment. Automatically runs sanctions screening,
 | `chain`           | enum    | no       | `base`, `ethereum`, `solana`, `polygon`. Default: `base` |
 | `payment_protocol`| enum    | no       | `x402` or `direct`. Default: `x402`         |
 | `memo`            | string  | no       | Payment memo (max 256 chars)                 |
-| `invoice_id`      | string  | no       | Link to a FlowLink invoice                   |
+| `invoice_id`      | string  | no       | Link to a ProofLink invoice                   |
 | `require_kya`     | boolean | no       | Block if recipient has no KYA. Default: `false` |
 | `dry_run`         | boolean | no       | Run checks without executing. Default: `false` |
 
@@ -307,7 +307,7 @@ Retrieve a cryptographically signed compliance proof for audit trails.
 | Name                   | Type    | Required | Description                              |
 |-----------------------|---------|----------|------------------------------------------|
 | `txHash`              | string  | *        | Transaction hash                         |
-| `receiptId`           | string  | *        | FlowLink receipt ID                      |
+| `receiptId`           | string  | *        | ProofLink receipt ID                      |
 | `includeRawEvidence`  | boolean | no       | Include raw provider responses. Default: `false` |
 
 *At least one of `txHash` or `receiptId` is required.
@@ -320,8 +320,8 @@ Retrieve a cryptographically signed compliance proof for audit trails.
 
 | Variable           | Required | Description                 |
 |-------------------|----------|-----------------------------|
-| `FLOWLINK_API_KEY` | yes      | FlowLink API key            |
-| `FLOWLINK_BASE_URL`| no       | Override API base URL        |
+| `PROOFLINK_API_KEY` | yes      | ProofLink API key            |
+| `PROOFLINK_BASE_URL`| no       | Override API base URL        |
 | `LOG_LEVEL`        | no       | Log verbosity (`debug`, `info`, `warn`, `error`) |
 
 ### Programmatic Usage
@@ -329,9 +329,9 @@ Retrieve a cryptographically signed compliance proof for audit trails.
 Use the MCP server programmatically in your own application:
 
 ```ts
-import { createFlowLinkMCPServer } from "@flowlink/mcp-server";
+import { createProofLinkMCPServer } from "@prooflink/mcp-server";
 
-const handle = await createFlowLinkMCPServer();
+const handle = await createProofLinkMCPServer();
 await handle.start();
 
 // Server is now running on stdio transport
@@ -365,7 +365,7 @@ process.on("SIGTERM", async () => {
 
 ### Agent-to-agent invoice
 
-> **User:** Create an invoice from my agent (did:flowlink:agent:my-bot, wallet 0xAlice) to 0xBob for 2 hours of GPU compute at $50/hr.
+> **User:** Create an invoice from my agent (did:prooflink:agent:my-bot, wallet 0xAlice) to 0xBob for 2 hours of GPU compute at $50/hr.
 >
 > *[calls `create_compliant_invoice` with seller/buyer/line_items]*
 >

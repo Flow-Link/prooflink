@@ -5,6 +5,7 @@ import { z } from "zod";
 import { getDb } from "../db/index.js";
 import { invoices } from "../db/schema.js";
 import type { AuthContext } from "../middleware/auth.js";
+import { requireScope } from "../middleware/auth.js";
 import { validate } from "../middleware/validate.js";
 
 // ---------------------------------------------------------------------------
@@ -91,7 +92,7 @@ const STATE_TRANSITIONS: Record<string, string[]> = {
 const invoiceRoutes = new Hono();
 
 // POST /v1/invoices -- Create invoice
-invoiceRoutes.post("/", validate({ body: CreateInvoiceRequest }), async (c) => {
+invoiceRoutes.post("/", requireScope("write"), validate({ body: CreateInvoiceRequest }), async (c) => {
   const parsed = c.get("validatedBody") as CreateInvoiceRequest;
   const auth = c.get("auth") as AuthContext | undefined;
 
@@ -167,6 +168,7 @@ invoiceRoutes.get("/:id", validate({ params: InvoiceIdParams }), async (c) => {
 // PATCH /v1/invoices/:id/state -- Update invoice state
 invoiceRoutes.patch(
   "/:id/state",
+  requireScope("write"),
   validate({ params: InvoiceIdParams, body: UpdateStateRequest }),
   async (c) => {
     const { id: invoiceId } = c.get("validatedParams") as z.infer<typeof InvoiceIdParams>;

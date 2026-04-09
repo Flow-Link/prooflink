@@ -1,4 +1,4 @@
-# FlowLink Hackathon Strategy
+# ProofLink Hackathon Strategy
 
 **Research Date:** 2026-03-20
 **Status:** Actionable — first target (ETHGlobal Cannes) is 2 weeks away
@@ -38,7 +38,7 @@
 
 **Critical pattern:** The judges explicitly valued projects addressing infrastructure safety, risk management, and production-readiness. Not gimmicks — real guardrails.
 
-**Faktory is the closest analog to FlowLink that has won.** It won $3K for the integration category despite being a direct product fit. FlowLink is a more complete, protocol-agnostic version of that idea.
+**Faktory is the closest analog to ProofLink that has won.** It won $3K for the integration category despite being a direct product fit. ProofLink is a more complete, protocol-agnostic version of that idea.
 
 ### Coinbase Agents in Action Hackathon
 
@@ -92,7 +92,7 @@
 - Pre-product/pre-seed stage preferred (raised < ~$250K)
 - Strong founder-market fit even without existing product
 
-**FlowLink fit:** Extremely strong. Base's x402 integration with Coinbase CDP means compliance infrastructure on Base is directly in scope. The fact that FlowLink already has a live product (v0-flowlink.vercel.app) with real sanctions screening differentiates it from pre-product entrants.
+**ProofLink fit:** Extremely strong. Base's x402 integration with Coinbase CDP means compliance infrastructure on Base is directly in scope. The fact that ProofLink already has a live product (v0-prooflink.vercel.app) with real sanctions screening differentiates it from pre-product entrants.
 
 **Submission requirements:**
 - Functioning onchain app at public URL
@@ -110,9 +110,9 @@
 
 1. **Working demo with real transactions.** Pre-funded wallets, fast testnet, no waiting. If the transaction takes 45 seconds during the demo, you lose the room. Use SKALE (gasless, instant) or Base (fast + gasless via Paymaster).
 
-2. **Novel use of the core protocol.** Winners don't just "integrate x402" — they expose a specific gap and fill it. FlowLink's gap: compliance, auditability, and invoicing that x402 explicitly excludes.
+2. **Novel use of the core protocol.** Winners don't just "integrate x402" — they expose a specific gap and fill it. ProofLink's gap: compliance, auditability, and invoicing that x402 explicitly excludes.
 
-3. **Business viability.** Judges ask: "Could a real company pay for this?" FlowLink's CFO-targeting and ProofLink Engine branding answers this immediately.
+3. **Business viability.** Judges ask: "Could a real company pay for this?" ProofLink's CFO-targeting and ProofLink Engine branding answers this immediately.
 
 4. **Technical sophistication.** Not complexity theater. Sophistication means: the system makes correct decisions under adversarial conditions (sanctioned address, malformed payment, agent identity fraud). Live sanctions screening scores on this.
 
@@ -120,17 +120,17 @@
 
 The Chainlink Convergence hackathon has an explicit **Risk & Compliance track** ($16K first prize). The stated focus: "monitoring, safeguards, and automated controls across onchain systems including risk detection, reserve verification, and automated responses based on real-world or blockchain conditions."
 
-AnChain.AI demonstrated the value of compliance in x402 specifically: sub-200ms OFAC/FATF screening, audit trail generation, high-risk wallet detection. This is the exact capability FlowLink's ProofLink Engine provides.
+AnChain.AI demonstrated the value of compliance in x402 specifically: sub-200ms OFAC/FATF screening, audit trail generation, high-risk wallet detection. This is the exact capability ProofLink's ProofLink Engine provides.
 
 **The compliance demo moment that wins:** Show a payment attempt from a sanctioned OFAC wallet. Show it blocked in real time with a structured audit record. Then show the same payment from a clean wallet going through instantly. That 20-second sequence communicates everything judges need.
 
 ---
 
-## Part 5: Demo Strategy for FlowLink
+## Part 5: Demo Strategy for ProofLink
 
 ### The 3-Minute Demo Script (backward-built)
 
-**Ending moment (what judges remember):** An AI agent attempts to pay a sanctioned wallet. FlowLink intercepts it in real time, blocks it with a structured compliance record, and the agent receives a 402 rejection with embedded compliance reason code. The CFO gets an automatic audit log. Total elapsed time from agent initiation to block: under 500ms.
+**Ending moment (what judges remember):** An AI agent attempts to pay a sanctioned wallet. ProofLink intercepts it in real time, blocks it with a structured compliance record, and the agent receives a 402 rejection with embedded compliance reason code. The CFO gets an automatic audit log. Total elapsed time from agent initiation to block: under 500ms.
 
 **Structure:**
 
@@ -146,18 +146,18 @@ AnChain.AI demonstrated the value of compliance in x402 specifically: sub-200ms 
 
 00:45-01:30 — Live demo sequence
   [Screen: Agent sends x402 payment request]
-  [Screen: FlowLink intercepts — OFAC screen in 180ms — BLOCKED]
+  [Screen: ProofLink intercepts — OFAC screen in 180ms — BLOCKED]
   [Screen: Structured compliance record with flagged entity, reason, timestamp]
   [Screen: Clean wallet sends same payment — APPROVED in 210ms]
   [Screen: Auto-generated invoice with line items, VAT, ERP-compatible export]
 
 01:30-02:00 — Technical depth
-  "FlowLink sits between your x402 server and any facilitator.
+  "ProofLink sits between your x402 server and any facilitator.
    ProofLink Engine runs OFAC, FATF Travel Rule, AML monitoring.
    Protocol-agnostic: x402, ACP, AP2 — we wrap any agentic payment standard."
 
 02:00-02:30 — Traction + vision
-  "Live at v0-flowlink.vercel.app. [X] screened transactions.
+  "Live at v0-prooflink.vercel.app. [X] screened transactions.
    The agentic economy moves $600M/year today. Zero of it has compliance infrastructure.
    We're building the trust layer before the regulators mandate it."
 
@@ -172,7 +172,7 @@ AnChain.AI demonstrated the value of compliance in x402 specifically: sub-200ms 
 
 2. **Show the audit trail.** A JSON/PDF export with: timestamp, screened addresses, screening result, risk score, transaction hash. This is what a CFO actually needs. No other x402 demo shows this.
 
-3. **Make the agent visible.** Use a terminal-style UI showing the agent's decision process. When FlowLink blocks the payment, show the agent receiving the structured 402 rejection and adapting (e.g., selecting an alternative payee). This demonstrates agentic depth — not just "compliance happened" but "the agent understood and responded."
+3. **Make the agent visible.** Use a terminal-style UI showing the agent's decision process. When ProofLink blocks the payment, show the agent receiving the structured 402 rejection and adapting (e.g., selecting an alternative payee). This demonstrates agentic depth — not just "compliance happened" but "the agent understood and responded."
 
 4. **Speed is the proof.** Show a clock. Sub-200ms screening. Judges come from TradFi where compliance checks take hours. Real-time screening on every transaction is genuinely novel.
 
@@ -186,20 +186,20 @@ AnChain.AI demonstrated the value of compliance in x402 specifically: sub-200ms 
 
 ---
 
-## Part 6: Upcoming Hackathons — Ranked by FlowLink Fit
+## Part 6: Upcoming Hackathons — Ranked by ProofLink Fit
 
 ### Tier 1: Must Enter
 
 #### 1. ETHGlobal Cannes — April 3-5, 2026
 **Prize pool:** $311,500+ across 29 sponsor tracks
 **Location:** Cannes, France (IRL)
-**FlowLink-relevant tracks:**
+**ProofLink-relevant tracks:**
 - Circle ($10K) — Compliance Engine for Smart Wallets + USDC multichain payments
-- Self Protocol ($10K) — KYC/AML proofs on Celo (FlowLink's agent identity layer)
+- Self Protocol ($10K) — KYC/AML proofs on Celo (ProofLink's agent identity layer)
 - World ($20K) — Identity + human verification (ProofLink Engine integration point)
 - LayerZero ($20K) — Cross-chain compliance routing
 
-**Target:** Win Circle + Self Protocol tracks. Build compliance middleware that wraps Circle's Compliance Engine with FlowLink's OFAC screening. One integration, two prize tracks.
+**Target:** Win Circle + Self Protocol tracks. Build compliance middleware that wraps Circle's Compliance Engine with ProofLink's OFAC screening. One integration, two prize tracks.
 
 **Registration:** Apply at ethglobal.com/events/cannes. Staking requirement (small ETH). Teams up to 5.
 
@@ -213,11 +213,11 @@ AnChain.AI demonstrated the value of compliance in x402 specifically: sub-200ms 
 **Organizer:** Algorand Foundation
 **Focus:** x402 on Algorand + agentic commerce production builds
 
-**FlowLink fit:** Perfect. This is the exact community building x402 infrastructure. FlowLink as a compliance-enriched x402 facilitator is the canonical missing piece in Algorand's agentic stack.
+**ProofLink fit:** Perfect. This is the exact community building x402 infrastructure. ProofLink as a compliance-enriched x402 facilitator is the canonical missing piece in Algorand's agentic stack.
 
 **Registration:** Algorand Builders Berlin via DoraHacks / Luma. Watch algorand.co for announcement.
 
-**Strategy:** Position FlowLink as the production-readiness layer for Algorand x402. Show that without FlowLink, no enterprise can deploy Algorand x402 due to OFAC liability.
+**Strategy:** Position ProofLink as the production-readiness layer for Algorand x402. Show that without ProofLink, no enterprise can deploy Algorand x402 due to OFAC liability.
 
 ---
 
@@ -227,9 +227,9 @@ AnChain.AI demonstrated the value of compliance in x402 specifically: sub-200ms 
 **CRE & AI Track:** $17K (1st)
 **Format:** Virtual
 
-**FlowLink fit:** The Risk & Compliance track was built for FlowLink. "Monitoring, safeguards, and automated controls across onchain systems" is the exact ProofLink Engine description.
+**ProofLink fit:** The Risk & Compliance track was built for ProofLink. "Monitoring, safeguards, and automated controls across onchain systems" is the exact ProofLink Engine description.
 
-**Required:** Projects must use Chainlink Runtime Environment (CRE) as orchestration layer. FlowLink would integrate CRE to trigger compliance checks via Chainlink's oracle network.
+**Required:** Projects must use Chainlink Runtime Environment (CRE) as orchestration layer. ProofLink would integrate CRE to trigger compliance checks via Chainlink's oracle network.
 
 **Deadline:** March 8. May have passed — verify at chain.link/hackathon. If live, submit immediately.
 
@@ -240,7 +240,7 @@ AnChain.AI demonstrated the value of compliance in x402 specifically: sub-200ms 
 **This is not a hackathon — it's an accelerator.** Treat it as such.
 **Student track deadline:** April 27, 2026
 
-**Strategy:** Apply to the Startup track if still open. If deadline passed, focus on being application-ready for the next cohort. FlowLink is the ideal Base Batches candidate:
+**Strategy:** Apply to the Startup track if still open. If deadline passed, focus on being application-ready for the next cohort. ProofLink is the ideal Base Batches candidate:
 - Building on Base mainnet
 - x402 (Coinbase's protocol) as primary integration
 - Pre-product / early stage
@@ -257,7 +257,7 @@ AnChain.AI demonstrated the value of compliance in x402 specifically: sub-200ms 
 **Prize pool:** Typically $300K+ based on prior years
 **Relevance:** NYC is the TradFi capital. Compliance infrastructure is especially resonant here. Circle, Coinbase, JP Morgan's crypto team all sponsor ETHGlobal NYC.
 
-**Strategy:** By June, FlowLink should have 2+ months of production usage data. Lead with traction, not just demo. "We processed X screened transactions with $Y in blocked funds."
+**Strategy:** By June, ProofLink should have 2+ months of production usage data. Lead with traction, not just demo. "We processed X screened transactions with $Y in blocked funds."
 
 ---
 
@@ -265,7 +265,7 @@ AnChain.AI demonstrated the value of compliance in x402 specifically: sub-200ms 
 **Prize pool:** $202K total (includes $100K in pilot opportunities with AMINA Bank)
 **Focus:** Institutional stablecoin infrastructure on Solana
 
-**FlowLink fit:** Strong but requires Solana deployment. If FlowLink adds Solana support before April, this is a $100K pilot partnership opportunity that could define the enterprise GTM.
+**ProofLink fit:** Strong but requires Solana deployment. If ProofLink adds Solana support before April, this is a $100K pilot partnership opportunity that could define the enterprise GTM.
 
 **Requirement:** Teams only, no solo submissions. Demo Day in Zurich.
 
@@ -275,7 +275,7 @@ AnChain.AI demonstrated the value of compliance in x402 specifically: sub-200ms 
 **Format:** Async (online)
 **Focus:** Onchain AI agents
 
-**FlowLink fit:** Good. Async format means lower barrier to enter. Use this to refine the agent-to-agent compliance demo that will be used in NYC in June.
+**ProofLink fit:** Good. Async format means lower barrier to enter. Use this to refine the agent-to-agent compliance demo that will be used in NYC in June.
 
 ---
 
@@ -292,7 +292,7 @@ AnChain.AI demonstrated the value of compliance in x402 specifically: sub-200ms 
 
 ### Immediate (next 2 weeks) — ETHGlobal Cannes, April 3-5
 
-**Build target:** FlowLink Compliance Middleware for Circle + Self Protocol
+**Build target:** ProofLink Compliance Middleware for Circle + Self Protocol
 
 **Deliverables:**
 1. ProofLink Engine endpoint that wraps Circle's Compliance Engine with OFAC/FATF screening
@@ -314,7 +314,7 @@ AnChain.AI demonstrated the value of compliance in x402 specifically: sub-200ms 
 
 ### 1 Month — Agentic Commerce Berlin, April 10-12
 
-**Build target:** FlowLink as production x402 facilitator for Algorand
+**Build target:** ProofLink as production x402 facilitator for Algorand
 
 **Deliverables:**
 1. x402 facilitator server that routes through ProofLink Engine before settling
@@ -322,15 +322,15 @@ AnChain.AI demonstrated the value of compliance in x402 specifically: sub-200ms 
 3. Travel Rule compliance: originator/beneficiary data transmitted automatically
 4. Dashboard showing real-time screening results per transaction
 
-**Demo narrative:** "Every Algorand x402 payment flows through FlowLink before it settles. OFAC screening happens in the HTTP layer — no smart contract changes needed. The payment either gets a 200 or a 402 with a compliance reason."
+**Demo narrative:** "Every Algorand x402 payment flows through ProofLink before it settles. OFAC screening happens in the HTTP layer — no smart contract changes needed. The payment either gets a 200 or a 402 with a compliance reason."
 
-**Position:** FlowLink is the compliance wrapper that makes Algorand x402 enterprise-safe. Show the flow with a known test SDN wallet.
+**Position:** ProofLink is the compliance wrapper that makes Algorand x402 enterprise-safe. Show the flow with a known test SDN wallet.
 
 ---
 
 ### 3 Months — ETHGlobal New York, June 12-14
 
-**By this point FlowLink should have:**
+**By this point ProofLink should have:**
 - 2+ months of live transaction data
 - At least one design partner (even if unpaid)
 - API documentation
@@ -357,11 +357,11 @@ AnChain.AI demonstrated the value of compliance in x402 specifically: sub-200ms 
 Base Batches offers $50K investment + 8 weeks of mentorship + Demo Day at Coinbase HQ. A hackathon win is worth $5-20K. Base Batches is worth $50K+ and distribution.
 
 **Application requirements (prepare now):**
-- [ ] FlowLink live on Base mainnet with real transactions
+- [ ] ProofLink live on Base mainnet with real transactions
 - [ ] Open GitHub repo with clean README
 - [ ] 2-min video: problem, demo, architecture (can reuse hackathon demo video)
 - [ ] Pitch deck (see pitch_deck_outline.md in this directory)
-- [ ] Written description: why FlowLink, why now, why Base
+- [ ] Written description: why ProofLink, why now, why Base
 
 **Key message for Base application:** "We're building the compliance infrastructure that makes x402 (Coinbase's protocol) safe for enterprise adoption. Every company building on Base needs us before their CFO or general counsel will sign off on stablecoin payments. We are the trust layer between Coinbase's payment protocol and the real world."
 
@@ -371,8 +371,8 @@ Base Batches offers $50K investment + 8 weeks of mentorship + Demo Day at Coinba
 
 ### Open-Source Strategy
 
-The x402 Intent Firewall won on open-source dev tooling. FlowLink should release:
-- `flowlink-sdk` — x402 compliance middleware SDK (open source)
+The x402 Intent Firewall won on open-source dev tooling. ProofLink should release:
+- `prooflink-sdk` — x402 compliance middleware SDK (open source)
 - ProofLink Engine API — commercial, closed
 - Compliance receipt schema — open standard to drive adoption
 
@@ -380,7 +380,7 @@ Open-source the wrapper, commercialize the intelligence. This pattern (Kong, Ngi
 
 ### Protocol Positioning
 
-Do NOT position as "x402 compliance" exclusively. Multiple winning projects (and the FINDINGS.md research) confirm that ACP (OpenAI + Stripe) and AP2 (Google) are live alternatives. Position FlowLink as:
+Do NOT position as "x402 compliance" exclusively. Multiple winning projects (and the FINDINGS.md research) confirm that ACP (OpenAI + Stripe) and AP2 (Google) are live alternatives. Position ProofLink as:
 
 **"Protocol-agnostic compliance and invoicing middleware for agentic payments. Works with x402, ACP, AP2, and any future HTTP-native payment standard."**
 
@@ -394,12 +394,12 @@ Build once, reuse everywhere. The core 90-second demo clip — sanctioned addres
 3. Tweeted as a standalone clip
 4. Submitted as the hackathon video
 
-This clip is the single most important marketing asset FlowLink can create.
+This clip is the single most important marketing asset ProofLink can create.
 
 ### Sponsor Relationship Strategy
 
 After every hackathon, immediately follow up with the sponsors whose tracks you won or placed in. Specifically:
-- **Circle:** Compliance Engine partnership discussion. FlowLink + Circle = enterprise-grade stablecoin payments.
+- **Circle:** Compliance Engine partnership discussion. ProofLink + Circle = enterprise-grade stablecoin payments.
 - **Coinbase CDP:** x402 facilitator partner listing. Being listed as a "compliance-enriched facilitator" on x402.org is worth more than prize money.
 - **Chainlink:** CRE integration partner. Compliance oracles as a product line.
 

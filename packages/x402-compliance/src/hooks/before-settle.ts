@@ -1,7 +1,7 @@
 import type {
   SettleContext,
   BeforeHookResult,
-  FlowLinkConfig,
+  ProofLinkConfig,
   TravelRuleTransmitRequest,
   TravelRuleTransmitResult,
   PendingDecision,
@@ -28,7 +28,7 @@ export interface PriceConverter {
 // ---------------------------------------------------------------------------
 
 export interface BeforeSettleDeps {
-  config: FlowLinkConfig;
+  config: ProofLinkConfig;
   travelRuleService?: TravelRuleService;
   priceConverter: PriceConverter;
   screener: SanctionsScreener;

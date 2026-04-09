@@ -8,8 +8,8 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "FlowLink - Compliance Layer for the Agentic Economy",
-  description: "FlowLink is the regulatory-grade trust layer that makes stablecoin payments safe for CFOs today and AI agents tomorrow. Real-time compliance, sanctions screening, KYC verification, and Travel Rule compliance.",
+  title: "ProofLink - Compliance Layer for the Agentic Economy",
+  description: "ProofLink is the regulatory-grade trust layer that makes stablecoin payments safe for CFOs today and AI agents tomorrow. Real-time compliance, sanctions screening, KYC verification, and Travel Rule compliance.",
   generator: "v0.app",
 }
 

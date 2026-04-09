@@ -1,4 +1,4 @@
-# FlowLink Investor FAQ -- Battle-Tested Answers for VC Meetings
+# ProofLink Investor FAQ -- Battle-Tested Answers for VC Meetings
 **Version:** 1.0
 **Date:** March 20, 2026
 **Classification:** Internal -- Study Before Every Pitch
@@ -82,12 +82,12 @@ The window is 12-18 months. After that, incumbents will have built their own com
 
 **The answer:** Four reasons we still win:
 
-1. The Travel Rule obligation falls on the VASP processing the transaction, not on the agent. VASPs still need compliance middleware -- FlowLink provides it regardless of how agents are classified.
+1. The Travel Rule obligation falls on the VASP processing the transaction, not on the agent. VASPs still need compliance middleware -- ProofLink provides it regardless of how agents are classified.
 2. Enterprise CFOs still need audit trails for SOX compliance, internal audit, and board reporting. These requirements do not disappear because FATF exempts agents.
 3. KYA has value as an enterprise trust layer even without regulatory mandate. "Verify the agent you are paying" is good business practice.
 4. The H2H B2B invoicing business is completely independent of agent-specific regulation.
 
-Honest framing: regulatory mandate creates "must-have" demand. Without mandate, FlowLink is "should-have" for agents but "must-have" for H2H stablecoin compliance. The business case narrows but does not collapse.
+Honest framing: regulatory mandate creates "must-have" demand. Without mandate, ProofLink is "should-have" for agents but "must-have" for H2H stablecoin compliance. The business case narrows but does not collapse.
 
 **The trap:** Insisting regulators will definitely enforce. You do not know that. Acknowledge the uncertainty and show the business works in both scenarios.
 
@@ -111,13 +111,13 @@ Honest framing: regulatory mandate creates "must-have" demand. Without mandate, 
 
 **Why they're asking:** This is the single most dangerous question in your pitch. Every VC who knows the x402 ecosystem will ask some version of it.
 
-**The answer:** Nothing stops Coinbase from building x402 compliance. Three things stop them from replacing FlowLink:
+**The answer:** Nothing stops Coinbase from building x402 compliance. Three things stop them from replacing ProofLink:
 
-1. **FlowLink is cross-protocol. Coinbase is x402-only.** Stripe's MPP, Google's AP2, OpenAI's ACP, Visa TAP -- Coinbase has no incentive to make compliance work for competing protocols. An enterprise using three protocols needs one compliance layer, not three.
-2. **Coinbase's compliance covers Coinbase's ecosystem.** A payment from a Coinbase wallet to a non-Coinbase wallet falls outside Coinbase's compliance perimeter. FlowLink covers the entire transaction regardless of ecosystem.
-3. **The KYA open standard creates ecosystem lock-in.** If KYA becomes the adopted agent identity standard, Coinbase's proprietary agent identity is just one implementation of the FlowLink-authored standard.
+1. **ProofLink is cross-protocol. Coinbase is x402-only.** Stripe's MPP, Google's AP2, OpenAI's ACP, Visa TAP -- Coinbase has no incentive to make compliance work for competing protocols. An enterprise using three protocols needs one compliance layer, not three.
+2. **Coinbase's compliance covers Coinbase's ecosystem.** A payment from a Coinbase wallet to a non-Coinbase wallet falls outside Coinbase's compliance perimeter. ProofLink covers the entire transaction regardless of ecosystem.
+3. **The KYA open standard creates ecosystem lock-in.** If KYA becomes the adopted agent identity standard, Coinbase's proprietary agent identity is just one implementation of the ProofLink-authored standard.
 
-The deeper point: Coinbase building basic x402 compliance validates our thesis and grows the market. It proves compliance is mandatory. It does not solve cross-protocol compliance. The precedent: Coinbase did not build Chainalysis. They bought Chainalysis services. FlowLink occupies the same structural position for agentic payments.
+The deeper point: Coinbase building basic x402 compliance validates our thesis and grows the market. It proves compliance is mandatory. It does not solve cross-protocol compliance. The precedent: Coinbase did not build Chainalysis. They bought Chainalysis services. ProofLink occupies the same structural position for agentic payments.
 
 The realistic risk: if Coinbase ships native compliance before we establish customer lock-in, our x402-specific value shrinks. The mitigation is speed -- ship the product, win the hackathons, publish the standard, sign design partners within 90 days.
 
@@ -129,15 +129,15 @@ The realistic risk: if Coinbase ships native compliance before we establish cust
 
 **Why they're asking:** They want to know if the compliance incumbents can trivially replicate your product.
 
-**The answer:** Chainalysis and TRM Labs are post-hoc monitoring tools. They analyze transactions after settlement. FlowLink enforces compliance before funds move. Three structural reasons they will not replicate us:
+**The answer:** Chainalysis and TRM Labs are post-hoc monitoring tools. They analyze transactions after settlement. ProofLink enforces compliance before funds move. Three structural reasons they will not replicate us:
 
 1. **Architecture.** Retrofitting post-hoc analytics into a pre-payment decision engine requires an architectural rewrite of their core product. They would need to integrate with six payment protocols (x402, MPP, AP2, ACP, Visa TAP, Mastercard Agent Pay), which is outside their current product architecture.
 2. **Channel conflict.** Moving into the payment flow would require Chainalysis to compete with their own customers -- VASPs who use Chainalysis for compliance and would not adopt a competing payment product from the same vendor.
-3. **Pricing.** TRM's average contract is $693K/year. FlowLink is $499/month. These are different markets with different buyers. Chainalysis sells to compliance teams at enterprises. We sell to developers and CFOs at mid-market companies.
+3. **Pricing.** TRM's average contract is $693K/year. ProofLink is $499/month. These are different markets with different buyers. Chainalysis sells to compliance teams at enterprises. We sell to developers and CFOs at mid-market companies.
 
 The real risk from Chainalysis/TRM is not competition -- it is them defining the compliance receipt format before we do. We mitigate this by being TRM-compatible by design and moving faster on agent-specific compliance where they have no product.
 
-Chainalysis or TRM Labs acquiring FlowLink is actually our strongest exit scenario. We add pre-payment compliance (new revenue stream) to their post-hoc monitoring (existing business). It is a complementary acquisition.
+Chainalysis or TRM Labs acquiring ProofLink is actually our strongest exit scenario. We add pre-payment compliance (new revenue stream) to their post-hoc monitoring (existing business). It is a complementary acquisition.
 
 **The trap:** Dismissing Chainalysis as "not a threat." They are a threat at the 12-18 month horizon. Acknowledge it, then explain why the structural differences give you a window.
 
@@ -147,11 +147,11 @@ Chainalysis or TRM Labs acquiring FlowLink is actually our strongest exit scenar
 
 **Why they're asking:** TRM Labs is the sleeper competitor most founders miss. An informed VC will push on this specifically.
 
-**The answer:** TRM Labs is the closest architectural threat. They are API-first, growing fast (150% annual revenue growth), and have deep regulatory relationships with the FBI, IRS, Coinbase, Circle, Stripe, Visa, and PayPal. But TRM sells monitoring tools to compliance teams at $100K+/year ($693K average contract). FlowLink sells compliance-as-infrastructure to developers and CFOs at $499/month. Different buyer, different price point, different integration model.
+**The answer:** TRM Labs is the closest architectural threat. They are API-first, growing fast (150% annual revenue growth), and have deep regulatory relationships with the FBI, IRS, Coinbase, Circle, Stripe, Visa, and PayPal. But TRM sells monitoring tools to compliance teams at $100K+/year ($693K average contract). ProofLink sells compliance-as-infrastructure to developers and CFOs at $499/month. Different buyer, different price point, different integration model.
 
 TRM's partnership with Finray signals a move toward in-flow compliance, which validates our thesis. But their enterprise GTM motion -- $693K contracts, long sales cycles -- is structurally incompatible with developer-first, protocol-level adoption. We get adopted by being embedded in the x402 SDK. TRM gets adopted after a six-month enterprise sales process.
 
-TRM is a potential acquirer, not a direct competitor at our market tier. If TRM wanted to access the developer/mid-market segment, acquiring FlowLink would be faster than building it.
+TRM is a potential acquirer, not a direct competitor at our market tier. If TRM wanted to access the developer/mid-market segment, acquiring ProofLink would be faster than building it.
 
 **The trap:** Leaving TRM Labs out of your competitive analysis entirely. Any informed VC will notice the gap and assume you have not done your homework. Acknowledge TRM explicitly and explain the structural differences.
 
@@ -159,7 +159,7 @@ TRM is a potential acquirer, not a direct competitor at our market tier. If TRM 
 
 ### Q11: "Why not just use Request Finance? They already have 3,189 organizations and $1.3B+ in all-time volume."
 
-**Why they're asking:** Request Finance is the most obvious comparable. If they add compliance, does FlowLink lose its reason to exist?
+**Why they're asking:** Request Finance is the most obvious comparable. If they add compliance, does ProofLink lose its reason to exist?
 
 **The answer:** Request Finance is a crypto invoicing tool with zero compliance. In a post-GENIUS Act, post-MiCA world, that is disqualifying for enterprise adoption. Specifically:
 
@@ -171,7 +171,7 @@ TRM is a potential acquirer, not a direct competitor at our market tier. If TRM 
 
 Request Finance adding compliance would require an architectural rewrite. Compliance cannot be bolted on to an invoice ledger that was built without it -- you need the identity layer, the sanctions screening pipeline, the Travel Rule transmission protocol, and the on-chain attestation system from day one.
 
-Our positioning: "Request Finance invoices. FlowLink makes those invoices legal." We are also priced more competitively: $499/month vs. Request's $600/month entry -- and we include the full compliance stack they do not offer at any price.
+Our positioning: "Request Finance invoices. ProofLink makes those invoices legal." We are also priced more competitively: $499/month vs. Request's $600/month entry -- and we include the full compliance stack they do not offer at any price.
 
 **The trap:** Being dismissive of Request Finance's traction. 3,189 organizations is real adoption. Acknowledge it, then explain why compliance is the wedge that makes their product insufficient for regulated commerce.
 
@@ -181,7 +181,7 @@ Our positioning: "Request Finance invoices. FlowLink makes those invoices legal.
 
 **Why they're asking:** Skyfire is the most visible competitor in the agent identity space. If they define the KYA standard, your standards-authorship moat disappears.
 
-**The answer:** Skyfire does agent identity (KYAPay). We do compliant payment execution. These are complementary, not competitive. Skyfire verifies who the agent is. FlowLink verifies the payment is legal, documents it, and provides the compliance receipt the CFO hands to the auditor.
+**The answer:** Skyfire does agent identity (KYAPay). We do compliant payment execution. These are complementary, not competitive. Skyfire verifies who the agent is. ProofLink verifies the payment is legal, documents it, and provides the compliance receipt the CFO hands to the auditor.
 
 Skyfire is consumer-focused -- agent buying on Amazon. We are B2B-focused -- agent paying a $50K invoice with Travel Rule compliance. Skyfire has no compliance receipts, no dispute resolution, no B2B workflow, and no multi-protocol compliance.
 
@@ -199,7 +199,7 @@ The risk is real: if Skyfire expands into compliance before we establish our pos
 
 **The answer:** Notabene does Travel Rule data transmission between VASPs. They are our infrastructure provider, not our competitor. Notabene transmits data -- originator and beneficiary information alongside transfers. The money moves separately on chain. Notabene does not do payments, does not do invoicing, does not do agent identity, and does not do pre-payment compliance decisions.
 
-The critical gap: Notabene assumes both parties are VASPs with registered compliance officers. Agent-to-agent payments break this assumption entirely. FlowLink extends Travel Rule to agent transactions where Notabene's VASP-to-VASP model does not apply.
+The critical gap: Notabene assumes both parties are VASPs with registered compliance officers. Agent-to-agent payments break this assumption entirely. ProofLink extends Travel Rule to agent transactions where Notabene's VASP-to-VASP model does not apply.
 
 The dependency risk is real: we pay Notabene $24K-$56K/year for Travel Rule transmission. If they raise prices or restrict access, our cost structure changes. Mitigation: Notabene is not our only option -- TRISA and OpenVASP are alternative Travel Rule protocols. We architect for multi-provider Travel Rule transmission.
 
@@ -243,17 +243,17 @@ What we are shipping in 90 days:
 **The answer:** Step by step:
 
 1. Agent or human initiates a $50K USDC payment via x402.
-2. FlowLink intercepts the payment payload before funds move.
+2. ProofLink intercepts the payment payload before funds move.
 3. Sanctions screening runs in <100ms against OFAC SDN, EU Consolidated, UN, and HMT lists. Screens both entities and wallet addresses.
 4. A match is flagged -- the beneficiary entity name has a partial match against the OFAC SDN list.
-5. Payment is blocked immediately. The transaction never executes. FlowLink is pre-payment, not post-hoc.
+5. Payment is blocked immediately. The transaction never executes. ProofLink is pre-payment, not post-hoc.
 6. The agent receives a structured rejection with a reason code (e.g., `SANCTIONS_PARTIAL_MATCH`).
 7. The human principal (the CFO who authorized the agent) receives a notification with the match details.
 8. A suspicious activity report is queued for manual compliance review. If the match is a false positive (common with partial name matches), the compliance officer clears it and the payment can be re-initiated.
 9. If the match is confirmed, the transaction remains blocked and a SAR is filed per BSA requirements.
 10. A ProofLink Compliance Receipt is issued documenting the blocked transaction -- proving due diligence was exercised even though the payment did not complete.
 
-The key design decision: FlowLink issues compliance decisions, not fund transfers. We return PASS/FAIL to the VASP or protocol, which executes or blocks the payment. FlowLink never touches the funds.
+The key design decision: ProofLink issues compliance decisions, not fund transfers. We return PASS/FAIL to the VASP or protocol, which executes or blocks the payment. ProofLink never touches the funds.
 
 **The trap:** Only describing the happy path. Every VC who has evaluated a compliance company will ask about the failure case. If you cannot walk through it in detail, they will assume you have not built it.
 
@@ -297,7 +297,7 @@ If A2A takes three years instead of twelve months, we are still a viable $2-3M A
 
 **Why they're asking:** They want to know if your identity layer has a security model or if it is trust-by-default.
 
-**The answer:** ERC-8004 registration is permissionless -- anyone can register. But FlowLink's KYA verification is not. Registration alone does not grant compliance status. FlowLink independently verifies:
+**The answer:** ERC-8004 registration is permissionless -- anyone can register. But ProofLink's KYA verification is not. Registration alone does not grant compliance status. ProofLink independently verifies:
 
 1. The human principal behind the agent (KYC/KYB via Jumio/Onfido integration or vLEI lookup)
 2. The delegation scope (what the agent is authorized to spend, on what, with what limits)
@@ -305,7 +305,7 @@ If A2A takes three years instead of twelve months, we are still a viable $2-3M A
 
 A malicious agent with fake ERC-8004 credentials fails KYA verification because the human principal cannot be verified against real identity records. The ERC-8004 Reputation Registry adds a second layer -- agents build reputation scores over time, and new agents with no history face higher scrutiny.
 
-The architectural principle: trust the verification, not the registration. ERC-8004 is an identity layer. FlowLink is the verification layer. They serve different functions.
+The architectural principle: trust the verification, not the registration. ERC-8004 is an identity layer. ProofLink is the verification layer. They serve different functions.
 
 **The trap:** Claiming ERC-8004 is secure by design. It is not -- it is permissionless. Your value is the verification layer on top of it.
 
@@ -469,7 +469,7 @@ If all three assumptions fail simultaneously (small invoices, slow customer acqu
 
 **The answer:** We acknowledge this directly. Neither founder has a compliance or regulatory background. Here is why we are still the right team:
 
-1. **This is an infrastructure problem, not a regulatory consulting problem.** FlowLink is not a law firm or a compliance consultancy. It is a compliance API. Building a fast, reliable, multi-protocol compliance middleware is a systems engineering challenge. Akash's background -- systems-level ML engineering at CERN, vLLM contributor, production-grade distributed systems -- is directly applicable. The cofounder's experience building Request Network's invoicing engine means they understand exactly what the compliance gaps are from the inside.
+1. **This is an infrastructure problem, not a regulatory consulting problem.** ProofLink is not a law firm or a compliance consultancy. It is a compliance API. Building a fast, reliable, multi-protocol compliance middleware is a systems engineering challenge. Akash's background -- systems-level ML engineering at CERN, vLLM contributor, production-grade distributed systems -- is directly applicable. The cofounder's experience building Request Network's invoicing engine means they understand exactly what the compliance gaps are from the inside.
 
 2. **We are hiring for the gap.** 25% of our raise ($190K-$375K) is allocated to compliance: Head of Compliance hire, legal opinions, and regulatory advisory. This is not an afterthought -- it is the second-largest budget line.
 
@@ -487,7 +487,7 @@ The honest framing: technical depth that compliance-background founders lack (ML
 
 **The answer:** [CRITICAL: Fill in before any pitch meeting. The following must be specific:]
 
-Our cofounder is [FULL NAME]. At Request Finance, they [SPECIFIC ROLE -- e.g., "led protocol engineering for Request Network's V2 invoicing engine processing $X/month"]. Their specific contribution was [CONCRETE DELIVERABLE -- e.g., "architected the multi-chain payment settlement system"]. They bring deep knowledge of crypto invoicing infrastructure, payment protocol integration, and -- critically -- the specific gaps in Request Finance's compliance story that FlowLink addresses.
+Our cofounder is [FULL NAME]. At Request Finance, they [SPECIFIC ROLE -- e.g., "led protocol engineering for Request Network's V2 invoicing engine processing $X/month"]. Their specific contribution was [CONCRETE DELIVERABLE -- e.g., "architected the multi-chain payment settlement system"]. They bring deep knowledge of crypto invoicing infrastructure, payment protocol integration, and -- critically -- the specific gaps in Request Finance's compliance story that ProofLink addresses.
 
 [If they have any compliance/fintech/regulatory background, state it here.]
 
@@ -523,16 +523,16 @@ The Head of Compliance is the most critical hire after the first two engineers. 
 
 ### Q29: "Are you a money transmitter? Do you need an MSB registration or state MTLs?"
 
-**Why they're asking:** This is the existential regulatory question. If FlowLink is classified as an MSB, you need 49 state money transmitter licenses ($1.3M-$3M+ upfront) and the business is dead at pre-seed.
+**Why they're asking:** This is the existential regulatory question. If ProofLink is classified as an MSB, you need 49 state money transmitter licenses ($1.3M-$3M+ upfront) and the business is dead at pre-seed.
 
 **The answer:** Our architecture is specifically designed to avoid MSB classification. The legal basis is 31 CFR 1010.100(ff)(5)(ii)(A) -- the software/network provider exemption. This exempts entities that "only provide the delivery, communication, or network access services used by a money transmitter to support money transmission services."
 
-FlowLink is a compliance decision service, not a payment execution service. The architecture:
+ProofLink is a compliance decision service, not a payment execution service. The architecture:
 1. A VASP or protocol initiates a payment.
-2. The VASP calls FlowLink's API (sanctions check, KYC verify, Travel Rule transmit).
-3. FlowLink returns PASS/FAIL + signed compliance receipt.
+2. The VASP calls ProofLink's API (sanctions check, KYC verify, Travel Rule transmit).
+3. ProofLink returns PASS/FAIL + signed compliance receipt.
 4. The VASP executes or blocks the payment.
-5. The money moves between counterparties on chain. FlowLink never touches, holds, or controls funds.
+5. The money moves between counterparties on chain. ProofLink never touches, holds, or controls funds.
 
 This is the same structural model as Chainalysis, TRM Labs, and Notabene -- none of which are classified as MSBs. FinCEN administrative rulings (FIN-2014-R002, the Merchant Payment Processor ruling) confirm that software provision in the context of money transmission does not constitute money transmission.
 
@@ -542,21 +542,21 @@ This is the same structural model as Chainalysis, TRM Labs, and Notabene -- none
 
 ---
 
-### Q30: "What is your liability if a FlowLink-cleared transaction turns out to involve a sanctioned party?"
+### Q30: "What is your liability if a ProofLink-cleared transaction turns out to involve a sanctioned party?"
 
-**Why they're asking:** This is the nightmare scenario. If FlowLink issues a compliance receipt clearing a transaction that later appears in an OFAC enforcement action, what happens to FlowLink?
+**Why they're asking:** This is the nightmare scenario. If ProofLink issues a compliance receipt clearing a transaction that later appears in an OFAC enforcement action, what happens to ProofLink?
 
 **The answer:** This is the most serious legal question we face. Our structural answer:
 
-1. **FlowLink issues compliance decisions based on available data at the time of screening.** OFAC sanctions screening uses the published SDN list. If a party is not on the list at the time of screening and is later added, the screening was correct at the time it was performed.
+1. **ProofLink issues compliance decisions based on available data at the time of screening.** OFAC sanctions screening uses the published SDN list. If a party is not on the list at the time of screening and is later added, the screening was correct at the time it was performed.
 
-2. **The ProofLink Compliance Receipt documents what was checked and when.** This is exactly the evidence that demonstrates due diligence was exercised -- it protects both FlowLink and the customer.
+2. **The ProofLink Compliance Receipt documents what was checked and when.** This is exactly the evidence that demonstrates due diligence was exercised -- it protects both ProofLink and the customer.
 
-3. **Customer agreements allocate regulatory compliance responsibility to the customer (the VASP/licensed entity).** FlowLink provides tools; the customer applies them and bears the regulatory obligation.
+3. **Customer agreements allocate regulatory compliance responsibility to the customer (the VASP/licensed entity).** ProofLink provides tools; the customer applies them and bears the regulatory obligation.
 
-4. **FlowLink's role is analogous to a credit rating agency issuing a rating.** The rating reflects the agency's assessment at the time. If subsequent information changes the picture, the rating was not "wrong" -- it was accurate at issuance.
+4. **ProofLink's role is analogous to a credit rating agency issuing a rating.** The rating reflects the agency's assessment at the time. If subsequent information changes the picture, the rating was not "wrong" -- it was accurate at issuance.
 
-That said, this is genuinely unsettled legal territory. We are engaging legal counsel specifically on the liability question for compliance attestation providers. The indemnification structure in our customer agreements is designed to limit FlowLink's exposure, but no contract eliminates regulatory risk entirely.
+That said, this is genuinely unsettled legal territory. We are engaging legal counsel specifically on the liability question for compliance attestation providers. The indemnification structure in our customer agreements is designed to limit ProofLink's exposure, but no contract eliminates regulatory risk entirely.
 
 **The trap:** Claiming zero liability. No compliance company has zero liability. Acknowledge the risk, show the structural protections (timestamped receipts, customer agreements, non-custodial architecture), and confirm you are getting legal counsel on this specific question.
 
@@ -569,9 +569,9 @@ That said, this is genuinely unsettled legal territory. We are engaging legal co
 **The answer:** Correct -- MiCA does not have an explicit technology provider exemption like FinCEN's 31 CFR 1010.100(ff)(5)(ii)(A). This is a genuine gap in our regulatory posture.
 
 Our mitigation:
-1. **Functional test still applies.** ESMA and national regulators apply a functional test: does the entity provide crypto-asset services to clients, or does it provide software to entities that do? FlowLink provides APIs to licensed CASPs, not services to retail users.
+1. **Functional test still applies.** ESMA and national regulators apply a functional test: does the entity provide crypto-asset services to clients, or does it provide software to entities that do? ProofLink provides APIs to licensed CASPs, not services to retail users.
 2. **EU entity structure.** We plan to establish a separate EU entity (Dutch BV or Irish Ltd) that only sells software licenses and API access to licensed CASPs -- no direct end-user relationships.
-3. **Regulatory opinion.** We will engage European regulatory counsel in Netherlands or Ireland to obtain an informal regulatory opinion confirming FlowLink's B2B SaaS model does not require CASP authorization. Budget: EUR 30K-80K.
+3. **Regulatory opinion.** We will engage European regulatory counsel in Netherlands or Ireland to obtain an informal regulatory opinion confirming ProofLink's B2B SaaS model does not require CASP authorization. Budget: EUR 30K-80K.
 
 This is a legal gray zone. The Notabene model -- B2B infrastructure provider serving VASPs/CASPs rather than being one -- works in practice but has not been formally blessed by ESMA. We are operating conservatively: B2B only, no retail, licensed CASPs as customers, explicit contractual allocation of regulatory responsibility.
 
@@ -697,8 +697,8 @@ These come up in every single pitch. Rehearse these until the answers are automa
 | Request Finance organizations | 3,189 | Request Finance |
 | TRM Labs average contract | $693K/year | Vendr |
 | Chainalysis ARR | ~$250M (2024 projected) | Sacra |
-| FlowLink COGS per transaction (full stack, 1M/mo) | ~$0.02 | Internal cost model |
-| FlowLink gross margin at scale | 97-99% | Internal cost model |
+| ProofLink COGS per transaction (full stack, 1M/mo) | ~$0.02 | Internal cost model |
+| ProofLink gross margin at scale | 97-99% | Internal cost model |
 | Break-even MRR | ~$60K/month | Internal financial model |
 | State MTL cost (49 states) | $1.3M-$3M+ | Legal research |
 

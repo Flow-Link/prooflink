@@ -10,7 +10,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("[FlowLink] Unhandled error:", error);
+    console.error("[ProofLink] Unhandled error:", error);
   }, [error]);
 
   return (

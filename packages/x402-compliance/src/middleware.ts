@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import type {
-  FlowLinkConfig,
+  ProofLinkConfig,
   X402ResourceServer,
   VerifyContext,
   SettleContext,
@@ -11,7 +11,7 @@ import type {
   ComplianceEventHandler,
   ComplianceEvent,
 } from "./types.js";
-import { FlowLinkConfigSchema } from "./types.js";
+import { ProofLinkConfigSchema } from "./types.js";
 import {
   createBeforeVerifyHook,
   payloadKey,
@@ -22,7 +22,7 @@ import {
 } from "./hooks/before-verify.js";
 import { createBeforeSettleHook, type TravelRuleService, type PriceConverter } from "./hooks/before-settle.js";
 import { createAfterSettleHook, type ProofLinkService, type InvoiceService } from "./hooks/after-settle.js";
-import { createFlowLinkExtension } from "./extension.js";
+import { createProofLinkExtension } from "./extension.js";
 
 // ---------------------------------------------------------------------------
 // Pending decision map with TTL-based eviction
@@ -116,10 +116,10 @@ class DefaultProofLinkService implements ProofLinkService {
 }
 
 // ---------------------------------------------------------------------------
-// FlowLinkX402Compliance — Main middleware class
+// ProofLinkX402Compliance — Main middleware class
 // ---------------------------------------------------------------------------
 
-export interface FlowLinkComplianceServices {
+export interface ProofLinkComplianceServices {
   screener?: SanctionsScreener;
   amlScorer?: AmlScorer;
   kyaVerifier?: KYAVerifier;
@@ -130,8 +130,8 @@ export interface FlowLinkComplianceServices {
   invoiceService?: InvoiceService;
 }
 
-export class FlowLinkX402Compliance {
-  private readonly config: FlowLinkConfig;
+export class ProofLinkX402Compliance {
+  private readonly config: ProofLinkConfig;
   private readonly pendingDecisions: Map<string, PendingDecision> & { cleanup(): void };
   private readonly settledProofLinks: Map<string, { hash: string; timestamp: number }> & { cleanup(): void };
   private readonly eventHandlers: ComplianceEventHandler[] = [];
@@ -143,15 +143,15 @@ export class FlowLinkX402Compliance {
   public readonly onAfterSettle: (ctx: SettleResultContext) => Promise<AfterHookResult>;
 
   /**
-   * @param config - FlowLink compliance configuration.
+   * @param config - ProofLink compliance configuration.
    * @param services - Injected service implementations. In production you MUST
    *   provide real `screener` and `amlScorer` implementations — the built-in
    *   defaults always return "clean" / score 0 and therefore bypass compliance.
    */
-  constructor(config: FlowLinkConfig, services: FlowLinkComplianceServices = {}) {
+  constructor(config: ProofLinkConfig, services: ProofLinkComplianceServices = {}) {
     // Validate config (logger is stripped for zod validation)
     const { logger, ...zodConfig } = config;
-    FlowLinkConfigSchema.parse(zodConfig);
+    ProofLinkConfigSchema.parse(zodConfig);
 
     this.config = config;
     this.pendingDecisions = createEvictingMap<PendingDecision>(DECISION_TTL_MS);
@@ -231,13 +231,13 @@ export class FlowLinkX402Compliance {
     server.onBeforeSettle(this.onBeforeSettle);
     server.onAfterSettle(this.onAfterSettle);
     server.registerExtension(
-      createFlowLinkExtension({
+      createProofLinkExtension({
         config: this.config,
         settledProofLinks: this.settledProofLinks,
       }),
     );
 
-    this.config.logger?.info("FlowLink x402 compliance registered on resource server");
+    this.config.logger?.info("ProofLink x402 compliance registered on resource server");
   }
 
   /**

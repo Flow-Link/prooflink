@@ -1,4 +1,4 @@
-# FlowLink — Grants, Accelerators & Hackathon Events
+# ProofLink — Grants, Accelerators & Hackathon Events
 **Research Date:** March 20, 2026
 **Status:** Actionable — sorted by urgency (soonest deadline first)
 
@@ -35,12 +35,12 @@
 **Prize Pool:** $150K+ USD across sponsors
 **Event Page:** https://ethglobal.com/events/cannes
 
-### Why FlowLink Should Be Here
-Cannes 2026 is co-located with EthCC[9] (Mar 30–Apr 2), the biggest European Ethereum conference. Sponsor roster historically includes Circle, Chainlink, The Graph, LayerZero, Hedera, World. FlowLink's compliance + x402 + USDC angle directly hits Circle, Coinbase, and any sponsor offering payments/stablecoin bounties.
+### Why ProofLink Should Be Here
+Cannes 2026 is co-located with EthCC[9] (Mar 30–Apr 2), the biggest European Ethereum conference. Sponsor roster historically includes Circle, Chainlink, The Graph, LayerZero, Hedera, World. ProofLink's compliance + x402 + USDC angle directly hits Circle, Coinbase, and any sponsor offering payments/stablecoin bounties.
 
 ### What to Build and Submit
-**Build target:** A live demo of the FlowLink compliance middleware as a drop-in x402 payment facilitator. Show:
-- An AI agent executing a stablecoin payment through FlowLink
+**Build target:** A live demo of the ProofLink compliance middleware as a drop-in x402 payment facilitator. Show:
+- An AI agent executing a stablecoin payment through ProofLink
 - Real-time OFAC/FATF screening on-chain
 - Structured invoice output with AML metadata
 - Demo on Base Sepolia with USDC
@@ -71,11 +71,11 @@ Pre-product, pre-launch, pre-seed teams (raised <$250K) building onchain on Base
 - Minimum 3 teams: $50K investment from Base Ecosystem Fund
 - All teams: Coinbase Ventures consideration
 
-### What FlowLink Should Submit for Batch 004
+### What ProofLink Should Submit for Batch 004
 When Batch 004 opens (expected ~Q4 2026 or early 2027), submit with:
 - **Framing:** "Compliance infrastructure for agent-to-agent USDC payments on Base"
 - **Traction:** Any live contracts on Base mainnet, any paying or pilot customers
-- **500-word light paper focus:** Why every AI agent that spends money on Base needs FlowLink before regulators force it
+- **500-word light paper focus:** Why every AI agent that spends money on Base needs ProofLink before regulators force it
 - **Founder-market fit:** CERN/vLLM background = trust in infra, not speculation
 
 ### Student Track (Still Open)
@@ -96,7 +96,7 @@ Top 5 teams flown to San Francisco for Demo Day. If there are student team membe
 Must have a live, functional deployment on Base mainnet. Retroactive model — rewards actual shipped work.
 
 ### What to Submit
-Once FlowLink has any contract live on Base (even a prototype):
+Once ProofLink has any contract live on Base (even a prototype):
 - The compliance middleware contract address
 - Demo video showing a real transaction with AML metadata
 - Emphasize: "bringing compliant USDC payments infrastructure to Base — no equivalent exists"
@@ -121,11 +121,11 @@ Once FlowLink has any contract live on Base (even a prototype):
 - Teams <10 people, full-time founders
 - "Arc-specific grants" will be a new track in 2026
 
-### FlowLink's Pitch to Circle
-FlowLink is the missing compliance layer for USDC flows — when Circle reopens, this is a tier-1 application:
+### ProofLink's Pitch to Circle
+ProofLink is the missing compliance layer for USDC flows — when Circle reopens, this is a tier-1 application:
 - **Problem:** Enterprises avoid USDC because there's no audit trail, no KYA, no FATF-compliant metadata
-- **Solution:** FlowLink wraps every USDC transfer with programmable compliance data
-- **Circle alignment:** Every USDC transaction that goes through FlowLink is more defensible for Circle's institutional clients
+- **Solution:** ProofLink wraps every USDC transfer with programmable compliance data
+- **Circle alignment:** Every USDC transaction that goes through ProofLink is more defensible for Circle's institutional clients
 - **Ask:** $75K–$100K to fund mainnet launch and first enterprise pilot
 
 **Action:** Set a calendar alert weekly to check https://www.circle.com/grant — they have not announced the exact reopen date.
@@ -140,8 +140,8 @@ FlowLink is the missing compliance layer for USDC flows — when Circle reopens,
 **Track page:** https://www.coinbase.com/developer-platform/discover/launches
 **Amount:** $3K–$10K per project, $25K–$30K total pool per round
 
-### Focus Areas That Match FlowLink
-Stated themes across all past rounds: "stablecoin and payments use cases," "autonomous agents," "CDP Wallets + Onramp + AgentKit integration." FlowLink hits all three.
+### Focus Areas That Match ProofLink
+Stated themes across all past rounds: "stablecoin and payments use cases," "autonomous agents," "CDP Wallets + Onramp + AgentKit integration." ProofLink hits all three.
 
 ### What to Submit When Open
 - Project using CDP Wallets or AgentKit with USDC stablecoin compliance overlay
@@ -158,24 +158,24 @@ Stated themes across all past rounds: "stablecoin and payments use cases," "auto
 **Deadline:** April 1, 2026
 **Amount:** $24,000 per fellow over 12 months
 **Apply:** https://esp.ethereum.foundation/rounds/phdfp26
-**Relevance:** Low for FlowLink directly (PhD enrollment required). Skip unless a team member is enrolled.
+**Relevance:** Low for ProofLink directly (PhD enrollment required). Skip unless a team member is enrolled.
 
 ### Track B: RFP — RFP Hub (Open-Source Grant Registry)
 **Deadline:** April 23, 2026
 **Duration:** 3–6 months
 **Apply:** https://esp.ethereum.foundation/applicants/rfp/rfp_hub
 **What they want:** Open-source aggregation platform for web3 funding opportunities (REST/GraphQL API, public data, governance framework)
-**Relevance:** Side project opportunity — FlowLink could bid on this as a revenue-neutral OSS contribution while building credibility with EF.
+**Relevance:** Side project opportunity — ProofLink could bid on this as a revenue-neutral OSS contribution while building credibility with EF.
 
 ### Track C: General ESP Grants (Wishlist/RFP)
 **Status:** Rolling, needs-driven
 **Apply:** https://esp.ethereum.foundation/applicants
 **Focus areas:** infrastructure, developer tools, cryptographic research, open-source public goods
-**Relevance:** Moderate. FlowLink's compliance infrastructure could qualify if framed as open-source developer tooling.
+**Relevance:** Moderate. ProofLink's compliance infrastructure could qualify if framed as open-source developer tooling.
 
-**FlowLink's pitch to EF ESP:** "Open-source compliance SDK for Ethereum dApps — enables any smart contract to attach FATF-compliant metadata to USDC transfers. No existing open-source equivalent."
+**ProofLink's pitch to EF ESP:** "Open-source compliance SDK for Ethereum dApps — enables any smart contract to attach FATF-compliant metadata to USDC transfers. No existing open-source equivalent."
 
-**Constraint:** EF funds non-commercial, open-source work. FlowLink must either open-source a component (the SDK/library) while keeping the hosted service proprietary, or apply for a specific research/tooling component.
+**Constraint:** EF funds non-commercial, open-source work. ProofLink must either open-source a component (the SDK/library) while keeping the hosted service proprietary, or apply for a specific research/tooling component.
 
 ---
 
@@ -194,7 +194,7 @@ All events: https://ethglobal.com/events
 | ETHGlobal Mumbai | Nov 6–8 | Mumbai, India | TBD | Register |
 
 ### Sponsor Track Strategy for All Events
-Across ETHGlobal hackathons, these sponsors consistently appear and align with FlowLink:
+Across ETHGlobal hackathons, these sponsors consistently appear and align with ProofLink:
 - **Circle:** USDC integration, real-world payments, compliance
 - **Coinbase/Base:** Onchain payments, x402, AI agents
 - **Chainlink:** Off-chain data, cross-chain, CCTP
@@ -213,7 +213,7 @@ Across ETHGlobal hackathons, these sponsors consistently appear and align with F
 ### Active / Upcoming Programs
 - **AI London Hackathon** — Mar 20–22, 2026 (today), London. Focus: AI agents and payments. $10K prize pool available.
 - **Shape Rotator Hackathon** — Prize pool $10K, top teams can advance to accelerator (up to $50K for graduating teams). Apply at encodeclub.com.
-- **Kite AI Global Hackathon** — AI Payments focus on agentic economy. Directly relevant to FlowLink's agent payment compliance angle.
+- **Kite AI Global Hackathon** — AI Payments focus on agentic economy. Directly relevant to ProofLink's agent payment compliance angle.
 
 ### Encode Accelerator Relevance
 Encode runs accelerator programs for top hackathon teams. The Shape Rotator Accelerator offers up to $50K for graduating teams. Low application bar compared to Base Batches.
@@ -235,10 +235,10 @@ Encode runs accelerator programs for top hackathon teams. The Shape Rotator Acce
 - Co-marketing and community amplification
 - Support across DeFi, infrastructure, RWA, privacy categories
 
-### FlowLink's Case for Chainlink BUILD
-FlowLink can use Chainlink CCIP for cross-chain stablecoin compliance and Chainlink Functions for pulling off-chain sanction list data (OFAC SDN list) into smart contracts. This is a direct integration story.
+### ProofLink's Case for Chainlink BUILD
+ProofLink can use Chainlink CCIP for cross-chain stablecoin compliance and Chainlink Functions for pulling off-chain sanction list data (OFAC SDN list) into smart contracts. This is a direct integration story.
 
-**Pitch framing:** "FlowLink uses Chainlink Functions to fetch real-time OFAC screening data onchain and CCIP to ensure cross-chain USDC transfers remain compliance-annotated."
+**Pitch framing:** "ProofLink uses Chainlink Functions to fetch real-time OFAC screening data onchain and CCIP to ensure cross-chain USDC transfers remain compliance-annotated."
 
 **Action:** Submit application at https://chain.link/build-program with the CCIP/Functions integration angle. This is high ROI — opens technical relationships with Chainlink team and co-marketing to their developer base.
 
@@ -251,8 +251,8 @@ FlowLink can use Chainlink CCIP for cross-chain stablecoin compliance and Chainl
 **Type:** Retroactive, rolling
 **Focus:** Projects building on Uniswap v4 hooks, Unichain integrations
 
-### FlowLink Relevance
-Moderate. If FlowLink integrates a Uniswap v4 hook for compliance-annotated swaps, this is a direct qualifying project. Uniswap's "DeFi Protocol Support" track also covers infrastructure integrations.
+### ProofLink Relevance
+Moderate. If ProofLink integrates a Uniswap v4 hook for compliance-annotated swaps, this is a direct qualifying project. Uniswap's "DeFi Protocol Support" track also covers infrastructure integrations.
 
 **Apply at:** https://uniswapfoundation.org/grants (HubSpot form)
 
@@ -265,11 +265,11 @@ Moderate. If FlowLink integrates a Uniswap v4 hook for compliance-annotated swap
 **Marketing Grants:** Up to $500K (USD, USDC, or XLM)
 **Matching Fund:** Up to $500M matching for pre-seed to Series B
 
-### FlowLink Relevance
+### ProofLink Relevance
 Lower priority than Base/Circle/Chainlink — Stellar is a different chain. However:
 - Stellar is a top network for cross-border stablecoin payments
-- If FlowLink ever adds USDC on Stellar support, the SCF Build Award is a natural fit
-- The Matching Fund is notable: if FlowLink raises any external capital, SDF will match up to $500K — track this
+- If ProofLink ever adds USDC on Stellar support, the SCF Build Award is a natural fit
+- The Matching Fund is notable: if ProofLink raises any external capital, SDF will match up to $500K — track this
 
 ---
 
@@ -280,9 +280,9 @@ Lower priority than Base/Circle/Chainlink — Stellar is a different chain. Howe
 **Type:** Rolling, milestone-based
 **Audit Program:** $10M ARB pool for smart contract audits
 
-### FlowLink Relevance
-Arbitrum is low priority vs. Base for FlowLink's initial deployment, but:
-- The **Audit Subsidy Program** is valuable — if FlowLink deploys on Arbitrum, they subsidize smart contract audits
+### ProofLink Relevance
+Arbitrum is low priority vs. Base for ProofLink's initial deployment, but:
+- The **Audit Subsidy Program** is valuable — if ProofLink deploys on Arbitrum, they subsidize smart contract audits
 - DeFi infrastructure track accepts compliance tooling applications
 
 ---
@@ -295,7 +295,7 @@ Arbitrum is low priority vs. Base for FlowLink's initial deployment, but:
 **Amount:** Variable, up to 35M POL pool
 
 ### What to Watch For
-Season 3 will likely open Q2–Q3 2026. Categories consistently include DeFi, Infrastructure, AI. FlowLink fits the infrastructure track.
+Season 3 will likely open Q2–Q3 2026. Categories consistently include DeFi, Infrastructure, AI. ProofLink fits the infrastructure track.
 
 ---
 
@@ -306,8 +306,8 @@ Season 3 will likely open Q2–Q3 2026. Categories consistently include DeFi, In
 **Type:** 12-week intensive accelerator, cohort-based
 **Focus:** Early-stage crypto companies
 
-### FlowLink's Fit
-CSX curriculum explicitly covers "legal and regulatory compliance" and "tokenization and decentralization" — FlowLink's entire product domain. a16z has invested in compliance infrastructure (they backed TRM Labs' precursors).
+### ProofLink's Fit
+CSX curriculum explicitly covers "legal and regulatory compliance" and "tokenization and decentralization" — ProofLink's entire product domain. a16z has invested in compliance infrastructure (they backed TRM Labs' precursors).
 
 **Framing:** "We are boring compliance infrastructure for the $33T stablecoin market. No token. No speculation. Revenue from day one."
 
@@ -347,9 +347,9 @@ CSX curriculum explicitly covers "legal and regulatory compliance" and "tokeniza
 
 ## Positioning Notes for All Applications
 
-Across every grant and accelerator application, FlowLink should use this consistent framing:
+Across every grant and accelerator application, ProofLink should use this consistent framing:
 
-**One sentence:** "FlowLink is the compliance middleware for stablecoin payments — making USDC transfers FATF/OFAC-compliant by default, for both AI agents and human transactions."
+**One sentence:** "ProofLink is the compliance middleware for stablecoin payments — making USDC transfers FATF/OFAC-compliant by default, for both AI agents and human transactions."
 
 **The wedge:** Start with x402 payment facilitation for AI agents (Coinbase/Base angle), expand to enterprise stablecoin treasury compliance (Circle/institutional angle).
 

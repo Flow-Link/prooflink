@@ -9,16 +9,16 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 
 import {Types} from "./libraries/Types.sol";
 import {ProofLinkRegistry} from "./ProofLinkRegistry.sol";
-import {FlowLinkKYA} from "./FlowLinkKYA.sol";
+import {ProofLinkKYA} from "./ProofLinkKYA.sol";
 
-/// @title FlowLinkFacilitator
-/// @author FlowLink
+/// @title ProofLinkFacilitator
+/// @author ProofLink
 /// @notice x402 compliance-gated facilitator. Verifies compliance before x402 verify,
 ///         executes settlement only if compliant, and anchors ProofLink receipts.
 /// @dev Uses UUPS proxy pattern. Can be configured to fail-open or fail-closed.
-///      Integrates with ProofLinkRegistry for receipt anchoring and FlowLinkKYA for
+///      Integrates with ProofLinkRegistry for receipt anchoring and ProofLinkKYA for
 ///      agent credential verification.
-contract FlowLinkFacilitator is
+contract ProofLinkFacilitator is
     Initializable,
     AccessControlUpgradeable,
     UUPSUpgradeable,
@@ -43,7 +43,7 @@ contract FlowLinkFacilitator is
     ProofLinkRegistry public proofLinkRegistry;
 
     /// @notice KYA credential management contract.
-    FlowLinkKYA public kyaContract;
+    ProofLinkKYA public kyaContract;
 
     /// @notice Maximum AML risk score accepted for settlement (0-100).
     uint8 public riskThreshold;
@@ -144,9 +144,9 @@ contract FlowLinkFacilitator is
         _disableInitializers();
     }
 
-    /// @notice Initialize the FlowLinkFacilitator.
+    /// @notice Initialize the ProofLinkFacilitator.
     /// @param proofLinkRegistry_ ProofLink compliance receipt registry address.
-    /// @param kyaContract_ FlowLinkKYA credential contract address.
+    /// @param kyaContract_ ProofLinkKYA credential contract address.
     /// @param admin Initial admin address.
     function initialize(address proofLinkRegistry_, address kyaContract_, address admin) external initializer {
         if (proofLinkRegistry_ == address(0) || kyaContract_ == address(0) || admin == address(0)) {
@@ -159,7 +159,7 @@ contract FlowLinkFacilitator is
         // ReentrancyGuard (non-upgradeable) initializes in constructor — no init needed
 
         proofLinkRegistry = ProofLinkRegistry(proofLinkRegistry_);
-        kyaContract = FlowLinkKYA(kyaContract_);
+        kyaContract = ProofLinkKYA(kyaContract_);
         riskThreshold = 50;
         failClosed = true; // Default: fail-closed (block non-compliant payments)
 
@@ -405,7 +405,7 @@ contract FlowLinkFacilitator is
     {
         if (proofLinkRegistry_ == address(0) || kyaContract_ == address(0)) revert ZeroAddress();
         proofLinkRegistry = ProofLinkRegistry(proofLinkRegistry_);
-        kyaContract = FlowLinkKYA(kyaContract_);
+        kyaContract = ProofLinkKYA(kyaContract_);
     }
 
     /// @notice Pause all settlements (emergency kill switch).

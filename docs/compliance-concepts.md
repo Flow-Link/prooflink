@@ -1,10 +1,10 @@
 # Compliance Concepts
 
-This guide explains the core compliance concepts behind FlowLink: how ProofLink receipts work, what each compliance check does, and which regulatory frameworks drive the requirements.
+This guide explains the core compliance concepts behind ProofLink: how ProofLink receipts work, what each compliance check does, and which regulatory frameworks drive the requirements.
 
 ## ProofLink Explained
 
-ProofLink is FlowLink's compliance receipt system -- a cryptographically signed proof that a transaction passed all required compliance checks. Every compliance check produces a ProofLink receipt that serves as an audit trail.
+ProofLink is ProofLink's compliance receipt system -- a cryptographically signed proof that a transaction passed all required compliance checks. Every compliance check produces a ProofLink receipt that serves as an audit trail.
 
 ### What a ProofLink receipt contains
 
@@ -37,8 +37,8 @@ ProofLink is FlowLink's compliance receipt system -- a cryptographically signed 
 ### Receipt lifecycle
 
 1. **Generation** -- created immediately after the compliance pipeline completes
-2. **Signing** -- signed with FlowLink's issuer key (EcdsaSecp256k1)
-3. **Storage** -- stored in the FlowLink database with a unique `receiptId`
+2. **Signing** -- signed with ProofLink's issuer key (EcdsaSecp256k1)
+3. **Storage** -- stored in the ProofLink database with a unique `receiptId`
 4. **Attestation** (optional) -- anchored on-chain via Ethereum Attestation Service (EAS)
 5. **Archival** (optional) -- full report pinned to IPFS for permanent auditability
 
@@ -50,7 +50,7 @@ Receipts have a default TTL of 300 seconds (5 minutes). After expiry, the compli
 
 ## Sanctions Screening
 
-Sanctions screening is the first and most critical compliance check. FlowLink screens wallet addresses and entity names against global sanctions lists.
+Sanctions screening is the first and most critical compliance check. ProofLink screens wallet addresses and entity names against global sanctions lists.
 
 ### Lists screened
 
@@ -185,13 +185,13 @@ interface TravelRuleData {
 
 ### Travel Rule provider
 
-FlowLink integrates with [Notabene](https://notabene.id/) for VASP-to-VASP Travel Rule messaging. Notabene handles the counterparty discovery, data exchange, and acknowledgment protocol.
+ProofLink integrates with [Notabene](https://notabene.id/) for VASP-to-VASP Travel Rule messaging. Notabene handles the counterparty discovery, data exchange, and acknowledgment protocol.
 
 ---
 
 ## Jurisdictional Rules
 
-FlowLink evaluates transactions against jurisdiction-specific regulations.
+ProofLink evaluates transactions against jurisdiction-specific regulations.
 
 ### GENIUS Act (United States)
 
@@ -202,7 +202,7 @@ The Stablecoin (GENIUS) Act, signed July 2025, requires:
 - Travel Rule compliance for transfers >= $3,000
 - Monthly reserve attestations
 
-**FlowLink enforcement:** Transactions involving U.S. counterparties trigger enhanced Travel Rule checks at the $3,000 threshold and require originator name and address.
+**ProofLink enforcement:** Transactions involving U.S. counterparties trigger enhanced Travel Rule checks at the $3,000 threshold and require originator name and address.
 
 ### MiCA (European Union)
 
@@ -213,11 +213,11 @@ The Markets in Crypto-Assets Regulation (fully enforceable mid-2026) requires:
 - Mandatory originator and beneficiary identification
 - Enhanced due diligence for third-country transfers
 
-**FlowLink enforcement:** Transactions involving EU counterparties trigger Travel Rule checks at the EUR 1,000 threshold, with enhanced data requirements for transfers to non-EU jurisdictions.
+**ProofLink enforcement:** Transactions involving EU counterparties trigger Travel Rule checks at the EUR 1,000 threshold, with enhanced data requirements for transfers to non-EU jurisdictions.
 
 ### FATF Recommendations
 
-99 jurisdictions implement the FATF Travel Rule with varying thresholds and data requirements. FlowLink maintains a jurisdiction database and applies the correct rules based on the sender and receiver locations.
+99 jurisdictions implement the FATF Travel Rule with varying thresholds and data requirements. ProofLink maintains a jurisdiction database and applies the correct rules based on the sender and receiver locations.
 
 ---
 
@@ -235,7 +235,7 @@ Every compliance check produces a receipt that can be retrieved later for audit 
 | `riskScore`       | Aggregate AML risk score (0-100)                |
 | `travelRuleStatus`| Travel Rule transmission status                 |
 | `checksPerformed` | Array of individual check results               |
-| `signature`       | ECDSA signature from FlowLink's issuer key      |
+| `signature`       | ECDSA signature from ProofLink's issuer key      |
 | `ttl`             | Time-to-live in seconds (default: 300)          |
 | `easAttestationUid` | On-chain EAS attestation UID (if enabled)     |
 | `ipfsCid`         | IPFS CID of the full compliance report          |
@@ -244,7 +244,7 @@ Every compliance check produces a receipt that can be retrieved later for audit 
 
 ```ts
 // Via SDK
-const receipt = await flowlink.getComplianceReceipt("rcpt_abc123");
+const receipt = await prooflink.getComplianceReceipt("rcpt_abc123");
 
 // Via API
 // GET /api/v1/compliance/receipt/rcpt_abc123
@@ -252,7 +252,7 @@ const receipt = await flowlink.getComplianceReceipt("rcpt_abc123");
 
 ### On-chain attestation via EAS
 
-When EAS is configured, FlowLink creates an on-chain attestation for each compliance receipt on the Ethereum Attestation Service. This provides tamper-proof evidence that the compliance check occurred and what the result was.
+When EAS is configured, ProofLink creates an on-chain attestation for each compliance receipt on the Ethereum Attestation Service. This provides tamper-proof evidence that the compliance check occurred and what the result was.
 
 The EAS attestation includes:
 - Receipt hash
@@ -265,7 +265,7 @@ The EAS attestation includes:
 
 ## The Compliance Pipeline
 
-When you call `checkCompliance()`, FlowLink runs six checks in sequence:
+When you call `checkCompliance()`, ProofLink runs six checks in sequence:
 
 ```
 Payment request received

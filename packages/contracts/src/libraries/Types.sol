@@ -2,7 +2,7 @@
 pragma solidity ^0.8.25;
 
 /// @title Types
-/// @notice Shared type definitions for FlowLink contracts.
+/// @notice Shared type definitions for ProofLink contracts.
 library Types {
     // ──────────────────────────────────────────────
     // Invoice

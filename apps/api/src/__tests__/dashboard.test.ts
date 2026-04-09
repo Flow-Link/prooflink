@@ -44,7 +44,7 @@ function makeCheck(overrides: Record<string, unknown> = {}) {
     id: "check-uuid-0001",
     senderAddress: "0xSENDER001",
     receiverAddress: "0xRECEIVER001",
-    senderAgentDid: "did:flowlink:agent:sender",
+    senderAgentDid: "did:prooflink:agent:sender",
     chain: "eip155:8453",
     status: "APPROVED",
     riskScore: 15,
@@ -58,7 +58,7 @@ function makeCheck(overrides: Record<string, unknown> = {}) {
 function makeInvoice(overrides: Record<string, unknown> = {}) {
   return {
     id: "inv-uuid-0001",
-    issuerAgentDid: "did:flowlink:agent:seller",
+    issuerAgentDid: "did:prooflink:agent:seller",
     buyerWalletAddress: "0xBUYER001",
     sellerWalletAddress: "0xSELLER001",
     currency: "USDC",
@@ -74,7 +74,7 @@ function makeInvoice(overrides: Record<string, unknown> = {}) {
 
 function makeAgent(overrides: Record<string, unknown> = {}) {
   return {
-    agentDid: "did:flowlink:agent:001",
+    agentDid: "did:prooflink:agent:001",
     name: "Test Agent",
     isActive: true,
     expiresAt: new Date("2027-01-01T00:00:00Z"),
@@ -90,22 +90,30 @@ function makeAgent(overrides: Record<string, unknown> = {}) {
 // Helpers to build chained select mock return values
 // ---------------------------------------------------------------------------
 
-/** db.select().from().orderBy().limit() */
+/** db.select().from().where().orderBy().limit() or db.select().from().orderBy().limit() */
 function selectFromOrderByLimit(rows: unknown[]) {
-  mockSelectFrom.mockReturnValue({
+  const orderByChain = {
     orderBy: () => ({
       limit: () => Promise.resolve(rows),
     }),
     groupBy: () => ({
       orderBy: () => Promise.resolve(rows),
     }),
+  };
+  mockSelectFrom.mockReturnValue({
+    ...orderByChain,
+    where: () => orderByChain,
   });
 }
 
-/** db.select().from().orderBy() (no limit) */
+/** db.select().from().where().orderBy() or db.select().from().orderBy() (no limit) */
 function selectFromOrderBy(rows: unknown[]) {
-  mockSelectFrom.mockReturnValue({
+  const chain = {
     orderBy: () => Promise.resolve(rows),
+  };
+  mockSelectFrom.mockReturnValue({
+    ...chain,
+    where: () => chain,
   });
 }
 
@@ -127,14 +135,22 @@ function setupStatsMock({
   let call = 0;
   mockSelectFrom.mockImplementation(() => {
     call++;
-    if (call === 1) return Promise.resolve([{ total: checksTotal }]);
-    if (call === 2)
-      return {
+    const resolved = (val: unknown) => {
+      const p = Promise.resolve(val);
+      // Add .where() that returns the same promise (for tenant-scoped queries)
+      (p as Record<string, unknown>)["where"] = () => p;
+      return p;
+    };
+    if (call === 1) return resolved([{ total: checksTotal }]);
+    if (call === 2) {
+      const groupByChain = {
         groupBy: () => Promise.resolve(statusBreakdown),
       };
-    if (call === 3) return Promise.resolve([{ total: agentsTotal }]);
+      return { ...groupByChain, where: () => groupByChain };
+    }
+    if (call === 3) return resolved([{ total: agentsTotal }]);
     // call 4: invoices volume
-    return Promise.resolve([{ totalVolume }]);
+    return resolved([{ totalVolume }]);
   });
 }
 
@@ -635,7 +651,7 @@ describe("Dashboard API", () => {
       const res = await app.request("/v1/dashboard/agents");
       const json = await res.json();
 
-      expect(json.data[0].name).toBe("did:flowlink:agent:001");
+      expect(json.data[0].name).toBe("did:prooflink:agent:001");
     });
 
     it("returns delegationScope keys as an array", async () => {
@@ -660,13 +676,13 @@ describe("Dashboard API", () => {
       expect(json.data[0].delegationScope).toEqual([]);
     });
 
-    it("returns provider as 'FlowLink'", async () => {
+    it("returns provider as 'ProofLink'", async () => {
       selectFromOrderBy([makeAgent()]);
 
       const res = await app.request("/v1/dashboard/agents");
       const json = await res.json();
 
-      expect(json.data[0].provider).toBe("FlowLink");
+      expect(json.data[0].provider).toBe("ProofLink");
     });
 
     it("returns credentialType as 'KYA-v1'", async () => {
@@ -717,13 +733,17 @@ describe("Dashboard API", () => {
 
   describe("GET /dashboard/volume", () => {
     it("returns 200 with correct shape", async () => {
-      mockSelectFrom.mockReturnValue({
+      const groupByChain = {
         groupBy: () => ({
           orderBy: () =>
             Promise.resolve([
               { date: "2026-03-20", total: 10, passed: 8, failed: 2 },
             ]),
         }),
+      };
+      mockSelectFrom.mockReturnValue({
+        ...groupByChain,
+        where: () => groupByChain,
       });
 
       const res = await app.request("/v1/dashboard/volume");
@@ -739,13 +759,17 @@ describe("Dashboard API", () => {
     });
 
     it("computes volume as (passed + failed) * 1000", async () => {
-      mockSelectFrom.mockReturnValue({
+      const groupByChain = {
         groupBy: () => ({
           orderBy: () =>
             Promise.resolve([
               { date: "2026-03-20", total: 10, passed: 7, failed: 3 },
             ]),
         }),
+      };
+      mockSelectFrom.mockReturnValue({
+        ...groupByChain,
+        where: () => groupByChain,
       });
 
       const res = await app.request("/v1/dashboard/volume");
@@ -755,10 +779,14 @@ describe("Dashboard API", () => {
     });
 
     it("returns empty array when no volume data exists", async () => {
-      mockSelectFrom.mockReturnValue({
+      const groupByChain = {
         groupBy: () => ({
           orderBy: () => Promise.resolve([]),
         }),
+      };
+      mockSelectFrom.mockReturnValue({
+        ...groupByChain,
+        where: () => groupByChain,
       });
 
       const res = await app.request("/v1/dashboard/volume");
@@ -768,7 +796,7 @@ describe("Dashboard API", () => {
     });
 
     it("returns multiple rows when multiple days of data exist", async () => {
-      mockSelectFrom.mockReturnValue({
+      const groupByChain = {
         groupBy: () => ({
           orderBy: () =>
             Promise.resolve([
@@ -776,6 +804,10 @@ describe("Dashboard API", () => {
               { date: "2026-03-20", total: 8, passed: 6, failed: 2 },
             ]),
         }),
+      };
+      mockSelectFrom.mockReturnValue({
+        ...groupByChain,
+        where: () => groupByChain,
       });
 
       const res = await app.request("/v1/dashboard/volume");
@@ -787,13 +819,17 @@ describe("Dashboard API", () => {
     });
 
     it("preserves passed and failed counts from the query result", async () => {
-      mockSelectFrom.mockReturnValue({
+      const groupByChain = {
         groupBy: () => ({
           orderBy: () =>
             Promise.resolve([
               { date: "2026-03-20", total: 3, passed: 1, failed: 2 },
             ]),
         }),
+      };
+      mockSelectFrom.mockReturnValue({
+        ...groupByChain,
+        where: () => groupByChain,
       });
 
       const res = await app.request("/v1/dashboard/volume");

@@ -19,9 +19,9 @@ export function sha256(data: string | Buffer): string {
  * `@noble/hashes/sha3` (keccak_256) or viem's `keccak256()`.
  *
  * This function is intentionally named `sha3_256Stub` to make the mismatch
- * visible. Use `@flowlink/core` for EVM-compatible hashing.
+ * visible. Use `@prooflink/core` for EVM-compatible hashing.
  *
- * @deprecated Use keccak256 from @noble/hashes or viem in @flowlink/core.
+ * @deprecated Use keccak256 from @noble/hashes or viem in @prooflink/core.
  */
 export function sha3_256Stub(data: string | Buffer): string {
   return createHash("sha3-256").update(data).digest("hex");
@@ -36,7 +36,7 @@ export function sha3_256Stub(data: string | Buffer): string {
  * characters across boundaries (e.g. name="ab", version="c" collides with
  * name="a", version="bc").
  *
- * For on-chain use, compute the domain separator in @flowlink/core using viem
+ * For on-chain use, compute the domain separator in @prooflink/core using viem
  * or ethers.
  */
 export function domainSeparatorHashOffChain(
@@ -81,8 +81,8 @@ export function generateReceiptId(prefix: ReceiptPrefix): string {
 // EIP-191 personal_sign and EIP-712 typed-data signature verification require
 // keccak256 and ecrecover, which are not available in Node.js built-in crypto.
 //
-// These functions live in @flowlink/core (which depends on viem).
-// They are intentionally NOT exported from @flowlink/shared to prevent callers
+// These functions live in @prooflink/core (which depends on viem).
+// They are intentionally NOT exported from @prooflink/shared to prevent callers
 // from importing a stub that always throws at runtime.
 
 // ---------------------------------------------------------------------------
@@ -128,7 +128,7 @@ function canonicalize(value: unknown): string {
  *   2. String concatenation (`${txHash}${chainId}${timestamp}`) collides when
  *      values share characters across field boundaries.
  *
- * For on-chain verification use @flowlink/core which uses viem's keccak256 with
+ * For on-chain verification use @prooflink/core which uses viem's keccak256 with
  * proper ABI encoding. This function produces a SHA-256 hash suitable only for
  * off-chain receipt lookup (database primary keys, cache keys, etc).
  */

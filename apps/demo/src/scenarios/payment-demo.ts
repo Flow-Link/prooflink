@@ -2,7 +2,7 @@ import chalk from "chalk";
 import oraImport from "ora";
 
 import {
-  flowlinkLog,
+  prooflinkLog,
   agentLog,
   x402Log,
   statusCleared,
@@ -45,7 +45,7 @@ export async function runPaymentDemo(): Promise<void> {
   console.log(
     chalk.gray(
       "  Simulating an AI agent paying for API services via x402 protocol.\n" +
-        "  FlowLink intercepts the payment and runs the full compliance pipeline.\n",
+        "  ProofLink intercepts the payment and runs the full compliance pipeline.\n",
     ),
   );
 
@@ -69,7 +69,7 @@ export async function runPaymentDemo(): Promise<void> {
   await sleep(300);
   spinner1.succeed(chalk.gray("Invoice INV-2026-0042 created"));
 
-  flowlinkLog("Intercepting x402 payment...");
+  prooflinkLog("Intercepting x402 payment...");
   await sleep(200);
 
   // ── Step 2: Screen sender ───────────────────────────────────────────────
@@ -130,12 +130,12 @@ export async function runPaymentDemo(): Promise<void> {
   await sleep(kyaLatency + 120);
   spinnerKya.stop();
 
-  flowlinkLog(`KYA verification: ${chalk.white(AGENT_ID)}`);
-  flowlinkLog(`  Agent name: ${chalk.white("inference-agent-v3")}`);
-  flowlinkLog(`  Type: ${chalk.white("semi-autonomous")}`);
-  flowlinkLog(`  Operator: ${chalk.white("Acme Corp")} ${chalk.gray("(LEI verified)")}`);
-  flowlinkLog(`  Trust score: ${chalk.green.bold("87/100")}`);
-  flowlinkLog(`  KYA status: ${chalk.green.bold("VERIFIED")}`);
+  prooflinkLog(`KYA verification: ${chalk.white(AGENT_ID)}`);
+  prooflinkLog(`  Agent name: ${chalk.white("inference-agent-v3")}`);
+  prooflinkLog(`  Type: ${chalk.white("semi-autonomous")}`);
+  prooflinkLog(`  Operator: ${chalk.white("Acme Corp")} ${chalk.gray("(LEI verified)")}`);
+  prooflinkLog(`  Trust score: ${chalk.green.bold("87/100")}`);
+  prooflinkLog(`  KYA status: ${chalk.green.bold("VERIFIED")}`);
 
   // ── Step 7: Settlement ──────────────────────────────────────────────────
 
@@ -167,9 +167,9 @@ export async function runPaymentDemo(): Promise<void> {
   await sleep(250);
   spinnerReceipt.stop();
 
-  flowlinkLog(`ProofLink receipt generated: ${chalk.white(receiptId)}`);
-  flowlinkLog(`Invoice generated: ${chalk.white("INV-2026-0042")} ${chalk.gray("(JSON + PDF)")}`);
-  flowlinkLog(`EAS attestation: ${chalk.white(easUid.slice(0, 10) + "..." + easUid.slice(-4))}`);
+  prooflinkLog(`ProofLink receipt generated: ${chalk.white(receiptId)}`);
+  prooflinkLog(`Invoice generated: ${chalk.white("INV-2026-0042")} ${chalk.gray("(JSON + PDF)")}`);
+  prooflinkLog(`EAS attestation: ${chalk.white(easUid.slice(0, 10) + "..." + easUid.slice(-4))}`);
 
   console.log();
   console.log(`  ${chalk.green.bold("\u{1F4B0}")} ${chalk.green.bold("Settlement authorized — payment complete!")}`);
@@ -213,7 +213,7 @@ export async function runPaymentDemo(): Promise<void> {
       {
         checkType: "AML_MONITORING",
         result: "PASSED",
-        provider: "FlowLink Engine",
+        provider: "ProofLink Engine",
         latencyMs: amlLatency,
       },
       {
@@ -225,7 +225,7 @@ export async function runPaymentDemo(): Promise<void> {
       {
         checkType: "INVOICE_VALIDATION",
         result: "PASSED",
-        provider: "FlowLink Engine",
+        provider: "ProofLink Engine",
         latencyMs: 8,
       },
     ],
@@ -275,7 +275,7 @@ export async function runPaymentDemo(): Promise<void> {
   console.log();
   console.log(
     chalk.gray(
-      '  "x402 delivers payments. FlowLink makes them legal."',
+      '  "x402 delivers payments. ProofLink makes them legal."',
     ),
   );
   console.log();

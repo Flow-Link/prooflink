@@ -36,7 +36,7 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        /* FlowLink brand colors */
+        /* ProofLink brand colors */
         brand: {
           blue: "hsl(var(--brand-blue))",
           teal: "hsl(var(--brand-teal))",

@@ -106,9 +106,9 @@ The following items were checked and found correct:
 - `pay_with_compliance`: `amount.value` uses `.positive()` — correct.
 - `memo`: `.max(256)` applied — correct.
 
-**Integration with `@flowlink/core`**
-- `@flowlink/core` is **not** listed in `package.json` dependencies and is **not** imported anywhere in `src/`. All tool handlers contain stub implementations with `// In production: calls ProofLinkEngine...` comments. This is intentional for the v0.1 stub release; the stubs will be replaced when the core engine is wired in.
-- The `@flowlink/shared` dependency is declared but also not imported in `src/` — it is available for future use without a package.json change.
+**Integration with `@prooflink/core`**
+- `@prooflink/core` is **not** listed in `package.json` dependencies and is **not** imported anywhere in `src/`. All tool handlers contain stub implementations with `// In production: calls ProofLinkEngine...` comments. This is intentional for the v0.1 stub release; the stubs will be replaced when the core engine is wired in.
+- The `@prooflink/shared` dependency is declared but also not imported in `src/` — it is available for future use without a package.json change.
 - The `TRAVEL_RULE_THRESHOLD_USD = 1_000` constant used in `pay-with-compliance.ts` and `submit-travel-rule.ts` matches `TRAVEL_RULE_THRESHOLDS.DEFAULT` and `TRAVEL_RULE_THRESHOLDS.EU` in `packages/shared/src/constants.ts`. It does **not** match `TRAVEL_RULE_THRESHOLDS.US = 3000` — this is a deliberate conservative choice (flag earlier) and is appropriate for a multi-jurisdiction default.
 
 **Test coverage**
@@ -124,11 +124,11 @@ The following items were checked and found correct:
 
 ## Remaining Technical Debt (not fixed — out of scope for stub release)
 
-1. **No `@flowlink/core` wiring**: All tool handlers are stubs. The sanctions `cleared = true` hardcode (`check-sanctions.ts:93`) and `verified = true` hardcode (`verify-kya.ts:46`) mean the tools never actually block anything. This is clearly intentional for the stub phase but must be replaced before production deployment.
+1. **No `@prooflink/core` wiring**: All tool handlers are stubs. The sanctions `cleared = true` hardcode (`check-sanctions.ts:93`) and `verified = true` hardcode (`verify-kya.ts:46`) mean the tools never actually block anything. This is clearly intentional for the stub phase but must be replaced before production deployment.
 
 2. **No rate limiting**: The server accepts unlimited concurrent tool calls. When ProofLink engine calls are wired in, external API calls (Chainalysis, Notabene) need per-client rate limiting to prevent quota exhaustion.
 
-3. **No API key validation at startup**: `index.ts` starts the server without verifying that `FLOWLINK_API_KEY` is present or valid. The `main()` function should call `loadConfig()` from `@flowlink/core` before starting and exit with a clear error if required env vars are missing.
+3. **No API key validation at startup**: `index.ts` starts the server without verifying that `PROOFLINK_API_KEY` is present or valid. The `main()` function should call `loadConfig()` from `@prooflink/core` before starting and exit with a clear error if required env vars are missing.
 
 4. **`verify-kya.ts:73` — dead branch**: The `if (!result.verified)` block is unreachable because `verified` is hardcoded to `true` on line 46. This will become live code once the engine is wired in, so it is correct as written — but static analysis tools will flag it.
 
@@ -138,11 +138,11 @@ The following items were checked and found correct:
 
 ## Files Modified
 
-- `/home/akash/PROJECTS/FLOW-LINK/packages/mcp-server/src/tools/check-sanctions.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/mcp-server/src/tools/verify-kya.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/mcp-server/src/tools/create-invoice.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/mcp-server/src/tools/submit-travel-rule.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/mcp-server/src/tools/get-receipt.ts`
-- `/home/akash/PROJECTS/FLOW-LINK/packages/mcp-server/src/tools/pay-with-compliance.ts`
+- `/home/akash/PROJECTS/prooflink/packages/mcp-server/src/tools/check-sanctions.ts`
+- `/home/akash/PROJECTS/prooflink/packages/mcp-server/src/tools/verify-kya.ts`
+- `/home/akash/PROJECTS/prooflink/packages/mcp-server/src/tools/create-invoice.ts`
+- `/home/akash/PROJECTS/prooflink/packages/mcp-server/src/tools/submit-travel-rule.ts`
+- `/home/akash/PROJECTS/prooflink/packages/mcp-server/src/tools/get-receipt.ts`
+- `/home/akash/PROJECTS/prooflink/packages/mcp-server/src/tools/pay-with-compliance.ts`
 
 All 19 tests pass after fixes.

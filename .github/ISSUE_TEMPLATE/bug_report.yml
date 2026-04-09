@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a bug in FlowLink
+description: Report a bug in ProofLink
 title: "[Bug]: "
 labels: ["bug", "triage"]
 body:
@@ -14,14 +14,14 @@ body:
       label: Affected Package
       description: Which package is affected?
       options:
-        - "@flowlink/core"
-        - "@flowlink/sdk"
-        - "@flowlink/shared"
-        - "@flowlink/x402-compliance"
-        - "@flowlink/mcp-server"
-        - "@flowlink/api"
-        - "@flowlink/dashboard"
-        - "@flowlink/contracts"
+        - "@prooflink/core"
+        - "@prooflink/sdk"
+        - "@prooflink/shared"
+        - "@prooflink/x402-compliance"
+        - "@prooflink/mcp-server"
+        - "@prooflink/api"
+        - "@prooflink/dashboard"
+        - "@prooflink/contracts"
         - "Multiple packages"
     validations:
       required: true

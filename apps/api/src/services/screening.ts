@@ -4,8 +4,9 @@ import {
   TRMLabsProvider,
   loadConfig,
   OFAC_SDN_ETH_ADDRESSES,
-} from "@flowlink/core";
-import type { SanctionsCheckResult } from "@flowlink/shared";
+} from "@prooflink/core";
+import type { SanctionsCheckResult } from "@prooflink/shared";
+import { logger } from "../utils/logger.js";
 
 // ---------------------------------------------------------------------------
 // Singleton screener — lazy-initialized so tests can mock before first use
@@ -76,10 +77,11 @@ export async function screenAddress(
   } catch (error) {
     // Last-resort fallback: offline OFAC SDN set — should rarely happen since
     // the screener itself handles failOpen, but guards against init errors etc.
-    console.warn(
-      `[screening] Screener error for ${address}, falling back to offline list:`,
-      error instanceof Error ? error.message : String(error),
-    );
+    logger.warn("Screener error — falling back to offline OFAC list", {
+      address,
+      chain,
+      error: error instanceof Error ? error.message : String(error),
+    });
 
     const matched = OFAC_SDN_ETH_ADDRESSES.has(address.toLowerCase());
     return {

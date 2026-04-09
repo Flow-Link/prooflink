@@ -19,7 +19,7 @@ export function WorkSection() {
           <h2 className="mb-2 font-sans text-5xl font-light tracking-tight text-foreground md:text-6xl lg:text-7xl">
             Three Layers
           </h2>
-          <p className="font-mono text-sm text-blue-300 md:text-base">/ How FlowLink Scales Compliance</p>
+          <p className="font-mono text-sm text-blue-300 md:text-base">/ How ProofLink Scales Compliance</p>
         </div>
 
         <div className="space-y-6 md:space-y-8">

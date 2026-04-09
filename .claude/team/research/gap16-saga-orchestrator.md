@@ -2,7 +2,7 @@
 
 **Research Date:** March 2026
 **Covers:** Temporal.io sagas, Conductor/Orkes, LangGraph 2PC, ERC-8183 escrow hooks, MAST failure taxonomy, SHIELDA exception framework, arXiv:2601.04583 trust boundary analysis, Dapper Labs production case study
-**FlowLink Gap IDs:** H7 (No Transaction Rollback / Saga Pattern), A14 (Payment-Execution Atomicity Broken), A2 (No Refund/Chargeback), A15 (Protocol Fragmentation)
+**ProofLink Gap IDs:** H7 (No Transaction Rollback / Saga Pattern), A14 (Payment-Execution Atomicity Broken), A2 (No Refund/Chargeback), A15 (Protocol Fragmentation)
 **Severity:** Critical
 **Relevance:** High
 
@@ -10,7 +10,7 @@
 
 ## 1. Problem Statement
 
-Multi-step agent payment workflows fail without any compensating mechanism. When Agent A pays Agent B to orchestrate Agents C and D, and step 3 of 5 fails, the current state across every FlowLink-supported protocol (x402, ACP, AP2, MPP) is:
+Multi-step agent payment workflows fail without any compensating mechanism. When Agent A pays Agent B to orchestrate Agents C and D, and step 3 of 5 fails, the current state across every ProofLink-supported protocol (x402, ACP, AP2, MPP) is:
 
 - Funds already disbursed at step 2 are permanently stranded
 - No compensating transaction path exists at the protocol layer
@@ -21,7 +21,7 @@ The MAST taxonomy (arXiv:2503.13657, UC Berkeley) confirms this is the dominant 
 
 SHIELDA (arXiv:2508.07935) adds a complementary view: across 12 agent artifacts and 36 exception types, **Task Flow failures (error propagation, missing information, task dependency exceptions) and Other Agent failures (protocol mismatch, agent conflict, communication exceptions) are exactly the exception classes that fire when payment steps fail in a chain**. These are not edge cases — they are the dominant runtime failure mode of any agent system doing real work across service boundaries.
 
-The consequence for FlowLink: any production agent using FlowLink to orchestrate multi-step paid workflows will experience fund loss and unrecoverable state with no current remediation path.
+The consequence for ProofLink: any production agent using ProofLink to orchestrate multi-step paid workflows will experience fund loss and unrecoverable state with no current remediation path.
 
 ---
 
@@ -58,19 +58,19 @@ From the 36-exception / 12-artifact taxonomy, these fire specifically during pay
 - `RoleViolation` — sub-agent initiates refund it was not authorized to execute
 - `ProtocolMismatch` — compensation request uses stale x402 schema version
 
-**SHIELDA's triadic handler pattern** (Local Handling + Flow Control + State Recovery) maps directly to saga compensation: retry → skip-failed-step → rollback. Their "Fallback Escalation" path (exhaust all recovery, escalate to human supervisor) is exactly what FlowLink needs as the final tier of its circuit breaker.
+**SHIELDA's triadic handler pattern** (Local Handling + Flow Control + State Recovery) maps directly to saga compensation: retry → skip-failed-step → rollback. Their "Fallback Escalation" path (exhaust all recovery, escalate to human supervisor) is exactly what ProofLink needs as the final tier of its circuit breaker.
 
 ### 2.3 arXiv:2601.04583 — Cross-Protocol Trust Boundaries
 
 "Autonomous Agents on Blockchains: Standards, Execution Models, and Trust Boundaries" (Alqithami, 2026) provides the blockchain-specific failure surface:
 
-**Intent-Execution Mismatch:** An agent formulates a payment intent that is valid at planning time but fails during execution due to MEV extraction, oracle manipulation, or state changes between simulation and broadcast. For FlowLink: a multi-step saga can have its step-3 payment front-run on-chain while the off-chain saga state believes the payment is in-flight.
+**Intent-Execution Mismatch:** An agent formulates a payment intent that is valid at planning time but fails during execution due to MEV extraction, oracle manipulation, or state changes between simulation and broadcast. For ProofLink: a multi-step saga can have its step-3 payment front-run on-chain while the off-chain saga state believes the payment is in-flight.
 
-**Policy Enforcement Breakdown (Class 3):** Middleware-layer compliance checks (FlowLink's before-settle hook) become disconnected from actual chain execution under adversarial conditions. A saga orchestrator must treat each settlement as potentially having diverged from the compliance-cleared intent.
+**Policy Enforcement Breakdown (Class 3):** Middleware-layer compliance checks (ProofLink's before-settle hook) become disconnected from actual chain execution under adversarial conditions. A saga orchestrator must treat each settlement as potentially having diverged from the compliance-cleared intent.
 
 **Multi-Agent Collusion (Class 7):** In a payment chain A→B→C→D, agents B and C could collude to falsely report step completion, triggering full saga payment without actual service delivery. Saga design must include independent verification gates, not just agent-reported status.
 
-**Key design constraint from this paper:** "Layer 4: Execution Controls and Circuit Breakers" — rollback mechanisms are required but not formalized in any existing blockchain agent standard. FlowLink has an opportunity to define this primitive.
+**Key design constraint from this paper:** "Layer 4: Execution Controls and Circuit Breakers" — rollback mechanisms are required but not formalized in any existing blockchain agent standard. ProofLink has an opportunity to define this primitive.
 
 ---
 
@@ -180,7 +180,7 @@ func PaymentSagaWorkflow(ctx workflow.Context, intent PaymentSagaIntent) error {
 - Dapper Labs case: replaced custom event-sourcing engine, achieved 50–60% developer velocity improvement, 30–40% code reduction, demonstrated reliable handling of NBA Top Shot reservation queues with extended timeout periods
 - For blockchain steps (on-chain ERC-8183 calls): dominant latency is block confirmation time (Base: ~2s, Ethereum: ~12s), not Temporal overhead
 
-**Constraints for FlowLink:**
+**Constraints for ProofLink:**
 - Workflow-level timeouts (`WorkflowExecutionTimeout`) must NOT be set — they block `defer` compensation execution
 - `Terminate` and `Reset` operations bypass `defer` — expose these only to admin roles with explicit confirmation
 - All activity functions must be deterministic (no `time.Now()`, no random UUIDs inside activity bodies — derive these from workflow inputs)
@@ -199,14 +199,14 @@ Conductor OSS (the successor to Netflix Conductor) is the only open-source workf
 2. **Event-driven compensation** — a failed task publishes a failure event; compensation tasks subscribe and execute inverse operations
 3. **Sub-workflow rollback** — nested workflows can signal cancellation up the parent chain
 
-Native AI task types relevant to FlowLink:
+Native AI task types relevant to ProofLink:
 - `LLM_TEXT_COMPLETE` / `LLM_CHAT_COMPLETE` — for agent reasoning steps within a payment saga
-- `LIST_MCP_TOOLS` / `CALL_MCP_TOOL` — for MCP-exposed FlowLink tool invocations (create-invoice, screen, etc.)
-- `HTTP` — for calling FlowLink API payment endpoints
+- `LIST_MCP_TOOLS` / `CALL_MCP_TOOL` — for MCP-exposed ProofLink tool invocations (create-invoice, screen, etc.)
+- `HTTP` — for calling ProofLink API payment endpoints
 
-**Key Conductor advantage over Temporal:** JSON-defined workflows (not code-first). This means a FlowLink customer can define their agent payment saga in JSON without writing Go/TypeScript workflow code. The tradeoff is less expressive compensation logic — Conductor does not have native `defer`-stack-style reverse compensation; it requires explicit compensation task configuration per step.
+**Key Conductor advantage over Temporal:** JSON-defined workflows (not code-first). This means a ProofLink customer can define their agent payment saga in JSON without writing Go/TypeScript workflow code. The tradeoff is less expressive compensation logic — Conductor does not have native `defer`-stack-style reverse compensation; it requires explicit compensation task configuration per step.
 
-**Saga applicability rating for FlowLink:** Medium. Conductor is better suited for deterministic workflows where the saga steps and their compensations are known at design time. For emergent agent workflows where compensation logic depends on runtime state, Temporal is stronger.
+**Saga applicability rating for ProofLink:** Medium. Conductor is better suited for deterministic workflows where the saga steps and their compensations are known at design time. For emergent agent workflows where compensation logic depends on runtime state, Temporal is stronger.
 
 **Latency:** Similar to Temporal — workflow engine overhead of 10–50ms per task transition. LLM task types add the underlying model's inference latency on top.
 
@@ -243,7 +243,7 @@ class PaymentSagaState(TypedDict):
     phase: str  # "prepare" | "commit" | "compensate"
 
 def acquire_clearance(state: PaymentSagaState) -> PaymentSagaState:
-    clearance_id = flowlink_client.acquire_compliance_clearance(state["intent"])
+    clearance_id = prooflink_client.acquire_compliance_clearance(state["intent"])
     return {"clearance_id": clearance_id, "phase": "clearance_acquired"}
 
 def fund_escrow(state: PaymentSagaState) -> PaymentSagaState:
@@ -259,7 +259,7 @@ def approval_gate(state: PaymentSagaState):
 
 def compensate_from_escrow(state: PaymentSagaState) -> PaymentSagaState:
     erc8183_client.reject(state["escrow_job_id"], reason="saga_compensation")
-    flowlink_client.release_clearance(state["clearance_id"])
+    prooflink_client.release_clearance(state["clearance_id"])
     return {"compensation_log": ["escrow_rejected", "clearance_released"], "phase": "compensated"}
 ```
 
@@ -273,7 +273,7 @@ def compensate_from_escrow(state: PaymentSagaState) -> PaymentSagaState:
 - Automatic worker crash recovery (you must implement this yourself with your checkpointer)
 - Distributed execution across multiple processes without additional infrastructure (LangGraph Platform / LangGraph Cloud addresses this but adds dependency)
 
-**Applicability to FlowLink:** Good for agent-reasoning-heavy workflows where the LLM itself participates in deciding whether to commit or compensate. Poor for high-throughput payment pipelines (thousands of concurrent sagas) where Temporal's worker pool model outperforms.
+**Applicability to ProofLink:** Good for agent-reasoning-heavy workflows where the LLM itself participates in deciding whether to commit or compensate. Poor for high-throughput payment pipelines (thousands of concurrent sagas) where Temporal's worker pool model outperforms.
 
 ---
 
@@ -301,7 +301,7 @@ interface IACPHook is IERC165 {
 ```
 
 Before-hooks fire before state changes — use for:
-- Validating FlowLink compliance clearance exists before `fund()` executes
+- Validating ProofLink compliance clearance exists before `fund()` executes
 - Checking sub-agent reputation score before `setProvider()` executes
 - Enforcing budget caps before `setBudget()` executes
 
@@ -331,14 +331,14 @@ Compensation chain:
   → after-hook fires reject() on Parent Job (refund to Client A)
 ```
 
-**Non-hookable refund as saga safety net:** `claimRefund()` is intentionally excluded from the hook system. This means a stuck saga (hook permanently reverting, agent offline) cannot permanently strand funds — any party can call `claimRefund()` after `expiredAt` passes. **This is the most important safety property for FlowLink**: even if the saga orchestrator crashes and never recovers, client funds return automatically.
+**Non-hookable refund as saga safety net:** `claimRefund()` is intentionally excluded from the hook system. This means a stuck saga (hook permanently reverting, agent offline) cannot permanently strand funds — any party can call `claimRefund()` after `expiredAt` passes. **This is the most important safety property for ProofLink**: even if the saga orchestrator crashes and never recovers, client funds return automatically.
 
 **Payment rollback latency for ERC-8183:**
 - `reject()` on Base: ~2 second block time + gas (negligible on Base, ~$0.001)
 - `claimRefund()` after expiry: same block time, permissionless, gas paid by caller
 - For multi-hop chains: each hop adds one transaction's worth of latency; 5-hop chain ≈ 10 seconds end-to-end for full compensation cascade on Base
 
-**Applicability to FlowLink:** ERC-8183 should be FlowLink's on-chain saga primitive for all EVM payment flows. Its hook system is the integration point for FlowLink's compliance layer (before-hooks) and saga coordination logic (after-hooks). The timeout-based `claimRefund()` eliminates the "stranded funds" failure mode entirely.
+**Applicability to ProofLink:** ERC-8183 should be ProofLink's on-chain saga primitive for all EVM payment flows. Its hook system is the integration point for ProofLink's compliance layer (before-hooks) and saga coordination logic (after-hooks). The timeout-based `claimRefund()` eliminates the "stranded funds" failure mode entirely.
 
 ---
 
@@ -363,27 +363,27 @@ Compensation chain:
 The optimal architecture is a layered combination:
 1. **Temporal** as the off-chain saga orchestrator (durable state, retry policies, compensation stack)
 2. **ERC-8183** as the on-chain escrow primitive per saga step (atomic fund lock/release)
-3. **FlowLink's before/after-settle hooks** as the compliance gate within each Temporal activity
+3. **ProofLink's before/after-settle hooks** as the compliance gate within each Temporal activity
 4. **SHIELDA's triadic handler patterns** as the exception classification and escalation framework when a saga step fires an unexpected exception class
 
 ---
 
-## 5. FlowLink Implementation Design
+## 5. ProofLink Implementation Design
 
 ### 5.1 Architecture: `SagaOrchestrator` Service
 
 ```
-FlowLink SagaOrchestrator
+ProofLink SagaOrchestrator
 ├── Temporal Worker Pool
 │   ├── PaymentSagaWorkflow        (orchestrates steps, owns compensation stack)
-│   ├── ComplianceClearanceActivity (acquires/releases FlowLink compliance lock)
+│   ├── ComplianceClearanceActivity (acquires/releases ProofLink compliance lock)
 │   ├── EscrowJobActivity           (ERC-8183 create + fund + reject/complete)
 │   ├── SubAgentDispatchActivity    (A2A/ACP/x402 dispatch with signed receipts)
 │   ├── DeliverableVerifyActivity   (waits for deliverable hash, verifies against EAS)
 │   └── SagaCircuitBreakerActivity  (SHIELDA escalation: retry → skip → abort → human)
 ├── ERC-8183 Hook Contracts
-│   ├── FlowLinkBeforeHook          (compliance gate on fund(), setProvider())
-│   └── FlowLinkAfterHook           (saga event emission, parent job coordination)
+│   ├── ProofLinkBeforeHook          (compliance gate on fund(), setProvider())
+│   └── ProofLinkAfterHook           (saga event emission, parent job coordination)
 └── Saga State API
     ├── GET  /saga/:id               (current step, compensation log, ERC-8183 job IDs)
     ├── POST /saga/:id/signal        (inject external signal: approval, rejection, timeout)
@@ -449,7 +449,7 @@ export interface PaymentSagaIntent {
   complianceClearanceRequired: boolean;
   // ERC-8183 escrow params
   escrowExpiredAt: number; // Unix timestamp — must be > saga timeout
-  evaluatorAddress: string; // FlowLink's evaluator contract or client's address
+  evaluatorAddress: string; // ProofLink's evaluator contract or client's address
 }
 ```
 
@@ -547,21 +547,21 @@ export interface EscrowJobActivity {
 }
 ```
 
-### 5.5 FlowLink Hook Contract (ERC-8183 Integration)
+### 5.5 ProofLink Hook Contract (ERC-8183 Integration)
 
 ```solidity
-// contracts/FlowLinkSagaHook.sol
+// contracts/ProofLinkSagaHook.sol
 
 interface IACPHook {
     function beforeAction(uint256 jobId, bytes4 selector, bytes calldata data) external;
     function afterAction(uint256 jobId, bytes4 selector, bytes calldata data) external;
 }
 
-contract FlowLinkSagaHook is IACPHook, IERC165 {
-    // FlowLink compliance oracle — gates fund() calls
-    IFlowLinkComplianceOracle public immutable oracle;
+contract ProofLinkSagaHook is IACPHook, IERC165 {
+    // ProofLink compliance oracle — gates fund() calls
+    IProofLinkComplianceOracle public immutable oracle;
     // Saga coordinator — receives after-action events
-    IFlowLinkSagaCoordinator public immutable coordinator;
+    IProofLinkSagaCoordinator public immutable coordinator;
 
     bytes4 constant FUND_SELECTOR = bytes4(keccak256("fund(uint256,bytes)"));
     bytes4 constant SET_PROVIDER_SELECTOR = bytes4(keccak256("setProvider(uint256,address)"));
@@ -573,7 +573,7 @@ contract FlowLinkSagaHook is IACPHook, IERC165 {
             // Require compliance clearance exists for this job
             require(
                 oracle.hasClearance(jobId),
-                "FlowLink: compliance clearance required before funding"
+                "ProofLink: compliance clearance required before funding"
             );
         }
         if (selector == SET_PROVIDER_SELECTOR) {
@@ -581,7 +581,7 @@ contract FlowLinkSagaHook is IACPHook, IERC165 {
             // Require provider has ERC-8004 registry entry (KYA check)
             require(
                 oracle.isRegisteredAgent(provider),
-                "FlowLink: provider must be a registered agent"
+                "ProofLink: provider must be a registered agent"
             );
         }
     }
@@ -712,9 +712,9 @@ Assuming Base L2 deployment:
 
 | Step | Component | Latency |
 |---|---|---|
-| Compliance clearance | FlowLink AML + TRM/Chainalysis API | 100–500ms |
+| Compliance clearance | ProofLink AML + TRM/Chainalysis API | 100–500ms |
 | ERC-8183 create + fund | Block confirmation on Base | ~2s |
-| FlowLink before-hook validation | On-chain oracle call + gas | ~2s (same tx) |
+| ProofLink before-hook validation | On-chain oracle call + gas | ~2s (same tx) |
 | Sub-agent dispatch (A2A/ACP) | Network + agent reasoning | 500ms–5s |
 | Deliverable verification | EAS attestation lookup | 200–500ms |
 | ERC-8183 complete | Block confirmation on Base | ~2s |
@@ -722,27 +722,27 @@ Assuming Base L2 deployment:
 | **Total (happy path)** | | **~7–12 seconds** |
 | **Total (with compensation, 3 steps)** | | **~4–6 additional seconds** |
 
-**Comparison to current FlowLink x402 flow:** A single x402 payment with compliance is ~300–700ms. The saga adds 7–12s for a 5-step flow. This is acceptable for high-value, multi-step workflows (agent pipelines, B2B orchestration) but NOT suitable for sub-second micropayments. Saga orchestration is explicitly for complex multi-step flows; streaming micropayments remain a separate architecture.
+**Comparison to current ProofLink x402 flow:** A single x402 payment with compliance is ~300–700ms. The saga adds 7–12s for a 5-step flow. This is acceptable for high-value, multi-step workflows (agent pipelines, B2B orchestration) but NOT suitable for sub-second micropayments. Saga orchestration is explicitly for complex multi-step flows; streaming micropayments remain a separate architecture.
 
 ---
 
 ## 8. What Doesn't Exist Yet (Gaps Within the Gap)
 
-The research reveals several second-order gaps that FlowLink will need to solve:
+The research reveals several second-order gaps that ProofLink will need to solve:
 
-1. **No saga-aware agent identity**: When an agent calls `reject()` on an ERC-8183 job as a compensation, there is no standard for proving that this agent was authorized to perform that compensation (vs. an attacker calling `reject()` to steal the refund). FlowLink needs a signed compensation authorization attached to each saga step.
+1. **No saga-aware agent identity**: When an agent calls `reject()` on an ERC-8183 job as a compensation, there is no standard for proving that this agent was authorized to perform that compensation (vs. an attacker calling `reject()` to steal the refund). ProofLink needs a signed compensation authorization attached to each saga step.
 
-2. **No cross-protocol saga correlation**: If step 2 uses x402 and step 4 uses ACP, the saga orchestrator must maintain a unified correlation ID that links both payment protocol flows. No existing standard provides this. FlowLink's `sagaId` (sha256 of intent params) is the proposed correlation primitive.
+2. **No cross-protocol saga correlation**: If step 2 uses x402 and step 4 uses ACP, the saga orchestrator must maintain a unified correlation ID that links both payment protocol flows. No existing standard provides this. ProofLink's `sagaId` (sha256 of intent params) is the proposed correlation primitive.
 
-3. **No saga-level compliance receipt**: Current FlowLink `SettlementResult` covers a single payment. A multi-step saga needs a composite receipt that covers all steps with their individual compliance checks and the final compensation state. This is needed for VASP-to-VASP Travel Rule reporting.
+3. **No saga-level compliance receipt**: Current ProofLink `SettlementResult` covers a single payment. A multi-step saga needs a composite receipt that covers all steps with their individual compliance checks and the final compensation state. This is needed for VASP-to-VASP Travel Rule reporting.
 
-4. **LangGraph 2PC without Temporal durability**: LangGraph's `interrupt()` mechanism provides the approval-gate primitive but lacks Temporal's crash recovery. A production FlowLink deployment should use LangGraph for the agent reasoning portions and Temporal for the durable execution backbone — not one or the other exclusively.
+4. **LangGraph 2PC without Temporal durability**: LangGraph's `interrupt()` mechanism provides the approval-gate primitive but lacks Temporal's crash recovery. A production ProofLink deployment should use LangGraph for the agent reasoning portions and Temporal for the durable execution backbone — not one or the other exclusively.
 
 5. **MAST coordination failures are not caught by ERC-8183**: On-chain escrow protects funds. It does NOT protect against the 36.9% MAST coordination failure rate where agents fail to communicate properly. The saga orchestrator must treat every sub-agent result as potentially erroneous and verify independently (e.g., EAS attestation of deliverable hash, not just agent self-report).
 
 ---
 
-## 9. Implementation Roadmap for FlowLink
+## 9. Implementation Roadmap for ProofLink
 
 ### Phase 1 — Foundation (Weeks 1–4)
 - [ ] Define `PaymentSagaIntent` schema in `packages/shared/src/types/`
@@ -759,9 +759,9 @@ The research reveals several second-order gaps that FlowLink will need to solve:
 - [ ] Temporal worker pool config: separate task queues for compliance, escrow, and sub-agent activities
 
 ### Phase 3 — On-Chain Hooks (Weeks 9–12)
-- [ ] Deploy `FlowLinkSagaHook` contract implementing `IACPHook`
-- [ ] Integrate compliance oracle contract (reads FlowLink off-chain clearance into on-chain state)
-- [ ] Deploy `FlowLinkSagaCoordinator` contract that receives after-action events
+- [ ] Deploy `ProofLinkSagaHook` contract implementing `IACPHook`
+- [ ] Integrate compliance oracle contract (reads ProofLink off-chain clearance into on-chain state)
+- [ ] Deploy `ProofLinkSagaCoordinator` contract that receives after-action events
 - [ ] Audit hook contracts: verify reentrancy protection, non-hookable `claimRefund()`, idempotent `reject()`
 - [ ] Test nested saga with 3-level job chain (parent → orchestrator → 2 specialists)
 

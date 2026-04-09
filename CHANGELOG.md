@@ -6,17 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [0.1.0] — 2026-03-21
 
-Initial release of FlowLink — compliance-as-infrastructure for stablecoin and AI agent payments.
+Initial release of ProofLink — compliance-as-infrastructure for stablecoin and AI agent payments.
 
 ### Added
 
-- **@flowlink/shared** — Shared types, constants, and utilities across all packages
-- **@flowlink/core** — ProofLink compliance decision engine (sanctions screening, KYC, AML)
-- **@flowlink/sdk** — TypeScript client SDK for the FlowLink compliance API
-- **@flowlink/x402-compliance** — Compliance middleware for x402 payment protocol (sanctions, AML, Travel Rule, ProofLink receipts, rate limiting, multi-chain)
-- **@flowlink/mcp-server** — MCP compliance server for AI agent integration (sanctions screening, KYA, travel rule, compliant payments)
-- **@flowlink/contracts** — Solidity smart contracts for compliance receipts, KYA, invoices, and x402 facilitator (Foundry)
-- **@flowlink/integrations** — Optional external service integrations for compliance infrastructure
+- **@prooflink/shared** — Shared types, constants, and utilities across all packages
+- **@prooflink/core** — ProofLink compliance decision engine (sanctions screening, KYC, AML)
+- **@prooflink/sdk** — TypeScript client SDK for the ProofLink compliance API
+- **@prooflink/x402-compliance** — Compliance middleware for x402 payment protocol (sanctions, AML, Travel Rule, ProofLink receipts, rate limiting, multi-chain)
+- **@prooflink/mcp-server** — MCP compliance server for AI agent integration (sanctions screening, KYA, travel rule, compliant payments)
+- **@prooflink/contracts** — Solidity smart contracts for compliance receipts, KYA, invoices, and x402 facilitator (Foundry)
+- **@prooflink/integrations** — Optional external service integrations for compliance infrastructure
 - **apps/api** — HTTP API server
 - **apps/dashboard** — Web dashboard (Next.js)
 - **apps/demo** — Demo application

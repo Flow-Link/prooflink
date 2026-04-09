@@ -2,7 +2,7 @@ import chalk from "chalk";
 import oraImport from "ora";
 
 import {
-  flowlinkLog,
+  prooflinkLog,
   sectionHeader,
   stepHeader,
   timingDisplay,
@@ -39,7 +39,7 @@ export async function runWebhookDemo(): Promise<void> {
 
   sectionHeader("REAL-TIME WEBHOOK DEMO");
 
-  console.log(chalk.gray("  FlowLink sends real-time webhooks for every compliance event."));
+  console.log(chalk.gray("  ProofLink sends real-time webhooks for every compliance event."));
   console.log(chalk.gray("  Integrate with Slack, PagerDuty, ERP systems, or custom dashboards."));
   console.log(chalk.gray("  All payloads are signed with HMAC-SHA256 for authenticity.\n"));
 
@@ -55,7 +55,7 @@ export async function runWebhookDemo(): Promise<void> {
   console.log(`  ${chalk.gray("Endpoint:")} ${chalk.cyan(webhookUrl)}`);
   console.log(`  ${chalk.gray("Events:")}   ${chalk.white("screening.*, payment.*, travel_rule.*, kya.*")}`);
   console.log(`  ${chalk.gray("Format:")}   ${chalk.white("JSON (application/json)")}`);
-  console.log(`  ${chalk.gray("Auth:")}     ${chalk.white("HMAC-SHA256 signature in X-FlowLink-Signature header")}`);
+  console.log(`  ${chalk.gray("Auth:")}     ${chalk.white("HMAC-SHA256 signature in X-ProofLink-Signature header")}`);
   console.log();
 
   const spinnerReg = ora({
@@ -67,8 +67,8 @@ export async function runWebhookDemo(): Promise<void> {
   spinnerReg.succeed(chalk.gray("Webhook registered"));
 
   const subscriptionId = `sub_${Math.random().toString(36).slice(2, 10)}`;
-  flowlinkLog(`Subscription ID: ${chalk.white(subscriptionId)}`);
-  flowlinkLog(`Secret: ${chalk.white("whsec_" + "x".repeat(32))} ${chalk.gray("(for HMAC verification)")}`);
+  prooflinkLog(`Subscription ID: ${chalk.white(subscriptionId)}`);
+  prooflinkLog(`Secret: ${chalk.white("whsec_" + "x".repeat(32))} ${chalk.gray("(for HMAC verification)")}`);
 
   reporter.addEvent({
     type: "webhook",
@@ -114,7 +114,7 @@ export async function runWebhookDemo(): Promise<void> {
   };
   events.push(event1);
 
-  flowlinkLog(`${chalk.green("\u2192")} Webhook fired: ${chalk.green.bold("screening.cleared")}`);
+  prooflinkLog(`${chalk.green("\u2192")} Webhook fired: ${chalk.green.bold("screening.cleared")}`);
   formatJson(`Webhook: ${event1.type}`, {
     id: event1.id,
     type: event1.type,
@@ -161,7 +161,7 @@ export async function runWebhookDemo(): Promise<void> {
   };
   events.push(event2);
 
-  flowlinkLog(`${chalk.red("\u2192")} Webhook fired: ${chalk.red.bold("screening.blocked")}`);
+  prooflinkLog(`${chalk.red("\u2192")} Webhook fired: ${chalk.red.bold("screening.blocked")}`);
   formatJson(`Webhook: ${event2.type}`, {
     id: event2.id,
     type: event2.type,
@@ -211,7 +211,7 @@ export async function runWebhookDemo(): Promise<void> {
   };
   events.push(event3);
 
-  flowlinkLog(`${chalk.magenta("\u2192")} Webhook fired: ${chalk.magenta.bold("payment.settled")}`);
+  prooflinkLog(`${chalk.magenta("\u2192")} Webhook fired: ${chalk.magenta.bold("payment.settled")}`);
   formatJson(`Webhook: ${event3.type}`, {
     id: event3.id,
     type: event3.type,
@@ -265,7 +265,7 @@ export async function runWebhookDemo(): Promise<void> {
   };
   events.push(event4);
 
-  flowlinkLog(`${chalk.yellow("\u2192")} Webhook fired: ${chalk.yellow.bold("travel_rule.completed")}`);
+  prooflinkLog(`${chalk.yellow("\u2192")} Webhook fired: ${chalk.yellow.bold("travel_rule.completed")}`);
   formatJson(`Webhook: ${event4.type}`, {
     id: event4.id,
     type: event4.type,
@@ -310,7 +310,7 @@ export async function runWebhookDemo(): Promise<void> {
   };
   events.push(event5);
 
-  flowlinkLog(`${chalk.cyan("\u2192")} Webhook fired: ${chalk.cyan.bold("kya.verified")}`);
+  prooflinkLog(`${chalk.cyan("\u2192")} Webhook fired: ${chalk.cyan.bold("kya.verified")}`);
   formatJson(`Webhook: ${event5.type}`, {
     id: event5.id,
     type: event5.type,

@@ -45,6 +45,8 @@ interface WsEvent {
   data: Record<string, unknown>;
   timestamp: string;
   id: string;
+  /** When set, only deliver to clients authenticated with this apiKeyId. */
+  apiKeyId?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -110,11 +112,24 @@ function startHeartbeat(): void {
 // ---------------------------------------------------------------------------
 
 /**
- * Broadcast an event to all connected WebSocket clients subscribed to the event type.
+ * Broadcast an event to connected WebSocket clients subscribed to the event type.
+ *
+ * Tenant isolation: if the event carries an `apiKeyId`, only clients
+ * authenticated with that same key receive the message. System events
+ * (no apiKeyId) are broadcast to all subscribers.
+ *
+ * The `apiKeyId` is stripped from the payload before sending so it is
+ * never leaked to clients.
  */
 export function broadcastWsEvent(event: WsEvent): void {
-  const payload = JSON.stringify(event);
+  // Strip apiKeyId from the payload sent to clients
+  const { apiKeyId, ...safeEvent } = event;
+  const payload = JSON.stringify(safeEvent);
+
   for (const client of clients.values()) {
+    // Tenant isolation: if event is scoped, only matching clients receive it
+    if (apiKeyId && client.apiKeyId !== apiKeyId) continue;
+
     if (client.subscriptions.size === 0 || client.subscriptions.has(event.type)) {
       try {
         client.ws.send(payload);
@@ -128,6 +143,23 @@ export function broadcastWsEvent(event: WsEvent): void {
 /** Get the count of active WebSocket connections. */
 export function getWsClientCount(): number {
   return clients.size;
+}
+
+/** Gracefully close all WebSocket connections during server shutdown. */
+export function shutdownWebSockets(): void {
+  if (heartbeatTimer) {
+    clearInterval(heartbeatTimer);
+    heartbeatTimer = null;
+  }
+
+  for (const [id, client] of clients) {
+    try {
+      client.ws.close(1001, "Server shutting down");
+    } catch {
+      /* already closed */
+    }
+    clients.delete(id);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -273,7 +305,7 @@ export function handleWsConnection(ws: WebSocket, apiKeyId: string): void {
       type: "connected",
       clientId,
       availableEvents: VALID_EVENTS,
-      message: "Connected to FlowLink event stream. Send subscribe messages to start receiving events.",
+      message: "Connected to ProofLink event stream. Send subscribe messages to start receiving events.",
     }),
   );
 

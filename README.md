@@ -1,138 +1,297 @@
 <p align="center">
-  <img src="https://via.placeholder.com/200x200?text=FlowLink" alt="FlowLink Logo" width="200" />
-</p>
-
-<h1 align="center">FlowLink</h1>
-
-<p align="center">
-  <strong>Compliance-as-infrastructure for AI agent payments</strong>
+  <h1 align="center">ProofLink</h1>
 </p>
 
 <p align="center">
-  <a href="#quick-start"><img src="https://img.shields.io/badge/npm-%40flowlink%2Fsdk-blue?logo=npm" alt="npm" /></a>
-  <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Solidity-0.8.25-363636?logo=solidity" alt="Solidity" />
-  <img src="https://img.shields.io/badge/license-MIT-green" alt="License" />
-  <img src="https://img.shields.io/badge/build-passing-brightgreen" alt="Build" />
-  <img src="https://img.shields.io/badge/Base-Sepolia-0052FF?logo=coinbase" alt="Base Sepolia" />
+  <strong>Compliance infrastructure for AI agent payments</strong>
 </p>
 
 <p align="center">
-  The neutral middleware that makes every stablecoin payment legal, auditable, and enterprise-safe.<br/>
-  Sanctions screening. FATF Travel Rule. Know Your Agent. On-chain compliance receipts.<br/>
-  One API call. Every protocol.
+  Real-time sanctions screening · AML risk scoring · FATF Travel Rule · Cryptographic compliance receipts
+</p>
+
+<p align="center">
+  <a href="https://github.com/Flow-Link/prooflink/actions"><img src="https://img.shields.io/github/actions/workflow/status/Flow-Link/prooflink/ci.yml?branch=master&label=CI&logo=github" alt="CI" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT" /></a>
+  <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript strict" />
+  <img src="https://img.shields.io/badge/tests-1557%2B%20passing-brightgreen" alt="Tests: 1557+ passing" />
 </p>
 
 ---
 
-## Why FlowLink
+## The Problem
 
-Six agent payment protocols launched in 12 months. **Zero have native compliance.**
+Six agent payment protocols shipped in 12 months. **None have compliance.**
 
-- **Regulation is here.** The GENIUS Act (July 2025) and MiCA (mid-2026) make stablecoin compliance a legal requirement. 99 jurisdictions enforce the FATF Travel Rule. The fine wave is imminent.
-- **Agent payments have no identity layer.** x402, MPP, AP2, ACP, Visa TAP, Mastercard Agent Pay -- none define how originator information travels with autonomous agent transactions.
-- **No compliance MCP server exists.** Payment MCP servers are proliferating (PayPal, Worldpay, Marqeta). Compliance MCP servers: zero. Agents can `get_weather()` but cannot `check_sanctions()`.
-- **Acquirers are buying now.** Mastercard acquired BVNK for $1.8B. Stripe acquired Bridge for $1.1B. Both compliance-native stablecoin infrastructure. The playbook is proven.
+The GENIUS Act takes effect July 2025. MiCA enforcement begins mid-2026. Ninety-nine jurisdictions already enforce the FATF Travel Rule. Every stablecoin payment an autonomous agent makes will need identity, screening, and audit trails -- and none of the protocols (x402, MPP, AP2, ACP, A2A) define how that works.
+
+ProofLink is the shared compliance layer. One API call screens both parties, scores risk, transmits Travel Rule data, and produces a cryptographic receipt. Drop it in front of any protocol. Ship compliant from day one.
 
 ---
 
-## What FlowLink Does
+## How It Works
 
 ```
-                    ┌─────────────────────────────────┐
-                    │         AI Agent / App           │
-                    │  (Claude, LangChain, Custom)     │
-                    └──────────────┬──────────────────┘
-                                   │
-                    ┌──────────────▼──────────────────┐
-                    │      FlowLink SDK / MCP         │
-                    │   @flowlink/sdk  |  MCP Server   │
-                    └──────────────┬──────────────────┘
-                                   │
-         ┌─────────────────────────▼─────────────────────────┐
-         │              FlowLink Compliance Engine            │
-         │                                                    │
-         │  ┌────────────┐ ┌──────────┐ ┌──────────────────┐ │
-         │  │ Sanctions   │ │ AML      │ │ Travel Rule      │ │
-         │  │ Screening   │ │ Scoring  │ │ (FATF/Notabene)  │ │
-         │  └────────────┘ └──────────┘ └──────────────────┘ │
-         │  ┌────────────┐ ┌──────────┐ ┌──────────────────┐ │
-         │  │ KYA        │ │ Juris-   │ │ ProofLink        │ │
-         │  │ (Agent ID) │ │ diction  │ │ Receipts (EAS)   │ │
-         │  └────────────┘ └──────────┘ └──────────────────┘ │
-         └─────────────────────────┬─────────────────────────┘
-                                   │
-              ┌────────────────────┼────────────────────┐
-              ▼                    ▼                    ▼
-        ┌──────────┐        ┌──────────┐        ┌──────────┐
-        │   x402   │        │   MPP    │        │   AP2    │
-        │ (Coinbase)│        │ (Stripe) │        │ (Visa)   │
-        └──────────┘        └──────────┘        └──────────┘
+  Payment Request
+        |
+        v
++---------------+     +---------------+     +---------------+
+|   Identity    | --> |  Sanctions    | --> |     AML       |
+|  Resolution   |     |  Screening    |     |   Scoring     |
+| (KYA / DID)   |     | (OFAC/EU/UN)  |     |   (0-100)     |
++---------------+     +---------------+     +---------------+
+                                                    |
+                                                    v
++---------------+     +---------------+     +---------------+
+|   Receipt     | <-- |  Travel Rule  | <-- |   Decision    |
+| (EAS on-chain)|     | (FATF/GENIUS) |     |    Engine     |
++---------------+     +---------------+     +---------------+
 ```
 
-**Key features:**
+**Risk score thresholds:**
 
-- **ProofLink Receipts** -- Cryptographically signed, on-chain compliance attestations via EAS. The document a CFO hands to an auditor.
-- **Know Your Agent (KYA)** -- W3C Verifiable Credential standard for AI agent identity. Who built it, who controls it, what it can spend.
-- **Agent Invoice Standard** -- Machine-readable invoice format for autonomous agent commerce. JSON-LD schema with on-chain anchoring.
-- **Cross-Protocol Compliance** -- One engine spanning x402, MPP, AP2, ACP, and direct transfers. More fragmentation = more value.
-- **MCP Compliance Server** -- Six tools that make compliance an ambient capability for any AI agent.
-- **Real-Time Dashboard** -- Monitor compliance checks, risk distribution, and travel rule status.
+| Score | Decision | What happens |
+|-------|----------|-------------|
+| 0--49 | `APPROVED` | Payment proceeds automatically |
+| 50--79 | `ESCALATED` | Flagged for manual review |
+| 80--100 | `REJECTED` | Payment blocked, SAR generated |
+
+The full pipeline completes in under 200ms.
 
 ---
 
 ## Quick Start
 
 ```bash
-npm install @flowlink/sdk
+git clone https://github.com/Flow-Link/prooflink.git
+cd prooflink
+corepack enable && pnpm install
+
+# Start Postgres + Redis
+docker compose up -d postgres redis
+
+# Configure environment
+cp .env.example .env
+
+# Run migrations and start dev servers
+pnpm --filter=@prooflink/api db:migrate
+pnpm dev
 ```
 
-```ts
-import { FlowLinkClient } from "@flowlink/sdk";
+API runs on `localhost:3001`. Dashboard on `localhost:3100`.
 
-const flowlink = new FlowLinkClient({ apiKey: process.env.FLOWLINK_API_KEY! });
+---
 
-const decision = await flowlink.checkCompliance({
+## Architecture
+
+### Monorepo Structure
+
+```
+prooflink/
+├── apps/
+│   ├── api/              # Hono REST API server
+│   ├── dashboard/        # Next.js 15 admin dashboard
+│   └── demo/             # Interactive demo scenarios
+├── packages/
+│   ├── core/             # Compliance decision engine
+│   ├── sdk/              # TypeScript client SDK
+│   ├── x402-compliance/  # x402 protocol middleware
+│   ├── mcp-server/       # MCP compliance server (11 tools)
+│   ├── contracts/        # Solidity smart contracts (Foundry)
+│   ├── shared/           # Shared types, schemas, constants
+│   └── integrations/     # Third-party bridges (Request Finance)
+├── k8s/                  # Kubernetes manifests
+├── docker-compose.yml    # Local development stack
+└── turbo.json            # Turborepo pipeline config
+```
+
+### Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Runtime | Node.js 22, TypeScript 5.8 (strict) |
+| API | Hono |
+| Database | PostgreSQL 16, Drizzle ORM |
+| Cache | Redis 7 |
+| Frontend | Next.js 15, React 19, Tailwind CSS, Radix UI |
+| Contracts | Solidity 0.8.25, Foundry, EAS |
+| Build | Turborepo, pnpm workspaces |
+| Lint | Biome |
+| Blockchain | Base (EAS native at `0x4200...0021`) |
+
+---
+
+## API Reference
+
+### Full Compliance Check
+
+```bash
+curl -X POST https://api.prooflink.io/v1/compliance/check \
+  -H "Authorization: Bearer fl_live_sk_a1b2c3d4e5f6" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "sender": {
+      "address": "0x742d35Cc6634C0532925a3b844Bc9e7595f2bD68",
+      "chain": "base",
+      "agentDID": "did:prooflink:agent:data-processor"
+    },
+    "receiver": {
+      "address": "0x8Ba1f109551bD432803012645Ac136ddd64DBA72",
+      "chain": "base"
+    },
+    "amount": "5000",
+    "asset": "USDC",
+    "protocol": "x402"
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "id": "chk_a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "status": "APPROVED",
+  "riskScore": 12,
+  "sanctions": {
+    "sender": { "clear": true, "lists": ["OFAC_SDN", "EU", "UN"] },
+    "receiver": { "clear": true, "lists": ["OFAC_SDN", "EU", "UN"] }
+  },
+  "travelRule": {
+    "required": true,
+    "transmitted": true,
+    "protocol": "TRISA"
+  },
+  "receipt": {
+    "id": "rcpt_f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "attestationUid": "0x1a2b3c4d...",
+    "explorerUrl": "https://base.easscan.org/attestation/view/0x1a2b3c4d..."
+  },
+  "processingTimeMs": 142
+}
+```
+
+### Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/v1/compliance/check` | Full compliance check (screening + AML + Travel Rule) |
+| `POST` | `/v1/compliance/screen` | Sanctions screening only |
+| `POST` | `/v1/compliance/batch` | Batch compliance checks |
+| `GET` | `/v1/compliance/analytics` | Compliance volume and risk analytics |
+| `POST` | `/v1/identity/verify` | Verify agent identity (KYA) |
+| `POST` | `/v1/identity/register` | Register a new agent |
+| `GET` | `/v1/identity/agents/:id` | Get agent details |
+| `POST` | `/v1/invoices` | Create a compliance-stamped invoice |
+| `GET` | `/v1/invoices` | List invoices |
+| `GET` | `/v1/invoices/:id` | Get invoice details |
+| `POST` | `/v1/travel-rule/submit` | Submit Travel Rule transfer |
+| `GET` | `/v1/receipts/:id` | Get compliance receipt |
+| `GET` | `/v1/receipts` | List receipts |
+| `POST` | `/v1/policies` | Create compliance policy |
+| `GET` | `/v1/policies` | List active policies |
+| `GET` | `/v1/reports` | Generate compliance reports |
+| `POST` | `/v1/disputes` | File a compliance dispute |
+| `POST` | `/v1/escrow` | Create escrow with compliance gate |
+| `GET` | `/v1/discovery` | Protocol discovery endpoint |
+| `GET` | `/v1/webhooks` | List configured webhooks |
+| `POST` | `/v1/webhooks` | Register a webhook |
+| `GET` | `/health` | Health check |
+
+Full request/response schemas: [`docs/api-reference.md`](docs/api-reference.md)
+
+---
+
+## SDK Usage
+
+```bash
+pnpm add @prooflink/sdk
+```
+
+```typescript
+import { ProofLinkClient } from "@prooflink/sdk";
+
+const client = new ProofLinkClient({
+  apiKey: process.env.PROOFLINK_API_KEY!,
+  baseUrl: "https://api.prooflink.io", // optional, defaults to production
+});
+
+// Run a compliance check
+const result = await client.checkCompliance({
   sender: { address: "0xAlice", chain: "base" },
   receiver: { address: "0xBob", chain: "base" },
   amount: "5000",
   asset: "USDC",
 });
 
-console.log(decision.status);    // "APPROVED"
-console.log(decision.riskScore); // 12
-console.log(decision.receiptId); // "a1b2c3d4-..."  <- on-chain proof
+console.log(result.status);     // "APPROVED"
+console.log(result.riskScore);  // 12
+console.log(result.receipt.id); // "rcpt_f47ac10b-..."
+
+// Screen a single address
+const screen = await client.screenAddress({
+  address: "0x742d35Cc6634C0532925a3b844Bc9e7595f2bD68",
+  chain: "base",
+});
+
+// Verify an agent
+const agent = await client.verifyAgent({
+  agentId: "did:prooflink:agent:data-processor",
+  chain: "eip155:8453",
+});
 ```
 
-That single call runs sanctions screening on both parties, AML risk scoring, Travel Rule transmission, and jurisdictional checks. The receipt is your audit trail.
+---
+
+## MCP Server
+
+Add compliance tools to any MCP-compatible client.
+
+**Configuration** (MCP client config):
+
+```json
+{
+  "mcpServers": {
+    "prooflink-compliance": {
+      "command": "npx",
+      "args": ["@prooflink/mcp-server"],
+      "env": {
+        "PROOFLINK_API_KEY": "fl_live_your_api_key"
+      }
+    }
+  }
+}
+```
+
+**Available tools (11):**
+
+| Tool | Description |
+|------|-------------|
+| `check_sanctions` | Screen addresses against OFAC, EU, UN, HMT sanctions lists |
+| `verify_kya` | Verify agent identity, authorization, and compliance standing |
+| `register_agent` | Register a new agent with KYA credentials |
+| `create_invoice` | Generate compliance-stamped invoices for agent services |
+| `list_invoices` | List and filter invoices |
+| `submit_travel_rule` | Transmit FATF Travel Rule originator/beneficiary data |
+| `pay_with_compliance` | End-to-end compliant payment with all checks |
+| `get_receipt` | Retrieve cryptographic compliance receipt for audit |
+| `get_risk_report` | Get risk assessment report for an address or entity |
+| `get_metrics` | Compliance check volume, approval rates, latency stats |
+| `batch_check` | Run compliance checks on multiple transactions |
 
 ---
 
-## Packages
+## x402 Middleware
 
-| Package | Description | Status |
-|---------|-------------|--------|
-| [`@flowlink/core`](packages/core) | ProofLink compliance decision engine | ![core](https://img.shields.io/badge/-ready-brightgreen) |
-| [`@flowlink/sdk`](packages/sdk) | TypeScript client SDK | ![sdk](https://img.shields.io/badge/-ready-brightgreen) |
-| [`@flowlink/x402-compliance`](packages/x402-compliance) | x402 protocol compliance middleware | ![x402](https://img.shields.io/badge/-ready-brightgreen) |
-| [`@flowlink/mcp-server`](packages/mcp-server) | MCP compliance server for AI agents | ![mcp](https://img.shields.io/badge/-ready-brightgreen) |
-| [`@flowlink/contracts`](packages/contracts) | Solidity smart contracts (Foundry) | ![contracts](https://img.shields.io/badge/-ready-brightgreen) |
-| [`@flowlink/shared`](packages/shared) | Shared types, schemas, constants | ![shared](https://img.shields.io/badge/-ready-brightgreen) |
-| [`@flowlink/request-finance`](packages/integrations/request-finance) | Request Network integration | ![request](https://img.shields.io/badge/-ready-brightgreen) |
-| [`@flowlink/api`](apps/api) | Hono REST API server | ![api](https://img.shields.io/badge/-ready-brightgreen) |
-| [`@flowlink/dashboard`](apps/dashboard) | Next.js 15 admin dashboard | ![dashboard](https://img.shields.io/badge/-ready-brightgreen) |
-| [`@flowlink/demo`](apps/demo) | Interactive hackathon demo | ![demo](https://img.shields.io/badge/-ready-brightgreen) |
+Drop compliance into any x402 payment server:
 
----
+```bash
+pnpm add @prooflink/x402-compliance
+```
 
-## x402 Integration
+```typescript
+import { createProofLinkCompliance } from "@prooflink/x402-compliance";
 
-Drop compliance into any x402 payment server in 3 lines:
-
-```ts
-import { createFlowLinkCompliance } from "@flowlink/x402-compliance";
-
-const compliance = createFlowLinkCompliance({
+const compliance = createProofLinkCompliance({
   chainalysisApiKey: process.env.CHAINALYSIS_API_KEY!,
   policy: {
     sanctionsLists: ["OFAC_SDN", "EU", "UN"],
@@ -141,344 +300,147 @@ const compliance = createFlowLinkCompliance({
   },
 });
 
-compliance.register(server); // Hooks into onBeforeVerify, onBeforeSettle, onAfterSettle
-// Every x402 payment now has compliance enforced automatically
+// Hooks into onBeforeVerify, onBeforeSettle, onAfterSettle
+compliance.register(server);
 ```
 
 Three hook points fire automatically:
+
 1. **Before verify** -- sanctions screening + AML scoring on the payer
-2. **Before settle** -- travel rule transmission for transfers above threshold
-3. **After settle** -- ProofLink receipt generation + EAS attestation
-
-[Full x402 guide](docs/x402-integration.md)
-
----
-
-## MCP Integration
-
-Give any AI agent compliance superpowers. Six tools, one server.
-
-**Claude Desktop** -- add to `~/.claude/claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "flowlink-compliance": {
-      "command": "npx",
-      "args": ["@flowlink/mcp-server"],
-      "env": {
-        "FLOWLINK_API_KEY": "fl_live_your_api_key"
-      }
-    }
-  }
-}
-```
-
-**Available MCP tools:**
-
-| Tool | Description |
-|------|-------------|
-| `check_sanctions` | Screen addresses/entities against OFAC, EU, UN, HMT sanctions lists |
-| `verify_kya` | Verify AI agent identity, authorization, and compliance standing |
-| `create_compliant_invoice` | Generate compliance-stamped invoices for agent services |
-| `submit_travel_rule` | Transmit FATF Travel Rule originator/beneficiary data |
-| `pay_with_compliance` | End-to-end compliant stablecoin payment with all checks |
-| `get_compliance_receipt` | Retrieve cryptographically signed compliance proof for audit |
-
-**Example conversation:**
-
-> **User:** Pay 5,000 USDC to 0xBob on Base for the data analysis job.
->
-> **Claude:** I'll check compliance first.
-> *[calls `check_sanctions`]* -- Clear, risk score 2/100.
-> *[calls `pay_with_compliance`]* -- Payment completed. Tx: `0xa1b2c3...`, Receipt: `rcpt_abc123`.
-
-[Full MCP guide](docs/mcp-integration.md)
+2. **Before settle** -- Travel Rule transmission for transfers above threshold
+3. **After settle** -- receipt generation + EAS attestation
 
 ---
 
 ## Smart Contracts
 
-Solidity 0.8.25, built with Foundry, deployed on **Base Sepolia** (upgradeable via ERC-1967 proxy).
+Solidity 0.8.25. Built with Foundry. Deployed on Base Sepolia (upgradeable via ERC-1967).
 
-| Contract | Purpose | Key Feature |
-|----------|---------|-------------|
-| `ProofLinkRegistry.sol` | On-chain compliance receipt registry | EAS attestations with custom schema |
-| `FlowLinkKYA.sol` | Know Your Agent identity attestations | ERC-8004 compatible agent registry |
-| `AgentInvoice.sol` | Autonomous agent invoice management | Content hash anchoring + state machine |
-| `FlowLinkFacilitator.sol` | x402 compliant payment facilitator | Pre-settlement compliance gate |
-
-**Deploy to Base Sepolia:**
+| Contract | Purpose |
+|----------|---------|
+| `ProofLinkRegistry.sol` | On-chain compliance receipt registry via EAS attestations |
+| `ProofLinkKYA.sol` | Know Your Agent identity attestations (ERC-8004 compatible) |
+| `AgentInvoice.sol` | Autonomous agent invoice management with content hash anchoring |
+| `ProofLinkFacilitator.sol` | x402-compliant payment facilitator with pre-settlement compliance gate |
 
 ```bash
 cd packages/contracts
+
+# Build
+forge build
+
+# Test
+forge test -vvv
+
+# Deploy to Base Sepolia
 forge script script/Deploy.s.sol --rpc-url base_sepolia --broadcast --verify
 ```
 
-Dependencies: OpenZeppelin Contracts, OpenZeppelin Upgradeable, EAS (Base native at `0x4200...0021`).
-
 ---
 
-## Dashboard
+## Deployment
 
-<p align="center">
-  <em>[Dashboard screenshot placeholder -- run <code>pnpm --filter=@flowlink/dashboard dev</code> at localhost:3100]</em>
-</p>
-
-**Next.js 15 admin dashboard** with real-time compliance monitoring:
-
-- **Live compliance feed** -- every check as it happens, with risk scores and status
-- **Risk distribution** -- visualize low/medium/high/critical risk across all transactions
-- **Volume analytics** -- transaction volume by chain (Base, Ethereum, Polygon) and token (USDC, USDT)
-- **Travel Rule tracker** -- transmission status, counterparty VASP acknowledgments
-- **Agent KYA management** -- register agents, view trust scores, manage delegation scopes
-- **Invoice lifecycle** -- create, issue, track, and settle invoices with compliance stamps
-- **Compliance receipts** -- browse and export ProofLink receipts for auditors
-
-Stack: React 19, Radix UI, TanStack Query, Recharts, Tailwind CSS.
-
----
-
-## Architecture
-
-### ProofLink Decision Pipeline
-
-Every transaction flows through a six-stage compliance pipeline. The entire pipeline completes in under 200ms.
-
-```
-  Payment Request
-        │
-        ▼
-┌───────────────┐    ┌───────────────┐    ┌───────────────┐
-│   Sanctions   │───▶│     AML       │───▶│  Travel Rule  │
-│   Screening   │    │   Scoring     │    │ Transmission  │
-│ (OFAC/EU/UN)  │    │  (0-100)      │    │ (FATF/GENIUS) │
-└───────────────┘    └───────────────┘    └───────────────┘
-                                                  │
-                                                  ▼
-┌───────────────┐    ┌───────────────┐    ┌───────────────┐
-│  KYA Check    │◀──│ Jurisdiction  │◀──│   Decision    │
-│ (Agent ID)    │    │   Rules       │    │   Engine      │
-│ (ERC-8004)    │    │ (MiCA/GENIUS) │    │ (APPROVE/     │
-└───────────────┘    └───────────────┘    │  ESCALATE/    │
-                                          │  REJECT)      │
-                                          └───────┬───────┘
-                                                  │
-                                                  ▼
-                                          ┌───────────────┐
-                                          │  ProofLink    │
-                                          │  Receipt      │
-                                          │ (EAS on-chain)│
-                                          └───────────────┘
-```
-
-**Decision thresholds:**
-
-| Risk Score | Decision | Action |
-|------------|----------|--------|
-| 0-49 | `APPROVED` | Payment proceeds |
-| 50-79 | `ESCALATED` | Manual review required |
-| 80-100 | `REJECTED` | Payment blocked |
-
-### Know Your Agent (KYA)
-
-A W3C Verifiable Credential profile for AI agent identity:
-
-```json
-{
-  "type": ["VerifiableCredential", "KYACredential"],
-  "credentialSubject": {
-    "id": "did:flowlink:agent:data-processor",
-    "agentType": "autonomous",
-    "controllingEntity": {
-      "name": "DataCo Inc",
-      "lei": "549300EXAMPLE00000",
-      "kybVerified": true
-    },
-    "delegationScope": {
-      "maxTransactionValue": 10000,
-      "dailyLimit": 50000,
-      "allowedChains": ["eip155:8453"],
-      "expiresAt": "2027-01-01T00:00:00Z"
-    }
-  }
-}
-```
-
-KYA answers four questions regulators ask about agent payments:
-1. **Who built it?** -- Controlling entity with KYB verification
-2. **Who authorized it?** -- Delegation scope with spending limits
-3. **What can it do?** -- Allowed chains, currencies, counterparties
-4. **When does authority expire?** -- Time-bounded credentials
-
-### Compliance Receipt Flow
-
-```
-Transaction ──▶ FlowLink Engine ──▶ ProofLink Receipt ──▶ EAS Attestation
-                     │                     │                     │
-                     │              receipt_hash          attestation_uid
-                     │              signature             on-chain proof
-                     │                     │                     │
-                     └─────────────────────┴─────────────────────┘
-                                           │
-                                    Auditor retrieves
-                                    via receipt ID or
-                                    tx hash
-```
-
----
-
-## API
-
-Base URL: `https://api.flowlink.io/v1`
-
-### Run a compliance check
+### Docker
 
 ```bash
-curl -X POST https://api.flowlink.io/v1/compliance/check \
-  -H "Authorization: Bearer fl_live_your_api_key" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "sender": { "address": "0xAlice", "chain": "base" },
-    "receiver": { "address": "0xBob", "chain": "base" },
-    "amount": "5000",
-    "asset": "USDC"
-  }'
+docker compose up -d
 ```
 
-### Screen an address
+Starts PostgreSQL, Redis, and the API server. Dashboard available via `pnpm --filter=@prooflink/dashboard build && pnpm --filter=@prooflink/dashboard start`.
+
+### Kubernetes
 
 ```bash
-curl -X POST https://api.flowlink.io/v1/compliance/screen \
-  -H "Authorization: Bearer fl_live_your_api_key" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "address": "0x742d35Cc6634C0532925a3b844Bc9e7595f2bD68",
-    "chain": "base"
-  }'
+kubectl apply -k k8s/base/
 ```
 
-### Verify an agent
+Production overlay with resource limits and autoscaling:
 
 ```bash
-curl -X POST https://api.flowlink.io/v1/identity/verify \
-  -H "Authorization: Bearer fl_live_your_api_key" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "agentId": "did:flowlink:agent:data-processor",
-    "chain": "eip155:8453"
-  }'
+kubectl apply -k k8s/overlays/production/
 ```
-
-[Full API reference](docs/api-reference.md) -- every endpoint, field, and error code.
 
 ---
 
-## Key Innovations
+## Testing
 
-### ProofLink: On-Chain Compliance Receipts
+```bash
+# All tests
+pnpm test
 
-Every compliance decision generates a cryptographically signed receipt, optionally attested on-chain via the Ethereum Attestation Service (EAS). ProofLink receipts are the document a CFO hands to an auditor -- structured, tamper-proof, and legally meaningful.
+# Unit tests only
+pnpm --filter=@prooflink/core test
+pnpm --filter=@prooflink/api test
 
-### KYA: Know Your Agent Standard
+# E2E tests
+pnpm --filter=@prooflink/api test:e2e
 
-The first identity standard designed for autonomous AI agents. A W3C Verifiable Credential profile that binds an agent to its controlling entity, defines spending limits, and enables Travel Rule compliance for agent-to-agent payments. Compatible with ERC-8004 agent registries.
+# Smart contract tests
+cd packages/contracts && forge test -vvv
 
-### Agent Invoice Standard (AIS-1)
+# Type checking
+pnpm typecheck
 
-A JSON-LD invoice schema purpose-built for autonomous agent commerce. Bridges the gap between "transaction hash" and "CFO-approved invoice" with service categories, work proof URIs, and on-chain content anchoring.
-
-### Multi-Protocol Compliance
-
-One compliance engine spanning every major agent payment protocol:
-
-| Protocol | Creator | FlowLink Integration |
-|----------|---------|---------------------|
-| **x402** | Coinbase | Middleware hooks (onBeforeVerify, onBeforeSettle, onAfterSettle) |
-| **MPP** | Stripe | Session compliance via API |
-| **AP2** | Visa | Pre-authorization compliance gate |
-| **ACP** | Crossmint | Transaction-level screening |
-| **Direct** | -- | Standard ERC-20 transfer compliance |
+# Lint
+pnpm lint
+```
 
 ---
 
-## Roadmap
+## Configuration
 
-| Quarter | Milestone |
-|---------|-----------|
-| **Q1 2026** | Core engine, x402 middleware, MCP server, SDK, smart contracts, dashboard |
-| **Q2 2026** | Production deployment, first design partners, hackathon wins (ETHGlobal / Coinbase Agents in Action) |
-| **Q3 2026** | KYA standard submission to W3C CCG, MPP + AP2 integrations, agent-to-human compliance flows |
-| **Q4 2026** | Agent-to-agent compliance, behavioral AML models, dispute resolution, Request Finance bridge live |
+Key environment variables (see [`.env.example`](.env.example) for the full list):
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `REDIS_URL` | Yes | Redis connection string |
+| `PORT` | Yes | API server port (default: `3001`) |
+| `NODE_ENV` | Yes | `development` / `staging` / `production` |
+| `API_KEY_SECRET` | Yes | Secret for signing API keys |
+| `JWT_SECRET` | Yes | JWT signing secret |
+| `PROOFLINK_API_KEY` | No | Self-auth API key |
+| `CHAINALYSIS_API_KEY` | No | Chainalysis sanctions API key |
+| `BASE_RPC_URL` | No | Base RPC endpoint |
+| `ETHEREUM_RPC_URL` | No | Ethereum RPC endpoint |
+| `EAS_CONTRACT_ADDRESS` | No | EAS contract (default: Base native) |
+| `CORS_ORIGIN` | No | Allowed CORS origins (comma-separated) |
+| `RATE_LIMIT_MAX` | No | Max requests per window (default: `100`) |
+| `LOG_LEVEL` | No | `debug` / `info` / `warn` / `error` |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | No | OpenTelemetry OTLP endpoint |
 
 ---
 
-## Self-Hosting
+## Supported Protocols
 
-```bash
-# Prerequisites: Node.js >= 22, pnpm 9.15+, Docker
-
-# Clone and install
-git clone https://github.com/AkashMaher/flow-link.git
-cd flow-link
-corepack enable && pnpm install
-
-# Start infrastructure
-cp .env.example .env  # Configure DATABASE_URL, REDIS_URL, RPC URLs
-docker compose up -d postgres redis
-
-# Run database migrations and start
-pnpm --filter=@flowlink/api db:migrate
-pnpm dev  # Starts API (3001) + Dashboard (3100) in parallel
-```
-
-**Run the hackathon demo:**
-
-```bash
-pnpm --filter=@flowlink/demo dev        # Full interactive demo
-pnpm --filter=@flowlink/demo demo:sanctions  # Sanctions screening scenario
-pnpm --filter=@flowlink/demo demo:payment    # Compliant payment flow
-```
+| Protocol | Creator | Integration | Status |
+|----------|---------|-------------|--------|
+| **x402** | Coinbase | Middleware hooks (`onBeforeVerify`, `onBeforeSettle`, `onAfterSettle`) | Full |
+| **MCP** | Open standard | 11-tool compliance server | Full |
+| **MPP** | Stripe | Session compliance via API | Adapter |
+| **AP2** | Visa | Pre-authorization compliance gate | Adapter |
+| **ACP** | Crossmint | Transaction-level screening | Adapter |
+| **A2A** | Google | Protocol discovery endpoint | Discovery |
 
 ---
 
 ## Contributing
 
-1. **Branch naming:** `feature/`, `fix/`, `refactor/`, `docs/`
-2. **Commits:** Conventional commits -- `feat(core): add travel rule validation`
-3. **Type safety:** Strict TypeScript everywhere, no `any` without justification
-4. **Testing:** `pnpm test` must pass. Smart contracts: `forge test -vvv`
-5. **Linting:** `pnpm lint` (Biome). Contracts: `forge fmt --check`
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for guidelines.
 
-See the [Developer Guide](docs/DEVELOPER_README.md) for full monorepo setup, package details, and deployment instructions.
-
----
+**Quick rules:** branch naming (`feature/`, `fix/`), conventional commits, strict TypeScript, `pnpm test` must pass.
 
 ## License
 
-MIT
-
----
-
-## Team
-
-| | Name | Role |
-|---|------|------|
-| | **Akash Maher** | Co-founder & Engineering -- IIT Patna, CERN GSoC, vLLM contributor |
-| | *[Co-founder]* | *[TBD]* |
+[MIT](LICENSE) -- Copyright (c) 2025 ProofLink
 
 ---
 
 <p align="center">
-  <strong>FlowLink</strong> -- the trust layer for the agent economy.
-  <br/>
-  <a href="docs/quickstart.md">Quick Start</a> &middot;
-  <a href="docs/api-reference.md">API Reference</a> &middot;
-  <a href="docs/sdk-reference.md">SDK Reference</a> &middot;
-  <a href="docs/mcp-integration.md">MCP Integration</a> &middot;
-  <a href="docs/x402-integration.md">x402 Integration</a> &middot;
-  <a href="docs/kya-guide.md">KYA Guide</a> &middot;
-  <a href="docs/compliance-concepts.md">Compliance Concepts</a> &middot;
-  <a href="docs/architecture.md">Architecture</a> &middot;
-  <a href="EXECUTIVE_SUMMARY.md">Executive Summary</a>
+  <a href="docs/api-reference.md">API Reference</a> ·
+  <a href="docs/sdk-reference.md">SDK</a> ·
+  <a href="docs/mcp-integration.md">MCP</a> ·
+  <a href="docs/x402-integration.md">x402</a> ·
+  <a href="docs/kya-guide.md">KYA Guide</a> ·
+  <a href="docs/architecture.md">Architecture</a>
 </p>
