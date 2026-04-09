@@ -53,7 +53,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Restore turbo cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .turbo
           key: turbo-typecheck-${{ github.sha }}
@@ -79,7 +79,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Restore turbo cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .turbo
           key: turbo-test-${{ github.sha }}
@@ -151,7 +151,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Restore turbo cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .turbo
           key: turbo-integration-${{ github.sha }}
@@ -207,7 +207,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Restore turbo cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .turbo
           key: turbo-build-${{ github.sha }}
