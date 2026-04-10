@@ -214,8 +214,11 @@ export function getApiKey(): string {
 
 async function fetchApi<T>(path: string): Promise<T | null> {
 	try {
+		const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+		const key = getApiKey();
+		if (key) headers['X-API-Key'] = key;
 		const res = await fetch(`${API_BASE}${path}`, {
-			headers: { 'Content-Type': 'application/json' },
+			headers,
 			signal: AbortSignal.timeout(3000),
 		});
 		if (!res.ok) return null;

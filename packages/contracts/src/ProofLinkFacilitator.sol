@@ -7,7 +7,7 @@ import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/Pau
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-import {Types} from "./libraries/Types.sol";
+import {Types, SANCTIONS_MATCH_MASK} from "./libraries/Types.sol";
 import {ProofLinkRegistry} from "./ProofLinkRegistry.sol";
 import {ProofLinkKYA} from "./ProofLinkKYA.sol";
 
@@ -98,6 +98,9 @@ contract ProofLinkFacilitator is
     /// @notice Emitted when a spending limit is set for an agent.
     event SpendingLimitSet(address indexed agent, uint128 limit);
 
+    /// @notice Emitted when contract addresses are updated.
+    event ContractAddressesUpdated(address proofLinkRegistry, address kyaContract);
+
     // ──────────────────────────────────────────────
     // Errors
     // ──────────────────────────────────────────────
@@ -156,7 +159,9 @@ contract ProofLinkFacilitator is
         __AccessControl_init();
         // UUPSUpgradeable does not require init in OZ v5
         __Pausable_init();
-        // ReentrancyGuard (non-upgradeable) initializes in constructor — no init needed
+        // OZ v5 ReentrancyGuard uses ERC-7201 namespaced storage (slot-based).
+        // Uninitialized (0) is safe: _nonReentrantBefore only reverts when value == ENTERED (2).
+        // First nonReentrant call transitions 0 -> 2 -> 1 correctly.
 
         proofLinkRegistry = ProofLinkRegistry(proofLinkRegistry_);
         kyaContract = ProofLinkKYA(kyaContract_);
@@ -185,7 +190,7 @@ contract ProofLinkFacilitator is
         returns (bool isCompliant, string memory reason)
     {
         // Check sanctions flags (bits 8-11 are match indicators)
-        if (compliance.sanctionsFlags & 0x0F00 != 0) {
+        if ((compliance.sanctionsFlags & SANCTIONS_MATCH_MASK) != 0) {
             return (false, "SANCTIONS_HIT");
         }
 
@@ -237,7 +242,7 @@ contract ProofLinkFacilitator is
         if (payload.deadline != 0 && block.timestamp > payload.deadline) revert DeadlineExpired();
 
         // Run compliance checks
-        _enforceCompliance(payload, compliance);
+        bool compliancePassed = _enforceCompliance(payload, compliance);
 
         // Mark nonce as used (before external calls — CEI pattern)
         _usedNonces[payload.nonce] = true;
@@ -260,22 +265,23 @@ contract ProofLinkFacilitator is
             proofLinkReceiptId: compliance.proofLinkReceiptId
         });
 
-        // Anchor compliance receipt in ProofLinkRegistry
-        // Note: actual token transfer happens via EIP-3009 or Permit2 in the off-chain layer.
-        // This contract only records the settlement and anchors the compliance receipt.
-        proofLinkRegistry.anchorReceipt(
-            compliance.proofLinkReceiptId,
-            payload.paymentHash,
-            payload.chainId,
-            payload.payer,
-            payload.payee,
-            payload.amount,
-            payload.token,
-            bytes32(0), // IPFS hash set by off-chain engine later
-            compliance.riskScore,
-            compliance.sanctionsFlags,
-            compliance.travelRuleCompliant
-        );
+        // Anchor compliance receipt in ProofLinkRegistry only if compliance passed.
+        // In fail-open mode, skip anchoring to avoid recording non-compliant receipts.
+        if (compliancePassed) {
+            proofLinkRegistry.anchorReceipt(
+                compliance.proofLinkReceiptId,
+                payload.paymentHash,
+                payload.chainId,
+                payload.payer,
+                payload.payee,
+                payload.amount,
+                payload.token,
+                bytes32(0), // IPFS hash set by off-chain engine later
+                compliance.riskScore,
+                compliance.sanctionsFlags,
+                compliance.travelRuleCompliant
+            );
+        }
 
         emit PaymentSettled(
             settlementId, payload.payer, payload.payee, payload.token, payload.amount, compliance.proofLinkReceiptId
@@ -406,6 +412,7 @@ contract ProofLinkFacilitator is
         if (proofLinkRegistry_ == address(0) || kyaContract_ == address(0)) revert ZeroAddress();
         proofLinkRegistry = ProofLinkRegistry(proofLinkRegistry_);
         kyaContract = ProofLinkKYA(kyaContract_);
+        emit ContractAddressesUpdated(proofLinkRegistry_, kyaContract_);
     }
 
     /// @notice Pause all settlements (emergency kill switch).
@@ -424,22 +431,23 @@ contract ProofLinkFacilitator is
 
     /// @dev Enforce compliance checks. Reverts if fail-closed and checks fail.
     ///      Emits ComplianceCheckFailed if fail-open and checks fail.
+    /// @return passed True if all compliance checks passed; false if fail-open and a check failed.
     function _enforceCompliance(
         Types.PaymentPayload calldata payload,
         Types.ComplianceAttestation calldata compliance
-    ) internal {
+    ) internal returns (bool passed) {
         // Check sanctions (bits 8-11 are match indicators)
-        if (compliance.sanctionsFlags & 0x0F00 != 0) {
+        if ((compliance.sanctionsFlags & SANCTIONS_MATCH_MASK) != 0) {
             if (failClosed) revert SanctionsHit();
             emit ComplianceCheckFailed(payload.payer, payload.payee, payload.amount, "SANCTIONS_HIT");
-            return;
+            return false;
         }
 
         // Check risk score
         if (compliance.riskScore > riskThreshold) {
             if (failClosed) revert RiskScoreTooHigh();
             emit ComplianceCheckFailed(payload.payer, payload.payee, payload.amount, "RISK_TOO_HIGH");
-            return;
+            return false;
         }
 
         // Check KYA if required
@@ -448,7 +456,7 @@ contract ProofLinkFacilitator is
             if (!kyaValid) {
                 if (failClosed) revert KYAVerificationFailed();
                 emit ComplianceCheckFailed(payload.payer, payload.payee, payload.amount, "KYA_INVALID");
-                return;
+                return false;
             }
         }
 
@@ -460,10 +468,19 @@ contract ProofLinkFacilitator is
             if (spent + payload.amount > limit) {
                 if (failClosed) revert SpendingLimitExceeded();
                 emit ComplianceCheckFailed(payload.payer, payload.payee, payload.amount, "SPENDING_LIMIT_EXCEEDED");
-                return; // Consistent with other fail-open branches — do not proceed further
+                return false;
             }
         }
+
+        return true;
     }
+
+    // ──────────────────────────────────────────────
+    // Storage Gap
+    // ──────────────────────────────────────────────
+
+    /// @dev Reserved storage for future upgrades.
+    uint256[50] private __gap;
 
     /// @dev Authorize UUPS proxy upgrades to DEFAULT_ADMIN_ROLE holders only.
     function _authorizeUpgrade(address) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}

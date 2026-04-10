@@ -76,6 +76,9 @@ contract ProofLinkKYA is Initializable, AccessControlUpgradeable, UUPSUpgradeabl
     /// @notice Emitted when an agent is deactivated.
     event AgentDeactivated(address indexed wallet, address indexed deactivatedBy);
 
+    /// @notice Emitted when registry addresses are updated.
+    event RegistriesUpdated(address identityRegistry, address validationRegistry);
+
     // ──────────────────────────────────────────────
     // Errors
     // ──────────────────────────────────────────────
@@ -191,7 +194,7 @@ contract ProofLinkKYA is Initializable, AccessControlUpgradeable, UUPSUpgradeabl
             validationRegistry.validationResponse(
                 requestHash,
                 defaultValidationScore,
-                string(abi.encodePacked("ipfs://", credentialHash)),
+                "", // URI omitted — callers should use credentialHash directly
                 credentialHash,
                 "kya"
             );
@@ -367,6 +370,7 @@ contract ProofLinkKYA is Initializable, AccessControlUpgradeable, UUPSUpgradeabl
         if (validationRegistry_ != address(0)) {
             validationRegistry = IERC8004ValidationRegistry(validationRegistry_);
         }
+        emit RegistriesUpdated(identityRegistry_, validationRegistry_);
     }
 
     /// @notice Set the default validation score for ERC-8004 validation responses.
@@ -381,6 +385,13 @@ contract ProofLinkKYA is Initializable, AccessControlUpgradeable, UUPSUpgradeabl
     // ──────────────────────────────────────────────
     // Internal
     // ──────────────────────────────────────────────
+
+    // ──────────────────────────────────────────────
+    // Storage Gap
+    // ──────────────────────────────────────────────
+
+    /// @dev Reserved storage for future upgrades.
+    uint256[50] private __gap;
 
     /// @dev Authorize UUPS proxy upgrades to DEFAULT_ADMIN_ROLE holders only.
     function _authorizeUpgrade(address) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}

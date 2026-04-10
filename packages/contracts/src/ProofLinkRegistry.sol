@@ -15,7 +15,7 @@ import {
     Attestation
 } from "./interfaces/IEAS.sol";
 import {ISchemaRegistry} from "./interfaces/IEAS.sol";
-import {Types} from "./libraries/Types.sol";
+import {Types, SANCTIONS_MATCH_MASK} from "./libraries/Types.sol";
 
 /// @title ProofLinkRegistry
 /// @author ProofLink
@@ -119,11 +119,11 @@ contract ProofLinkRegistry is Initializable, AccessControlUpgradeable, UUPSUpgra
     /// @notice Receipt has been revoked.
     error ReceiptAlreadyRevoked();
 
-    /// @notice Batch size exceeds maximum (50).
-    error BatchTooLarge();
-
     /// @notice Risk score exceeds maximum (100).
     error InvalidRiskScore();
+
+    /// @notice Invalid status value (must be 0-2).
+    error InvalidStatus();
 
     /// @notice Risk threshold exceeds maximum (100).
     error InvalidRiskThreshold();
@@ -133,6 +133,9 @@ contract ProofLinkRegistry is Initializable, AccessControlUpgradeable, UUPSUpgra
 
     /// @notice IPFS content hash is empty (zero bytes32).
     error InvalidIpfsHash();
+
+    /// @notice A receipt already exists for this payment tx hash.
+    error DuplicateReceipt();
 
     // ──────────────────────────────────────────────
     // Initializer
@@ -260,6 +263,7 @@ contract ProofLinkRegistry is Initializable, AccessControlUpgradeable, UUPSUpgra
         });
 
         receiptToEAS[receiptId] = easUID;
+        if (txHashToReceipt[paymentTxHash] != bytes32(0)) revert DuplicateReceipt();
         txHashToReceipt[paymentTxHash] = receiptId;
 
         emit ReceiptAnchored(receiptId, payer, payee, easUID);
@@ -341,7 +345,7 @@ contract ProofLinkRegistry is Initializable, AccessControlUpgradeable, UUPSUpgra
         Types.ProofLinkReceipt storage receipt = _receipts[rid];
         if (receipt.riskScore > riskThreshold) return false;
         // Sanctions match bits (bits 8-11) must be zero for compliance
-        if (receipt.sanctionsFlags & 0x0F00 != 0) return false;
+        if ((receipt.sanctionsFlags & SANCTIONS_MATCH_MASK) != 0) return false;
         return true;
     }
 
@@ -381,7 +385,7 @@ contract ProofLinkRegistry is Initializable, AccessControlUpgradeable, UUPSUpgra
     ) external onlyRole(ATTESTER_ROLE) {
         if (receiptHash == bytes32(0)) revert ReceiptNotFound();
         if (sender == address(0) || receiver == address(0)) revert ZeroAddress();
-        if (status > 2) revert InvalidRiskScore();
+        if (status > 2) revert InvalidStatus();
         if (_simpleAttestations[receiptHash].timestamp != 0) revert ReceiptAlreadyExists();
 
         _simpleAttestations[receiptHash] = Types.SimpleAttestation({
@@ -428,6 +432,13 @@ contract ProofLinkRegistry is Initializable, AccessControlUpgradeable, UUPSUpgra
     // ──────────────────────────────────────────────
     // Internal
     // ──────────────────────────────────────────────
+
+    // ──────────────────────────────────────────────
+    // Storage Gap
+    // ──────────────────────────────────────────────
+
+    /// @dev Reserved storage for future upgrades.
+    uint256[50] private __gap;
 
     /// @dev Authorize UUPS proxy upgrades to DEFAULT_ADMIN_ROLE holders only.
     function _authorizeUpgrade(address) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}

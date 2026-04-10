@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { getDb } from "../db/index.js";
 import { escrows } from "../db/schema.js";
+import { requireScope } from "../middleware/auth.js";
 import type { AuthContext } from "../middleware/auth.js";
 import { validate } from "../middleware/validate.js";
 import {
@@ -113,7 +114,7 @@ function handleServiceError(c: any, err: unknown) {
 const escrowRoutes = new Hono();
 
 // POST /v1/escrow — Create escrow
-escrowRoutes.post("/", validate({ body: CreateEscrowRequest }), async (c) => {
+escrowRoutes.post("/", requireScope("write"), validate({ body: CreateEscrowRequest }), async (c) => {
   const parsed = c.get("validatedBody") as CreateEscrowRequest;
   const auth = c.get("auth") as AuthContext;
 
@@ -152,7 +153,7 @@ escrowRoutes.get("/:id", validate({ params: EscrowIdParams }), async (c) => {
 });
 
 // POST /v1/escrow/:id/fund — Fund escrow (payer only)
-escrowRoutes.post("/:id/fund", validate({ params: EscrowIdParams }), async (c) => {
+escrowRoutes.post("/:id/fund", requireScope("write"), validate({ params: EscrowIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof EscrowIdParams>;
   const auth = c.get("auth") as AuthContext;
 
@@ -165,7 +166,7 @@ escrowRoutes.post("/:id/fund", validate({ params: EscrowIdParams }), async (c) =
 });
 
 // POST /v1/escrow/:id/activate — Activate escrow (tenant-isolated)
-escrowRoutes.post("/:id/activate", validate({ params: EscrowIdParams }), async (c) => {
+escrowRoutes.post("/:id/activate", requireScope("write"), validate({ params: EscrowIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof EscrowIdParams>;
   const auth = c.get("auth") as AuthContext;
 
@@ -180,6 +181,7 @@ escrowRoutes.post("/:id/activate", validate({ params: EscrowIdParams }), async (
 // POST /v1/escrow/:id/complete — Complete with evaluator proof (tenant-isolated)
 escrowRoutes.post(
   "/:id/complete",
+  requireScope("write"),
   validate({ params: EscrowIdParams, body: CompleteEscrowRequest }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof EscrowIdParams>;
@@ -198,6 +200,7 @@ escrowRoutes.post(
 // POST /v1/escrow/:id/dispute — Initiate dispute (tenant-isolated)
 escrowRoutes.post(
   "/:id/dispute",
+  requireScope("write"),
   validate({ params: EscrowIdParams, body: DisputeEscrowRequest }),
   async (c) => {
     const { id } = c.get("validatedParams") as z.infer<typeof EscrowIdParams>;
@@ -214,7 +217,7 @@ escrowRoutes.post(
 );
 
 // POST /v1/escrow/:id/refund — Refund after dispute/expiry (tenant-isolated)
-escrowRoutes.post("/:id/refund", validate({ params: EscrowIdParams }), async (c) => {
+escrowRoutes.post("/:id/refund", requireScope("write"), validate({ params: EscrowIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof EscrowIdParams>;
   const auth = c.get("auth") as AuthContext;
 
@@ -227,7 +230,7 @@ escrowRoutes.post("/:id/refund", validate({ params: EscrowIdParams }), async (c)
 });
 
 // POST /v1/escrow/:id/expire — Check expiry and transition (tenant-isolated)
-escrowRoutes.post("/:id/expire", validate({ params: EscrowIdParams }), async (c) => {
+escrowRoutes.post("/:id/expire", requireScope("write"), validate({ params: EscrowIdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof EscrowIdParams>;
   const auth = c.get("auth") as AuthContext;
 

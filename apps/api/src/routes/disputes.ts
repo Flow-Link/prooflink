@@ -98,7 +98,7 @@ function handleServiceError(c: Context, error: unknown) {
 const disputeRoutes = new Hono();
 
 // POST /v1/disputes — open a new dispute (tenant-isolated)
-disputeRoutes.post("/", validate({ body: CreateDisputeBody }), async (c) => {
+disputeRoutes.post("/", requireScope("write"), validate({ body: CreateDisputeBody }), async (c) => {
   const body = c.get("validatedBody") as z.infer<typeof CreateDisputeBody>;
   const auth = c.get("auth") as AuthContext;
 
@@ -180,7 +180,7 @@ disputeRoutes.get("/:id", validate({ params: IdParams }), async (c) => {
 });
 
 // POST /v1/disputes/:id/evidence — submit evidence (tenant-isolated)
-disputeRoutes.post("/:id/evidence", validate({ params: IdParams, body: EvidenceBody }), async (c) => {
+disputeRoutes.post("/:id/evidence", requireScope("write"), validate({ params: IdParams, body: EvidenceBody }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof IdParams>;
   const body = c.get("validatedBody") as z.infer<typeof EvidenceBody>;
   const auth = c.get("auth") as AuthContext;
@@ -194,7 +194,7 @@ disputeRoutes.post("/:id/evidence", validate({ params: IdParams, body: EvidenceB
 });
 
 // POST /v1/disputes/:id/escalate — escalate to arbitration (tenant-isolated)
-disputeRoutes.post("/:id/escalate", validate({ params: IdParams }), async (c) => {
+disputeRoutes.post("/:id/escalate", requireScope("write"), validate({ params: IdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof IdParams>;
   const auth = c.get("auth") as AuthContext;
 

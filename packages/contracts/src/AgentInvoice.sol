@@ -35,9 +35,6 @@ contract AgentInvoice is Initializable, AccessControlUpgradeable, UUPSUpgradeabl
     /// @dev recipient address => array of invoice IDs
     mapping(address => bytes32[]) internal _recipientInvoices;
 
-    /// @dev Nonce counter per issuer for deterministic invoice ID generation.
-    mapping(address => uint256) internal _nonces;
-
     // ──────────────────────────────────────────────
     // Events
     // ──────────────────────────────────────────────
@@ -344,6 +341,13 @@ contract AgentInvoice is Initializable, AccessControlUpgradeable, UUPSUpgradeabl
         }
         return false;
     }
+
+    // ──────────────────────────────────────────────
+    // Storage Gap
+    // ──────────────────────────────────────────────
+
+    /// @dev Reserved storage for future upgrades.
+    uint256[50] private __gap;
 
     /// @dev Authorize UUPS proxy upgrades to DEFAULT_ADMIN_ROLE holders only.
     function _authorizeUpgrade(address) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}

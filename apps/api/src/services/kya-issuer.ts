@@ -2,6 +2,7 @@ import { createHash, createHmac, randomUUID, timingSafeEqual } from "node:crypto
 
 import type { KYACredentialSubject, KYAVerifiableCredential } from "./kya-schema.js";
 import { KYACredentialSubjectSchema } from "./kya-schema.js";
+import { logger } from "../utils/logger.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -101,8 +102,8 @@ export function issueKYACredential(input: IssueKYACredentialInput): IssuedCreden
 
   // Warn (but don't reject) when LEI is missing
   if (!parsed.controllingEntityLEI) {
-    console.warn(
-      `[kya-issuer] Issuing credential for ${input.agentDid} without controllingEntityLEI — strongly recommended for production use`,
+    logger.warn(
+      `Issuing credential for ${input.agentDid} without controllingEntityLEI — strongly recommended for production use`,
     );
   }
 

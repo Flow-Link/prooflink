@@ -466,7 +466,7 @@ contract ProofLinkRegistryTest is Test {
 
     function test_attest_revert_invalidStatus() public {
         vm.prank(attester);
-        vm.expectRevert(ProofLinkRegistry.InvalidRiskScore.selector);
+        vm.expectRevert(ProofLinkRegistry.InvalidStatus.selector);
         registry.attest(keccak256("bad"), payer, payee, 1000, "base", 3);
     }
 

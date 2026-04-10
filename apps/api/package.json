@@ -30,6 +30,7 @@
     "@prooflink/shared": "workspace:*",
     "drizzle-orm": "^0.39.0",
     "hono": "^4.7.0",
+    "ioredis": "^5.10.1",
     "pg": "^8.13.0",
     "zod": "^3.24.0"
   },

@@ -1,8 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
+// Sanctions bitmask constants (file-level for gas efficiency)
+uint16 constant SANCTIONS_SCREENED_MASK = 0x000F;
+uint16 constant SANCTIONS_MATCH_MASK = 0x0F00;
+
 /// @title Types
 /// @notice Shared type definitions for ProofLink contracts.
+
 library Types {
     // ──────────────────────────────────────────────
     // Invoice

@@ -1,3 +1,4 @@
+import { createConnection } from "node:net";
 import { Hono } from "hono";
 
 import {
@@ -25,6 +26,40 @@ checker.addCheck(
     await pool.query("SELECT 1");
   }),
 );
+
+// Redis check (if configured)
+const redisUrl = process.env["REDIS_URL"];
+if (redisUrl) {
+  checker.addCheck(
+    customCheck("redis", () => {
+      return new Promise<void>((resolve, reject) => {
+        const parsed = new URL(redisUrl);
+        const port = Number(parsed.port) || 6379;
+        const host = parsed.hostname || "127.0.0.1";
+        const socket = createConnection({ host, port }, () => {
+          socket.write("PING\r\n");
+        });
+        socket.setTimeout(3000);
+        socket.on("data", (data) => {
+          socket.destroy();
+          if (data.toString().includes("+PONG")) {
+            resolve();
+          } else {
+            reject(new Error(`Unexpected Redis response: ${data.toString().trim()}`));
+          }
+        });
+        socket.on("error", (err) => {
+          socket.destroy();
+          reject(err);
+        });
+        socket.on("timeout", () => {
+          socket.destroy();
+          reject(new Error("Redis connection timed out"));
+        });
+      });
+    }),
+  );
+}
 
 // Chainalysis API check (if configured)
 const chainalysisUrl = process.env["CHAINALYSIS_API_URL"];

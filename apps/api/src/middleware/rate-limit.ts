@@ -1,4 +1,5 @@
 import type { MiddlewareHandler } from "hono";
+import Redis from "ioredis";
 
 import type { AuthContext } from "./auth.js";
 import { logger } from "../utils/logger.js";
@@ -84,37 +85,56 @@ export class MapStore implements RateLimitStore {
 }
 
 // ---------------------------------------------------------------------------
-// RedisStore stub — documents the Redis sorted-set pattern for production
+// RedisStore — Redis sorted-set sliding window (production, multi-pod safe)
 // ---------------------------------------------------------------------------
 
 /**
  * Redis-backed rate-limit store using sorted sets.
  *
- * Algorithm (Redis sorted-set sliding window):
+ * Algorithm: O(log N) per request, atomic across all pods.
  *   MULTI
  *     ZREMRANGEBYSCORE  key  0  (now - windowMs)   // trim expired
  *     ZADD              key  now  <unique-member>   // add this request
  *     ZCARD             key                         // count in window
  *     PEXPIRE           key  windowMs               // auto-cleanup
  *   EXEC
- *
- * This is O(log N) per request and atomic across all pods.
- *
- * To implement:
- *   1. Install `ioredis` (or use the built-in `redis` package)
- *   2. Pass the Redis client to the constructor
- *   3. Implement increment() using the pipeline above
- *
- * Example:
- *   const redis = new Redis(process.env.REDIS_URL);
- *   const store = new RedisStore(redis);
- *   rateLimitMiddleware({ defaultLimit: 60, store });
  */
 export class RedisStore implements RateLimitStore {
-  async increment(_key: string, _windowMs: number): Promise<{ count: number; resetAt: number }> {
-    throw new Error(
-      "RedisStore is not yet implemented. Set RATE_LIMIT_STORE=memory or configure a Redis client.",
-    );
+  private redis: Redis;
+
+  constructor(redisUrl: string) {
+    this.redis = new Redis(redisUrl, {
+      maxRetriesPerRequest: 3,
+      lazyConnect: true,
+    });
+  }
+
+  async connect(): Promise<void> {
+    await this.redis.connect();
+  }
+
+  async increment(key: string, windowMs: number): Promise<{ count: number; resetAt: number }> {
+    const now = Date.now();
+    const windowKey = `ratelimit:${key}`;
+
+    const multi = this.redis.multi();
+    multi.zremrangebyscore(windowKey, 0, now - windowMs);
+    multi.zadd(windowKey, now, `${now}:${Math.random().toString(36).slice(2)}`);
+    multi.zcard(windowKey);
+    multi.pexpire(windowKey, windowMs);
+
+    const results = await multi.exec();
+    // results[2] is [err, count] from ZCARD
+    const count = (results?.[2]?.[1] as number) ?? 0;
+
+    return {
+      count,
+      resetAt: now + windowMs,
+    };
+  }
+
+  close(): void {
+    this.redis.disconnect();
   }
 }
 
@@ -128,15 +148,32 @@ function getDefaultStore(): RateLimitStore {
   if (defaultStore) return defaultStore;
 
   const storeType = process.env["RATE_LIMIT_STORE"] ?? "memory";
+  const redisUrl = process.env["REDIS_URL"];
 
-  if (storeType === "redis") {
+  if (storeType === "redis" && redisUrl) {
+    try {
+      const store = new RedisStore(redisUrl);
+      store.connect().catch((err: unknown) => {
+        logger.warn(
+          "Redis rate-limit store failed to connect. Requests may fail until Redis is available.",
+          { err: String(err) },
+        );
+      });
+      defaultStore = store;
+      return defaultStore;
+    } catch (err: unknown) {
+      logger.warn(
+        "Failed to create Redis rate-limit store. Falling back to in-memory store.",
+        { err: String(err) },
+      );
+    }
+  } else if (storeType === "redis" && !redisUrl) {
     logger.warn(
-      "RATE_LIMIT_STORE=redis but Redis is not configured yet. " +
+      "RATE_LIMIT_STORE=redis but REDIS_URL is not set. " +
       "Falling back to in-memory store. Multi-pod rate limiting will NOT be consistent.",
     );
   }
 
-  // Always fall back to MapStore for now
   defaultStore = new MapStore();
   return defaultStore;
 }

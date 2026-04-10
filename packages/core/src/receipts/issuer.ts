@@ -24,7 +24,7 @@ const COMPLIANCE_RECEIPT_TYPES = {
 } as const;
 
 const COMPLIANCE_RECEIPT_DOMAIN = {
-  name: "ProofLink ProofLink",
+  name: "ProofLink",
   version: "1",
   // chainId is set dynamically from config
 } as const;

@@ -232,7 +232,7 @@ dashboard.get("/health", async (c) => {
 		success: true,
 		data: {
 			status: dbOk ? "operational" : "degraded",
-			uptime: 99.97,
+			uptime: Math.round(process.uptime()),
 			latency: Math.round(process.uptime() > 60 ? 42 : process.uptime()),
 			lastChecked: new Date().toISOString(),
 			services: [
