@@ -14,7 +14,7 @@
   <a href="https://github.com/Flow-Link/prooflink/actions"><img src="https://img.shields.io/github/actions/workflow/status/Flow-Link/prooflink/ci.yml?branch=master&label=CI&logo=github" alt="CI" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT" /></a>
   <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript strict" />
-  <img src="https://img.shields.io/badge/tests-1557%2B%20passing-brightgreen" alt="Tests: 1557+ passing" />
+  <img src="https://img.shields.io/badge/tests-2295%20passing-brightgreen" alt="Tests: 1557+ passing" />
 </p>
 
 ---
@@ -57,6 +57,35 @@ ProofLink is the shared compliance layer. One API call screens both parties, sco
 | 80--100 | `REJECTED` | Payment blocked, SAR generated |
 
 The full pipeline completes in under 200ms.
+
+---
+
+## Dashboard
+
+<p align="center">
+  <img src="docs/images/dashboard.png" alt="ProofLink Dashboard — real-time compliance monitoring" width="800" />
+</p>
+
+<p align="center"><em>Real-time compliance monitoring with volume charts, activity feed, and risk overview</em></p>
+
+<details>
+<summary><strong>More screenshots</strong></summary>
+
+<br />
+
+**Compliance History** — Search, filter, and review every compliance decision:
+
+<p align="center">
+  <img src="docs/images/compliance-history.png" alt="Compliance decision history" width="800" />
+</p>
+
+**Sanctions Screening** — Screen any wallet address with instant OFAC/EU/UN match detection:
+
+<p align="center">
+  <img src="docs/images/sanctions-screening.png" alt="Address sanctions screening" width="800" />
+</p>
+
+</details>
 
 ---
 
