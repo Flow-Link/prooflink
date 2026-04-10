@@ -85,6 +85,12 @@ The full pipeline completes in under 200ms.
   <img src="docs/images/sanctions-screening.png" alt="Address sanctions screening" width="800" />
 </p>
 
+**Analytics** — Transaction volume, compliance decision breakdown, risk distribution, and geographic insights:
+
+<p align="center">
+  <img src="docs/images/analytics.png" alt="Compliance analytics dashboard" width="800" />
+</p>
+
 </details>
 
 ---
