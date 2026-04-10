@@ -226,7 +226,7 @@ disputeRoutes.post(
 );
 
 // POST /v1/disputes/:id/close — close after resolution executed (tenant-isolated)
-disputeRoutes.post("/:id/close", validate({ params: IdParams }), async (c) => {
+disputeRoutes.post("/:id/close", requireScope("write"), validate({ params: IdParams }), async (c) => {
   const { id } = c.get("validatedParams") as z.infer<typeof IdParams>;
   const auth = c.get("auth") as AuthContext;
 

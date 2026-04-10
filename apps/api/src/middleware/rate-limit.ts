@@ -155,9 +155,10 @@ function getDefaultStore(): RateLimitStore {
       const store = new RedisStore(redisUrl);
       store.connect().catch((err: unknown) => {
         logger.warn(
-          "Redis rate-limit store failed to connect. Requests may fail until Redis is available.",
+          "Redis rate-limit store failed to connect. Falling back to in-memory store.",
           { err: String(err) },
         );
+        defaultStore = new MapStore();
       });
       defaultStore = store;
       return defaultStore;

@@ -223,6 +223,7 @@ contract ProofLinkRegistry is Initializable, AccessControlUpgradeable, UUPSUpgra
     ) external onlyRole(ATTESTER_ROLE) returns (bytes32 easUID) {
         if (schemaUID == bytes32(0)) revert SchemaNotRegistered();
         if (receiptToEAS[receiptId] != bytes32(0)) revert ReceiptAlreadyExists();
+        if (txHashToReceipt[paymentTxHash] != bytes32(0)) revert DuplicateReceipt();
         if (riskScore > 100) revert InvalidRiskScore();
 
         // ABI-encode data matching SCHEMA_STRING
@@ -263,7 +264,6 @@ contract ProofLinkRegistry is Initializable, AccessControlUpgradeable, UUPSUpgra
         });
 
         receiptToEAS[receiptId] = easUID;
-        if (txHashToReceipt[paymentTxHash] != bytes32(0)) revert DuplicateReceipt();
         txHashToReceipt[paymentTxHash] = receiptId;
 
         emit ReceiptAnchored(receiptId, payer, payee, easUID);
