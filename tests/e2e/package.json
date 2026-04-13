@@ -10,7 +10,7 @@
     "test:ui": "vitest --config vitest.config.ts --ui"
   },
   "devDependencies": {
-    "vitest": "^3.0.0",
+    "vitest": "^4.1.4",
     "typescript": "^5.8.0"
   }
 }
